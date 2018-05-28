@@ -1,0 +1,9 @@
+language: java
+os:
+  - linux
+install:
+  - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+script:
+  - mvn test -B
+after_success:
+  - npm run coveralls

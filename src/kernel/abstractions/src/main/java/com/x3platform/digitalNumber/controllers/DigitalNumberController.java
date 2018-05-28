@@ -5,20 +5,25 @@ import java.util.*;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import X3Platform.Ajax.*;
-import X3Platform.Util.*;
+// import X3Platform.Ajax.*;
+// import X3Platform.Util.*;
 
+// import X3Platform.Globalization.*;
+// import X3Platform.Messages.*;
+
+import com.x3platform.messages.MessageObject;
 import com.x3platform.digitalNumber.DigitalNumberContext;
 import com.x3platform.digitalNumber.models.*;
 import com.x3platform.digitalNumber.services.*;
-import X3Platform.Globalization.*;
-import X3Platform.Messages.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  *
  */
-@RestController
-@RequestMapping("/api/sys/digitalNumber")
+// @RestController
+@RequestMapping("/api/sys/digital-number")
 public class DigitalNumberController {
   // 数据提供器
   private IDigitalNumberService service = DigitalNumberContext.getInstance().getDigitalNumberService();
@@ -32,12 +37,13 @@ public class DigitalNumberController {
    *
    * @return 返回操作结果
    */
+  @RequestMapping("/save")
   public final String Save(HttpServletRequest req, HttpServletResponse res) {
     DigitalNumberInfo param = new DigitalNumberInfo();
 
     // param = AjaxUtil.<DigitalNumberInfo>Deserialize(param, doc);
 
-    this.service.Save(param);
+    this.service.save(param);
 
     return "{\"message\":{\"returnCode\":0,\"value\":\"查询成功。\"}}";
   }
@@ -48,13 +54,14 @@ public class DigitalNumberController {
    * @param doc Xml 文档对象
    * @return 返回操作结果
    */
-  public final String Delete(HttpServletRequest req, HttpServletResponse res) {
+  public final String delete(HttpServletRequest req, HttpServletResponse res) {
     // String name = XmlHelper.Fetch("name", doc);
     String name = req.getParameter("name");
 
-    this.service.Delete(name);
+    this.service.delete(name);
 
-    return MessageObject.Stringify("0", I18n.Strings["msg_delete_success"]);
+    // return MessageObject.Stringify("0", I18n.Strings["msg_delete_success"]);
+    return MessageObject.stringify("0", "msg_delete_success");
   }
 
   // -------------------------------------------------------
@@ -70,25 +77,22 @@ public class DigitalNumberController {
   public final String FindOne(HttpServletRequest req, HttpServletResponse res) {
     StringBuilder outString = new StringBuilder();
 
-    String name = XmlHelper.Fetch("name", doc);
+    // String name = XmlHelper.Fetch("name", doc);
+    String name = req.getParameter("name");
 
-    DigitalNumberInfo param = this.service.FindOne(name);
+    DigitalNumberInfo param = this.service.findOne(name);
 
-    outString.append("{\"data\":" + AjaxUtil.<DigitalNumberInfo>Parse(param) + ",");
+    // outString.append("{\"data\":" + AjaxUtil.<DigitalNumberInfo>Parse(param) + ",");
 
-    outString.append(MessageObject.Stringify("0", I18n.Strings["msg_query_success"], true) + "}");
+    // outString.append(MessageObject.Stringify("0", I18n.Strings["msg_query_success"], true) + "}");
+    outString.append(MessageObject.stringify("0", "msg_query_success", true) + "}");
 
     return outString.toString();
   }
-//C# TO JAVA CONVERTER TODO TASK: There is no preprocessor in Java:
-  ///#endregion
 
   // -------------------------------------------------------
   // 自定义功能
   // -------------------------------------------------------
-
-//C# TO JAVA CONVERTER TODO TASK: There is no preprocessor in Java:
-  ///#region 函数:GetPaging(HttpServletRequest req, HttpServletResponse res)
 
   /**
    * 获取分页内容
@@ -96,7 +100,7 @@ public class DigitalNumberController {
    * @param doc Xml 文档对象
    * @return 返回操作结果
    */
-  public final String GetPaging(HttpServletRequest req, HttpServletResponse res) {
+  /*public final String GetPaging(HttpServletRequest req, HttpServletResponse res) {
     StringBuilder outString = new StringBuilder();
 
     PagingHelper paging = PagingHelper.Create(XmlHelper.Fetch("paging", doc, "xml"), XmlHelper.Fetch("query", doc, "xml"));
@@ -116,7 +120,7 @@ public class DigitalNumberController {
     outString.append(MessageObject.Stringify("0", I18n.Strings["msg_query_success"], true) + "}");
 
     return outString.toString();
-  }
+  }*/
 
   /**
    * 创建新的对象
@@ -124,21 +128,22 @@ public class DigitalNumberController {
    * @param doc Xml 文档对象
    * @return 返回操作结果
    */
+  /*
   public final String CreateNewObject(HttpServletRequest req, HttpServletResponse res) {
     StringBuilder outString = new StringBuilder();
 
     DigitalNumberInfo param = new DigitalNumberInfo();
 
-    param.Name = "";
+    param.setName("");
 
-    param.CreatedDate = param.ModifiedDate = java.time.LocalDateTime.now();
+    param.setCreatedDate = param.ModifiedDate = java.time.LocalDateTime.now();
 
     outString.append("{\"data\":" + AjaxUtil.<DigitalNumberInfo>Parse(param) + ",");
 
     outString.append(MessageObject.Stringify("0", I18n.Strings["msg_create_success"], true) + "}");
 
     return outString.toString();
-  }
+  }*/
 
   /**
    * 生成流水号
@@ -147,9 +152,10 @@ public class DigitalNumberController {
    * @return 返回操作结果
    */
   public final String Generate(HttpServletRequest req, HttpServletResponse res) {
-    String name = XmlHelper.Fetch("name", doc);
+    // String name = XmlHelper.Fetch("name", doc);
+    String name = req.getParameter("name");
 
-    String result = this.service.Generate(name);
+    String result = this.service.generate(name);
 
     return "{\"data\":\"" + result + "\",\"message\":{\"returnCode\":0,\"value\":\"查询成功。\"}}";
   }

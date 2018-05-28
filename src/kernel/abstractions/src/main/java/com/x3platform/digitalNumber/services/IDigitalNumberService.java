@@ -2,19 +2,12 @@ package com.x3platform.digitalNumber.services;
 
 import java.util.*;
 
+import com.x3platform.data.DataQuery;
 import com.x3platform.digitalNumber.models.*;
 
 /**
  */
 public interface IDigitalNumberService {
-
-  /**
-   * 索引
-   *
-   * @param name
-   * @return
-   */
-  DigitalNumberInfo getItem(String name);
 
   // -------------------------------------------------------
   // 保存 删除
@@ -27,23 +20,18 @@ public interface IDigitalNumberService {
    * @param param 实例<see cref="DigitalNumberInfo"/>详细信息
    * @return <see cref="DigitalNumberInfo"/> 实例详细信息
    */
-  DigitalNumberInfo Save(DigitalNumberInfo param);
+  DigitalNumberInfo save(DigitalNumberInfo param);
 
   /**
    * 删除记录
    *
    * @param name 名称
    */
-  void Delete(String name);
-//C# TO JAVA CONVERTER TODO TASK: There is no preprocessor in Java:
-  ///#endregion
+  void delete(String name);
 
   // -------------------------------------------------------
   // 查询
   // -------------------------------------------------------
-
-//C# TO JAVA CONVERTER TODO TASK: There is no preprocessor in Java:
-  ///#region 函数:FindOne(string name)
 
   /**
    * 查询某条记录
@@ -51,24 +39,14 @@ public interface IDigitalNumberService {
    * @param name 名称
    * @return 返回一个<see cref="DigitalNumberInfo"/> 实例的详细信息
    */
-  DigitalNumberInfo FindOne(String name);
-//C# TO JAVA CONVERTER TODO TASK: There is no preprocessor in Java:
-  ///#endregion
-
-//C# TO JAVA CONVERTER TODO TASK: There is no preprocessor in Java:
-  ///#region 函数:FindAll()
+  DigitalNumberInfo findOne(String name);
 
   /**
    * 查询所有相关记录
    *
    * @return 返回所有<see cref="DigitalNumberInfo"/> 实例的详细信息
    */
-  List<DigitalNumberInfo> FindAll();
-//C# TO JAVA CONVERTER TODO TASK: There is no preprocessor in Java:
-  ///#endregion
-
-//C# TO JAVA CONVERTER TODO TASK: There is no preprocessor in Java:
-  ///#region 函数:FindAll(DataQuery query)
+  List<DigitalNumberInfo> findAll();
 
   /**
    * 查询所有相关记录
@@ -76,7 +54,7 @@ public interface IDigitalNumberService {
    * @param query 数据查询参数
    * @return 返回所有<see cref="DigitalNumberInfo"/> 实例的详细信息
    */
-  // List<DigitalNumberInfo> FindAll(DataQuery query);
+  List<DigitalNumberInfo> findAll(DataQuery query);
 
   // -------------------------------------------------------
   // 自定义功能
@@ -99,7 +77,7 @@ public interface IDigitalNumberService {
    * @param name 名称
    * @return 布尔值
    */
-  boolean IsExistName(String name);
+  boolean isExistName(String name);
 
   /**
    * 生成数字编码
@@ -107,7 +85,7 @@ public interface IDigitalNumberService {
    * @param name 规则名称
    * @return 数字编码
    */
-  String Generate(String name);
+  String generate(String name);
 
   /**
    * 根据前缀生成数字编码
@@ -117,7 +95,7 @@ public interface IDigitalNumberService {
    * @param expression      规则表达式
    * @return 数字编码
    */
-  String GenerateCodeByPrefixCode(String entityTableName, String prefixCode, String expression);
+  String generateCodeByPrefixCode(String entityTableName, String prefixCode, String expression);
 
   /**
    * 根据前缀生成数字编码
@@ -139,7 +117,7 @@ public interface IDigitalNumberService {
    * @param expression              规则表达式
    * @return 数字编码
    */
-  String GenerateCodeByCategoryId(String entityTableName, String entityCategoryTableName, String entityCategoryId, String expression);
+  String generateCodeByCategoryId(String entityTableName, String entityCategoryTableName, String entityCategoryId, String expression);
 
   /**
    * 根据类别标识成数字编码

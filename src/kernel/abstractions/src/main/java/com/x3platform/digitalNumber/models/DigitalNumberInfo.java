@@ -11,68 +11,68 @@ public class DigitalNumberInfo {
   public DigitalNumberInfo() {
   }
 
-  private String m_Name;
+  private String name;
 
   /**
    * 名称
    */
   public final String getName() {
-    return m_Name;
+    return name;
   }
 
   public final void setName(String value) {
-    m_Name = value;
+    name = value;
   }
 
-  private String m_Expression;
+  private String expression;
 
   /**
    * 表达式
    */
   public final String getExpression() {
-    return m_Expression;
+    return expression;
   }
 
   public final void setExpression(String value) {
-    m_Expression = value;
+    expression = value;
   }
 
-  private int m_Seed;
+  private int seed;
 
   /**
    * 因子
    */
   public final int getSeed() {
-    return m_Seed;
+    return seed;
   }
 
   public final void setSeed(int value) {
-    m_Seed = value;
+    seed = value;
   }
 
-  private java.time.LocalDateTime m_ModifiedDate = java.time.LocalDateTime.MIN;
+  private java.time.LocalDateTime modifiedDate = java.time.LocalDateTime.MIN;
 
   /**
    * 更新日期
    */
   public final java.time.LocalDateTime getModifiedDate() {
-    return m_ModifiedDate;
+    return modifiedDate;
   }
 
   public final void setModifiedDate(java.time.LocalDateTime value) {
-    m_ModifiedDate = value;
+    modifiedDate = value;
   }
 
-  private java.time.LocalDateTime m_CreatedDate = java.time.LocalDateTime.MIN;
+  private java.time.LocalDateTime createdDate = java.time.LocalDateTime.MIN;
 
   /**
    * 创建日期
    */
   public final java.time.LocalDateTime getCreatedDate() {
-    return m_CreatedDate;
+    return createdDate;
   }
 
   public final void setCreatedDate(java.time.LocalDateTime value) {
-    m_CreatedDate = value;
+    createdDate = value;
   }
 }
