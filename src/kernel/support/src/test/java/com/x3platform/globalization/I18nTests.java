@@ -43,7 +43,12 @@ public class I18nTests {
 
   @Test
   public void testLocation() {
+    assertNotNull("I18n.getTranslates() is not null.", I18n.getTranslates());
+    assertNotNull("I18n.getStrings() is not null.", I18n.getStrings());
+    assertNotNull("I18n.getExceptions() is not null.", I18n.getExceptions());
+
     String text = I18n.getStrings().text("text_all");
+
     assertNotNull("text is not null.", text);
 
     text = I18n.getExceptions().text("code_parameter_is_null");

@@ -5,7 +5,7 @@
   <artifactId>x3platform-abstractions</artifactId>
   <version>0.0.1</version>
   <packaging>jar</packaging>
-  <name>x3platform-abstractions</name>
+  <name>x3platform-membership</name>
   <url>http://maven.apache.org</url>
 
   <properties>

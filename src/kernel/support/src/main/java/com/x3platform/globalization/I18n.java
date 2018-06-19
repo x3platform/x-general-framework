@@ -15,7 +15,6 @@ public class I18n {
     lockObjects.put("exceptions", new Object());
   }
 
-  ///#region 属性:Translates
   private static volatile Localization values = null;
 
   /**
