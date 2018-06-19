@@ -4,7 +4,7 @@ os:
 install:
   - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
   - mvn resources:resources
-  - mvn resources:test-resources
+  - mvn resources:testResources
 script:
   - mvn test -B
 after_success:
