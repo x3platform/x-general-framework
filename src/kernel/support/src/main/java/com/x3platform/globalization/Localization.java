@@ -1,13 +1,13 @@
 package com.x3platform.globalization;
 
 import java.util.*;
+import java.util.Locale;
 
-import com.x3platform.config.KernelConfigurationView;
-import com.x3platform.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// import com.x3platform.Configuration.*;
+import com.x3platform.config.KernelConfigurationView;
+import com.x3platform.util.StringUtil;
 
 /**
  * 本地化信息
@@ -52,8 +52,10 @@ public class Localization {
 
     this.warnNullValue = warnNullValue;
 
+    String file = KernelConfigurationView.getInstance().getApplicationPathRoot() + "locales/" + KernelConfigurationView.getInstance().getCultureName() + "/" + fileName;
+
     // 初始化默认翻译
-    this.defaultLocalizer = new Localizer(KernelConfigurationView.getInstance().getApplicationPathRoot() + "locales/" + KernelConfigurationView.getInstance().getCultureName() + "/" + fileName, nodeName);
+    this.defaultLocalizer = new Localizer(file, nodeName);
 
     // 初始化默认翻译
     dictionary = new HashMap<String, Localizer>();
@@ -118,6 +120,9 @@ public class Localization {
    */
   private Localizer getLocalizer() {
     Localizer localizer = null;
+
+    Locale locale = Locale.getDefault();
+
     /* TODO 需要修改 源码
     CultureInfo culture = Thread.currentThread().CurrentCulture;
 

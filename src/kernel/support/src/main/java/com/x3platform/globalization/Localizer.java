@@ -9,11 +9,15 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 本地化翻译器
  */
 public class Localizer {
+  private Logger logger = LoggerFactory.getLogger(this.getClass());
+
   private Document doc = null;
 
   private String nodeName = null;
@@ -24,6 +28,10 @@ public class Localizer {
    */
   public Localizer(String file, String nodeName) {
     File fileInfo = new File(file);
+
+    if (!fileInfo.exists()) {
+      logger.warn(String.format("locale file %1$s is not exist.", file));
+    }
 
     if (fileInfo.isFile()) {
       SAXReader saxReader = new SAXReader();
@@ -65,8 +73,9 @@ public class Localizer {
         if (!files[i].isDirectory()) {
           File tempFile = files[i];
           // 只处理相同名字前缀的文件
-          if (tempFile.getName().indexOf(fileName) != 0)
+          if (tempFile.getName().indexOf(fileName) != 0) {
             continue;
+          }
 
           try {
             Document tempDoc = saxReader.read(tempFile);
@@ -111,7 +120,6 @@ public class Localizer {
    * @return
    */
   public final String getText(String applicationName, String name) {
-
     Node node = doc.selectSingleNode("resources/application[@name='" + applicationName + "']/" + nodeName + "[@name='" + name + "']");
 
     return node == null ? null : node.getText();
