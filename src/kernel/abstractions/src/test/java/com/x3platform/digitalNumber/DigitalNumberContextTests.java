@@ -17,4 +17,11 @@ public class DigitalNumberContextTests {
     assertNotNull("DigitalNumberServer is not null.",
       DigitalNumberContext.getInstance().getDigitalNumberService());
   }
+
+  @Test
+  public void testGenerate() {
+    String result = DigitalNumberContext.generate("Key_Guid");
+
+    assertNotNull("result is not null.", result);
+  }
 }

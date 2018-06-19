@@ -11,6 +11,23 @@ import static org.junit.Assert.*;
 public class StringUtilTests {
   // 测试随机字符串
   @Test
+  public void testUnicodeEncode() {
+    String text = StringUtil.unicodeEncode("中文");
+    assertEquals("\"中文\" should return \"\\u4e2d\\u6587\"", "\\u4e2d\\u6587", text);
+
+    text = StringUtil.unicodeEncode("Hello");
+    assertEquals("\"Hello\" should return \"\\u0048\\u0065\\u006c\\u006c\\u006f\"", "\\u0048\\u0065\\u006c\\u006c\\u006f", text);
+  }
+
+  @Test
+  public void testUnicodeDecode() {
+    String text = StringUtil.unicodeDecode("\\u4e2d\\u6587");
+
+    assertEquals("\"\\u4e2d\\u6587\" should return \"中文\"", "中文", text);
+  }
+
+  // 测试随机字符串
+  @Test
   public void testToRandom() {
     String randomText1 = StringUtil.toRandom(8);
     String randomText2 = StringUtil.toRandom(8);
@@ -23,6 +40,18 @@ public class StringUtilTests {
   @Test
   public void testToBase64() {
     String result = StringUtil.toBase64("abc");
+    assertTrue("StringHelper.toBase64 should return 'true'", result.length() > 0);
+  }
+
+  @Test
+  public void testToUuid() {
+    String result = StringUtil.toUuid();
+    assertTrue("StringHelper.toBase64 should return 'true'", result.length() > 0);
+  }
+
+  @Test
+  public void testTo8DigitUuid() {
+    String result = StringUtil.to8DigitUuid();
     assertTrue("StringHelper.toBase64 should return 'true'", result.length() > 0);
   }
 }

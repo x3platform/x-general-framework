@@ -4,6 +4,7 @@ import java.util.*;
 
 // import com.x3platform.Configuration.*;
 import com.x3platform.RefObject;
+import com.x3platform.SpringContext;
 import com.x3platform.data.*;
 // import com.x3platform.Membership.*;
 // import com.x3platform.Security.Authority.*;
@@ -29,6 +30,12 @@ public class DigitalNumberService implements IDigitalNumberService {
 
   @Autowired
   private DigitalNumberMapper provider = null;
+
+  // public DigitalNumberService() {
+    // this.configuration = DigitalNumberConfigurationView.getInstance().getConfiguration();
+
+  //  this.provider = SpringContext.getBean(DigitalNumberMapper.class);
+  // }
 
   // -------------------------------------------------------
   // 保存 删除
@@ -137,9 +144,9 @@ public class DigitalNumberService implements IDigitalNumberService {
         int seed = param.getSeed();
 
         // TODO 需要修改, 源码如下
-         RefObject<Integer> refSeed = new RefObject<Integer>(seed);
-         result = DigitalNumberScript.runScript(param.getExpression(), param.getModifiedDate(), refSeed);
-         seed = refSeed.value;
+        RefObject<Integer> refSeed = new RefObject<Integer>(seed);
+        result = DigitalNumberScript.runScript(param.getExpression(), param.getModifiedDate(), refSeed);
+        seed = refSeed.value;
 
         param.setSeed(seed);
 

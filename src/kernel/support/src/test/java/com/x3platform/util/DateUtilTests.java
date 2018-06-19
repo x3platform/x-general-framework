@@ -14,8 +14,8 @@ public class DateUtilTests {
   @Test
   public void testGetDefaultTime() {
     LocalDateTime date = DateUtil.getDefaultTime();
-
-    assertEquals("DateUtil.getDefaultTime() should return 1970-01-01T00:00", "1970-01-01T00:00", date.toString());
+    String dateText =  date.toString();
+    assertTrue("DateUtil.getDefaultTime() should return " + dateText, "1970-01-01T00:00".equals(dateText));
   }
 
   @Test
@@ -26,7 +26,7 @@ public class DateUtilTests {
 
     long timestamp2 = DateUtil.getTimestamp(now);
 
-    assertEquals("DateUtil.getDefaultTime() should return 1970-01-01T00:00", "1970-01-01T00:00", timestamp);
+    assertEquals("DateUtil.getDefaultTime() should return 1970-01-01T00:00", timestamp, timestamp2);
   }
 
   @Test

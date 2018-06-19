@@ -28,7 +28,7 @@ public class DigitalNumberConfiguration {
   public static final String SectionName = "digital-number";
 
 
-  @Value("${x3platform." + SectionName + ".ignore-increment-seed}")
+  @Value("${x3platform." + SectionName + ".ignore-increment-seed:Key_32DigitGuid,Key_Guid,Key_Nonce,Key_Random_10,Key_Session}")
   private String m_IgnoreIncrementSeed;
 
   public String getIgnoreIncrementSeed() {

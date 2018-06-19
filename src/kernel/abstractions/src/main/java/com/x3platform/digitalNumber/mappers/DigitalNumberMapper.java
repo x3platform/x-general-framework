@@ -72,7 +72,7 @@ public interface DigitalNumberMapper {
    */
   List<DigitalNumberInfo> findAll(DataQuery query);
 
-  List<DigitalNumberInfo> findAll(String whereClause, String orderBy, int length);
+  List<DigitalNumberInfo> findAll(@Param("whereClause") String whereClause, @Param("orderBy") String orderBy, @Param("length") int length);
 
   // -------------------------------------------------------
   // 自定义功能

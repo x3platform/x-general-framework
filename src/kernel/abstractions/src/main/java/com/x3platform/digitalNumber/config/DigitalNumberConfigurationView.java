@@ -46,7 +46,7 @@ public class DigitalNumberConfigurationView {
 
   @Autowired
   DigitalNumberConfiguration configuration;
-
+  // public getConfiguration
   public String getIgnoreIncrementSeed() {
     return configuration.getIgnoreIncrementSeed();
   }

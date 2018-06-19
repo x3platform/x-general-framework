@@ -8,6 +8,8 @@ src/unpackage/release
 # 文件
 git-fetch.cmd
 
+target/
+
 *.iml
 .gradle
 /local.properties

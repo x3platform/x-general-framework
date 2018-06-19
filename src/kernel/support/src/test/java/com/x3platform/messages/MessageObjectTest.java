@@ -24,10 +24,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
-// @SpringBootTest(classes = App.class)
-// @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,classes = TestContextConfiguration.class)
-// @SpringBootTest(classes = TestContextConfiguration.class)
-@SpringBootTest()
+@SpringBootTest
 public class MessageObjectTest {
 
   @Autowired
