@@ -23,14 +23,22 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.io.File;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class I18nTests {
   @Test
   public void testLocalizer() {
-    String path = PathUtil.getProgramPath() + "locales/zh-CN/exceptions.xml";
+    String path = PathUtil.getProgramPath() + "/locales/zh-CN/exceptions.xml";
+
+    File file = new File(path);
+
+    assertTrue("file is exist. path:" + path, file.exists());
 
     Localizer localizer = new Localizer(path, "exception");
+
+    assertNotNull("localizer is not null.", localizer);
   }
 
   @Test
