@@ -2,8 +2,8 @@ language: java
 os:
   - linux
 install:
-  - mvn clean resources:resources install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+  - echo install ok.
 script:
-  - mvn test -B
+  - mvn clean resources:resources install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 after_success:
-  - echo ok
+  - echo after_success ok.
