@@ -1,6 +1,9 @@
 package com.x3platform.digitalNumber;
 
+import com.x3platform.KernelContext;
 import com.x3platform.SpringContext;
+import com.x3platform.digitalNumber.config.DigitalNumberConfiguration;
+import com.x3platform.globalization.I18n;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.x3platform.plugins.*;
@@ -38,14 +41,13 @@ public class DigitalNumberContext extends CustomPlugin {
     return instance;
   }
 
-  @Autowired
-  private IDigitalNumberService m_DigitalNumberService = null;
+  private IDigitalNumberService mDigitalNumberService = null;
 
   /**
    * 流水号服务提供者
    */
   public final IDigitalNumberService getDigitalNumberService() {
-    return m_DigitalNumberService;
+    return mDigitalNumberService;
   }
 
   private DigitalNumberContext() {
@@ -79,12 +81,12 @@ public class DigitalNumberContext extends CustomPlugin {
 
   private void Reload() {
     if (this.restartCount > 0) {
-      // KernelContext.Log.Info(String.format(I18n.Strings["application_is_reloading"], DigitalNumberConfiguration.ApplicationName));
+      KernelContext.getLog().info(String.format(I18n.getStrings().text("application_is_reloading"), DigitalNumberConfiguration.ApplicationName));
 
       // 重新加载配置信息
       // DigitalNumberConfigurationView.Instance.Reload();
     } else {
-      // KernelContext.Log.Info(String.format(I18n.Strings["application_is_loading"], DigitalNumberConfiguration.ApplicationName));
+      KernelContext.getLog().info(String.format(I18n.getStrings().text("application_is_loading"), DigitalNumberConfiguration.ApplicationName));
     }
 
     // 创建对象构建器(Spring.NET)
@@ -94,8 +96,9 @@ public class DigitalNumberContext extends CustomPlugin {
 
     // 创建数据服务对象
     // this.m_DigitalNumberService = objectBuilder.<IDigitalNumberService>GetObject(IDigitalNumberService.class);
-    this.m_DigitalNumberService = SpringContext.getBean("digitalNumberService", IDigitalNumberService.class);
-    // KernelContext.Log.Info(String.format(I18n.Strings["application_is_successfully_loaded"], DigitalNumberConfiguration.ApplicationName));
+    this.mDigitalNumberService = SpringContext.getBean("digitalNumberService", IDigitalNumberService.class);
+
+    KernelContext.getLog().info(String.format(I18n.getStrings().text("application_is_successfully_loaded"), DigitalNumberConfiguration.ApplicationName));
   }
 
   /**

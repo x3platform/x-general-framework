@@ -11,10 +11,12 @@ public abstract class CustomPlugin implements ICustomPlugin {
   /**
    * 标识
    */
+  @Override
   public String getId() {
     return m_Id;
   }
 
+  @Override
   public void setId(String value) {
     m_Id = value;
   }
@@ -24,6 +26,7 @@ public abstract class CustomPlugin implements ICustomPlugin {
   /**
    * 名称
    */
+  @Override
   public String getName() {
     return m_Name;
   }
@@ -33,6 +36,7 @@ public abstract class CustomPlugin implements ICustomPlugin {
   /**
    * 版本
    */
+  @Override
   public final String getVersion() {
     return m_Version;
   }
@@ -42,6 +46,7 @@ public abstract class CustomPlugin implements ICustomPlugin {
   /**
    * 作者
    */
+  @Override
   public String getAuthor() {
     return m_Author;
   }
@@ -51,6 +56,7 @@ public abstract class CustomPlugin implements ICustomPlugin {
   /**
    * 版权
    */
+  @Override
   public String getCopyright() {
     return m_Copyright;
   }
@@ -60,6 +66,7 @@ public abstract class CustomPlugin implements ICustomPlugin {
   /**
    * 插件获取地址
    */
+  @Override
   public String getUrl() {
     return m_Url;
   }
@@ -69,6 +76,7 @@ public abstract class CustomPlugin implements ICustomPlugin {
   /**
    * 缩略图
    */
+  @Override
   public String getThumbnailUrl() {
     return m_ThumbnailUrl;
   }

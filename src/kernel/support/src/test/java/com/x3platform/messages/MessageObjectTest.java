@@ -1,7 +1,5 @@
 package com.x3platform.messages;
 
-// import com.x3platform.App;
-
 import com.x3platform.SpringContext;
 
 import com.x3platform.config.KernelConfiguration;

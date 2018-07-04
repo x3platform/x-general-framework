@@ -10,11 +10,11 @@ import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@WebAppConfiguration
+// @WebAppConfiguration
 public class DigitalNumberContextTests {
   @Test
   public void testLoad() {
-    assertNotNull("DigitalNumberServer is not null.",
+    assertNotNull("DigitalNumberService is not null.",
       DigitalNumberContext.getInstance().getDigitalNumberService());
   }
 

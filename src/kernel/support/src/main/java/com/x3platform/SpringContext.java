@@ -1,6 +1,8 @@
 package com.x3platform;
 
 import com.x3platform.util.ApplicationContextUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -13,15 +15,18 @@ import org.springframework.stereotype.Component;
 @Component
 @Lazy(false)
 public class SpringContext implements ApplicationContextAware {
-  private static ApplicationContext applicationContext;
+  private Logger logger = LoggerFactory.getLogger(this.getClass());
+
+  private static ApplicationContext sApplicationContext;
 
   @Override
   public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-    this.applicationContext = applicationContext;
+    sApplicationContext = applicationContext;
+    logger.info("Spring ApplicationContext registed");
   }
 
   public static ApplicationContext getApplicationContext() {
-    return applicationContext;
+    return sApplicationContext;
   }
 
   public static Object getBean(String name) {

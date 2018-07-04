@@ -2,10 +2,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.x3platform</groupId>
-  <artifactId>x3platform-abstractions</artifactId>
+  <artifactId>x3platform-connect</artifactId>
   <version>0.0.1</version>
   <packaging>jar</packaging>
-  <name>x3platform-abstractions</name>
+  <name>x3platform-connect</name>
   <url>http://maven.apache.org</url>
 
   <properties>
@@ -19,8 +19,7 @@
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
     <version>2.0.2.RELEASE</version>
-    <relativePath/>
-    <!-- lookup parent from repository -->
+    <relativePath/> <!-- lookup parent from repository -->
   </parent>
 
   <dependencies>
@@ -34,11 +33,6 @@
           <artifactId>spring-boot-starter-logging</artifactId>
         </exclusion>
       </exclusions>
-    </dependency>
-
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-aop</artifactId>
     </dependency>
 
     <dependency>
@@ -75,13 +69,11 @@
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>
     </dependency>
-    <!-- Mybatis -->
     <dependency>
       <groupId>org.mybatis.spring.boot</groupId>
       <artifactId>mybatis-spring-boot-starter</artifactId>
       <version>1.3.2</version>
     </dependency>
-    <!-- x3platform -->
     <dependency>
       <groupId>com.x3platform</groupId>
       <artifactId>x3platform-support</artifactId>
@@ -99,6 +91,11 @@
       <artifactId>junit</artifactId>
       <version>4.12</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.x3platform</groupId>
+      <artifactId>x3platform-support</artifactId>
+      <version>0.0.1</version>
     </dependency>
   </dependencies>
   <build>
@@ -119,20 +116,4 @@
       </resource>
     </resources>
   </build>
-  <distributionManagement>
-    <repository>
-      <uniqueVersion>false</uniqueVersion>
-      <id>releases</id>
-      <name>Nexus Release Repository</name>
-      <url>http://dev.amiintellect.com:27070/repository/maven-releases/</url>
-      <layout>default</layout>
-    </repository>
-    <snapshotRepository>
-      <uniqueVersion>true</uniqueVersion>
-      <id>snapshots</id>
-      <name>Nexus Snapshot Repository</name>
-      <url>http://dev.amiintellect.com:27070/repository/maven-snapshots/</url>
-      <layout>legacy</layout>
-    </snapshotRepository>
-  </distributionManagement>
 </project>

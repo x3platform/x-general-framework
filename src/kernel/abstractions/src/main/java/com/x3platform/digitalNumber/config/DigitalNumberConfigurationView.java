@@ -44,6 +44,10 @@ public class DigitalNumberConfigurationView {
     return instance;
   }
 
+  public void Reload() {
+    instance = null;
+  }
+
   @Autowired
   DigitalNumberConfiguration configuration;
   // public getConfiguration

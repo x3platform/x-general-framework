@@ -76,8 +76,6 @@ public final class MessageObject implements IMessageObject {
       outString.append("{");
     }
 
-    outString.append("\"message\":{");
-
     // TODO 需要修改
     // Code:
     // if (AjaxConfigurationView.Instance.NamingRule.equals("underline")) {
@@ -88,7 +86,6 @@ public final class MessageObject implements IMessageObject {
     outString.append(String.format("\"code\":\"%1$s\",", StringUtil.toSafeJson(this.getCode())));
 
     outString.append(String.format("\"message\":\"%1$s\"", StringUtil.toSafeJson(this.getMessage())));
-    outString.append("}");
 
     // 是否成功执行
     // outString.append("\"success\":1,\"msg\":\"success\"");

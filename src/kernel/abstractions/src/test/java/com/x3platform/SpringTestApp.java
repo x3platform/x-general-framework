@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Import;
 
 @SpringBootApplication
 @Import(DynamicDataSourceRegister.class)
-@EnableAutoConfiguration
+// @EnableAutoConfiguration
 public class SpringTestApp {
 
 }
