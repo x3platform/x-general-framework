@@ -1,10 +1,6 @@
-执行
-./gradlew build
+## x-general-framework ##
 
-输出目录 
-build/libs/
-
-
-mvn release:perform
--DconnectionUrl=scm:git:git@github.com:x3platform/x-general-framework.git 
--Dscm.tag=exam-reactor-3.3.0
+如何编译此项目?
+```
+mvn install
+```
