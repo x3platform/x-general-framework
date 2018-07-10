@@ -1,4 +1,4 @@
-package com.x3platform.config;
+package com.x3platform.configuration;
 
 import com.x3platform.util.PathUtil;
 import org.slf4j.Logger;

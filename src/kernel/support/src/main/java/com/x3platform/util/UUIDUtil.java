@@ -10,6 +10,22 @@ import java.util.UUID;
  */
 public class UUIDUtil {
 
+  private static final String EMPTY_STRING = "00000000000000000000000000000000";
+
+  /**
+   * 创建空的UUID
+   */
+  public static UUID empty() {
+    return UUID.fromString(EMPTY_STRING);
+  }
+
+  /**
+   * 创建空的UUID字符串
+   */
+  public static String emptyString() {
+    return EMPTY_STRING;
+  }
+
   /**
    * 格式化输出UUID
    */

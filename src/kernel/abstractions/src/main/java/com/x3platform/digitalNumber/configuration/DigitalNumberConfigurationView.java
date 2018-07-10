@@ -1,4 +1,4 @@
-package com.x3platform.digitalNumber.config;
+package com.x3platform.digitalNumber.configuration;
 
 // import com.x3platform.Configuration.*;
 // import com.x3platform.Yaml.RepresentationModel.*;
@@ -44,13 +44,13 @@ public class DigitalNumberConfigurationView {
     return instance;
   }
 
-  public void Reload() {
+  public void reload() {
     instance = null;
   }
 
   @Autowired
   DigitalNumberConfiguration configuration;
-  // public getConfiguration
+
   public String getIgnoreIncrementSeed() {
     return configuration.getIgnoreIncrementSeed();
   }

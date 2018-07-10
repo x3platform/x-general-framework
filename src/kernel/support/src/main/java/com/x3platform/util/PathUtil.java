@@ -1,6 +1,6 @@
 package com.x3platform.util;
 
-import com.x3platform.config.KernelConfigurationView;
+import com.x3platform.configuration.KernelConfigurationView;
 
 import java.io.File;
 import java.io.FileOutputStream;

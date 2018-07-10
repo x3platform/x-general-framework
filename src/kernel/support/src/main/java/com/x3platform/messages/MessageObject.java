@@ -2,7 +2,7 @@ package com.x3platform.messages;
 
 import javax.xml.bind.annotation.XmlElement;
 
-import com.x3platform.config.KernelConfigurationView;
+import com.x3platform.configuration.KernelConfigurationView;
 import org.dom4j.Element;
 
 // import com.x3platform.Ajax.*;

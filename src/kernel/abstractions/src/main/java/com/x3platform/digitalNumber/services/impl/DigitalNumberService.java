@@ -2,21 +2,14 @@ package com.x3platform.digitalNumber.services.impl;
 
 import java.util.*;
 
-// import com.x3platform.Configuration.*;
 import com.x3platform.RefObject;
 import com.x3platform.SpringContext;
 import com.x3platform.data.*;
-// import com.x3platform.Membership.*;
-// import com.x3platform.Security.Authority.*;
-// import com.x3platform.Spring.*;
 import com.x3platform.digitalNumber.DigitalNumberScript;
 import com.x3platform.util.*;
 
-// import com.x3platform.DigitalNumber.Configuration.*;
-// import com.x3platform.DigitalNumber.IBLL.*;
-// import com.x3platform.DigitalNumber.IDAL.*;
-import com.x3platform.digitalNumber.config.DigitalNumberConfiguration;
-import com.x3platform.digitalNumber.config.DigitalNumberConfigurationView;
+import com.x3platform.digitalNumber.configuration.DigitalNumberConfiguration;
+import com.x3platform.digitalNumber.configuration.DigitalNumberConfigurationView;
 import com.x3platform.digitalNumber.mappers.DigitalNumberMapper;
 import com.x3platform.digitalNumber.models.*;
 import com.x3platform.digitalNumber.services.IDigitalNumberService;

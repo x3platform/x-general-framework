@@ -10,7 +10,7 @@ import org.dom4j.Node;
 import java.util.Locale;
 
 import com.x3platform.util.*;
-import com.x3platform.config.KernelConfigurationView;
+import com.x3platform.configuration.KernelConfigurationView;
 
 /**
  * 本地化脚本文件

@@ -9,8 +9,8 @@ import org.springframework.context.annotation.Import;
 
 @SpringBootApplication
 @Import(DynamicDataSourceRegister.class)
-@ComponentScan(basePackages = {"com.amiintellect", "com.x3platform"})
-@MapperScan({"com.amiintellect", "com.x3platform"})
+@ComponentScan(basePackages = {"com.x3platform"})
+@MapperScan({"com.x3platform"})
 public class SpringTestApp {
 
 }

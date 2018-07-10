@@ -2,7 +2,7 @@ package com.x3platform.globalization;
 
 import com.x3platform.SpringContext;
 
-import com.x3platform.config.KernelConfiguration;
+import com.x3platform.configuration.KernelConfiguration;
 import com.x3platform.data.DataQuery;
 import com.x3platform.util.ApplicationContextUtil;
 import com.x3platform.util.PathUtil;
@@ -11,7 +11,7 @@ import org.junit.runner.RunWith;
 
 import static org.junit.Assert.*;
 
-import com.x3platform.config.KernelConfigurationView;
+import com.x3platform.configuration.KernelConfigurationView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;

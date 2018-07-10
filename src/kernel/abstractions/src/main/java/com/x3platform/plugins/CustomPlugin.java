@@ -6,114 +6,114 @@ import java.util.*;
  * 自定义插件
  */
 public abstract class CustomPlugin implements ICustomPlugin {
-  private String m_Id = "";
+  private String mId = "";
 
   /**
    * 标识
    */
   @Override
   public String getId() {
-    return m_Id;
+    return mId;
   }
 
   @Override
   public void setId(String value) {
-    m_Id = value;
+    mId = value;
   }
 
-  private String m_Name = "";
+  private String mName = "";
 
   /**
    * 名称
    */
   @Override
   public String getName() {
-    return m_Name;
+    return mName;
   }
 
-  private String m_Version = "1.0.0.0";
+  private String mVersion = "1.0.0.0";
 
   /**
    * 版本
    */
   @Override
   public final String getVersion() {
-    return m_Version;
+    return mVersion;
   }
 
-  private String m_Author = "ruanyu@x3platform.com";
+  private String mAuthor = "ruanyu@x3platform.com";
 
   /**
    * 作者
    */
   @Override
   public String getAuthor() {
-    return m_Author;
+    return mAuthor;
   }
 
-  private String m_Copyright = "MIT";
+  private String mCopyright = "MIT";
 
   /**
    * 版权
    */
   @Override
   public String getCopyright() {
-    return m_Copyright;
+    return mCopyright;
   }
 
-  private String m_Url = "";
+  private String mUrl = "";
 
   /**
    * 插件获取地址
    */
   @Override
   public String getUrl() {
-    return m_Url;
+    return mUrl;
   }
 
-  private String m_ThumbnailUrl = "";
+  private String mThumbnailUrl = "";
 
   /**
    * 缩略图
    */
   @Override
   public String getThumbnailUrl() {
-    return m_ThumbnailUrl;
+    return mThumbnailUrl;
   }
 
-  private String m_Description = "";
+  private String mDescription = "";
 
   /**
    * 描述信息
    */
   public String getDescription() {
-    return m_Description;
+    return mDescription;
   }
 
-  private int m_Status = 0;
+  private int mStatus = 0;
 
   /**
    * 状态, 0 未激活, 1 已激活.
    */
   public int getStatus() {
-    return m_Status;
+    return mStatus;
   }
 
   public void setStatus(int value) {
-    m_Status = value;
+    mStatus = value;
   }
 
-  private int m_SupportMenu = 1;
+  private int mSupportMenu = 1;
 
   /**
    * 菜单支持
    */
   public int getSupportMenu() {
-    return m_SupportMenu;
+    return mSupportMenu;
   }
 
   public void setSupportMenu(int value) {
-    m_SupportMenu = value;
+    mSupportMenu = value;
   }
 
   /**
@@ -121,7 +121,7 @@ public abstract class CustomPlugin implements ICustomPlugin {
    *
    * @return 返回信息. =0代表安装成功, >0代表安装失败.
    */
-  public int Install() {
+  public int install() {
     throw new RuntimeException("Oops |-_-||, the method or operation is not implemented.");
   }
 
@@ -130,7 +130,7 @@ public abstract class CustomPlugin implements ICustomPlugin {
    *
    * @return 返回信息. =0代表卸载成功, >0代表卸载失败.
    */
-  public int Uninstall() {
+  public int uninstall() {
     throw new RuntimeException("Oops |-_-||, the method or operation is not implemented.");
   }
 
@@ -139,7 +139,7 @@ public abstract class CustomPlugin implements ICustomPlugin {
    *
    * @return 返回信息. =0代表重启成功, >0代表重启失败.
    */
-  public int Restart() {
+  public int restart() {
     throw new RuntimeException("Oops |-_-||, the method or operation is not implemented.");
   }
 
@@ -148,7 +148,7 @@ public abstract class CustomPlugin implements ICustomPlugin {
    *
    * @return 返回信息. =0代表执行成功, >0代表执行失败.
    */
-  public int Command(Hashtable agrs) {
+  public int command(Hashtable agrs) {
     throw new RuntimeException("Oops |-_-||, the method or operation is not implemented.");
   }
 }

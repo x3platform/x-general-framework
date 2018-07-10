@@ -150,7 +150,7 @@ public final class KernelContext implements IContext {
    * @return
    */
   public static Object CreateObject(String type) {
-    return CreateObject(type, null);
+    return CreateObject(type, new Object[]{});
   }
 
   /**

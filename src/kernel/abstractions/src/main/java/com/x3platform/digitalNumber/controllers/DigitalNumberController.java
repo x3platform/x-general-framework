@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletResponse;
  *
  */
 // @RestController
-@RequestMapping("/api/sys/digital-number")
+@RequestMapping("/api/sys/digitalNumber")
 public class DigitalNumberController {
   // 数据提供器
   private IDigitalNumberService service = DigitalNumberContext.getInstance().getDigitalNumberService();

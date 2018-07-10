@@ -2,7 +2,8 @@ package com.x3platform.digitalNumber;
 
 import com.x3platform.KernelContext;
 import com.x3platform.SpringContext;
-import com.x3platform.digitalNumber.config.DigitalNumberConfiguration;
+import com.x3platform.digitalNumber.configuration.DigitalNumberConfiguration;
+import com.x3platform.digitalNumber.configuration.DigitalNumberConfigurationView;
 import com.x3platform.globalization.I18n;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -51,7 +52,7 @@ public class DigitalNumberContext extends CustomPlugin {
   }
 
   private DigitalNumberContext() {
-    Restart();
+    restart();
   }
 
   /**
@@ -65,7 +66,7 @@ public class DigitalNumberContext extends CustomPlugin {
    * @return 返回信息. =0代表重启成功, >0代表重启失败.
    */
   @Override
-  public int Restart() {
+  public int restart() {
     try {
       this.Reload();
 
@@ -84,15 +85,10 @@ public class DigitalNumberContext extends CustomPlugin {
       KernelContext.getLog().info(String.format(I18n.getStrings().text("application_is_reloading"), DigitalNumberConfiguration.ApplicationName));
 
       // 重新加载配置信息
-      // DigitalNumberConfigurationView.Instance.Reload();
+      DigitalNumberConfigurationView.getInstance().reload();
     } else {
       KernelContext.getLog().info(String.format(I18n.getStrings().text("application_is_loading"), DigitalNumberConfiguration.ApplicationName));
     }
-
-    // 创建对象构建器(Spring.NET)
-    // String springObjectFile = DigitalNumberConfigurationView.Instance.Configuration.keySet()["SpringObjectFile"].Value;
-
-    // SpringObjectBuilder objectBuilder = SpringObjectBuilder.Create(DigitalNumberConfiguration.ApplicationName, springObjectFile);
 
     // 创建数据服务对象
     // this.m_DigitalNumberService = objectBuilder.<IDigitalNumberService>GetObject(IDigitalNumberService.class);

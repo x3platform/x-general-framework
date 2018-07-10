@@ -67,26 +67,26 @@ public interface ICustomPlugin {
    *
    * @return 返回信息. =0代表安装成功, >0代表安装失败.
    */
-  int Install();
+  int install();
 
   /**
    * 卸载插件
    *
    * @return 返回信息. =0代表卸载成功, >0代表卸载失败.
    */
-  int Uninstall();
+  int uninstall();
 
   /**
    * 重启插件
    *
    * @return 返回信息. =0代表卸载成功, >0代表卸载失败.
    */
-  int Restart();
+  int restart();
 
   /**
    * 执行命令
    *
    * @return 返回信息. =0代表执行成功, >0代表执行失败.
    */
-  int Command(Hashtable agrs);
+  int command(Hashtable agrs);
 }

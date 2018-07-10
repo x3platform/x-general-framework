@@ -6,7 +6,7 @@ import java.util.Locale;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.x3platform.config.KernelConfigurationView;
+import com.x3platform.configuration.KernelConfigurationView;
 import com.x3platform.util.StringUtil;
 
 /**

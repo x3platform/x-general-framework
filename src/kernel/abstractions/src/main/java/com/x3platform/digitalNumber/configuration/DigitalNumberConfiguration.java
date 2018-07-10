@@ -1,4 +1,4 @@
-package com.x3platform.digitalNumber.config;
+package com.x3platform.digitalNumber.configuration;
 
 // import com.x3platform.Configuration.*;
 // import com.x3platform.Yaml.RepresentationModel.*;
@@ -29,9 +29,9 @@ public class DigitalNumberConfiguration {
 
 
   @Value("${x3platform." + SectionName + ".ignore-increment-seed:Key_32DigitGuid,Key_Guid,Key_Nonce,Key_Random_10,Key_Session}")
-  private String m_IgnoreIncrementSeed;
+  private String mIgnoreIncrementSeed;
 
   public String getIgnoreIncrementSeed() {
-    return m_IgnoreIncrementSeed;
+    return mIgnoreIncrementSeed;
   }
 }

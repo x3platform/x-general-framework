@@ -2,14 +2,14 @@ package com.x3platform.messages;
 
 import com.x3platform.SpringContext;
 
-import com.x3platform.config.KernelConfiguration;
+import com.x3platform.configuration.KernelConfiguration;
 import com.x3platform.util.ApplicationContextUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static org.junit.Assert.*;
 
-import com.x3platform.config.KernelConfigurationView;
+import com.x3platform.configuration.KernelConfigurationView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -33,7 +33,7 @@ public class MessageObjectTest {
 
   @Test
   public void testCreateMessageObjectFormatter() {
-    // System.out.println(config.getMessageObjectFormatter());
+    // System.out.println(configuration.getMessageObjectFormatter());
 
     KernelConfigurationView configView = null;
 

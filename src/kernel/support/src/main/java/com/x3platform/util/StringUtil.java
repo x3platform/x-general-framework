@@ -3,6 +3,8 @@ package com.x3platform.util;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -63,7 +65,7 @@ public class StringUtil {
       // CharBuffer charBuffer = charset.decode(ByteBuffer.wrap(codes));
       // CharBuffer charBuffer = CharBuffer.wrap(codes);
 
-      outString.append((char)Integer.parseInt(code, 16));
+      outString.append((char) Integer.parseInt(code, 16));
     }
 
     /*
@@ -351,7 +353,7 @@ public class StringUtil {
   /**
    * 解密为 ASCII 编码方式的 Base64 字符串，如果是其他编码方式的请设置 codepage
    */
-  public static String FromBase64(String base64Text, String charsetName) {
+  public static String fromBase64(String base64Text, String charsetName) {
     // 补末尾的等号
     int count = 4 - base64Text.length() % 4;
 
@@ -375,7 +377,99 @@ public class StringUtil {
   }
 
   /**
-   * 生成一个Guid格式字符串
+   * 格式化日期
+   *
+   * @param date
+   * @return
+   */
+  public static String toDate(String date) {
+    try {
+      return toDate(java.time.LocalDateTime.parse(date));
+    } catch (java.lang.Exception e) {
+      //当日期格式无法识别,转换失败,返回原始数据.
+      return date;
+    }
+  }
+
+  /**
+   * 格式化日期
+   *
+   * @param date
+   * @return
+   */
+  public static String toDate(java.time.LocalDateTime date) {
+    // return date.ToString("yyyy-MM-dd HH:mm:ss");
+
+    DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+    return format.format(date);
+  }
+
+  /**
+   * 格式化时间
+   *
+   * @param date
+   * @return
+   */
+  public static String ToTime(java.time.LocalDateTime date) {
+    // return date.toString("yyyy-MM-dd HH:mm:ss");
+
+    DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    return format.format(date);
+  }
+
+  /**
+   * 智能日期格式
+   *
+   * @param date
+   * @return
+   */
+  public static String toSmartTime(java.time.LocalDateTime date) {
+    //
+    // 1.今年以前的时间显示 "yyyy年"
+    //
+    // 2.今年的时间显示为 "MM月dd日"
+    //
+    // 3.当天的时间显示为 "HH:mm:ss"
+    //
+    // 4.其他时间 显示为 "yyyy-MM-dd HH:mm:ss"
+    //
+
+    DateFormat format = null;
+
+    if (date.getYear() < java.time.LocalDateTime.now().getYear()) {
+      format = new SimpleDateFormat("yyyy年");
+
+      return format.format(date);
+    } else {
+      if (java.time.LocalDateTime.now().getDayOfYear() == date.getDayOfYear()) {
+        format = new SimpleDateFormat("HH:mm:ss");
+        return format.format(date);
+        // return date.toString("HH:mm:ss");
+      } else if (java.time.LocalDateTime.now().getYear() == date.getYear()) {
+        format = new SimpleDateFormat("MM月dd日");
+        return format.format(date);
+        // return date.toString("MM月dd日");
+      } else {
+        format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return format.format(date);
+        // return date.toString("yyyy-MM-dd HH:mm:ss");
+      }
+    }
+  }
+
+  /**
+   * 格式化日期
+   *
+   * @param date
+   * @return
+   */
+  public static String toDateFormat(java.time.LocalDateTime date, String pattern) {
+    DateFormat format = new SimpleDateFormat(pattern);
+    return format.format(date);
+  }
+
+  /**
+   * 生成一个Uuid格式字符串
    *
    * @return
    */
