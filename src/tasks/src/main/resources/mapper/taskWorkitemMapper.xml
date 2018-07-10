@@ -1,9 +1,49 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.x3platform.tasks.mapper.TaskWorkitemMapper">
 
-  <select id="selectTaskWorkitem" parameterType="string" resultType="TaskWorkitemModel">
-    select * from task_workitem where id=#{id}
+<mapper namespace="com.x3platform.tasks.mapper.workitem.TaskWorkitemMapper">
+
+  <!--待优化(具体需要字段)-->
+  <select id="selectTask" parameterType="string" resultType="TaskWorkitemModel">
+    SELECT * FROM task_workitem WHERE id=#{id}
   </select>
 
+
+  <!--待确定需要字段,查询条件-->
+  <select id="queryAllTasK" parameterType="string" resultMap="task">
+    SELECT id,title,content,created_date,is_read,type FROM task_workitem WHERE receiver_id=#{receiver_id} AND status!=1
+  </select>
+
+  <!--统计有多少需要处理的消息-->
+  <select id="countTask" parameterType="string" resultType="_int">
+    SELECT COUNT(id) FROM task_workitem WHERE receiver_id=#{receiver_id} AND status!=1
+  </select>
+
+  <!--修改阅读状态-->
+  <update id="updateRead" parameterType="string">
+    UPDATE task_workitem SET is_read=1 WHERE id=#{id}
+  </update>
+
+
+  <!--清楚操作，改变status的值-->
+  <!--<update id="clearTask" parameterType="string">-->
+    <!--UPDATE task_workitem SET status=1 WHERE type=#{type}-->
+  <!--</update>-->
+
+  <!--完成任务-->
+  <update id="updateStatus" parameterType="string">
+    UPDATE task_workitem SET status=1 WHERE id=#{id}
+  </update>
+  <!--<delete id="delTaskWorkitem" parameterType="string">-->
+  <!--DELETE FROM task_workitem WHERE id=#{id}-->
+  <!--</delete>-->
+
+  <insert id="addTask" parameterType="TaskWorkitemModel">
+    INSERT INTO task_workitem (id,application_id,task_code,type,title,content,tags,sender_id,receiver_id,is_read,status,finish_time,created_date)
+    VALUES (#{id},#{application_id},#{task_code},#{type},#{title},#{content},#{tags},#{sender_id},#{receiver_id},0,0,#{finish_time},#{created_date})
+  </insert>
+
+  <resultMap id="task" type="TaskWorkitemModel"></resultMap>
+
 </mapper>
+

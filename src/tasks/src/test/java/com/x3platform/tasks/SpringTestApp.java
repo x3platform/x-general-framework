@@ -2,6 +2,7 @@ package com.x3platform.tasks;
 
 import com.x3platform.data.DynamicDataSourceRegister;
 import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;

@@ -1,4 +1,4 @@
-package com.x3platform.tasks.model;
+package com.x3platform.tasks.model.workitem;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -19,6 +19,11 @@ public class TaskWorkitemModel {
   private long status;
   private Date finish_time;
   private Date created_date;
+
+
+  public void setId(String id) {
+    this.id = id;
+  }
 
   public String getApplication_id() {
     return application_id;
@@ -121,5 +126,7 @@ public class TaskWorkitemModel {
   public String getId() {
     return id;
   }
+
+
 }
 
