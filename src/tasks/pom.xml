@@ -97,6 +97,11 @@
       <artifactId>x3platform-support</artifactId>
       <version>0.0.1</version>
     </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-test</artifactId>
+      <version>4.3.13.RELEASE</version>
+    </dependency>
   </dependencies>
   <build>
     <resources>
@@ -112,7 +117,9 @@
         <directory>src/main/resources</directory>
         <includes>
           <include>**/*.*</include>
+          <include>*.*</include>
         </includes>
+
       </resource>
     </resources>
   </build>
