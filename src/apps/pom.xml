@@ -97,6 +97,16 @@
       <artifactId>x3platform-support</artifactId>
       <version>0.0.1</version>
     </dependency>
+    <dependency>
+      <groupId>com.x3platform</groupId>
+      <artifactId>x3platform-abstractions</artifactId>
+      <version>0.0.1</version>
+    </dependency>
+    <dependency>
+      <groupId>com.x3platform</groupId>
+      <artifactId>x3platform-membership</artifactId>
+      <version>0.0.1</version>
+    </dependency>
   </dependencies>
   <build>
     <resources>
