@@ -31,7 +31,7 @@ public class ApplicationServiceTests {
 
     ApplicationInfo param = service.findOne("00000000-0000-0000-0000-000000000001");
 
-    assertNotNull("entity is not null.", entity);
+    assertNotNull("entity is not null.", param);
   }
 
   @Test
