@@ -14,5 +14,5 @@ public interface IContext {
   /**
    * 重新加载
    */
-  void Reload();
+  void reload();
 }

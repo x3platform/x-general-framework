@@ -77,7 +77,7 @@ public class MembershipManagement extends CustomPlugin {
       // 自增重启次数计数器
       this.restartCount++;
     } catch (RuntimeException ex) {
-      // KernelContext.Log.Error(ex.getMessage(), ex);
+      KernelContext.getLog().error(ex.toString());
       throw ex;
     }
 

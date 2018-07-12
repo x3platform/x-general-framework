@@ -68,7 +68,7 @@ public class DigitalNumberContext extends CustomPlugin {
   @Override
   public int restart() {
     try {
-      this.Reload();
+      this.reload();
 
       // 自增重启次数计数器
       this.restartCount++;
@@ -80,7 +80,7 @@ public class DigitalNumberContext extends CustomPlugin {
     return 0;
   }
 
-  private void Reload() {
+  private void reload() {
     if (this.restartCount > 0) {
       KernelContext.getLog().info(String.format(I18n.getStrings().text("application_is_reloading"), DigitalNumberConfiguration.ApplicationName));
 

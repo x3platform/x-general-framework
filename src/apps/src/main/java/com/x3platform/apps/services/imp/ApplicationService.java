@@ -6,16 +6,20 @@ import com.x3platform.apps.mappers.ApplicationMapper;
 import com.x3platform.apps.models.ApplicationInfo;
 import com.x3platform.apps.services.IApplicationService;
 import com.x3platform.membership.IAccountInfo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
 
 /**
  * 应用配置服务
  */
+@Service
 public class ApplicationService implements IApplicationService {
   /**
    * 数据提供器
    */
+  @Autowired
   private ApplicationMapper provider = null;
 
   /**

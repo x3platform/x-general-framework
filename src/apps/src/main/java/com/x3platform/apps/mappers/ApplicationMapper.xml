@@ -2,159 +2,159 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.x3platform.apps.mappers.ApplicationMapper" >
   <resultMap id="findOne_Result" type="com.x3platform.apps.models.ApplicationInfo">
-    <result property="Id" column="Id" />
-    <result property="AccountId" column="AccountId" />
-    <result property="ParentId" column="ParentId" />
-    <result property="Code" column="Code" />
-    <result property="ApplicationName" column="ApplicationName" />
-    <result property="ApplicationDisplayName" column="ApplicationDisplayName" />
-    <result property="ApplicationKey" column="ApplicationKey" />
-    <result property="ApplicationSecret" column="ApplicationSecret" />
-    <result property="PinYin" column="PinYin" />
-    <result property="Description" column="Description" />
-    <result property="HasChildren" column="HasChildren" />
-    <result property="AdministratorEmail" column="AdministratorEmail" />
-    <result property="IconPath" column="IconPath" />
-    <result property="BigIconPath" column="BigIconPath" />
-    <result property="HelpUrl" column="HelpUrl" />
-    <result property="LicenseStatus" column="LicenseStatus" />
-    <result property="Hidden" column="Hidden" />
-    <result property="Locking" column="Locking" />
-    <result property="OrderId" column="OrderId" />
-    <result property="Status" column="Status" />
-    <result property="Remark" column="Remark" />
-    <result property="ModifiedDate" column="ModifiedDate" />
-    <result property="CreatedDate" column="CreatedDate" />
+    <result property="id" column="id" />
+    <result property="accountId" column="account_id" />
+    <result property="parentId" column="parent_id" />
+    <result property="code" column="code" />
+    <result property="applicationName" column="application_name" />
+    <result property="applicationDisplayName" column="application_display_name" />
+    <result property="applicationKey" column="application_key" />
+    <result property="applicationSecret" column="application_secret" />
+    <result property="pinyin" column="pinyin" />
+    <result property="description" column="description" />
+    <result property="hasChildren" column="has_children" />
+    <result property="administratorEmail" column="administrator_email" />
+    <result property="iconPath" column="icon_path" />
+    <result property="bigIconPath" column="big_icon_path" />
+    <result property="helpUrl" column="help_url" />
+    <result property="licenseStatus" column="license_status" />
+    <result property="hidden" column="hidden" />
+    <result property="locking" column="locking" />
+    <result property="orderId" column="order_id" />
+    <result property="status" column="status" />
+    <result property="remark" column="remark" />
+    <result property="modifiedDate" column="modified_date" />
+    <result property="createdDate" column="created_date" />
   </resultMap>
   <resultMap id="FindAll_Result" type="com.x3platform.apps.models.ApplicationInfo">
-    <result property="Id" column="Id" />
-    <result property="AccountId" column="AccountId" />
-    <result property="ParentId" column="ParentId" />
-    <result property="Code" column="Code" />
-    <result property="ApplicationName" column="ApplicationName" />
-    <result property="ApplicationDisplayName" column="ApplicationDisplayName" />
-    <result property="ApplicationKey" column="ApplicationKey" />
-    <result property="ApplicationSecret" column="ApplicationSecret" />
-    <result property="PinYin" column="PinYin" />
-    <result property="Description" column="Description" />
-    <result property="HasChildren" column="HasChildren" />
-    <result property="AdministratorEmail" column="AdministratorEmail" />
-    <result property="IconPath" column="IconPath" />
-    <result property="BigIconPath" column="BigIconPath" />
-    <result property="HelpUrl" column="HelpUrl" />
-    <result property="LicenseStatus" column="LicenseStatus" />
-    <result property="Hidden" column="Hidden" />
-    <result property="Locking" column="Locking" />
-    <result property="OrderId" column="OrderId" />
-    <result property="Status" column="Status" />
-    <result property="Remark" column="Remark" />
-    <result property="ModifiedDate" column="ModifiedDate" />
-    <result property="CreatedDate" column="CreatedDate" />
+    <result property="id" column="id" />
+    <result property="accountId" column="account_id" />
+    <result property="parentId" column="parent_id" />
+    <result property="code" column="code" />
+    <result property="applicationName" column="application_name" />
+    <result property="applicationDisplayName" column="application_display_name" />
+    <result property="applicationKey" column="application_key" />
+    <result property="applicationSecret" column="application_secret" />
+    <result property="pinyin" column="pinyin" />
+    <result property="description" column="description" />
+    <result property="hasChildren" column="has_children" />
+    <result property="administratorEmail" column="administrator_email" />
+    <result property="iconPath" column="icon_path" />
+    <result property="bigIconPath" column="big_icon_path" />
+    <result property="helpUrl" column="help_url" />
+    <result property="licenseStatus" column="license_status" />
+    <result property="hidden" column="hidden" />
+    <result property="locking" column="locking" />
+    <result property="orderId" column="order_id" />
+    <result property="status" column="status" />
+    <result property="remark" column="remark" />
+    <result property="modifiedDate" column="modified_date" />
+    <result property="createdDate" column="created_date" />
   </resultMap>
   <insert id="Insert" parameterType="com.x3platform.apps.models.ApplicationInfo" >
-    INSERT INTO tb_Application
+    INSERT INTO application
     (
-    Id,
-    AccountId,
-    ParentId,
-    Code,
-    ApplicationName,
-    ApplicationDisplayName,
-    ApplicationKey,
-    ApplicationSecret,
-    PinYin,
-    Description,
-    AdministratorEmail
-    IconPath,
-    BigIconPath,
-    HelpUrl,
-    LicenseStatus,
-    Hidden,
-    Locking,
-    OrderId,
-    Status,
-    Remark,
-    ModifiedDate,
-    CreatedDate
+      id,
+      account_id,
+      parent_id,
+      code,
+      application_name,
+      application_display_name,
+      application_key,
+      application_secret,
+      pinyin,
+      description,
+      administrator_email,
+      icon_path,
+      big_icon_path,
+      help_url,
+      license_status,
+      hidden,
+      locking,
+      order_id,
+      status,
+      remark,
+      modified_date,
+      created_date
     )
     VALUES
     (
-    #Id#,
-    #AccountId#,
-    #ParentId#,
-    #Code#,
-    #ApplicationName#,
-    #ApplicationDisplayName#,
-    #ApplicationKey#,
-    #ApplicationSecret#,
-    #PinYin#,
-    #Description#,
-    #AdministratorEmail#
-    #IconPath#,
-    #BigIconPath#,
-    #HelpUrl#,
-    #LicenseStatus#,
-    #Hidden#,
-    #Locking#,
-    #OrderId#,
-    #Status#,
-    #Remark#,
-    CURRENT_TIMESTAMP,
-    CURRENT_TIMESTAMP
+      #Id#,
+      #AccountId#,
+      #ParentId#,
+      #Code#,
+      #ApplicationName#,
+      #ApplicationDisplayName#,
+      #ApplicationKey#,
+      #ApplicationSecret#,
+      #PinYin#,
+      #Description#,
+      #AdministratorEmail#
+      #IconPath#,
+      #BigIconPath#,
+      #HelpUrl#,
+      #LicenseStatus#,
+      #Hidden#,
+      #Locking#,
+      #OrderId#,
+      #Status#,
+      #Remark#,
+      CURRENT_TIMESTAMP,
+      CURRENT_TIMESTAMP
     )
   </insert>
-  <update id="Update" parameterType="com.x3platform.apps.models.ApplicationInfo" >
-    UPDATE tb_Application SET
+  <update id="update" parameterType="com.x3platform.apps.models.ApplicationInfo" >
+    UPDATE application SET
 
-    ParentId = #ParentId#,
-    Code = #Code#,
-    ApplicationName = #ApplicationName#,
-    ApplicationDisplayName = #ApplicationDisplayName#,
-    ApplicationKey = #ApplicationKey#,
-    ApplicationSecret = #ApplicationSecret#,
-    PinYin = #PinYin#,
-    Description = #Description#,
-    AdministratorEmail = #AdministratorEmail#,
-    IconPath = #IconPath#,
-    BigIconPath = #BigIconPath#,
-    HelpUrl = #HelpUrl#,
-    LicenseStatus = #LicenseStatus#,
-    Hidden = #Hidden#,
-    Locking = #Locking#,
-    OrderId = #OrderId#,
-    Status = #Status#,
-    Remark = #Remark#,
-    ModifiedDate = CURRENT_TIMESTAMP
+      parent_id = #{parentId},
+      code = #{code},
+      application_name = #{applicationName},
+      application_display_name = #{applicationDisplayName},
+      application_key = #{applicationKey},
+      application_secret = #{applicationSecret},
+      pinyin = #{pinyin},
+      description = #{description},
+      administrator_email = #{administratorEmail},
+      icon_path = #{iconPath},
+      big_icon_path = #{bigIconPath},
+      help_url = #{helpUrl},
+      license_status = #{licenseStatus},
+      hidden = #{hidden},
+      locking = #{locking},
+      order_id = #{orderId},
+      status = #{status},
+      remark = #{remark},
+      modified_date = CURRENT_TIMESTAMP
 
-    WHERE Id = #Id# AND ModifiedDate = #ModifiedDate#
+    WHERE Id = #{Id} AND modified_date = #{ModifiedDate}
   </update>
   <!--
       <update id="Sync_HasChildren" >
           CREATE TEMPORARY TABLE tmp (Id VARCHAR(36) PRIMARY KEY, ParentId VARCHAR(36), Status INT);
 
-          INSERT INTO tmp SELECT Id, ParentId, Status FROM tb_Application;
+          INSERT INTO tmp SELECT Id, ParentId, Status FROM application;
 
-          UPDATE tb_Application SET HasChildren = (
+          UPDATE application SET HasChildren = (
             SELECT CASE COUNT(Id) WHEN  0 THEN 0 ELSE 1 END
-            FROM tmp WHERE tmp.ParentId = tb_Application.Id AND tmp.Status = 1) ;
+            FROM tmp WHERE tmp.ParentId = application.Id AND tmp.Status = 1) ;
 
           DROP TEMPORARY TABLE tmp;
       </update>
       -->
-  <delete id="Delete">
-    DELETE FROM tb_Application WHERE $WhereClause$
+  <delete id="delete">
+    DELETE FROM application WHERE $WhereClause$
   </delete>
-  <select id="FindOne" parameterType="com.x3platform.apps.models.ApplicationInfo" resultMap="FindOne_Result" >
-    SELECT * FROM tb_Application WHERE Id = #Id#
+  <select id="findOne" parameterType="com.x3platform.apps.models.ApplicationInfo" resultMap="findOne_Result" >
+    SELECT * FROM application WHERE Id = #{id}
   </select>
-  <select id="FindOneByApplicationName" parameterType="com.x3platform.apps.models.ApplicationInfo" resultMap="FindOne_Result" >
-    SELECT * FROM tb_Application WHERE ApplicationName = #ApplicationName#
+  <select id="findOneByApplicationName" parameterType="com.x3platform.apps.models.ApplicationInfo" resultMap="findOne_Result" >
+    SELECT * FROM application WHERE ApplicationName = #{applicationName}
   </select>
-  <select id="IsExist" >
-    SELECT COUNT(*) AS "Count" FROM tb_Application T WHERE $WhereClause$
+  <select id="isExist" >
+    SELECT COUNT(*) AS "Count" FROM application T WHERE $WhereClause$
   </select>
-  <select id="HasAuthority" >
-    SELECT COUNT(*) AS "Count" FROM view_AuthObject_Account View1, tb_Application_Scope Scope
+  <select id="hasAuthority" >
+    SELECT COUNT(*) AS "Count" FROM view_AuthObject_Account View1, application_Scope Scope
     WHERE
     View1.AccountId = #AccountId#
     AND View1.AuthorizationObjectId = Scope.AuthorizationObjectId
@@ -162,23 +162,23 @@
     AND Scope.AuthorityId = #AuthorityId#
     AND Scope.ApplicationId = #ApplicationId#
   </select>
-  <insert id="AddAuthorizationScopeObject">
-    INSERT INTO tb_Application_Scope
+  <insert id="addAuthorizationScopeObject">
+    INSERT INTO application_Scope
     (AuthorizationObjectType, AuthorizationObjectId, AuthorityId, ApplicationId, ModifiedDate, CreatedDate)
 
     VALUES
     (#AuthorizationObjectType#, #AuthorizationObjectId#, #AuthorityId#, #ApplicationId#, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
   </insert>
-  <delete id="RemoveAuthorizationScopeObjects">
-    DELETE FROM tb_Application_Scope WHERE ApplicationId = #ApplicationId# AND AuthorityId = #AuthorityId#
+  <delete id="removeAuthorizationScopeObjects">
+    DELETE FROM application_Scope WHERE ApplicationId = #ApplicationId# AND AuthorityId = #AuthorityId#
   </delete>
-  <select id="GetAuthorizationScopeObjects" >
-    SELECT * FROM tb_Application_Scope T WHERE ApplicationId = #ApplicationId# AND AuthorityId = #AuthorityId#
+  <select id="getAuthorizationScopeObjects" >
+    SELECT * FROM application_Scope T WHERE ApplicationId = #ApplicationId# AND AuthorityId = #AuthorityId#
   </select>
   <insert id="SyncFromPackPage" parameterType="com.x3platform.apps.models.ApplicationInfo" >
-    IF EXISTS(SELECT 0 FROM tb_Application WHERE Id = #Id#)
+    IF EXISTS(SELECT 0 FROM application WHERE Id = #Id#)
     BEGIN
-    UPDATE tb_Application SET
+    UPDATE application SET
 
     ParentId = #ParentId#,
     Code = #Code#,
@@ -190,7 +190,7 @@
     END
     ELSE
     BEGIN
-    INSERT INTO tb_Application
+    INSERT INTO application
     (
     Id,
     AccountId,

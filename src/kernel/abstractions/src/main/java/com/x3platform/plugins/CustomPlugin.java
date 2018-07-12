@@ -41,7 +41,7 @@ public abstract class CustomPlugin implements ICustomPlugin {
     return mVersion;
   }
 
-  private String mAuthor = "ruanyu@x3platform.com";
+  private String mAuthor = "app@x3platform.com";
 
   /**
    * 作者

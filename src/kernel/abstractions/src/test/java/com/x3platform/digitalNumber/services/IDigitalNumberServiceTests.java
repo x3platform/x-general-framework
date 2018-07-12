@@ -1,6 +1,7 @@
-package com.x3platform.digitalNumber;
+package com.x3platform.digitalNumber.services;
 
 import com.x3platform.data.DataQuery;
+import com.x3platform.digitalNumber.DigitalNumberContext;
 import com.x3platform.digitalNumber.models.DigitalNumberInfo;
 import com.x3platform.digitalNumber.services.IDigitalNumberService;
 import com.x3platform.util.DateUtil;
@@ -20,7 +21,7 @@ import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@WebAppConfiguration
+// @WebAppConfiguration
 public class IDigitalNumberServiceTests {
 
   @Autowired

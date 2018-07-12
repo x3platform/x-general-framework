@@ -71,10 +71,10 @@ public class MessageObjectTest {
     // {"message":{"returnCode":"0","value":"success"},"success":1,"msg":"success"}
     // {"message":{"code":"0","message":"success"}}
     assertTrue("MessageObject.toString() should return {\"message\":{\"code\":\"0\",\"message\":\"success\"}}",
-      text.equals("{\"message\":{\"code\":\"0\",\"message\":\"success\"}}"));
+      text.equals("{\"code\":\"0\",\"message\":\"success\"}"));
 
     text = result.toString(true);
     assertTrue("MessageObject.toString() should return \"message\":{\"code\":\"0\",\"message\":\"success\"}",
-      text.equals("\"message\":{\"code\":\"0\",\"message\":\"success\"}"));
+      text.equals("\"code\":\"0\",\"message\":\"success\""));
   }
 }

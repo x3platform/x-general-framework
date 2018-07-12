@@ -87,14 +87,14 @@ public final class KernelContext implements IContext {
   //   return authenticationManagement;
   // }
   private KernelContext() {
-    this.Reload();
+    this.reload();
   }
 
   /**
    * 重新加载
    */
   @Override
-  public void Reload() {
+  public void reload() {
     // this.configuration = KernelConfigurationView.Instance.Configuration;
 
     // String authenticationManagementType = KernelConfigurationView.Instance.AuthenticationManagementType;
@@ -149,8 +149,8 @@ public final class KernelContext implements IContext {
    * @param type
    * @return
    */
-  public static Object CreateObject(String type) {
-    return CreateObject(type, new Object[]{});
+  public static Object createObject(String type) {
+    return createObject(type, new Object[]{});
   }
 
   /**
@@ -160,7 +160,7 @@ public final class KernelContext implements IContext {
    * @param args
    * @return
    */
-  public static Object CreateObject(String type, Object... args) {
+  public static Object createObject(String type, Object... args) {
     if (StringUtil.isNullOrEmpty(type)) {
       return null;
     }
@@ -215,7 +215,7 @@ public final class KernelContext implements IContext {
    * @param type
    * @return 格式:com.x3platform.KernelContext,com.x3platform
    */
-  public static String ParseObjectType(java.lang.Class type) {
+  public static String parseObjectType(java.lang.Class type) {
     if (type == null) {
       return null;
     }

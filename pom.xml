@@ -11,7 +11,10 @@
     <module>src/kernel/support</module>
     <module>src/kernel/abstractions</module>
     <module>src/membership</module>
+    <module>src/apps</module>
     <module>src/tasks</module>
+    <!-- App 示例代码 -->
+    <module>src/app</module>
   </modules>
 
   <!-- git 远程仓库配置 -->
