@@ -1,58 +1,20 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.x3platform.membership.mappers.AccountMapper">
-  <resultMap id="findOne_Result" type="com.x3platform.membership.models.AccountInfo" >
-    <result property="Id" column="Id" />
-    <result property="Code" column="Code" />
-    <result property="Name" column="Name" />
-    <result property="GlobalName" column="GlobalName" />
-    <result property="DisplayName" column="DisplayName" />
-    <result property="PinYin" column="PinYin" />
-    <result property="LoginName" column="LoginName" />
-    <result property="IdentityCard" column="IdentityCard" />
-    <result property="Type" column="Type" />
-    <result property="CertifiedMobile" column="CertifiedMobile" />
-    <result property="CertifiedEmail" column="CertifiedEmail" />
-    <result property="CertifiedAvatar" column="CertifiedAvatar" />
-    <result property="EnableExchangeEmail" column="EnableExchangeEmail" />
-    <result property="IsDraft" column="IsDraft" />
-    <result property="Locking" column="Locking" />
-    <result property="OrderId" column="OrderId" />
-    <result property="Status" column="Status" />
-    <result property="Remark" column="Remark" />
-    <result property="IP" column="IP" />
-    <result property="LoginDate" column="LoginDate" />
-    <result property="DistinguishedName" column="DistinguishedName" />
-    <result property="ModifiedDate" column="ModifiedDate" />
-    <result property="CreatedDate" column="CreatedDate" />
+<mapper namespace="com.x3platform.membership.mappers.OrganizationUnitMapper">
+  <resultMap id="findOne_Result" type="com.x3platform.membership.models.OrganizationUnitInfo">
+    <result property="mId" column="id"/>
+    <result property="mName" column="name"/>
+    <result property="mModifiedDate" column="modified_date"/>
+    <result property="mCreatedDate" column="created_date"/>
   </resultMap>
-  <resultMap id="findAll_Result" type="com.x3platform.membership.models.AccountInfo">
-    <result property="Id" column="Id" />
-    <result property="Code" column="Code" />
-    <result property="Name" column="Name" />
-    <result property="GlobalName" column="GlobalName" />
-    <result property="DisplayName" column="DisplayName" />
-    <result property="PinYin" column="PinYin" />
-    <result property="LoginName" column="LoginName" />
-    <result property="IdentityCard" column="IdentityCard" />
-    <result property="Type" column="Type" />
-    <result property="CertifiedMobile" column="CertifiedMobile" />
-    <result property="CertifiedEmail" column="CertifiedEmail" />
-    <result property="CertifiedAvatar" column="CertifiedAvatar" />
-    <result property="EnableExchangeEmail" column="EnableExchangeEmail" />
-    <result property="IsDraft" column="IsDraft" />
-    <result property="Locking" column="Locking" />
-    <result property="OrderId" column="OrderId" />
-    <result property="Status" column="Status" />
-    <result property="Remark" column="Remark" />
-    <result property="IP" column="IP" />
-    <result property="LoginDate" column="LoginDate" />
-    <result property="DistinguishedName" column="DistinguishedName" />
-    <result property="ModifiedDate" column="ModifiedDate" />
-    <result property="CreatedDate" column="CreatedDate" />
+  <resultMap id="findAll_Result" type="com.x3platform.membership.models.OrganizationUnitInfo">
+    <result property="mId" column="id"/>
+    <result property="mName" column="name"/>
+    <result property="mModifiedDate" column="modified_date"/>
+    <result property="mCreatedDate" column="created_date"/>
   </resultMap>
-  <insert id="insert" parameterType="com.x3platform.digitalNumber.models.DigitalNumberInfo">
-    INSERT INTO sys_digital_number
+  <insert id="insert" parameterType="com.x3platform.membership.models.OrganizationUnitInfo">
+    INSERT INTO sys_organization_unit
     (
       name,
       expression,
@@ -69,8 +31,8 @@
       CURRENT_TIMESTAMP
     )
   </insert>
-  <update id="update" parameterType="com.x3platform.digitalNumber.models.DigitalNumberInfo">
-    UPDATE sys_digital_number SET
+  <update id="update" parameterType="com.x3platform.membership.models.OrganizationUnitInfo">
+    UPDATE sys_organization_unit SET
 
     expression = #{expression},
     seed = #{seed},
@@ -78,10 +40,10 @@
 
     WHERE Name = #{name}
   </update>
-  <insert id="save" parameterType="com.x3platform.digitalNumber.models.DigitalNumberInfo">
-      IF EXISTS(SELECT 0 FROM sys_digital_number WHERE Name = #name#)
+  <insert id="save" parameterType="com.x3platform.membership.models.OrganizationUnitInfo">
+      IF EXISTS(SELECT 0 FROM sys_organization_unit WHERE Name = #name#)
       BEGIN
-      UPDATE sys_digital_number SET
+      UPDATE sys_organization_unit SET
 
       Expression = #Expression#,
       Seed = #Seed#,
@@ -91,7 +53,7 @@
       END
       ELSE
       BEGIN
-      INSERT INTO sys_digital_number
+      INSERT INTO sys_organization_unit
       (
       Name,
       Expression,
@@ -110,13 +72,13 @@
       END
   </insert>
   <delete id="delete">
-    DELETE FROM sys_digital_number WHERE Name = #{name}
+    DELETE FROM sys_organization_unit WHERE Name = #{name}
   </delete>
   <select id="findOne" resultMap="findOne_Result">
-    SELECT * FROM sys_digital_number WHERE Name = #{name}
+    SELECT * FROM sys_organization_unit WHERE id = #{id}
   </select>
   <select id="findAll" resultMap="findAll_Result">
-    SELECT * FROM sys_digital_number T
+    SELECT * FROM sys_organization_unit T
     <where>
       <if test="whereClause != null and whereClause !=''">
         ${whereClause}
@@ -131,7 +93,7 @@
   </select>
   <!--
       <select id="FindAll#MySql" resultMap="findAll_Result" >
-        SELECT * FROM sys_digital_number T
+        SELECT * FROM sys_organization_unit T
 
         <dynamic prepend="WHERE">
           <isParameterPresent>
@@ -162,7 +124,7 @@
           </isNotEqual>
         </dynamic>
 
-        * FROM sys_digital_number T
+        * FROM sys_organization_unit T
 
         <dynamic prepend="WHERE">
           <isParameterPresent>
@@ -181,7 +143,7 @@
         </dynamic>
       </select>
       <select id="GetPaging#MySql"  resultMap="findAll_Result" >
-        SELECT * FROM sys_digital_number T
+        SELECT * FROM sys_organization_unit T
 
         <dynamic prepend="WHERE">
           <isParameterPresent>
@@ -203,7 +165,7 @@
       <select id="GetPaging#Oracle" resultMap="findAll_Result" >
         SELECT T2.* FROM (
         SELECT ROWNUM RowIndex, T1.* FROM (
-        SELECT * FROM sys_digital_number T
+        SELECT * FROM sys_organization_unit T
 
         <where>
           <if test="WhereClause != null">
@@ -220,7 +182,7 @@
 
         FROM (SELECT *, ROW_NUMBER() OVER(ORDER BY $OrderBy$) AS RowIndex
 
-        FROM sys_digital_number T
+        FROM sys_organization_unit T
 
         <where>
           <if test="WhereClause != null">
@@ -231,7 +193,7 @@
         WHERE TableIndex.RowIndex BETWEEN $StartIndex$ + 1 AND $StartIndex$ + $PageSize$
       </select>
       <select id="GetRowCount" >
-        SELECT COUNT(0) AS "RowCount" FROM sys_digital_number T
+        SELECT COUNT(0) AS "RowCount" FROM sys_organization_unit T
         <where>
           <if test="WhereClause != null">
               $WhereClause$
@@ -240,10 +202,10 @@
       </select>
       -->
   <select id="isExist">
-    SELECT COUNT(0) AS "Count" FROM sys_digital_number WHERE $WhereClause$
+    SELECT COUNT(0) AS "Count" FROM sys_organization_unit WHERE $WhereClause$
   </select>
   <select id="isExistName" resultType="boolean">
-    SELECT COUNT(0) AS "Count" FROM sys_digital_number WHERE Name = #{name}
+    SELECT COUNT(0) AS "Count" FROM sys_organization_unit WHERE Name = #{name}
   </select>
   <select id="GetMaxSeedByPrefix#MySql">
       SELECT
@@ -265,5 +227,8 @@
       BEGIN
       SELECT 0
       END
+    </select>
+  <select id="GetPrefixCodeByCategoryId">
+      SELECT PrefixCode FROM $EntityCategoryTableName$ T WHERE Id = '$EntityCategoryId$'
     </select>
 </mapper>

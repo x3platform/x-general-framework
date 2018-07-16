@@ -6,6 +6,7 @@ import com.x3platform.*;
 import com.x3platform.membership.*;
 
 /**
+ * 帐号服务接口
  */
 public interface IAccountService {
 
@@ -448,15 +449,4 @@ public interface IAccountService {
    * @param param 帐号信息
    */
   int syncToLDAP(IAccountInfo param);
-
-  // -------------------------------------------------------
-  // 同步管理
-  // -------------------------------------------------------
-
-  /**
-   * 同步信息
-   *
-   * @param param 帐号信息
-   */
-  int syncFromPackPage(IAccountInfo param);
 }

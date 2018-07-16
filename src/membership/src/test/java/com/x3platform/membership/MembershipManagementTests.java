@@ -1,4 +1,4 @@
-package com.x3platform.apps;
+package com.x3platform.membership;
 
 import com.x3platform.membership.MembershipManagement;
 import org.junit.Test;
@@ -23,7 +23,9 @@ public class MembershipManagementTests {
   @Test
   public void testLoad() {
     MembershipManagement instance = MembershipManagement.getInstance();
-    assertNotNull("AccountService is not null.",
-      instance.getAccountService());
+
+    assertNotNull("OrganizationUnitService is not null.", instance.getOrganizationUnitService());
+    assertNotNull("RoleService is not null.", instance.getRoleService());
+    assertNotNull("AccountService is not null.", instance.getAccountService());
   }
 }

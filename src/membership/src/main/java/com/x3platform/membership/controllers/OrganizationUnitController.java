@@ -2,7 +2,14 @@ package com.x3platform.membership.controllers;
 
 import java.util.*;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.x3platform.membership.IOrganizationUnitInfo;
+import com.x3platform.membership.MembershipManagement;
+import com.x3platform.membership.models.OrganizationUnitInfo;
+import com.x3platform.membership.services.IOrganizationUnitService;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,10 +26,10 @@ import javax.servlet.http.HttpServletResponse;
  */
 @RestController
 @Lazy(true)
-@RequestMapping("/api/membership/account")
-public class AccountController {
+@RequestMapping("/api/membership/organizationUnit")
+public class OrganizationUnitController {
   // 数据提供器
-  private IDigitalNumberService service = DigitalNumberContext.getInstance().getDigitalNumberService();
+  private IOrganizationUnitService service = MembershipManagement.getInstance().getOrganizationUnitService();
 
   // -------------------------------------------------------
   // 保存 删除
@@ -35,7 +42,7 @@ public class AccountController {
    */
   @RequestMapping("/save")
   public final String save(HttpServletRequest req, HttpServletResponse res) {
-    DigitalNumberInfo param = new DigitalNumberInfo();
+    IOrganizationUnitInfo param = new OrganizationUnitInfo();
 
     // param = AjaxUtil.<DigitalNumberInfo>Deserialize(param, doc);
 
@@ -70,13 +77,17 @@ public class AccountController {
    * @param doc Xml 文档对象
    * @return 返回一个相关的实例列表.
    */
-  public final String findOne(HttpServletRequest req, HttpServletResponse res) {
+  @RequestMapping("/findOne")
+  public final String findOne(@RequestBody String data) {
+
     StringBuilder outString = new StringBuilder();
 
-    // String name = XmlHelper.Fetch("name", doc);
-    String name = req.getParameter("name");
+    JSONObject req = JSON.parseObject(data);
 
-    DigitalNumberInfo param = this.service.findOne(name);
+    // 组织单位唯一标识
+    String id = req.getString("id");
+
+    IOrganizationUnitInfo param = this.service.findOne(id);
 
     // outString.append("{\"data\":" + AjaxUtil.<DigitalNumberInfo>Parse(param) + ",");
 
@@ -140,19 +151,4 @@ public class AccountController {
 
     return outString.toString();
   }*/
-
-  /**
-   * 生成流水号
-   *
-   * @param doc Xml 文档对象
-   * @return 返回操作结果
-   */
-  public final String Generate(HttpServletRequest req, HttpServletResponse res) {
-    // String name = XmlHelper.Fetch("name", doc);
-    String name = req.getParameter("name");
-
-    String result = this.service.generate(name);
-
-    return "{\"data\":\"" + result + "\",\"message\":{\"returnCode\":0,\"value\":\"查询成功。\"}}";
-  }
 }

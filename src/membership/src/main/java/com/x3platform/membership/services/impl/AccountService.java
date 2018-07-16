@@ -10,17 +10,21 @@ import com.x3platform.membership.mappers.AccountMapper;
 import com.x3platform.membership.models.AccountInfo;
 import com.x3platform.membership.services.IAccountService;
 import com.x3platform.util.StringUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
 
 /**
  * 帐号服务
  */
+@Service
 public class AccountService implements IAccountService {
 
   /**
    * 数据提供器
    */
+  @Autowired
   private AccountMapper provider = null;
 
   /**

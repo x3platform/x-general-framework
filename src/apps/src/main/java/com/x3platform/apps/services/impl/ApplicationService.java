@@ -1,4 +1,4 @@
-package com.x3platform.apps.services.imp;
+package com.x3platform.apps.services.impl;
 
 import com.x3platform.apps.AppsSecurity;
 import com.x3platform.apps.configuration.AppsConfigurationView;
@@ -126,7 +126,7 @@ public class ApplicationService implements IApplicationService {
    * @return 返回所有 ApplicationInfo 实例的详细信息
    */
   public final List<ApplicationInfo> findAll() {
-    return provider.findAll("", 0);
+    return provider.findAll();
   }
 
   /**
@@ -135,9 +135,9 @@ public class ApplicationService implements IApplicationService {
    * @param whereClause SQL 查询条件
    * @return 返回所有 ApplicationInfo 实例的详细信息
    */
-  public final List<ApplicationInfo> findAll(String whereClause) {
-    return provider.findAll(whereClause, 0);
-  }
+  // public final List<ApplicationInfo> findAll(String whereClause) {
+  //  return provider.findAll(whereClause, 0);
+  // }
 
   /**
    * 查询所有相关记录
@@ -146,9 +146,9 @@ public class ApplicationService implements IApplicationService {
    * @param length      条数
    * @return 返回所有 ApplicationInfo 实例的详细信息
    */
-  public final List<ApplicationInfo> findAll(String whereClause, int length) {
-    return provider.findAll(whereClause, length);
-  }
+  // public final List<ApplicationInfo> findAll(String whereClause, int length) {
+  //  return provider.findAll(whereClause, length);
+  // }
 
   /**
    * 根据帐号所属的标准角色信息对应的应用系统的功能点, 查询此帐号有权限启用的应用系统信息.

@@ -46,6 +46,24 @@ public class MembershipManagement extends CustomPlugin {
     return mAccountService;
   }
 
+  private IOrganizationUnitService mOrganizationUnitService = null;
+
+  /**
+   * 角色服务提供者
+   */
+  public final IOrganizationUnitService getOrganizationUnitService() {
+    return mOrganizationUnitService;
+  }
+
+  private IRoleService mRoleService = null;
+
+  /**
+   * 角色服务提供者
+   */
+  public final IRoleService getRoleService() {
+    return mRoleService;
+  }
+
   private ISettingService mSettingService = null;
 
   /**
@@ -96,7 +114,9 @@ public class MembershipManagement extends CustomPlugin {
 
     // 创建数据服务对象
     this.mAccountService = SpringContext.getBean("com.x3platform.membership.services.IAccountService", IAccountService.class);
-    this.mSettingService = SpringContext.getBean("com.x3platform.membership.services.ISettingService", ISettingService.class);
+    this.mRoleService = SpringContext.getBean("com.x3platform.membership.services.IRoleService", IRoleService.class);
+    this.mOrganizationUnitService = SpringContext.getBean("com.x3platform.membership.services.IOrganizationUnitService", IOrganizationUnitService.class);
+    // this.mSettingService = SpringContext.getBean("com.x3platform.membership.services.ISettingService", ISettingService.class);
 
     KernelContext.getLog().info(String.format(I18n.getStrings().text("application_is_successfully_loaded"), MembershipConfiguration.ApplicationName));
   }

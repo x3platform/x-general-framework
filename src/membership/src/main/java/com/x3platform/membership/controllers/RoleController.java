@@ -19,8 +19,8 @@ import javax.servlet.http.HttpServletResponse;
  */
 @RestController
 @Lazy(true)
-@RequestMapping("/api/membership/account")
-public class AccountController {
+@RequestMapping("/api/membership/role")
+public class RoleController {
   // 数据提供器
   private IDigitalNumberService service = DigitalNumberContext.getInstance().getDigitalNumberService();
 
