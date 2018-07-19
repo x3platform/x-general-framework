@@ -49,8 +49,6 @@ public interface AccountMapper {
   // 查询
   // -------------------------------------------------------
 
-  ///#region 函数:findOne(string id)
-
   /**
    * 查询某条记录
    *
@@ -63,12 +61,9 @@ public interface AccountMapper {
    * 查询某条记录
    *
    * @param globalName 帐号的全局名称
-   * @return 返回一个<see cref="IAccountInfo"/>实例的详细信息
+   * @return 返回一个实例的详细信息
    */
   IAccountInfo findOneByGlobalName(String globalName);
-  ///#endregion
-
-  ///#region 函数:findOneByLoginName(string loginName)
 
   /**
    * 查询某条记录
@@ -77,94 +72,77 @@ public interface AccountMapper {
    * @return 返回一个 IAccount 实例的详细信息
    */
   IAccountInfo findOneByLoginName(String loginName);
-  ///#endregion
-
-  ///#region 函数:findOneByCertifiedMobile(string certifiedMobile)
 
   /**
    * 根据已验证的手机号查询某条记录
    *
    * @param certifiedMobile 已验证的手机号
-   * @return 返回一个<see cref="IAccountInfo"/>实例的详细信息
+   * @return 返回一个实例的详细信息
    */
   IAccountInfo findOneByCertifiedMobile(String certifiedMobile);
-  ///#endregion
-
-  ///#region 函数:findOneByCertifiedEmail(string certifiedEmail)
 
   /**
    * 根据已验证的邮箱地址查询某条记录
    *
    * @param certifiedEmail 已验证的邮箱地址
-   * @return 返回一个<see cref="IAccountInfo"/>实例的详细信息
+   * @return 返回一个实例的详细信息
    */
   IAccountInfo findOneByCertifiedEmail(String certifiedEmail);
-  ///#endregion
 
-  ///#region 函数:findAll(string whereClause,int length)
+  /**
+   * 查询所有相关记录
+   *
+   * @return 返回所有实例的详细信息
+   */
+  List<IAccountInfo> findAll(Map params);
 
   /**
    * 查询所有相关记录
    *
    * @param whereClause SQL 查询条件
    * @param length      条数
-   * @return 返回所有<see cref="IAccountInfo"/>实例的详细信息
+   * @return 返回所有实例的详细信息
    */
   List<IAccountInfo> findAll(String whereClause, int length);
-  ///#endregion
-
-  ///#region 函数:findAllByOrganizationUnitId(string organizationId)
 
   /**
    * 查询某个用户所在的所有组织单位
    *
    * @param organizationId 组织标识
-   * @return 返回一个<see cref="IAccountInfo"/>实例的详细信息
+   * @return 返回一个实例的详细信息
    */
   List<IAccountInfo> findAllByOrganizationUnitId(String organizationId);
-  ///#endregion
-
-  ///#region 函数:findAllByOrganizationUnitId(string organizationId, bool defaultOrganizationUnitRelation)
 
   /**
    * 查询某个组织下的所有相关帐号
    *
    * @param organizationId                  组织标识
    * @param defaultOrganizationUnitRelation 默认组织关系
-   * @return 返回一个<see cref="IAccountInfo"/>实例的详细信息
+   * @return 返回一个实例的详细信息
    */
   List<IAccountInfo> findAllByOrganizationUnitId(String organizationId, boolean defaultOrganizationUnitRelation);
-  ///#endregion
-
-  ///#region 函数:findAllByRoleId(string roleId)
 
   /**
    * 查询某个角色下的所有相关帐号
    *
    * @param roleId 组织标识
-   * @return 返回一个<see cref="IAccountInfo"/>实例的详细信息
+   * @return 返回一个实例的详细信息
    */
   List<IAccountInfo> findAllByRoleId(String roleId);
-  ///#endregion
-
-  ///#region 函数:findAllByGroupId(string groupId)
 
   /**
    * 查询某个群组下的所有相关帐号
    *
    * @param groupId 群组标识
-   * @return 返回一个<see cref="IAccountInfo"/>实例的详细信息
+   * @return 返回一个实例的详细信息
    */
   List<IAccountInfo> findAllByGroupId(String groupId);
-  ///#endregion
-
-  ///#region 函数:findAllWithoutMemberInfo(int length)
 
   /**
    * 返回所有没有成员信息的帐号信息
    *
    * @param length 条数, 0表示全部
-   * @return 返回所有<see cref="IAccountInfo"/>实例的详细信息
+   * @return 返回所有实例的详细信息
    */
   List<IAccountInfo> findAllWithoutMemberInfo(int length);
   ///#endregion
@@ -176,7 +154,7 @@ public interface AccountMapper {
    *
    * @param organizationId 组织标识
    * @param level          层次
-   * @return 返回所有<see cref="IAccountInfo"/>实例的详细信息
+   * @return 返回所有实例的详细信息
    */
   List<IAccountInfo> findForwardLeaderAccountsByOrganizationUnitId(String organizationId, int level);
   ///#endregion
@@ -188,7 +166,7 @@ public interface AccountMapper {
    *
    * @param organizationId 组织标识
    * @param level          层次
-   * @return 返回所有<see cref="IAccountInfo"/>实例的详细信息
+   * @return 返回所有实例的详细信息
    */
   List<IAccountInfo> findBackwardLeaderAccountsByOrganizationUnitId(String organizationId, int level);
   ///#endregion
@@ -204,7 +182,7 @@ public interface AccountMapper {
    * @param pageSize   页面大小
    * @param query      数据查询参数
    * @param rowCount   记录行数
-   * @return 返回一个列表<see cref="IAccountInfo"/>
+   * @return 返回一个列表
    */
   // List<IAccountInfo> getPaging(int startIndex, int pageSize, DataQuery query, tangible.RefObject<Integer> rowCount);
 

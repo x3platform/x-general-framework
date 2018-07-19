@@ -12,70 +12,71 @@ import com.x3platform.util.*;
  */
 public class DataQuery implements ISerializedObject {
 
-  // private HashMap<String, String> m_Variables = new HashMap<String, String>() {
-  //  {  "elevatedPrivileges", "0" },
-  //  {   "scence", "default" }
-  // };
-  private HashMap<String, String> m_Variables = new HashMap<String, String>();
+  public DataQuery() {
+    this.mVariables.put("elevatedPrivileges", "0");
+    this.mVariables.put("scence", "default");
+  }
+
+  private HashMap<String, String> mVariables = new HashMap<String, String>();
 
   /**
    * 查询上下文环境变量集合
    */
   public final HashMap<String, String> getVariables() {
-    return this.m_Variables;
+    return this.mVariables;
   }
 
-  private String m_Table = "";
+  private String mTable = "";
 
   /**
    * 数据表名称
    */
   public final String getTable() {
-    return this.m_Table;
+    return this.mTable;
   }
 
   public final void setTable(String value) {
-    this.m_Table = value;
+    this.mTable = value;
   }
 
-  private List<String> m_Fields = new ArrayList<String>();
+  private List<String> mFields = new ArrayList<String>();
 
   /**
    * 字段列表
    */
   public final List<String> getFields() {
-    return this.m_Fields;
+    return this.mFields;
   }
 
-  private HashMap<String, Object> m_Where = new HashMap<String, Object>();
+  private HashMap<String, Object> mWhere = new HashMap<String, Object>();
 
   /**
    * 过滤规则
    */
   public final HashMap<String, Object> getWhere() {
-    return this.m_Where;
+    return this.mWhere;
   }
 
-  private List<String> m_Orders = new ArrayList<String>();
+  private List<String> mOrders = new ArrayList<String>();
 
   /**
    * 排序规则
    */
   public final List<String> getOrders() {
-    return this.m_Orders;
+    return this.mOrders;
   }
 
-  private int m_Length = 1000;
+  private int mLength = 1000;
 
   /**
    * 查询记录最大函数限制 (默认值:1000)
    */
   public final int getLength() {
-    return this.m_Length;
+    return this.mLength;
   }
 
   public final void setLength(int value) {
-    this.m_Length = value;
+    this.mLength = value;
   }
 
   /**
@@ -387,7 +388,7 @@ public class DataQuery implements ISerializedObject {
    *
    * @param queryXml Xml文本格式
    */
-  public static DataQuery Create(String queryXml) {
+  public static DataQuery create(String queryXml) {
     DataQuery query = new DataQuery();
 
     // Document doc = new Document();

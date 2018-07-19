@@ -11,6 +11,7 @@ import com.x3platform.membership.models.AccountInfo;
 import com.x3platform.membership.services.IAccountService;
 import com.x3platform.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -41,23 +42,21 @@ public class AccountService implements IAccountService {
   //  }
   // };
 
-  ///#region 构造函数:AccountService()
-
   /**
    * 构造函数
    */
-  // public AccountService() {
-  //  this.configuration = MembershipConfigurationView.Instance.Configuration;
+  public AccountService() {
+    this.dictionary.put("id", new HashMap<String, IAccountInfo>());
+    this.dictionary.put("loginName", new HashMap<String, IAccountInfo>());
 
-  // 创建对象构建器(Spring.NET)
-  // String springObjectFile = this.configuration.keySet()["SpringObjectFile"].Value;
+    // 创建对象构建器(Spring.NET)
+    // String springObjectFile = this.configuration.keySet()["SpringObjectFile"].Value;
 
-  // SpringObjectBuilder objectBuilder = SpringObjectBuilder.Create(MembershipConfiguration.ApplicationName, springObjectFile);
+    // SpringObjectBuilder objectBuilder = SpringObjectBuilder.Create(MembershipConfiguration.ApplicationName, springObjectFile);
 
-  // 创建数据提供器
-  // this.provider = objectBuilder.<IAccountProvider>GetObject(IAccountProvider.class);
-  //}
-  ///#endregion
+    // 创建数据提供器
+    // this.provider = objectBuilder.<IAccountProvider>GetObject(IAccountProvider.class);
+  }
 
   // -------------------------------------------------------
   // 缓存管理
@@ -161,7 +160,11 @@ public class AccountService implements IAccountService {
     */
     param.setDistinguishedName(combineDistinguishedName(param.getName()));
 
-    param = this.provider.save(param);
+    if (!this.provider.isExist(param.getId())) {
+      this.provider.insert(param);
+    } else {
+      this.provider.update(param);
+    }
     if (param != null) {
       String accountId = param.getId();
 
@@ -328,21 +331,17 @@ public class AccountService implements IAccountService {
    * @return 返回所有 IAccountInfo 实例的详细信息
    */
   public final List<IAccountInfo> findAll() {
-    return this.provider.findAll("", 0);
+    return this.provider.findAll(new HashMap());
   }
 
   /**
    * 查询所有相关记录
    *
-   * @param whereClause SQL 查询条件
    * @return 返回所有 IAccountInfo 实例的详细信息
    */
   public final List<IAccountInfo> findAll(String whereClause) {
     return this.provider.findAll(whereClause, 0);
   }
-  ///#endregion
-
-  ///#region 函数:findAll(string whereClause,int length)
 
   /**
    * 查询所有相关记录
@@ -354,9 +353,6 @@ public class AccountService implements IAccountService {
   public final List<IAccountInfo> findAll(String whereClause, int length) {
     return this.provider.findAll(whereClause, length);
   }
-  ///#endregion
-
-  ///#region 函数:findAllByOrganizationUnitId(string organizationId)
 
   /**
    * 查询某个用户所在的所有组织单位
@@ -367,9 +363,6 @@ public class AccountService implements IAccountService {
   public final List<IAccountInfo> findAllByOrganizationUnitId(String organizationId) {
     return this.provider.findAllByOrganizationUnitId(organizationId);
   }
-  ///#endregion
-
-  ///#region 函数:findAllByOrganizationUnitId(string organizationId, bool defaultOrganizationUnitRelation)
 
   /**
    * 查询某个组织下的所有相关帐号
@@ -381,9 +374,6 @@ public class AccountService implements IAccountService {
   public final List<IAccountInfo> findAllByOrganizationUnitId(String organizationId, boolean defaultOrganizationUnitRelation) {
     return this.provider.findAllByOrganizationUnitId(organizationId, defaultOrganizationUnitRelation);
   }
-  ///#endregion
-
-  ///#region 函数:findAllByRoleId(string roleId)
 
   /**
    * 查询某个角色下的所有相关帐号
@@ -394,9 +384,6 @@ public class AccountService implements IAccountService {
   public final List<IAccountInfo> findAllByRoleId(String roleId) {
     return this.provider.findAllByRoleId(roleId);
   }
-  ///#endregion
-
-  ///#region 属性:findAllByGroupId(string groupId)
 
   /**
    * ��ѯĳ��Ⱥ���µ����������ʺ�

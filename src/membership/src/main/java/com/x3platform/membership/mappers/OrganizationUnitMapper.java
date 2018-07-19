@@ -58,7 +58,7 @@ public interface OrganizationUnitMapper {
    * 查询某条记录
    *
    * @param globalName 组织的全局名称
-   * @return 返回一个<see cref="IOrganizationUnitInfo"/>实例的详细信息
+   * @return 返回一个实例的详细信息
    */
   IOrganizationUnitInfo findOneByGlobalName(String globalName);
 
@@ -75,7 +75,7 @@ public interface OrganizationUnitMapper {
    *
    * @param roleId 角色标识
    * @param level  层次
-   * @return 返回所有<see cref="IOrganizationUnitInfo"/>实例的详细信息
+   * @return 返回所有实例的详细信息
    */
   IOrganizationUnitInfo findOneByRoleId(String roleId, int level);
 
@@ -83,7 +83,7 @@ public interface OrganizationUnitMapper {
    * 查询某个组织所属的公司信息
    *
    * @param id 组织标识
-   * @return 返回所有<see cref="IOrganizationUnitInfo"/>实例的详细信息
+   * @return 返回所有实例的详细信息
    */
   IOrganizationUnitInfo findCorporationByOrganizationUnitId(String id);
 
@@ -92,7 +92,7 @@ public interface OrganizationUnitMapper {
    *
    * @param organizationId 组织标识
    * @param level          层次
-   * @return 返回所有<see cref="IOrganizationUnitInfo"/>实例的详细信息
+   * @return 返回所有实例的详细信息
    */
   IOrganizationUnitInfo findDepartmentByOrganizationUnitId(String organizationId, int level);
 
@@ -103,13 +103,13 @@ public interface OrganizationUnitMapper {
    * @param length      条数
    * @return 返回所有 IOrganizationUnitInfo 实例的详细信息
    */
-  List<IOrganizationUnitInfo> findAll(String whereClause, int length);
+  List<IOrganizationUnitInfo> findAll(Map params);
 
   /**
    * 查询某个父节点下的所有组织单位
    *
    * @param parentId 父节标识
-   * @return 返回所有实例<see cref="IOrganizationUnitInfo"/>实例的详细信息
+   * @return 返回所有实例实例的详细信息
    */
   List<IOrganizationUnitInfo> findAllByParentId(String parentId);
 
@@ -125,7 +125,7 @@ public interface OrganizationUnitMapper {
    * 查询某个帐户所属的所有公司信息
    *
    * @param accountId 帐号标识
-   * @return 返回所有<see cref="IOrganizationUnitInfo"/>实例的详细信息
+   * @return 返回所有实例的详细信息
    */
   List<IOrganizationUnitInfo> findCorporationsByAccountId(String accountId);
 

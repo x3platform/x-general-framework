@@ -77,6 +77,9 @@
   <select id="findOne" resultMap="findOne_Result">
     SELECT * FROM sys_organization_unit WHERE id = #{id}
   </select>
+  <select id="findCorporationByOrganizationUnitId" resultMap="findOne_Result">
+    SELECT * FROM sys_organization_unit WHERE id IN ( func_GetCorporationIdByOrganizationUnitId(#{id}) )
+  </select>
   <select id="findAll" resultMap="findAll_Result">
     SELECT * FROM sys_organization_unit T
     <where>
@@ -90,6 +93,9 @@
     <if test="length > 0">
       LIMIT 0, ${length}
     </if>
+  </select>
+  <select id="findAllByParentId" resultMap="findAll_Result">
+    SELECT * FROM sys_organization_unit where id = #{parentId}
   </select>
   <!--
       <select id="FindAll#MySql" resultMap="findAll_Result" >

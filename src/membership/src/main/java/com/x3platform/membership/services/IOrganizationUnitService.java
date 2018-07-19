@@ -96,10 +96,7 @@ public interface IOrganizationUnitService {
    * @param whereClause SQL 查询条件
    * @return 返回所有<see cref="IOrganizationUnitInfo" />实例的详细信息
    */
-  List<IOrganizationUnitInfo> findAll(String whereClause);
-  ///#endregion
-
-  ///#region 函数:FindAll(string whereClause,int length)
+  // List<IOrganizationUnitInfo> findAll(String whereClause);
 
   /**
    * 查询所有相关记录
@@ -108,10 +105,7 @@ public interface IOrganizationUnitService {
    * @param length      条数
    * @return 返回所有<see cref="IOrganizationUnitInfo" />实例的详细信息
    */
-  List<IOrganizationUnitInfo> findAll(String whereClause, int length);
-  ///#endregion
-
-  ///#region 函数:FindAllByParentId(string parentId)
+  // List<IOrganizationUnitInfo> findAll(String whereClause, int length);
 
   /**
    * 查询某个父节点下的所有组织单位

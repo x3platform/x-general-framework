@@ -3,16 +3,27 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.x3platform</groupId>
   <artifactId>x3platform-support</artifactId>
-  <version>0.0.1</version>
+  <version>${project.release.version}</version>
   <packaging>jar</packaging>
   <name>x3platform-support</name>
   <url>http://maven.apache.org</url>
 
   <properties>
+    <project.release.version>0.0.1-SNAPSHOT</project.release.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>1.8</java.version>
     <lib.path>${basedir}/lib</lib.path>
   </properties>
+
+  <profiles>
+    <!-- mvn deploy -P release -->
+    <profile>
+      <id>release</id>
+      <properties>
+        <project.release.version>0.0.1</project.release.version>
+      </properties>
+    </profile>
+  </profiles>
 
   <parent>
     <groupId>org.springframework.boot</groupId>

@@ -28,13 +28,13 @@ public class DataQueryTest {
   public void testCreate() {
     DataQuery query = null;
 
-    query = DataQuery.Create("<scence>test</scence><length>100</length>");
+    query = DataQuery.create("<scence>test</scence><length>100</length>");
 
     assertNotNull("query is not null.", query);
     assertEquals("query.getLength() == 100.", 100, query.getLength());
     assertEquals("query..getVariables().get(\"scence\") == test.", "test", query.getVariables().get("scence"));
 
-    query = DataQuery.Create("<scence>test</scence><length>100</length>");
+    query = DataQuery.create("<scence>test</scence><length>100</length>");
 
     assertNotNull("query is not null.", query);
     assertEquals("query.getLength() == 100.", 100, query.getLength());

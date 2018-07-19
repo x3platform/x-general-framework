@@ -3,7 +3,7 @@ package com.x3platform.apps.services;
 import com.x3platform.apps.AppsContext;
 import com.x3platform.apps.models.ApplicationInfo;
 import com.x3platform.apps.services.IApplicationService;
-import com.x3platform.apps.services.imp.ApplicationService;
+import com.x3platform.apps.services.impl.ApplicationService;
 import javafx.application.Application;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,7 +43,6 @@ public class ApplicationServiceTests {
 
     assertNotNull("entity is not null.", entity);
   }
-
 
   @Test
   public void testGetPaging() {

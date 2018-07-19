@@ -2,6 +2,7 @@ package com.x3platform.digitalNumber.controllers;
 
 import java.util.*;
 
+import org.springframework.context.annotation.Lazy;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,7 +23,8 @@ import javax.servlet.http.HttpServletResponse;
 /**
  *
  */
-// @RestController
+@RestController
+@Lazy(true)
 @RequestMapping("/api/sys/digitalNumber")
 public class DigitalNumberController {
   // 数据提供器

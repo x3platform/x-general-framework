@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.x3platform</groupId>
   <artifactId>x3platform-tasks</artifactId>
-  <version>0.0.1</version>
+  <version>0.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>x3platform-tasks</name>
   <url>http://maven.apache.org</url>
@@ -97,11 +97,6 @@
       <artifactId>x3platform-support</artifactId>
       <version>0.0.1</version>
     </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-test</artifactId>
-      <version>4.3.13.RELEASE</version>
-    </dependency>
   </dependencies>
   <build>
     <resources>
@@ -123,4 +118,20 @@
       </resource>
     </resources>
   </build>
+  <distributionManagement>
+    <repository>
+      <uniqueVersion>false</uniqueVersion>
+      <id>releases</id>
+      <name>Nexus Release Repository</name>
+      <url>http://dev.amiintellect.com:27070/repository/maven-releases/</url>
+      <layout>default</layout>
+    </repository>
+    <snapshotRepository>
+      <uniqueVersion>true</uniqueVersion>
+      <id>snapshots</id>
+      <name>Nexus Snapshot Repository</name>
+      <url>http://dev.amiintellect.com:27070/repository/maven-snapshots/</url>
+      <layout>legacy</layout>
+    </snapshotRepository>
+  </distributionManagement>
 </project>

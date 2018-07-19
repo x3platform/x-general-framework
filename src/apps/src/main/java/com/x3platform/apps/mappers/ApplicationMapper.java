@@ -1,6 +1,7 @@
 package com.x3platform.apps.mappers;
 
 import com.x3platform.apps.models.ApplicationInfo;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.*;
 
@@ -87,9 +88,6 @@ public interface ApplicationMapper {
    * @return 返回一个 ApplicationInfo 实例的详细信息
    */
   ApplicationInfo findOne(String id);
-  ///#endregion
-
-  ///#region 函数:findOneByApplicationName(string applicationName)
 
   /**
    * 查询某条记录
@@ -98,21 +96,13 @@ public interface ApplicationMapper {
    * @return 返回一个 ApplicationInfo 实例的详细信息
    */
   ApplicationInfo findOneByApplicationName(String applicationName);
-  ///#endregion
-
-  ///#region 函数:findAll(string whereClause,int length)
 
   /**
    * 查询所有相关记录
    *
-   * @param whereClause SQL 查询条件
-   * @param length      条数
    * @return 返回所有 ApplicationInfo 实例的详细信息
    */
-  List<ApplicationInfo> findAll(String whereClause, int length);
-  ///#endregion
-
-  ///#region 函数:findAllByAccountId(string accountId)
+  List<ApplicationInfo> findAll();
 
   /**
    * 根据帐号所属的标准角色信息对应的应用系统的功能点, 查询此帐号有权限启用的应用系统信息.
@@ -171,9 +161,6 @@ public interface ApplicationMapper {
    * @return 布尔值
    */
   boolean hasAuthority(String accountId, String applicationId, String authorityName);
-  ///#endregion
-
-  ///#region 函数:BindAuthorizationScopeObjects(string applicationId, string authorityName, string scopeText)
 
   /**
    * 配置应用的权限信息

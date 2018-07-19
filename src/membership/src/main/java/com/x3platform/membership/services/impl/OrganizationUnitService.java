@@ -179,11 +179,8 @@ public class OrganizationUnitService implements IOrganizationUnitService {
    * @return 返回所有 IOrganizationInfo 实例的详细信息
    */
   public final List<IOrganizationUnitInfo> findAll() {
-    return this.provider.findAll("", 0);
+    return this.provider.findAll(new HashMap());
   }
-  ///#endregion
-
-  ///#region 函数:FindAll(string whereClause)
 
   /**
    * 查询所有相关记录
@@ -191,12 +188,9 @@ public class OrganizationUnitService implements IOrganizationUnitService {
    * @param whereClause SQL 查询条件
    * @return 返回所有 IOrganizationInfo 实例的详细信息
    */
-  public final List<IOrganizationUnitInfo> findAll(String whereClause) {
-    return this.provider.findAll(whereClause, 0);
-  }
-  ///#endregion
-
-  ///#region 函数:FindAll(string whereClause,int length)
+  // public final List<IOrganizationUnitInfo> findAll(String whereClause) {
+  //  return this.provider.findAll(whereClause, 0);
+  // }
 
   /**
    * 查询所有相关记录
@@ -205,12 +199,9 @@ public class OrganizationUnitService implements IOrganizationUnitService {
    * @param length      条数
    * @return 返回所有 IOrganizationInfo 实例的详细信息
    */
-  public final List<IOrganizationUnitInfo> findAll(String whereClause, int length) {
-    return this.provider.findAll(whereClause, length);
-  }
-  ///#endregion
-
-  ///#region 函数:FindAllByParentId(string parentId)
+  // public final List<IOrganizationUnitInfo> findAll(String whereClause, int length) {
+  //  return this.provider.findAll(whereClause, length);
+  // }
 
   /**
    * 查询某个父节点下的所有组织单位
@@ -253,9 +244,6 @@ public class OrganizationUnitService implements IOrganizationUnitService {
 
     return list;
   }
-  ///#endregion
-
-  ///#region 函数:FindAllByAccountId(string accountId)
 
   /**
    * 查询某条记录

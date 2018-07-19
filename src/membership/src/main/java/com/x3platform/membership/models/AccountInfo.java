@@ -6,7 +6,9 @@ import com.x3platform.IAuthorizationObject;
 import com.x3platform.IAuthorizationScope;
 import com.x3platform.membership.*;
 import com.x3platform.membership.configuration.MembershipConfigurationView;
+import com.x3platform.util.DateUtil;
 import com.x3platform.util.StringUtil;
+import com.x3platform.util.UUIDUtil;
 import org.dom4j.Element;
 import org.dom4j.Node;
 
@@ -43,7 +45,6 @@ public class AccountInfo implements IAccountInfo {
   // 具体属性
   //
 
-  ///#region 属性:Id
   private String mId = "";
 
   /**
@@ -56,7 +57,6 @@ public class AccountInfo implements IAccountInfo {
   public final void setId(String value) {
     mId = value;
   }
-  ///#endregion
 
   ///#region 属性:Code
   private String mCode = "";
@@ -160,7 +160,7 @@ public class AccountInfo implements IAccountInfo {
     this.mPassword = value;
   }
 
-  private java.time.LocalDateTime mPasswordChangedDate = java.time.LocalDateTime.MIN;
+  private java.time.LocalDateTime mPasswordChangedDate =  DateUtil.getDefaultTime();
 
   /**
    * 密码更新时间
@@ -538,10 +538,8 @@ public class AccountInfo implements IAccountInfo {
   public final void setIP(String value) {
     mIP = value;
   }
-  ///#endregion
 
-  ///#region 属性:LoginDate
-  private java.time.LocalDateTime mLoginDate = java.time.LocalDateTime.MIN;
+  private java.time.LocalDateTime mLoginDate = DateUtil.getDefaultTime();
 
   /**
    * 最近一次的登录时间
@@ -571,7 +569,7 @@ public class AccountInfo implements IAccountInfo {
   ///#endregion
 
   ///#region 属性:ModifiedDate
-  private java.time.LocalDateTime mModifiedDate = java.time.LocalDateTime.MIN;
+  private java.time.LocalDateTime mModifiedDate = DateUtil.getDefaultTime();
 
   /**
    * 修改时间
@@ -584,7 +582,7 @@ public class AccountInfo implements IAccountInfo {
     mModifiedDate = value;
   }
 
-  private java.time.LocalDateTime mCreatedDate = java.time.LocalDateTime.MIN;
+  private java.time.LocalDateTime mCreatedDate = DateUtil.getDefaultTime();
 
   /**
    * 创建时间

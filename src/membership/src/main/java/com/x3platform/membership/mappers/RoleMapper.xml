@@ -93,6 +93,9 @@
       LIMIT 0, ${length}
     </if>
   </select>
+  <select id="findAllByOrganizationUnitId" resultMap="findAll_Result">
+    SELECT * FROM sys_role where id IN (SELECT account_id from sys_account_role WHERE organization_unit_id = #{organizationUnitId})
+  </select>
   <!--
       <select id="FindAll#MySql" resultMap="findAll_Result" >
         SELECT * FROM sys_digital_number T

@@ -18,17 +18,13 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class DigitalNumberService implements IDigitalNumberService {
-  @Autowired
-  private DigitalNumberConfiguration configuration = null;
 
   @Autowired
   private DigitalNumberMapper provider = null;
 
-  // public DigitalNumberService() {
-    // this.configuration = DigitalNumberConfigurationView.getInstance().getConfiguration();
-
-  //  this.provider = SpringContext.getBean(DigitalNumberMapper.class);
-  // }
+  public DigitalNumberService() {
+    // this.provider = SpringContext.getBean(DigitalNumberMapper.class);
+  }
 
   // -------------------------------------------------------
   // 保存 删除

@@ -4,6 +4,7 @@ import java.util.*;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.x3platform.globalization.I18n;
 import com.x3platform.membership.IOrganizationUnitInfo;
 import com.x3platform.membership.MembershipManagement;
 import com.x3platform.membership.models.OrganizationUnitInfo;
@@ -89,10 +90,9 @@ public class OrganizationUnitController {
 
     IOrganizationUnitInfo param = this.service.findOne(id);
 
-    // outString.append("{\"data\":" + AjaxUtil.<DigitalNumberInfo>Parse(param) + ",");
+    outString.append("{\"data\":" + JSON.toJSONString(param) + ",");
 
-    // outString.append(MessageObject.Stringify("0", I18n.Strings["msg_query_success"], true) + "}");
-    outString.append(MessageObject.stringify("0", "msg_query_success", true) + "}");
+    outString.append(MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}");
 
     return outString.toString();
   }

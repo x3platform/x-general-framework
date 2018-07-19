@@ -2,6 +2,7 @@ package com.x3platform.membership.models;
 
 import java.util.*;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.x3platform.IAuthorizationObject;
 import com.x3platform.membership.*;
 import com.x3platform.util.StringUtil;
@@ -215,6 +216,7 @@ public class OrganizationUnitInfo implements IOrganizationUnitInfo {
   /**
    * 类型视图
    */
+  @JSONField(serialize=false)
   public final String getTypeView() {
     if (StringUtil.isNullOrEmpty(mTypeView) && this.getType() != -1) {
       mTypeView = MembershipManagement.getInstance().getSettingService().getText("应用管理_协同平台_人员及权限管理_组织管理_组织类别", String.valueOf(this.getType()));
@@ -222,9 +224,7 @@ public class OrganizationUnitInfo implements IOrganizationUnitInfo {
 
     return mTypeView;
   }
-  ///#endregion
 
-  ///#region 属性:Level
   private int mLevel = 0;
 
   /**
@@ -254,9 +254,6 @@ public class OrganizationUnitInfo implements IOrganizationUnitInfo {
   public final void setParentId(String value) {
     mParentId = value;
   }
-  ///#endregion
-
-  ///#region 属性:ParentGlobalName
 
   /**
    * 父节点全局名称
@@ -288,9 +285,6 @@ public class OrganizationUnitInfo implements IOrganizationUnitInfo {
 
     return mParent;
   }
-  ///#endregion
-
-  ///#region 属性:CorporationId
 
   /**
    * 公司标识
@@ -298,9 +292,6 @@ public class OrganizationUnitInfo implements IOrganizationUnitInfo {
   public final String getCorporationId() {
     return this.getCorporation() == null ? "" : this.getCorporation().getId();
   }
-  ///#endregion
-
-  ///#region 属性:CorporationName
 
   /**
    * 公司名称
@@ -308,14 +299,13 @@ public class OrganizationUnitInfo implements IOrganizationUnitInfo {
   public final String getCorporationName() {
     return this.getCorporation() == null ? "" : this.getCorporation().getName();
   }
-  ///#endregion
 
-  ///#region 属性:Corporation
   private IOrganizationUnitInfo mCorporation = null;
 
   /**
    * 公司
    */
+  @JSONField(serialize=false)
   public final IOrganizationUnitInfo getCorporation() {
     if (mCorporation == null && !StringUtil.isNullOrEmpty(this.getId())) {
       mCorporation = MembershipManagement.getInstance().getOrganizationUnitService().findCorporationByOrganizationUnitId(this.getId());
@@ -329,6 +319,7 @@ public class OrganizationUnitInfo implements IOrganizationUnitInfo {
   /**
    * 子节点
    */
+  @JSONField(serialize=false)
   public final List<IAuthorizationObject> getChindNodes() {
     if (mChindNodes == null) {
       mChindNodes = MembershipManagement.getInstance().getOrganizationUnitService().getChildNodes(this.getId());
@@ -337,14 +328,12 @@ public class OrganizationUnitInfo implements IOrganizationUnitInfo {
     return mChindNodes;
   }
 
-  ///#endregion
-
-  ///#region 属性:Roles
   private List<IRoleInfo> mRoles = null;
 
   /**
    * 所属角色信息
    */
+  @JSONField(serialize=false)
   public final List<IRoleInfo> getRoles() {
     if (mRoles == null) {
       this.mRoles = MembershipManagement.getInstance().getRoleService().findAllByOrganizationUnitId(this.getId());
@@ -358,6 +347,7 @@ public class OrganizationUnitInfo implements IOrganizationUnitInfo {
   /**
    * 所属角色视图
    */
+  @JSONField(serialize=false)
   public final String getRoleText() {
     if (StringUtil.isNullOrEmpty(this.mRoleText) && !this.getRoles().isEmpty()) {
       for (IRoleInfo role : this.getRoles()) {
@@ -375,6 +365,7 @@ public class OrganizationUnitInfo implements IOrganizationUnitInfo {
   /**
    * 所属角色视图
    */
+  @JSONField(serialize=false)
   public final String getRoleView() {
     if (StringUtil.isNullOrEmpty(this.mRoleView) && !this.getRoles().isEmpty()) {
       for (IRoleInfo role : this.getRoles()) {
@@ -386,14 +377,13 @@ public class OrganizationUnitInfo implements IOrganizationUnitInfo {
 
     return this.mRoleView;
   }
-  ///#endregion
 
-  ///#region 属性:RoleMemberView
   private String mRoleMemberView = "";
 
   /**
    * 所属角色的成员视图
    */
+  @JSONField(serialize=false)
   public final String getRoleMemberView() {
     if (StringUtil.isNullOrEmpty(this.mRoleMemberView) && !this.getRoles().isEmpty()) {
       List<IAccountInfo> list = MembershipManagement.getInstance().getAccountService().findAllByOrganizationUnitId(this.getId());
@@ -474,9 +464,7 @@ public class OrganizationUnitInfo implements IOrganizationUnitInfo {
   public final void setOrderId(String value) {
     mOrderId = value;
   }
-  ///#endregion
 
-  ///#region 属性:Status
   private int mStatus;
 
   /**
@@ -534,9 +522,7 @@ public class OrganizationUnitInfo implements IOrganizationUnitInfo {
   public final void setDistinguishedName(String value) {
     mDistinguishedName = value;
   }
-  ///#endregion
 
-  ///#region 属性:ModifiedDate
   private java.time.LocalDateTime mModifiedDate = java.time.LocalDateTime.MIN;
 
   /**
