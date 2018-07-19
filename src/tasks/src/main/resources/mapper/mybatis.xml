@@ -4,6 +4,6 @@
   "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
   <typeAliases>
-    <package name="com.x3platform.tasks.model"/>
+    <package name="com.x3platform.tasks.models"/>
   </typeAliases>
 </configuration>
