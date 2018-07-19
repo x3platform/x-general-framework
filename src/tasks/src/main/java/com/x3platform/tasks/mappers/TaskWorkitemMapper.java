@@ -54,4 +54,6 @@ public interface TaskWorkitemMapper {
    */
   void updateStatus(String id);
 
+  void clear();
+
 }
