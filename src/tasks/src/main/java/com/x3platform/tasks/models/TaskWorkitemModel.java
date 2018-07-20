@@ -1,4 +1,4 @@
-package com.x3platform.tasks.model.workitem;
+package com.x3platform.tasks.models;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 

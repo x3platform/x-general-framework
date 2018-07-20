@@ -1,25 +1,26 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.x3platform.tasks.mapper.workitem.TaskWorkitemMapper">
 
-  <!--待优化(具体需要字段)-->
-  <select id="selectTask" parameterType="string" resultType="TaskWorkitemModel">
+<mapper namespace="com.x3platform.tasks.mapper.TaskWorkitemMapper">
+
+  <!--待优化(具体需要字段)，查询出对应id待办信息的详情-->
+  <select id="selectTask" parameterType="string" resultType="com.x3platform.tasks.models.TaskWorkitemModel">
     SELECT * FROM task_workitem WHERE id=#{id}
   </select>
 
 
-  <!--待确定需要字段,查询条件-->
+  <!--待确定需要字段,查询出所有对应接收人的待办信息-->
   <select id="queryAllTasK" parameterType="string" resultMap="task">
     SELECT id,title,content,created_date,is_read,type FROM task_workitem WHERE receiver_id=#{receiver_id} AND status!=1
   </select>
 
-  <!--统计有多少需要处理的消息-->
+  <!--统计有多少需要处理的消息的条数-->
   <select id="countTask" parameterType="string" resultType="_int">
     SELECT COUNT(id) FROM task_workitem WHERE receiver_id=#{receiver_id} AND status!=1
   </select>
 
-  <!--修改阅读状态-->
+  <!--修改待办信息的阅读状态-->
   <update id="updateRead" parameterType="string">
     UPDATE task_workitem SET is_read=1 WHERE id=#{id}
   </update>
@@ -34,16 +35,22 @@
   <update id="updateStatus" parameterType="string">
     UPDATE task_workitem SET status=1 WHERE id=#{id}
   </update>
+
   <!--<delete id="delTaskWorkitem" parameterType="string">-->
   <!--DELETE FROM task_workitem WHERE id=#{id}-->
   <!--</delete>-->
 
-  <insert id="addTask" parameterType="TaskWorkitemModel">
+  <!--添加待办信息-->
+  <insert id="addTask" parameterType="com.x3platform.tasks.models.TaskWorkitemModel">
     INSERT INTO task_workitem (id,application_id,task_code,type,title,content,tags,sender_id,receiver_id,is_read,status,finish_time,created_date)
     VALUES (#{id},#{application_id},#{task_code},#{type},#{title},#{content},#{tags},#{sender_id},#{receiver_id},0,0,#{finish_time},#{created_date})
   </insert>
 
-  <resultMap id="task" type="TaskWorkitemModel"></resultMap>
+
+
+  <resultMap id="task" type="com.x3platform.tasks.models.TaskWorkitemModel"></resultMap>
+
+
 
 </mapper>
 
