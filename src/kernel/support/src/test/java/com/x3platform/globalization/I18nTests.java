@@ -30,7 +30,7 @@ import java.io.File;
 public class I18nTests {
   @Test
   public void testLocalizer() {
-    String path = PathUtil.getProgramPath() + "/locales/zh-CN/exceptions.xml";
+    String path = PathUtil.getProgramPath() + "/locales/zh-cn/exceptions.xml";
 
     File file = new File(path);
 
