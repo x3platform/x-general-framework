@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 
-<mapper namespace="com.x3platform.tasks.mapper.TaskWorkitemMapper">
+<mapper namespace="com.x3platform.tasks.mappers.TaskWorkitemMapper">
 
   <!--待优化(具体需要字段)，查询出对应id待办信息的详情-->
   <select id="selectTask" parameterType="string" resultType="com.x3platform.tasks.models.TaskWorkitemModel">

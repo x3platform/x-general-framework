@@ -128,14 +128,12 @@
       <id>releases</id>
       <name>Nexus Release Repository</name>
       <url>http://dev.amiintellect.com:27070/repository/maven-releases/</url>
-      <layout>default</layout>
     </repository>
     <snapshotRepository>
       <uniqueVersion>true</uniqueVersion>
       <id>snapshots</id>
       <name>Nexus Snapshot Repository</name>
       <url>http://dev.amiintellect.com:27070/repository/maven-snapshots/</url>
-      <layout>legacy</layout>
     </snapshotRepository>
   </distributionManagement>
 </project>

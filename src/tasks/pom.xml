@@ -11,8 +11,6 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>1.8</java.version>
-    <!-- <start-class>com.x3platform.App</start-class> -->
-    <lib.path>${basedir}/lib</lib.path>
   </properties>
 
   <parent>
@@ -74,11 +72,6 @@
       <artifactId>mybatis-spring-boot-starter</artifactId>
       <version>1.3.2</version>
     </dependency>
-    <dependency>
-      <groupId>com.x3platform</groupId>
-      <artifactId>x3platform-support</artifactId>
-      <version>0.0.1</version>
-    </dependency>
     <!-- 测试依赖 -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -95,7 +88,7 @@
     <dependency>
       <groupId>com.x3platform</groupId>
       <artifactId>x3platform-support</artifactId>
-      <version>0.0.1</version>
+      <version>0.0.1-SNAPSHOT</version>
     </dependency>
   </dependencies>
   <build>
@@ -124,14 +117,12 @@
       <id>releases</id>
       <name>Nexus Release Repository</name>
       <url>http://dev.amiintellect.com:27070/repository/maven-releases/</url>
-      <layout>default</layout>
     </repository>
     <snapshotRepository>
       <uniqueVersion>true</uniqueVersion>
       <id>snapshots</id>
       <name>Nexus Snapshot Repository</name>
       <url>http://dev.amiintellect.com:27070/repository/maven-snapshots/</url>
-      <layout>legacy</layout>
     </snapshotRepository>
   </distributionManagement>
 </project>
