@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
 
 <mapper namespace="com.x3platform.tasks.mapper.TaskWorkitemMapper">
 
   <!--待优化(具体需要字段)，查询出对应id待办信息的详情-->
-  <select id="selectTask" parameterType="string" resultType="TaskWorkitemModel">
+  <select id="selectTask" parameterType="string" resultType="com.x3platform.tasks.models.TaskWorkitemModel">
     SELECT * FROM task_workitem WHERE id=#{id}
   </select>
 
@@ -40,12 +41,16 @@
   <!--</delete>-->
 
   <!--添加待办信息-->
-  <insert id="addTask" parameterType="TaskWorkitemModel">
+  <insert id="addTask" parameterType="com.x3platform.tasks.models.TaskWorkitemModel">
     INSERT INTO task_workitem (id,application_id,task_code,type,title,content,tags,sender_id,receiver_id,is_read,status,finish_time,created_date)
     VALUES (#{id},#{application_id},#{task_code},#{type},#{title},#{content},#{tags},#{sender_id},#{receiver_id},0,0,#{finish_time},#{created_date})
   </insert>
 
-  <resultMap id="task" type="TaskWorkitemModel"></resultMap>
+
+
+  <resultMap id="task" type="com.x3platform.tasks.models.TaskWorkitemModel"></resultMap>
+
+
 
 </mapper>
 
