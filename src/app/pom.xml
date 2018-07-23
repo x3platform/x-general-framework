@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.x3platform</groupId>
   <artifactId>x3platform-app</artifactId>
-  <version>0.0.1</version>
+  <version>0.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>x3platform-app</name>
   <url>http://maven.apache.org</url>
