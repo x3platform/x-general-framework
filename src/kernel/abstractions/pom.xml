@@ -116,6 +116,13 @@
           <include>**/*.*</include>
         </includes>
       </resource>
+      <resource>
+        <!-- 设置 src/main/resources 资源目录 -->
+        <directory>src/main/resources</directory>
+        <includes>
+          <include>**/*.*</include>
+        </includes>
+      </resource>
     </resources>
   </build>
   <distributionManagement>
