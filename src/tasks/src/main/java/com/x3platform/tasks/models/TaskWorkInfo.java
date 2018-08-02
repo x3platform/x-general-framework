@@ -351,7 +351,7 @@ public class TaskWorkInfo implements IMessageObject, ISerializedObject {
       item.setIsRead(receiver.getIsRead());
       item.setFinishTime(receiver.getFinishTime());
 
-      item.setCreateDate(this.getCreateDate());
+      item.setCreatedDate(this.getCreateDate());
 
       list.add(item);
     }

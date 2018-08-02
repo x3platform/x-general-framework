@@ -168,15 +168,15 @@ public class TaskWorkItemInfo {
     this.mFinishTime = value;
   }
 
-  private java.time.LocalDateTime mCreateDate = java.time.LocalDateTime.MIN;
+  private java.time.LocalDateTime mCreatedDate = java.time.LocalDateTime.MIN;
 
   /**
    */
-  public final java.time.LocalDateTime getCreateDate() {
-    return this.mCreateDate;
+  public final java.time.LocalDateTime getCreatedDate() {
+    return this.mCreatedDate;
   }
 
-  public final void setCreateDate(java.time.LocalDateTime value) {
-    this.mCreateDate = value;
+  public final void setCreatedDate(java.time.LocalDateTime value) {
+    this.mCreatedDate = value;
   }
 }
