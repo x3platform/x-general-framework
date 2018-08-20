@@ -95,8 +95,8 @@ public class StringUtil {
     return StringUtils.isEmpty(text) || StringUtils.isBlank(text);
   }
 
-  public static String substring(String text, int start, int end) {
-    return StringUtils.substring(text, start, end);
+  public static String substring(String text, int start, int length) {
+    return StringUtils.substring(text, start, start + length);
   }
 
   /**

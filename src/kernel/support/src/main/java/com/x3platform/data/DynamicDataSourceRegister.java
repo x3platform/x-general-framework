@@ -27,7 +27,7 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.validation.DataBinder;
 
 /**
- * 动态数据源注册<br/>
+ * 动态数据源注册
  * 启动动态数据源请在启动类中（如SpringBootSampleApplication）
  * 添加 @Import(DynamicDataSourceRegister.class)
  */
@@ -248,5 +248,4 @@ public class DynamicDataSourceRegister
       dataBinder(ds, env);
     }
   }
-
 }

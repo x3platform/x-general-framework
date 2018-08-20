@@ -13,7 +13,7 @@ import static org.junit.Assert.*;
 public class DateUtilTests {
   @Test
   public void testGetDefaultTime() {
-    LocalDateTime date = DateUtil.getDefaultTime();
+    LocalDateTime date = DateUtil.getDefaultLocalDateTime();
     String dateText =  date.toString();
     assertTrue("DateUtil.getDefaultTime() should return " + dateText, "1970-01-01T00:00".equals(dateText));
   }

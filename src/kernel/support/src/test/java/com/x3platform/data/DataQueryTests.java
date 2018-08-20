@@ -22,22 +22,40 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.junit4.SpringRunner;
 
-public class DataQueryTest {
+import java.util.Map;
+
+public class DataQueryTests {
 
   @Test
   public void testCreate() {
     DataQuery query = null;
 
+    query = DataQuery.create("{scence:'test',length:100,'where':[{name:'name',value:'hello'}]}");
+
+    assertNotNull("query is not null.", query);
+    assertEquals("query.getLength() == 100.", 100, query.getLength());
+    assertEquals("query.getVariables().get(\"scence\") == test.", "test", query.getVariables().get("scence"));
+
     query = DataQuery.create("<scence>test</scence><length>100</length>");
 
     assertNotNull("query is not null.", query);
     assertEquals("query.getLength() == 100.", 100, query.getLength());
-    assertEquals("query..getVariables().get(\"scence\") == test.", "test", query.getVariables().get("scence"));
+    assertEquals("query.getVariables().get(\"scence\") == test.", "test", query.getVariables().get("scence"));
+  }
 
-    query = DataQuery.create("<scence>test</scence><length>100</length>");
+  @Test
+  public void testGetMap() {
+    DataQuery query = null;
+
+    query = DataQuery.create("<scence>test_get_map</scence><length>100</length>");
 
     assertNotNull("query is not null.", query);
-    assertEquals("query.getLength() == 100.", 100, query.getLength());
-    assertEquals("query..getVariables().get(\"scence\") == test.", "test", query.getVariables().get("scence"));
+
+    Map map = query.getMap();
+
+    assertNotNull("map is not null.", map);
+    assertTrue("map.get(\"length\") ==== 100.", map.size() > 0);
+    assertEquals("map.get(\"length\") == 100.", 100, map.get("length"));
+    assertEquals("map.get(\"var_scence\") == test_get_map.", "test_get_map", map.get("var_scence"));
   }
 }

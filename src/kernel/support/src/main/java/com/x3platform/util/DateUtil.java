@@ -14,9 +14,21 @@ public class DateUtil {
   private static LocalDateTime baseTime = LocalDateTime.of(1970, 1, 1, 0, 0, 0);
 
   /**
-   * 默认时间
+   * 默认时间 (Date 格式)
    */
-  public static LocalDateTime getDefaultTime() {
+  public static Date getDefaultDate() {
+    LocalDateTime localDateTime = getDefaultLocalDateTime();
+
+    ZoneId zone = ZoneId.systemDefault();
+    Instant instant = localDateTime.atZone(zone).toInstant();
+
+    return Date.from(instant);
+  }
+
+  /**
+   * 默认时间 (LocalDateTime 格式)
+   */
+  public static LocalDateTime getDefaultLocalDateTime() {
     return baseTime;
   }
 

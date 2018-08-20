@@ -1,7 +1,11 @@
 package com.x3platform.data;
 
+import java.math.BigDecimal;
 import java.util.*;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import org.dom4j.*;
 
 import com.x3platform.*;
@@ -10,7 +14,7 @@ import com.x3platform.util.*;
 /**
  * 数据查询参数对象
  */
-public class DataQuery implements ISerializedObject {
+public class DataQuery implements ISerializedObject, ISerializedJavaScriptObject {
 
   public DataQuery() {
     this.mVariables.put("elevatedPrivileges", "0");
@@ -66,10 +70,10 @@ public class DataQuery implements ISerializedObject {
     return this.mOrders;
   }
 
-  private int mLength = 1000;
+  private int mLength = 0;
 
   /**
-   * 查询记录最大函数限制 (默认值:1000)
+   * 查询记录最大函数限制 (默认值:0)
    */
   public final int getLength() {
     return this.mLength;
@@ -77,6 +81,43 @@ public class DataQuery implements ISerializedObject {
 
   public final void setLength(int value) {
     this.mLength = value;
+  }
+
+  /**
+   * 获取适用于 MyBaits 的参数集合
+   *
+   * @return
+   */
+  public final HashMap<String, Object> getMap() {
+    HashMap<String, Object> results = new HashMap<String, Object>();
+
+    // 设置 where 参数
+    HashMap<String, String> mapVariables = getVariables();
+
+    Iterator iterator = mapVariables.entrySet().iterator();
+
+    while (iterator.hasNext()) {
+      Map.Entry entry = (Map.Entry) iterator.next();
+      results.put("var_" + entry.getKey(), entry.getValue());
+    }
+
+    results.put("table", getTable());
+    results.put("fields", getFields());
+
+    // 设置 where 参数
+    HashMap<String, Object> mapWhere = getWhere();
+
+    iterator = mapWhere.entrySet().iterator();
+
+    while (iterator.hasNext()) {
+      Map.Entry entry = (Map.Entry) iterator.next();
+      results.put("param_" + entry.getKey(), entry.getValue());
+    }
+
+    results.put("length", getLength());
+    results.put("orders", getOrders());
+
+    return results;
   }
 
   /**
@@ -209,7 +250,7 @@ public class DataQuery implements ISerializedObject {
   }
 
   // -------------------------------------------------------
-  // 实现 ISerializedObject 序列化
+  // 实现 ISerializedObject 接口
   // -------------------------------------------------------
 
   /**
@@ -287,6 +328,8 @@ public class DataQuery implements ISerializedObject {
   public final void deserialize(Element element) {
     Node node = null;
 
+    this.getVariables().clear();
+
     // Scence
     node = element.selectSingleNode("scence");
 
@@ -296,43 +339,45 @@ public class DataQuery implements ISerializedObject {
     node = element.selectSingleNode("table");
 
     this.setTable((node == null) ? "" : node.getText());
-/*
+
     // Fields
-    node = element.SelectSingleNode("fileds");
+    node = element.selectSingleNode("fileds");
 
     this.getFields().clear();
 
     if (node != null) {
-      String[] fields = node.InnerText.split(new char[]{','}, StringSplitOptions.RemoveEmptyEntries);
+      String[] fields = node.getText().split(",");
 
       for (String field : fields) {
         this.getFields().add(field);
       }
     }
 
-    node = element.SelectSingleNode("where");
+    node = element.selectSingleNode("where");
+
+    this.getWhere().clear();
 
     if (node != null) {
       // Where
-      XmlNodeList nodes = node.ChildNodes;
+      // XmlNodeList nodes = node.ChildNodes;
+      List<Node> nodes = node.selectNodes("");
 
-      this.getWhere().clear();
-
-      for (XmlNode item : nodes) {
+      for (Node nodeItem : nodes) {
         String name, value, type;
+        Element item = (Element) nodeItem;
 
-        if (item.Attributes["name"] == null) {
+        if (item.attribute("name") == null) {
           // 支持
           // <item><name></name><value><value><type><type></item>
-          name = item.SelectSingleNode("name") == null ? "" : item.SelectSingleNode("name").InnerText;
-          value = item.SelectSingleNode("value") == null ? "" : item.SelectSingleNode("value").InnerText;
-          type = item.SelectSingleNode("type") == null ? "string" : item.SelectSingleNode("type").InnerText;
+          name = item.selectSingleNode("name") == null ? "" : item.selectSingleNode("name").getText();
+          value = item.selectSingleNode("value") == null ? "" : item.selectSingleNode("value").getText();
+          type = item.selectSingleNode("type") == null ? "string" : item.selectSingleNode("type").getText();
         } else {
           // 支持
           // <key name="name1" type="int" ></key>
-          name = item.Attributes["name"].Value;
-          value = item.InnerText;
-          type = item.Attributes["type"] == null ? "string" : item.Attributes["type"].Value;
+          name = item.attribute("name").getValue();
+          value = item.getText();
+          type = item.attribute("type") == null ? "string" : item.attribute("type").getValue();
         }
 
         // 忽略名称为空的参数
@@ -340,40 +385,22 @@ public class DataQuery implements ISerializedObject {
           continue;
         }
 
-        switch (type) {
-          case "int":
-            this.getWhere().put(name, Integer.parseInt(value));
-            break;
-          case "long":
-          case "number":
-            this.getWhere().put(name, Long.parseLong(value));
-            break;
-          case "decimal":
-            this.getWhere().put(name, (java.math.BigDecimal) value);
-            break;
-          case "date":
-            this.getWhere().put(name, java.time.LocalDateTime.parse(value));
-            break;
-          default:
-            this.getWhere().put(name, value);
-            break;
-        }
+        this.getWhere().put(name, convertParamType(type, value));
       }
     }
 
     // Orders
-    node = element.SelectSingleNode("orders");
+    node = element.selectSingleNode("orders");
 
     this.getOrders().clear();
 
     if (node != null) {
-      String[] orders = node.InnerText.split(new char[]{','}, StringSplitOptions.RemoveEmptyEntries);
+      String[] orders = node.getText().split(",");
 
       for (String order : orders) {
         this.getOrders().add(order);
       }
     }
-    */
 
     // Length
     node = element.selectSingleNode("length");
@@ -383,29 +410,131 @@ public class DataQuery implements ISerializedObject {
     }
   }
 
+  // -------------------------------------------------------
+  // 实现 ISerializedJavaScriptObject 接口
+  // -------------------------------------------------------
+
+  @Override
+  public String toJSON() {
+    return null;
+  }
+
+  @Override
+  public void fromJSON(String json) {
+    JSONObject data = JSON.parseObject(json);
+
+    this.getVariables().clear();
+
+    // Scence
+    if (data.containsKey("scence")) {
+      this.getVariables().put("scence", data.getString("scence"));
+    } else {
+      this.getVariables().put("scence", "default");
+
+    }
+
+    // Table
+    if (data.containsKey("table")) {
+      this.setTable(data.getString("table"));
+    }
+
+    // Fields
+    this.getFields().clear();
+
+    if (data.containsKey("fields")) {
+      String[] fields = data.getString("fields").split(",");
+
+      for (String field : fields) {
+        this.getFields().add(field);
+      }
+    }
+
+    this.getWhere().clear();
+
+    if (data.containsKey("where")) {
+      // Where
+      JSONArray nodes = data.getJSONArray("where");
+
+      for (Object nodeItem : nodes) {
+        String name, value, type;
+        JSONObject item = (JSONObject) nodeItem;
+
+        name = !item.containsKey("name") ? "" : item.getString("name");
+        value = !item.containsKey("value") ? "" : item.getString("value");
+        type = !item.containsKey("type") ? "string" : item.getString("type");
+
+        // 忽略名称为空的参数
+        if (StringUtil.isNullOrEmpty(name)) {
+          continue;
+        }
+
+        this.getWhere().put(name, convertParamType(type, value));
+      }
+    }
+
+    // Orders
+    this.getOrders().clear();
+
+    if (data.containsKey("orders")) {
+      String[] orders = data.getString("orders").split(",");
+
+      for (String order : orders) {
+        this.getOrders().add(order);
+      }
+    }
+
+    // Length
+    if (data.containsKey("length")) {
+      this.setLength(data.getInteger("length"));
+    }
+  }
+
+  /**
+   * 将参数字符串类型的值转为实际类型
+   */
+  private Object convertParamType(String type, String value) {
+    switch (type) {
+      case "int":
+        return Integer.parseInt(value);
+      case "long":
+      case "number":
+        return Long.parseLong(value);
+      case "decimal":
+        return new BigDecimal(value);
+      case "date":
+        return java.time.LocalDateTime.parse(value);
+      case "string":
+      default:
+        return value;
+    }
+  }
+
   /**
    * 创建查询参数
    *
-   * @param queryXml Xml文本格式
+   * @param queryText JSON 或 XML 格式文本
    */
-  public static DataQuery create(String queryXml) {
+  public static DataQuery create(String queryText) {
     DataQuery query = new DataQuery();
 
-    // Document doc = new Document();
-
-    // doc.LoadXml(String.format("<?xml version=\"1.0\" encoding=\"utf-8\" ?>\r\n<root>%1$s</root>", queryXml));
-
-    String text = String.format("<?xml version=\"1.0\" encoding=\"utf-8\" ?>\r\n<root>%1$s</root>", queryXml);
-
-    Document doc = null;
-
     try {
-      doc = DocumentHelper.parseText(text);
-    } catch (DocumentException e) {
-      e.printStackTrace();
-    }
+      // 默认为 JSON 解析
+      query.fromJSON(queryText);
 
-    query.deserialize(doc.getRootElement());
+    } catch (Exception ex) {
+
+      String text = String.format("<?xml version=\"1.0\" encoding=\"utf-8\" ?>\r\n<root>%1$s</root>", queryText);
+
+      Document doc = null;
+
+      try {
+        doc = DocumentHelper.parseText(text);
+      } catch (DocumentException documentException) {
+        documentException.printStackTrace();
+      }
+
+      query.deserialize(doc.getRootElement());
+    }
 
     return query;
   }
