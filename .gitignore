@@ -1,15 +1,18 @@
 # General
 bin/
 log/
-.log
-.temp
-.source
-.backup
-.bak
-.DS_Store
-
+*.log
+*.temp
+*.backup
+*.bak
 *.apk
 *.ap_
+
+# Mac DS_Store File
+.DS_Store
+
+# Windows Thumbnail.db
+Thumbs.db
 
 # generated files
 bin/
@@ -75,6 +78,3 @@ gen/
 # Local configuration file (sdk path, etc)
 local.properties
 application-dev.properties
-
-# Windows thumbnail db
-Thumbs.db

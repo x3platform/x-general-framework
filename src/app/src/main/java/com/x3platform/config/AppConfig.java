@@ -1,4 +1,4 @@
-package com.x3platform.configuration;
+package com.x3platform.config;
 
 import org.springframework.beans.factory.annotation.Configurable;
 
