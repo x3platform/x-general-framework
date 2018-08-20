@@ -83,7 +83,7 @@ public class TaskWorkItemController {
   /**
    * 根据receiver_id(接收人id)统计出该接收人待办信息条数
    *
-   * @param receiver_id
+   * @param data 请求的数据内容
    * @return
    */
   @RequestMapping("/getUnfinishedQuantities")

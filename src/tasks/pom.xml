@@ -25,12 +25,6 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.springframework.boot</groupId>
-          <artifactId>spring-boot-starter-logging</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
 
     <dependency>
@@ -44,17 +38,6 @@
       <artifactId>commons-lang3</artifactId>
       <version>3.7</version>
     </dependency>
-    <!-- 日志 -->
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-      <version>1.7.21</version>
-    </dependency>
-
-    <!-- <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-log4j</artifactId>
-    </dependency> -->
     <!-- 数据库设置 -->
     <!-- alibaba druid -->
     <dependency>
@@ -90,6 +73,16 @@
       <artifactId>x3platform-support</artifactId>
       <version>0.0.1-SNAPSHOT</version>
     </dependency>
+    <dependency>
+      <groupId>com.x3platform</groupId>
+      <artifactId>x3platform-abstractions</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>com.x3platform</groupId>
+      <artifactId>x3platform-membership</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+    </dependency>
   </dependencies>
   <build>
     <resources>
@@ -116,13 +109,13 @@
       <uniqueVersion>false</uniqueVersion>
       <id>releases</id>
       <name>Nexus Release Repository</name>
-      <url>http://dev.amiintellect.com:27070/repository/maven-releases/</url>
+      <url>http://nexus.amiintellect.com/repository/maven-releases/</url>
     </repository>
     <snapshotRepository>
       <uniqueVersion>true</uniqueVersion>
       <id>snapshots</id>
       <name>Nexus Snapshot Repository</name>
-      <url>http://dev.amiintellect.com:27070/repository/maven-snapshots/</url>
+      <url>http://nexus.amiintellect.com/repository/maven-snapshots/</url>
     </snapshotRepository>
   </distributionManagement>
 </project>
