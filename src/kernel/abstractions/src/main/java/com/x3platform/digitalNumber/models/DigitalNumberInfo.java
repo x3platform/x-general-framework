@@ -16,11 +16,11 @@ public class DigitalNumberInfo {
   /**
    * 名称
    */
-  public final String getName() {
+  public String getName() {
     return name;
   }
 
-  public final void setName(String value) {
+  public void setName(String value) {
     name = value;
   }
 
@@ -29,11 +29,11 @@ public class DigitalNumberInfo {
   /**
    * 表达式
    */
-  public final String getExpression() {
+  public String getExpression() {
     return expression;
   }
 
-  public final void setExpression(String value) {
+  public void setExpression(String value) {
     expression = value;
   }
 
@@ -42,11 +42,11 @@ public class DigitalNumberInfo {
   /**
    * 因子
    */
-  public final int getSeed() {
+  public int getSeed() {
     return seed;
   }
 
-  public final void setSeed(int value) {
+  public void setSeed(int value) {
     seed = value;
   }
 
@@ -55,11 +55,11 @@ public class DigitalNumberInfo {
   /**
    * 更新日期
    */
-  public final java.time.LocalDateTime getModifiedDate() {
+  public java.time.LocalDateTime getModifiedDate() {
     return modifiedDate;
   }
 
-  public final void setModifiedDate(java.time.LocalDateTime value) {
+  public void setModifiedDate(java.time.LocalDateTime value) {
     modifiedDate = value;
   }
 
@@ -68,11 +68,11 @@ public class DigitalNumberInfo {
   /**
    * 创建日期
    */
-  public final java.time.LocalDateTime getCreatedDate() {
+  public java.time.LocalDateTime getCreatedDate() {
     return createdDate;
   }
 
-  public final void setCreatedDate(java.time.LocalDateTime value) {
+  public void setCreatedDate(java.time.LocalDateTime value) {
     createdDate = value;
   }
 }

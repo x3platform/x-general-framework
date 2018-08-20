@@ -1,5 +1,6 @@
 package com.x3platform;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import org.dom4j.Element;
 
 import java.util.*;
@@ -24,6 +25,7 @@ public abstract class EntityClass implements ISerializedObject {
   /**
    * 属性
    */
+  @JSONField(serialize = false)
   private Hashtable propertieCache = new Hashtable(13);
 
   /**
@@ -38,7 +40,7 @@ public abstract class EntityClass implements ISerializedObject {
    */
   public String serializable() {
     // 实现类需要重新实现此方法.
-    throw new UnsupportedOperationException("此对象未实现方法：string Serializable()。");
+    throw new UnsupportedOperationException("此对象未实现方法：String serializable()。");
   }
 
   /**
@@ -68,7 +70,7 @@ public abstract class EntityClass implements ISerializedObject {
    *
    * @param id 标识
    */
-  public void Find(String id) {
+  public void find(String id) {
     // 实现类需要重新实现此方法.
     throw new UnsupportedOperationException("此对象未实现方法：void Find(string id) 。");
   }

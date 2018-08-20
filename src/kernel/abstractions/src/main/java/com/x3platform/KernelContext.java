@@ -3,12 +3,6 @@ package com.x3platform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// import com.x3platform.CacheBuffer.*;
-// import com.x3platform.Collections.*;
-// import com.x3platform.Configuration.*;
-// import com.x3platform.Membership.*;
-// import com.x3platform.Security.Authentication.*;
-
 import com.x3platform.util.StringUtil;
 
 import java.lang.reflect.InvocationTargetException;
@@ -221,10 +215,13 @@ public final class KernelContext implements IContext {
     }
 
     // String assemblyQualifiedName = type.AssemblyQualifiedName;
+
+    // int length = assemblyQualifiedName.indexOf(',', assemblyQualifiedName.indexOf(',') + 1);
+
+    // return assemblyQualifiedName.substring(0, length);
+
     String assemblyQualifiedName = type.getName();
 
-    int length = assemblyQualifiedName.indexOf(',', assemblyQualifiedName.indexOf(',') + 1);
-
-    return assemblyQualifiedName.substring(0, length);
+    return assemblyQualifiedName;
   }
 }
