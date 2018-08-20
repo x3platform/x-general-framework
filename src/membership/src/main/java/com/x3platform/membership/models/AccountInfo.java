@@ -2,6 +2,7 @@ package com.x3platform.membership.models;
 
 import java.util.*;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.x3platform.IAuthorizationObject;
 import com.x3platform.IAuthorizationScope;
 import com.x3platform.membership.*;
@@ -200,14 +201,13 @@ public class AccountInfo implements IAccountInfo {
   public final void setType(int value) {
     mType = value;
   }
-  ///#endregion
 
-  ///#region 属性:TypeView
   private String mTypeView;
 
   /**
    * 帐号类别视图 0:普通帐号 1:邮箱帐号 2:CRM帐号 3:RTX帐号 1000:供应商帐号 2000:客户帐号
    */
+  @JSONField(serialize=false)
   public final String getTypeView() {
     if (StringUtil.isNullOrEmpty(mTypeView)) {
       mTypeView = MembershipManagement.getInstance().getSettingService().getText("应用管理_协同平台_人员及权限管理_帐号管理_帐号类别", String.valueOf(this.getType()));
@@ -215,9 +215,7 @@ public class AccountInfo implements IAccountInfo {
 
     return mTypeView;
   }
-  ///#endregion
 
-  ///#region 属性:CertifiedMobile
   private String mCertifiedMobile;
 
   /**
@@ -299,10 +297,11 @@ public class AccountInfo implements IAccountInfo {
   /**
    * 帐号和角色接口集合
    */
+  @JSONField(serialize=false)
   public final List<IAccountOrganizationUnitRelationInfo> getOrganizationUnitRelations() {
     if (mOrganizationUnitRelations == null && !StringUtil.isNullOrEmpty(this.getId())) {
       // TODO 待处理
-      // mOrganizationUnitRelations = MembershipManagement.getInstance().getOrganizationUnitService().findAllRelationByAccountId(this.getId());
+      mOrganizationUnitRelations = MembershipManagement.getInstance().getOrganizationUnitService().findAllRelationByAccountId(this.getId());
     }
 
     return mOrganizationUnitRelations;
@@ -313,6 +312,7 @@ public class AccountInfo implements IAccountInfo {
   /**
    * 所属组织视图
    */
+  @JSONField(serialize=false)
   public final String getOrganizationUnitText() {
     if (StringUtil.isNullOrEmpty(mOrganizationUnitText) && !this.getOrganizationUnitRelations().isEmpty()) {
       for (IAccountOrganizationUnitRelationInfo relation : this.getOrganizationUnitRelations()) {
@@ -328,6 +328,7 @@ public class AccountInfo implements IAccountInfo {
   /**
    * 所属组织视图
    */
+  @JSONField(serialize=false)
   public final String getOrganizationUnitView() {
     if (StringUtil.isNullOrEmpty(mOrganizationUnitView) && !this.getOrganizationUnitRelations().isEmpty()) {
       for (IAccountOrganizationUnitRelationInfo relation : this.getOrganizationUnitRelations()) {
@@ -337,30 +338,27 @@ public class AccountInfo implements IAccountInfo {
 
     return mOrganizationUnitView;
   }
-  ///#endregion
 
-  ///#region 属性:RoleRelations
   private List<IAccountRoleRelationInfo> mRoleRelations = null;
 
   /**
    * 帐号和角色接口集合
    */
+  @JSONField(serialize=false)
   public final List<IAccountRoleRelationInfo> getRoleRelations() {
     if (mRoleRelations == null && !StringUtil.isNullOrEmpty(this.getId())) {
-      // TODO 待处理
-      // mRoleRelations = MembershipManagement.getInstance().getRoleService().FindAllRelationByAccountId(this.getId());
+      mRoleRelations = MembershipManagement.getInstance().getRoleService().findAllRelationByAccountId(this.getId());
     }
 
     return mRoleRelations;
   }
-  ///#endregion
 
-  ///#region 属性:RoleText
   private String mRoleText = "";
 
   /**
    * 所属角色视图
    */
+  @JSONField(serialize=false)
   public final String getRoleText() {
     if (StringUtil.isNullOrEmpty(mRoleText) && !this.getRoleRelations().isEmpty()) {
       for (IAccountRoleRelationInfo relation : this.getRoleRelations()) {
@@ -378,6 +376,7 @@ public class AccountInfo implements IAccountInfo {
   /**
    * 所属角色视图
    */
+  @JSONField(serialize=false)
   public final String getRoleView() {
     if (StringUtil.isNullOrEmpty(mRoleView) && !this.getRoleRelations().isEmpty()) {
       for (IAccountRoleRelationInfo relation : this.getRoleRelations()) {
@@ -395,10 +394,12 @@ public class AccountInfo implements IAccountInfo {
   /**
    * 帐号和角色接口集合
    */
+  @JSONField(serialize=false)
   public final List<IAccountGroupRelationInfo> getGroupRelations() {
     if (mGroupRelations == null && !StringUtil.isNullOrEmpty(this.getId())) {
       // TODO 待处理
       // mGroupRelations = MembershipManagement.getInstance().getGroupService().FindAllRelationByAccountId(this.getId());
+      mGroupRelations = new ArrayList<IAccountGroupRelationInfo>();
     }
 
     return mGroupRelations;
@@ -411,6 +412,7 @@ public class AccountInfo implements IAccountInfo {
   /**
    * 所属群组文本信息
    */
+  @JSONField(serialize=false)
   public final String getGroupText() {
     if (StringUtil.isNullOrEmpty(mGroupText) && !this.getGroupRelations().isEmpty()) {
       for (IAccountGroupRelationInfo relation : this.getGroupRelations()) {
@@ -428,6 +430,7 @@ public class AccountInfo implements IAccountInfo {
   /**
    * 所属群组视图
    */
+  @JSONField(serialize=false)
   public final String getGroupView() {
     if (StringUtil.isNullOrEmpty(mGroupView) && !this.getGroupRelations().isEmpty()) {
       for (IAccountGroupRelationInfo relation : this.getGroupRelations()) {

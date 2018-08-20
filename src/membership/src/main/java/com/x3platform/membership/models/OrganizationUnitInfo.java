@@ -193,9 +193,7 @@ public class OrganizationUnitInfo implements IOrganizationUnitInfo {
   public final void setPinYin(String value) {
     mPinYin = value;
   }
-  ///#endregion
 
-  ///#region 属性:Type
   private int mType = 0;
 
   /**
@@ -208,9 +206,7 @@ public class OrganizationUnitInfo implements IOrganizationUnitInfo {
   public final void setType(int value) {
     mType = value;
   }
-  ///#endregion
 
-  ///#region 属性:TypeView
   private String mTypeView;
 
   /**

@@ -25,8 +25,8 @@ import javax.servlet.http.HttpServletResponse;
 /**
  *
  */
-@RestController
 @Lazy(true)
+@RestController
 @RequestMapping("/api/membership/organizationUnit")
 public class OrganizationUnitController {
   // 数据提供器
@@ -75,7 +75,7 @@ public class OrganizationUnitController {
   /**
    * 获取分页内容 / get paging.
    *
-   * @param doc Xml 文档对象
+   * @param data JSON 对象
    * @return 返回一个相关的实例列表.
    */
   @RequestMapping("/findOne")

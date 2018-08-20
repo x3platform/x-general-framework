@@ -2,7 +2,15 @@ package com.x3platform.membership.controllers;
 
 import java.util.*;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.x3platform.membership.IAccountInfo;
+import com.x3platform.membership.MembershipManagement;
+import com.x3platform.membership.models.AccountInfo;
+import com.x3platform.membership.services.IAccountService;
+import com.x3platform.membership.services.IOrganizationUnitService;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,12 +25,12 @@ import javax.servlet.http.HttpServletResponse;
 /**
  *
  */
-@RestController
 @Lazy(true)
+@RestController
 @RequestMapping("/api/membership/account")
 public class AccountController {
   // 数据提供器
-  private IDigitalNumberService service = DigitalNumberContext.getInstance().getDigitalNumberService();
+  private IAccountService service = MembershipManagement.getInstance().getAccountService();
 
   // -------------------------------------------------------
   // 保存 删除
@@ -35,13 +43,15 @@ public class AccountController {
    */
   @RequestMapping("/save")
   public final String save(HttpServletRequest req, HttpServletResponse res) {
-    DigitalNumberInfo param = new DigitalNumberInfo();
+
+    IAccountInfo param = new AccountInfo();
 
     // param = AjaxUtil.<DigitalNumberInfo>Deserialize(param, doc);
 
     this.service.save(param);
 
-    return "{\"message\":{\"returnCode\":0,\"value\":\"查询成功。\"}}";
+    // return "{\"message\":{\"returnCode\":0,\"value\":\"查询成功。\"}}";
+    return MessageObject.stringify("0", "msg_save_success");
   }
 
   /**
@@ -65,22 +75,22 @@ public class AccountController {
   // -------------------------------------------------------
 
   /**
-   * 获取分页内容 / get paging.
-   *
-   * @param doc Xml 文档对象
+   * @param data JSON 格式文本
    * @return 返回一个相关的实例列表.
    */
-  public final String findOne(HttpServletRequest req, HttpServletResponse res) {
+  @RequestMapping("/findOne")
+  public final String findOne(@RequestBody String data) {
+
     StringBuilder outString = new StringBuilder();
 
+    JSONObject req = JSON.parseObject(data);
+
     // String name = XmlHelper.Fetch("name", doc);
-    String name = req.getParameter("name");
+    String id = req.getString("id");
 
-    DigitalNumberInfo param = this.service.findOne(name);
+    IAccountInfo param = this.service.findOne(id);
 
-    // outString.append("{\"data\":" + AjaxUtil.<DigitalNumberInfo>Parse(param) + ",");
-
-    // outString.append(MessageObject.Stringify("0", I18n.Strings["msg_query_success"], true) + "}");
+    outString.append("{\"data\":" + JSON.toJSONString(param) + ",");
     outString.append(MessageObject.stringify("0", "msg_query_success", true) + "}");
 
     return outString.toString();
@@ -118,41 +128,4 @@ public class AccountController {
     return outString.toString();
   }*/
 
-  /**
-   * 创建新的对象
-   *
-   * @param doc Xml 文档对象
-   * @return 返回操作结果
-   */
-  /*
-  public final String CreateNewObject(HttpServletRequest req, HttpServletResponse res) {
-    StringBuilder outString = new StringBuilder();
-
-    DigitalNumberInfo param = new DigitalNumberInfo();
-
-    param.setName("");
-
-    param.setCreatedDate = param.ModifiedDate = java.time.LocalDateTime.now();
-
-    outString.append("{\"data\":" + AjaxUtil.<DigitalNumberInfo>Parse(param) + ",");
-
-    outString.append(MessageObject.Stringify("0", I18n.Strings["msg_create_success"], true) + "}");
-
-    return outString.toString();
-  }*/
-
-  /**
-   * 生成流水号
-   *
-   * @param doc Xml 文档对象
-   * @return 返回操作结果
-   */
-  public final String Generate(HttpServletRequest req, HttpServletResponse res) {
-    // String name = XmlHelper.Fetch("name", doc);
-    String name = req.getParameter("name");
-
-    String result = this.service.generate(name);
-
-    return "{\"data\":\"" + result + "\",\"message\":{\"returnCode\":0,\"value\":\"查询成功。\"}}";
-  }
 }

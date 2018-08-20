@@ -17,8 +17,8 @@ import javax.servlet.http.HttpServletResponse;
 /**
  *
  */
-@RestController
 @Lazy(true)
+@RestController
 @RequestMapping("/api/membership/role")
 public class RoleController {
   // 数据提供器
