@@ -20,8 +20,8 @@ import javax.servlet.http.HttpServletResponse;
  */
 @Lazy(true)
 @RestController
-@RequestMapping("/api/apps/application")
-public class ApplicationController {
+@RequestMapping("/api/apps/applicationSetting")
+public class ApplicationSettingController {
   // 数据提供器
   private IApplicationService service = AppsContext.getInstance().getApplicationService();
 

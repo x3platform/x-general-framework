@@ -1,57 +1,50 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.x3platform.apps.mappers.ApplicationMapper" >
-  <resultMap id="findOne_Result" type="com.x3platform.apps.models.ApplicationInfo">
-    <result property="id" column="id" />
-    <result property="accountId" column="account_id" />
-    <result property="parentId" column="parent_id" />
-    <result property="code" column="code" />
-    <result property="applicationName" column="application_name" />
-    <result property="applicationDisplayName" column="application_display_name" />
-    <result property="applicationKey" column="application_key" />
-    <result property="applicationSecret" column="application_secret" />
-    <result property="pinyin" column="pinyin" />
-    <result property="description" column="description" />
-    <result property="hasChildren" column="has_children" />
-    <result property="administratorEmail" column="administrator_email" />
-    <result property="iconPath" column="icon_path" />
-    <result property="bigIconPath" column="big_icon_path" />
-    <result property="helpUrl" column="help_url" />
-    <result property="licenseStatus" column="license_status" />
-    <result property="hidden" column="hidden" />
-    <result property="locking" column="locking" />
-    <result property="orderId" column="order_id" />
-    <result property="status" column="status" />
-    <result property="remark" column="remark" />
-    <result property="modifiedDate" column="modified_date" />
-    <result property="createdDate" column="created_date" />
+<mapper namespace="com.x3platform.apps.mappers.ApplicationMenuMapper" >
+  <resultMap id="findOne_Result" type="com.x3platform.apps.models.ApplicationMenuInfo">
+    <result property="mId" column="id" />
+    <result property="mApplicationId" column="application_id" />
+    <result property="mParentId" column="parent_id" />
+    <result property="mCode" column="code" />
+    <result property="mName" column="name" />
+    <result property="mDescription" column="description" />
+    <result property="mUrl" column="url" />
+    <result property="mTarget" column="target" />
+    <result property="mMenuType" column="menu_type" />
+    <result property="mIconPath" column="icon_path" />
+    <result property="mBigIconPath" column="big_icon_path" />
+    <result property="mDisplayType" column="display_type" />
+    <result property="mHasChild" column="has_child" />
+    <result property="mContextObject" column="context_object" />
+    <result property="mOrderId" column="order_id" />
+    <result property="mStatus" column="status" />
+    <result property="mRemark" column="remark" />
+    <result property="mFullPath" column="full_path" />
+    <result property="mModifiedDate" column="modified_date" />
+    <result property="mCreatedDate" column="created_date" />
   </resultMap>
-  <resultMap id="findAll_Result" type="com.x3platform.apps.models.ApplicationInfo">
-    <result property="id" column="id" />
-    <result property="accountId" column="account_id" />
-    <result property="parentId" column="parent_id" />
-    <result property="code" column="code" />
-    <result property="applicationName" column="application_name" />
-    <result property="applicationDisplayName" column="application_display_name" />
-    <result property="applicationKey" column="application_key" />
-    <result property="applicationSecret" column="application_secret" />
-    <result property="pinyin" column="pinyin" />
-    <result property="description" column="description" />
-    <result property="hasChildren" column="has_children" />
-    <result property="administratorEmail" column="administrator_email" />
-    <result property="iconPath" column="icon_path" />
-    <result property="bigIconPath" column="big_icon_path" />
-    <result property="helpUrl" column="help_url" />
-    <result property="licenseStatus" column="license_status" />
-    <result property="hidden" column="hidden" />
-    <result property="locking" column="locking" />
-    <result property="orderId" column="order_id" />
-    <result property="status" column="status" />
-    <result property="remark" column="remark" />
-    <result property="modifiedDate" column="modified_date" />
-    <result property="createdDate" column="created_date" />
+  <resultMap id="findAll_Result" type="com.x3platform.apps.models.ApplicationMenuInfo">
+    <result property="mId" column="id" />
+    <result property="mApplicationId" column="application_id" />
+    <result property="mParentId" column="parent_id" />
+    <result property="mCode" column="code" />
+    <result property="mName" column="name" />
+    <result property="mDescription" column="description" />
+    <result property="mUrl" column="url" />
+    <result property="mTarget" column="target" />
+    <result property="mMenuType" column="menu_type" />
+    <result property="mIconPath" column="icon_path" />
+    <result property="mBigIconPath" column="big_icon_path" />
+    <result property="mDisplayType" column="display_type" />
+    <result property="mHasChild" column="has_child" />
+    <result property="mOrderId" column="order_id" />
+    <result property="mStatus" column="status" />
+    <result property="mRemark" column="remark" />
+    <result property="mFullPath" column="full_path" />
+    <result property="mModifiedDate" column="modified_date" />
+    <result property="mCreatedDate" column="created_date" />
   </resultMap>
-  <insert id="insert" parameterType="com.x3platform.apps.models.ApplicationInfo" >
+  <insert id="insert" parameterType="com.x3platform.apps.models.ApplicationMenuInfo" >
     INSERT INTO application
     (
       id,
@@ -103,7 +96,7 @@
       CURRENT_TIMESTAMP
     )
   </insert>
-  <update id="update" parameterType="com.x3platform.apps.models.ApplicationInfo" >
+  <update id="update" parameterType="com.x3platform.apps.models.ApplicationMenuInfo" >
     UPDATE application SET
 
       parent_id = #{parentId},
@@ -142,18 +135,24 @@
       </update>
       -->
   <delete id="delete">
-    DELETE FROM application WHERE $WhereClause$
+    DELETE FROM application_menu WHERE $WhereClause$
   </delete>
-  <select id="findOne" parameterType="com.x3platform.apps.models.ApplicationInfo" resultMap="findOne_Result" >
-    SELECT * FROM application WHERE id = #{id}
+  <select id="findOne" parameterType="com.x3platform.apps.models.ApplicationMenuInfo" resultMap="findOne_Result" >
+    SELECT * FROM application_menu WHERE id = #{id}
   </select>
-  <select id="findOneByApplicationName" parameterType="com.x3platform.apps.models.ApplicationInfo" resultMap="findOne_Result" >
-    SELECT * FROM application WHERE application_name = #{applicationName}
+  <select id="findOneByApplicationName" parameterType="com.x3platform.apps.models.ApplicationMenuInfo" resultMap="findOne_Result" >
+    SELECT * FROM application_menu WHERE application_name = #{applicationName}
   </select>
   <select id="findAll" resultMap="findAll_Result" >
-    SELECT * FROM application T
+    SELECT * FROM application_menu T
     <where>
-      <if test="param_parent_id != null and param_parentId != ''">
+      <if test="param_menu_type != null and param_menu_type != ''">
+        AND menu_type = #{param_menu_type}
+      </if>
+      <if test="param_application_id != null and param_application_id != ''">
+        AND application_id = #{param_application_id}
+      </if>
+      <if test="param_parent_id != null and param_parent_id != ''">
         AND parent_id = #{param_parent_id}
       </if>
       <if test="param_status != null and param_status != ''">
@@ -171,10 +170,10 @@
     </if>
   </select>
   <select id="findAllByAccountId" resultMap="findAll_Result" >
-    SELECT * FROM application where account_id = ${accountId}
+    SELECT * FROM application_menu where account_id = ${accountId}
   </select>
-  <select id="isExist" >
-    SELECT COUNT(*) AS "Count" FROM application T WHERE $WhereClause$
+  <select id="isExist" resultType="boolean" >
+    SELECT COUNT(0) AS "Count" FROM application_menu T WHERE id=#{id}
   </select>
   <select id="hasAuthority" >
     SELECT COUNT(*) AS "Count" FROM view_AuthObject_Account view1, application_scope Scope

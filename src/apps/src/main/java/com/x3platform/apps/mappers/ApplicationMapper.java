@@ -79,8 +79,6 @@ public interface ApplicationMapper {
   // 查询
   // -------------------------------------------------------
 
-  ///#region 函数:findOne(string id)
-
   /**
    * 查询某条记录
    *
@@ -100,9 +98,10 @@ public interface ApplicationMapper {
   /**
    * 查询所有相关记录
    *
+   * @param params 查询参数集合
    * @return 返回所有 ApplicationInfo 实例的详细信息
    */
-  List<ApplicationInfo> findAll();
+  List<ApplicationInfo> findAll(Map params);
 
   /**
    * 根据帐号所属的标准角色信息对应的应用系统的功能点, 查询此帐号有权限启用的应用系统信息.

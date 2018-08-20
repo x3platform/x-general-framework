@@ -22,7 +22,14 @@ public class AppsContextTests {
   @Test
   public void testLoad() {
     AppsContext instance = AppsContext.getInstance();
+
     assertNotNull("ApplicationService is not null.",
       instance.getApplicationService());
+
+    assertNotNull("ApplicationMenuService is not null.",
+      instance.getApplicationMenuService());
+
+    assertNotNull("ApplicationSettingService is not null.",
+      instance.getApplicationSettingService());
   }
 }

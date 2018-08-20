@@ -3,6 +3,7 @@ package com.x3platform.apps.services;
 import java.util.*;
 
 import com.x3platform.apps.models.ApplicationInfo;
+import com.x3platform.data.DataQuery;
 import com.x3platform.membership.IAccountInfo;
 
 /**
@@ -16,7 +17,7 @@ public interface IApplicationService {
   /**
    * 保存记录
    *
-   * @param param 实例<see cref="ApplicationInfo"/>详细信息
+   * @param param 实例 ApplicationInfo 详细信息
    * @return ApplicationInfo 实例详细信息
    */
   ApplicationInfo save(ApplicationInfo param);
@@ -58,25 +59,16 @@ public interface IApplicationService {
   /**
    * 查询所有相关记录
    *
-   * @param whereClause SQL 查询条件
+   * @param query 数据查询参数
    * @return 返回所有 ApplicationInfo 实例的详细信息
    */
-  // List<ApplicationInfo> findAll(String whereClause);
-
-  /**
-   * 查询所有相关记录
-   *
-   * @param whereClause SQL 查询条件
-   * @param length      条数
-   * @return 返回所有<see cref="ApplicationInfo"/>实例的详细信息
-   */
-  // List<ApplicationInfo> findAll(String whereClause, int length);
+  List<ApplicationInfo> findAll(DataQuery query);
 
   /**
    * 根据帐号所属的标准角色信息对应的应用系统的功能点, 查询此帐号有权限启用的应用系统信息.
    *
    * @param accountId 帐号标识
-   * @return 返回所有<see cref="ApplicationInfo"/>实例的详细信息
+   * @return 返回所有 ApplicationInfo 实例的详细信息
    */
   List<ApplicationInfo> findAllByAccountId(String accountId);
 
@@ -84,7 +76,7 @@ public interface IApplicationService {
    * 根据角色所属的标准角色信息对应的应用系统的功能点, 查询此帐号有权限启用的应用系统信息.
    *
    * @param roleIds 角色标识
-   * @return 返回所有<see cref="ApplicationInfo"/>实例的详细信息
+   * @return 返回所有 ApplicationInfo 实例的详细信息
    */
   List<ApplicationInfo> findAllByRoleIds(String roleIds);
 
@@ -99,7 +91,7 @@ public interface IApplicationService {
    * @param pageSize   页面大小
    * @param query      数据查询参数
    * @param rowCount   记录行数
-   * @return 返回一个列表<see cref="ApplicationInfo"/>
+   * @return 返回一个列表 ApplicationInfo
    */
   // List<ApplicationInfo> GetPaging(int startIndex, int pageSize, DataQuery query, tangible.RefObject<Integer> rowCount);
 

@@ -5,6 +5,7 @@ import com.x3platform.apps.configuration.AppsConfigurationView;
 import com.x3platform.apps.mappers.ApplicationMapper;
 import com.x3platform.apps.models.ApplicationInfo;
 import com.x3platform.apps.services.IApplicationService;
+import com.x3platform.data.DataQuery;
 import com.x3platform.membership.IAccountInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -126,35 +127,24 @@ public class ApplicationService implements IApplicationService {
    * @return 返回所有 ApplicationInfo 实例的详细信息
    */
   public final List<ApplicationInfo> findAll() {
-    return provider.findAll();
+    return provider.findAll(new HashMap());
   }
 
   /**
    * 查询所有相关记录
    *
-   * @param whereClause SQL 查询条件
+   * @param query 数据查询参数
    * @return 返回所有 ApplicationInfo 实例的详细信息
    */
-  // public final List<ApplicationInfo> findAll(String whereClause) {
-  //  return provider.findAll(whereClause, 0);
-  // }
-
-  /**
-   * 查询所有相关记录
-   *
-   * @param whereClause SQL 查询条件
-   * @param length      条数
-   * @return 返回所有 ApplicationInfo 实例的详细信息
-   */
-  // public final List<ApplicationInfo> findAll(String whereClause, int length) {
-  //  return provider.findAll(whereClause, length);
-  // }
+  public final List<ApplicationInfo> findAll(DataQuery query) {
+    return provider.findAll(query.getMap());
+  }
 
   /**
    * 根据帐号所属的标准角色信息对应的应用系统的功能点, 查询此帐号有权限启用的应用系统信息.
    *
    * @param accountId 帐号标识
-   * @return 返回所有<see cref="ApplicationInfo"/>实例的详细信息
+   * @return 返回所有<see                                                                                                                               cref                                                               =                                                               "                                                               ApplicationInfo                                                               "                                                               />实例的详细信息
    */
   public final List<ApplicationInfo> findAllByAccountId(String accountId) {
     return provider.findAllByAccountId(accountId);
@@ -164,7 +154,7 @@ public class ApplicationService implements IApplicationService {
    * 根据角色所属的标准角色信息对应的应用系统的功能点, 查询此帐号有权限启用的应用系统信息.
    *
    * @param roleIds 角色标识
-   * @return 返回所有<see cref="ApplicationInfo"/>实例的详细信息
+   * @return 返回所有<see                                                                                                                               cref                                                               =                                                               "                                                               ApplicationInfo                                                               "                                                               />实例的详细信息
    */
   public final List<ApplicationInfo> findAllByRoleIds(String roleIds) {
     return provider.findAllByRoleIds(roleIds);

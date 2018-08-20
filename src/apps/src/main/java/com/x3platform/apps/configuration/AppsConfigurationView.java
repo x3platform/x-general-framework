@@ -1,6 +1,7 @@
 package com.x3platform.apps.configuration;
 
 import com.x3platform.SpringContext;
+import com.x3platform.util.BooleanUtil;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,15 +48,15 @@ public class AppsConfigurationView {
     return configuration.getAdministrators();
   }
 
-  public String getHiddenStartMenu() {
-    return configuration.getHiddenStartMenu();
+  public boolean getHiddenStartMenu() {
+    return BooleanUtil.bool(configuration.getHiddenStartMenu());
   }
 
-  public int getHiddenTopMenu() {
-    return Integer.parseInt(configuration.getHiddenTopMenu());
+  public boolean getHiddenTopMenu() {
+    return BooleanUtil.bool(configuration.getHiddenTopMenu());
   }
 
-  public int getHiddenShortcutMenu() {
-    return Integer.parseInt(configuration.getHiddenShortcutMenu());
+  public boolean getHiddenShortcutMenu() {
+    return BooleanUtil.bool(configuration.getHiddenShortcutMenu());
   }
 }

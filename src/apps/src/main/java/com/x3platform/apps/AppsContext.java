@@ -4,7 +4,9 @@ import com.x3platform.KernelContext;
 import com.x3platform.SpringContext;
 import com.x3platform.apps.configuration.AppsConfiguration;
 import com.x3platform.apps.configuration.AppsConfigurationView;
+import com.x3platform.apps.services.IApplicationMenuService;
 import com.x3platform.apps.services.IApplicationService;
+import com.x3platform.apps.services.IApplicationSettingService;
 import com.x3platform.globalization.I18n;
 import com.x3platform.plugins.CustomPlugin;
 
@@ -39,10 +41,28 @@ public class AppsContext extends CustomPlugin {
   private IApplicationService mApplicationService = null;
 
   /**
-   * 流水号服务提供者
+   * 应用服务提供者
    */
   public final IApplicationService getApplicationService() {
     return mApplicationService;
+  }
+
+  private IApplicationMenuService mApplicationMenuService = null;
+
+  /**
+   * 应用菜单服务提供者
+   */
+  public final IApplicationMenuService getApplicationMenuService() {
+    return mApplicationMenuService;
+  }
+
+  private IApplicationSettingService mApplicationSettingService = null;
+
+  /**
+   * 应用设置服务提供者
+   */
+  public final IApplicationSettingService getApplicationSettingService() {
+    return mApplicationSettingService;
   }
 
   private AppsContext() {
@@ -59,7 +79,7 @@ public class AppsContext extends CustomPlugin {
    *
    * @return 返回信息. =0代表重启成功, >0代表重启失败.
    */
-  // @Override
+  @Override
   public int restart() {
     try {
       this.reload();
@@ -67,7 +87,7 @@ public class AppsContext extends CustomPlugin {
       // 自增重启次数计数器
       this.restartCount++;
     } catch (RuntimeException ex) {
-       KernelContext.getLog().error(ex.toString());
+      KernelContext.getLog().error(ex.toString());
       throw ex;
     }
 
@@ -86,6 +106,8 @@ public class AppsContext extends CustomPlugin {
 
     // 创建数据服务对象
     this.mApplicationService = SpringContext.getBean("com.x3platform.apps.services.IApplicationService", IApplicationService.class);
+    this.mApplicationMenuService = SpringContext.getBean("com.x3platform.apps.services.IApplicationMenuService", IApplicationMenuService.class);
+    this.mApplicationSettingService = SpringContext.getBean("com.x3platform.apps.services.IApplicationSettingService", IApplicationSettingService.class);
 
     KernelContext.getLog().info(String.format(I18n.getStrings().text("application_is_successfully_loaded"), AppsConfiguration.ApplicationName));
   }

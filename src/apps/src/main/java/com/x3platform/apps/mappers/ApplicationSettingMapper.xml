@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.x3platform.apps.mappers.ApplicationMapper" >
+<mapper namespace="com.x3platform.apps.mappers.ApplicationSettingMapper" >
   <resultMap id="findOne_Result" type="com.x3platform.apps.models.ApplicationInfo">
     <result property="id" column="id" />
     <result property="accountId" column="account_id" />
@@ -152,23 +152,17 @@
   </select>
   <select id="findAll" resultMap="findAll_Result" >
     SELECT * FROM application T
-    <where>
-      <if test="param_parent_id != null and param_parentId != ''">
-        AND parent_id = #{param_parent_id}
-      </if>
-      <if test="param_status != null and param_status != ''">
-        AND status = #{param_status}
+    <!--<where>
+      <if test="whereClause != null and whereClause !=''">
+        ${whereClause}
       </if>
     </where>
-    <if test="orders != null and orders.size() > 0">
-      ORDER BY
-      <foreach collection="orders" item="order" index="index" separator="," >
-        #{order}
-      </foreach>
+    <if test="orderBy != null and orderBy !=''">
+      ORDER BY ${orderBy}
     </if>
     <if test="length > 0">
       LIMIT 0, ${length}
-    </if>
+    </if>-->
   </select>
   <select id="findAllByAccountId" resultMap="findAll_Result" >
     SELECT * FROM application where account_id = ${accountId}
