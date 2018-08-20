@@ -1,3 +1,55 @@
+# General
+bin/
+log/
+.log
+.temp
+.source
+.backup
+.bak
+.DS_Store
+
+*.apk
+*.ap_
+
+# generated files
+bin/
+gen/
+
+# Python
+.env2
+.env3
+
+# NodeJS
+dist/
+node_modules/
+package-lock.json
+
+# Java
+target/
+
+# Java Gradle 
+.gradle
+build/
+
+# IDEA
+.idea/
+*.iml
+
+# NDK
+obj/
+
+# eclipse
+.settings
+.classpath
+.project
+
+# Visual Studio Code
+.vscode/
+
+# VIM
+*.swp
+*~
+
 # 文件夹
 app/build
 src/unpackage/release
@@ -8,23 +60,7 @@ src/unpackage/release
 # 文件
 git-fetch.cmd
 
-target/
-
-*.iml
-.gradle
-/local.properties
-/.idea/workspace.xml
-/.idea/libraries
 .DS_Store
-/build
-/captures
-
-
-.DS_Store
-
-#built application files
-*.apk
-*.ap_
 
 # files for the dex VM
 *.dex
@@ -38,29 +74,7 @@ gen/
 
 # Local configuration file (sdk path, etc)
 local.properties
+application-dev.properties
 
 # Windows thumbnail db
 Thumbs.db
-
-# OSX files
-.DS_Store
-
-# Eclipse project files
-.classpath
-.project
-
-# Android Studio
-*.iml
-.idea
-#.idea/workspace.xml - remove # and delete .idea if it better suit your needs.
-.gradle
-build/
-
-#NDK
-obj/
-
-
-*.swp
-*~
-
-.source
