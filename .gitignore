@@ -1,4 +1,4 @@
-# General
+# General File
 bin/
 log/
 *.log
@@ -14,9 +14,23 @@ log/
 # Windows Thumbnail.db
 Thumbs.db
 
-# generated files
+# Git fetch script
+git-fetch.cmd
+git-fetch.sh
+
+# Generated Files
+obj/
 bin/
 gen/
+target/
+build/
+
+# VIM
+*.swp
+*~
+
+# Visual Studio Code
+.vscode/
 
 # Python
 .env2
@@ -27,54 +41,29 @@ dist/
 node_modules/
 package-lock.json
 
-# Java
-target/
+# Java class files
+*.class
 
-# Java Gradle 
+# Java local configuration file (sdk path, etc)
+local.properties
+application-dev.properties
+
+# Java Gradle
 .gradle
-build/
 
-# IDEA
-.idea/
-*.iml
+# Android File
+app/build
+src/unpackage/release
+*.pkg
+*.dex
 
-# NDK
-obj/
-
-# eclipse
+# Eclipse
 .settings
 .classpath
 .project
 
-# Visual Studio Code
-.vscode/
-
-# VIM
-*.swp
-*~
-
-# 文件夹
-app/build
-src/unpackage/release
-
-# 临时文件
-*.pkg
-
-# 文件
-git-fetch.cmd
-
-.DS_Store
-
-# files for the dex VM
-*.dex
-
-# Java class files
-*.class
-
-# generated files
-bin/
-gen/
-
-# Local configuration file (sdk path, etc)
-local.properties
-application-dev.properties
+# IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
