@@ -27,11 +27,11 @@ public class ApplicationInfo extends EntityClass implements ICacheable {
   /**
    * 标识
    */
-  public final String getId() {
+  public String getId() {
     return id;
   }
 
-  public final void setId(String value) {
+  public void setId(String value) {
     id = value;
   }
 
@@ -40,7 +40,7 @@ public class ApplicationInfo extends EntityClass implements ICacheable {
   /**
    * 帐号
    */
-  public final IAccountInfo getAccount() {
+  public IAccountInfo getAccount() {
     if (account == null && !StringUtil.isNullOrEmpty(this.getAccountId())) {
       account = MembershipManagement.getInstance().getAccountService().findOne(this.getAccountId());
     }
@@ -53,18 +53,18 @@ public class ApplicationInfo extends EntityClass implements ICacheable {
   /**
    * 帐号标识
    */
-  public final String getAccountId() {
+  public String getAccountId() {
     return accountId;
   }
 
-  public final void setAccountId(String value) {
+  public void setAccountId(String value) {
     accountId = value;
   }
 
   /**
    * 账号姓名
    */
-  public final String getAccountName() {
+  public String getAccountName() {
     return this.getAccount() == null ? "" : this.getAccount().getName();
   }
 
@@ -73,9 +73,9 @@ public class ApplicationInfo extends EntityClass implements ICacheable {
   /**
    * 应用
    */
-  public final ApplicationInfo getParent() {
+  public ApplicationInfo getParent() {
     if (parent == null && !StringUtil.isNullOrEmpty(this.getParentId())) {
-       parent = AppsContext.getInstance().getApplicationService().findOne(this.getParentId());
+      parent = AppsContext.getInstance().getApplicationService().findOne(this.getParentId());
     }
 
     return parent;
@@ -86,7 +86,7 @@ public class ApplicationInfo extends EntityClass implements ICacheable {
   /**
    * 父级应用标识
    */
-  public final String getParentId() {
+  public String getParentId() {
     if (StringUtil.isNullOrEmpty(parentId)) {
       parentId = "00000000-0000-0000-0000-000000000001";
     }
@@ -94,19 +94,19 @@ public class ApplicationInfo extends EntityClass implements ICacheable {
     return parentId;
   }
 
-  public final void setParentId(String value) {
+  public void setParentId(String value) {
     parentId = value;
   }
 
   /**
    */
-  public final String getParentName() {
+  public String getParentName() {
     return this.getParent() == null ? this.getApplicationDisplayName() : this.getParent().getApplicationName();
   }
 
   /**
    */
-  public final String getParentDisplayName() {
+  public String getParentDisplayName() {
     return this.getParent() == null ? "" : this.getParent().getApplicationDisplayName();
   }
 
@@ -115,11 +115,11 @@ public class ApplicationInfo extends EntityClass implements ICacheable {
   /**
    * 应用编码
    */
-  public final String getCode() {
+  public String getCode() {
     return code;
   }
 
-  public final void setCode(String value) {
+  public void setCode(String value) {
     code = value;
   }
 
@@ -127,11 +127,11 @@ public class ApplicationInfo extends EntityClass implements ICacheable {
 
   /**
    */
-  public final String getApplicationName() {
+  public String getApplicationName() {
     return applicationName;
   }
 
-  public final void setApplicationName(String value) {
+  public void setApplicationName(String value) {
     applicationName = value;
   }
 
@@ -139,7 +139,7 @@ public class ApplicationInfo extends EntityClass implements ICacheable {
 
   /**
    */
-  public final String getApplicationDisplayName() {
+  public String getApplicationDisplayName() {
     if (StringUtil.isNullOrEmpty(applicationDisplayName)) {
       this.applicationDisplayName = this.applicationName;
     }
@@ -147,7 +147,7 @@ public class ApplicationInfo extends EntityClass implements ICacheable {
     return applicationDisplayName;
   }
 
-  public final void setApplicationDisplayName(String value) {
+  public void setApplicationDisplayName(String value) {
     applicationDisplayName = value;
   }
 
@@ -156,7 +156,7 @@ public class ApplicationInfo extends EntityClass implements ICacheable {
   /**
    * 应用许可号
    */
-  public final String getApplicationKey() {
+  public String getApplicationKey() {
     if (StringUtil.isNullOrEmpty(applicationKey)) {
       applicationKey = StringUtil.toUuid();
     }
@@ -176,21 +176,21 @@ public class ApplicationInfo extends EntityClass implements ICacheable {
     return applicationKey;
   }
 
-  public final void setApplicationKey(String value) {
+  public void setApplicationKey(String value) {
     applicationKey = value;
   }
 
-  private String mApplicationSecret = "";
+  private String applicationSecret = "";
 
   /**
    * 应用密钥
    */
-  public final String getApplicationSecret() {
-    return mApplicationSecret;
+  public String getApplicationSecret() {
+    return applicationSecret;
   }
 
-  public final void setApplicationSecret(String value) {
-    mApplicationSecret = value;
+  public void setApplicationSecret(String value) {
+    applicationSecret = value;
   }
 
   private String pinyin = "";
@@ -198,11 +198,11 @@ public class ApplicationInfo extends EntityClass implements ICacheable {
   /**
    * 拼音简写
    */
-  public final String getPinYin() {
+  public String getPinyin() {
     return pinyin;
   }
 
-  public final void setPinYin(String value) {
+  public void setPinyin(String value) {
     pinyin = value;
   }
 
@@ -210,11 +210,11 @@ public class ApplicationInfo extends EntityClass implements ICacheable {
 
   /**
    */
-  public final String getDescription() {
+  public String getDescription() {
     return description;
   }
 
-  public final void setDescription(String value) {
+  public void setDescription(String value) {
     description = value;
   }
 
@@ -223,24 +223,24 @@ public class ApplicationInfo extends EntityClass implements ICacheable {
   /**
    * 是否有叶子节点
    */
-  public final int getHasChildren() {
+  public int getHasChildren() {
     return hasChildren;
   }
 
-  public final void setHasChildren(int value) {
+  public void setHasChildren(int value) {
     hasChildren = value;
   }
 
-  private String mAdministratorEmail = "";
+  private String administratorEmail = "";
 
   /**
    */
-  public final String getAdministratorEmail() {
-    return mAdministratorEmail;
+  public String getAdministratorEmail() {
+    return administratorEmail;
   }
 
-  public final void setAdministratorEmail(String value) {
-    mAdministratorEmail = value;
+  public void setAdministratorEmail(String value) {
+    administratorEmail = value;
   }
 
   private String iconPath = "";
@@ -248,11 +248,11 @@ public class ApplicationInfo extends EntityClass implements ICacheable {
   /**
    * 图标文件
    */
-  public final String getIconPath() {
+  public String getIconPath() {
     return iconPath;
   }
 
-  public final void setIconPath(String value) {
+  public void setIconPath(String value) {
     iconPath = value;
   }
 
@@ -261,11 +261,11 @@ public class ApplicationInfo extends EntityClass implements ICacheable {
   /**
    * 大图标文件
    */
-  public final String getBigIconPath() {
+  public String getBigIconPath() {
     return bigIconPath;
   }
 
-  public final void setBigIconPath(String value) {
+  public void setBigIconPath(String value) {
     bigIconPath = value;
   }
 
@@ -274,11 +274,11 @@ public class ApplicationInfo extends EntityClass implements ICacheable {
   /**
    * 功能帮助文件
    */
-  public final String getHelpUrl() {
+  public String getHelpUrl() {
     return helpUrl;
   }
 
-  public final void setHelpUrl(String value) {
+  public void setHelpUrl(String value) {
     helpUrl = value;
   }
 
@@ -287,11 +287,11 @@ public class ApplicationInfo extends EntityClass implements ICacheable {
   /**
    * 授权状态
    */
-  public final String getLicenseStatus() {
+  public String getLicenseStatus() {
     return licenseStatus;
   }
 
-  public final void setLicenseStatus(String value) {
+  public void setLicenseStatus(String value) {
     licenseStatus = value;
   }
 
@@ -300,11 +300,11 @@ public class ApplicationInfo extends EntityClass implements ICacheable {
   /**
    * 显示为菜单列表时是否隐藏。
    */
-  public final int getHidden() {
+  public int getHidden() {
     return hidden;
   }
 
-  public final void setHidden(int value) {
+  public void setHidden(int value) {
     hidden = value;
   }
 
@@ -313,11 +313,11 @@ public class ApplicationInfo extends EntityClass implements ICacheable {
   /**
    * 是否锁定 0:允许 1:锁定
    */
-  public final int getLocking() {
+  public int getLocking() {
     return this.locking;
   }
 
-  public final void setLocking(int value) {
+  public void setLocking(int value) {
     this.locking = value;
   }
 
@@ -325,11 +325,11 @@ public class ApplicationInfo extends EntityClass implements ICacheable {
 
   /**
    */
-  public final String getOrderId() {
+  public String getOrderId() {
     return orderId;
   }
 
-  public final void setOrderId(String value) {
+  public void setOrderId(String value) {
     orderId = value;
   }
 
@@ -337,11 +337,11 @@ public class ApplicationInfo extends EntityClass implements ICacheable {
 
   /**
    */
-  public final int getStatus() {
+  public int getStatus() {
     return status;
   }
 
-  public final void setStatus(int value) {
+  public void setStatus(int value) {
     status = value;
   }
 
@@ -349,11 +349,11 @@ public class ApplicationInfo extends EntityClass implements ICacheable {
 
   /**
    */
-  public final String getRemark() {
+  public String getRemark() {
     return remark;
   }
 
-  public final void setRemark(String value) {
+  public void setRemark(String value) {
     remark = value;
   }
 
@@ -361,11 +361,11 @@ public class ApplicationInfo extends EntityClass implements ICacheable {
 
   /**
    */
-  public final java.time.LocalDateTime getModifiedDate() {
+  public java.time.LocalDateTime getModifiedDate() {
     return modifiedDate;
   }
 
-  public final void setModifiedDate(java.time.LocalDateTime value) {
+  public void setModifiedDate(java.time.LocalDateTime value) {
     modifiedDate = value;
   }
 
@@ -373,11 +373,11 @@ public class ApplicationInfo extends EntityClass implements ICacheable {
 
   /**
    */
-  public final java.time.LocalDateTime getCreatedDate() {
+  public java.time.LocalDateTime getCreatedDate() {
     return createdDate;
   }
 
-  public final void setCreatedDate(java.time.LocalDateTime value) {
+  public void setCreatedDate(java.time.LocalDateTime value) {
     createdDate = value;
   }
 
@@ -390,7 +390,7 @@ public class ApplicationInfo extends EntityClass implements ICacheable {
 
   /**
    */
-  // public final List<MembershipAuthorizationScopeObject> getAdministrators() {
+  // public List<MembershipAuthorizationScopeObject> getAdministrators() {
   //   if (mAdministrators == null) {
   //     mAdministrators = AppsContext.Instance.ApplicationService.GetAuthorizationScopeObjects(this.getId(), "应用_默认_管理员");
   //   }
@@ -402,7 +402,7 @@ public class ApplicationInfo extends EntityClass implements ICacheable {
 
   /**
    */
-  public final String getAdministratorScopeView() {
+  public String getAdministratorScopeView() {
     /*
     if (StringUtil.isNullOrEmpty(mAdministratorScopeView) && !this.getAdministrators().isEmpty()) {
       IAuthorizationObject authorizationObject = null;
@@ -426,7 +426,7 @@ public class ApplicationInfo extends EntityClass implements ICacheable {
 
   /**
    */
-  public final String getAdministratorScopeText() {
+  public String getAdministratorScopeText() {
     /*
     if (StringUtil.isNullOrEmpty(mAdministratorScopeText) && !this.getAdministrators().isEmpty()) {
       for (MembershipAuthorizationScopeObject authorizationScopeObject : this.getAdministrators()) {
@@ -444,45 +444,45 @@ public class ApplicationInfo extends EntityClass implements ICacheable {
   // -------------------------------------------------------
 
   /**
-  private List<MembershipAuthorizationScopeObject> reviewers = null;
+   private List<MembershipAuthorizationScopeObject> reviewers = null;
 
-  public final List<MembershipAuthorizationScopeObject> getReviewers() {
-    if (reviewers == null) {
-      reviewers = AppsContext.Instance.ApplicationService.GetAuthorizationScopeObjects(this.getId(), "应用_默认_审查员");
-    }
+   public List<MembershipAuthorizationScopeObject> getReviewers() {
+   if (reviewers == null) {
+   reviewers = AppsContext.Instance.ApplicationService.GetAuthorizationScopeObjects(this.getId(), "应用_默认_审查员");
+   }
 
-    return reviewers;
-  }
+   return reviewers;
+   }
 
-  private String reviewerScopeView = "";
+   private String reviewerScopeView = "";
 
-  public final String getReviewerScopeView() {
-    if (StringUtil.isNullOrEmpty(reviewerScopeView) && !this.getReviewers().isEmpty()) {
-      IAuthorizationObject authorizationObject = null;
+   public String getReviewerScopeView() {
+   if (StringUtil.isNullOrEmpty(reviewerScopeView) && !this.getReviewers().isEmpty()) {
+   IAuthorizationObject authorizationObject = null;
 
-      for (MembershipAuthorizationScopeObject authorizationScopeObject : this.getReviewers()) {
-        authorizationObject = authorizationScopeObject.GetAuthorizationObject();
+   for (MembershipAuthorizationScopeObject authorizationScopeObject : this.getReviewers()) {
+   authorizationObject = authorizationScopeObject.GetAuthorizationObject();
 
-        if (authorizationObject != null) {
-          reviewerScopeView += authorizationObject.Name + ";";
-        }
-      }
-    }
+   if (authorizationObject != null) {
+   reviewerScopeView += authorizationObject.Name + ";";
+   }
+   }
+   }
 
-    return reviewerScopeView;
-  }
+   return reviewerScopeView;
+   }
 
-  private String reviewerScopeText = "";
+   private String reviewerScopeText = "";
 
-  public final String getReviewerScopeText() {
-    if (StringUtil.isNullOrEmpty(reviewerScopeText) && !this.getReviewers().isEmpty()) {
-      for (MembershipAuthorizationScopeObject authorizationScopeObject : this.getReviewers()) {
-        reviewerScopeText += authorizationScopeObject.toString();
-      }
-    }
+   public String getReviewerScopeText() {
+   if (StringUtil.isNullOrEmpty(reviewerScopeText) && !this.getReviewers().isEmpty()) {
+   for (MembershipAuthorizationScopeObject authorizationScopeObject : this.getReviewers()) {
+   reviewerScopeText += authorizationScopeObject.toString();
+   }
+   }
 
-    return reviewerScopeText;
-  }
+   return reviewerScopeText;
+   }
    */
 
   // -------------------------------------------------------
@@ -493,51 +493,51 @@ public class ApplicationInfo extends EntityClass implements ICacheable {
    private List<MembershipAuthorizationScopeObject> members = null;
 
 
-  public final List<MembershipAuthorizationScopeObject> getMembers() {
-    if (members == null) {
-      members = AppsContext.Instance.ApplicationService.GetAuthorizationScopeObjects(this.getId(), "应用_默认_可访问成员");
+   public List<MembershipAuthorizationScopeObject> getMembers() {
+   if (members == null) {
+   members = AppsContext.Instance.ApplicationService.GetAuthorizationScopeObjects(this.getId(), "应用_默认_可访问成员");
 
-      if (members.isEmpty()) {
-        members.add(new MembershipAuthorizationScopeObject("Role", "00000000-0000-0000-0000-000000000000", "所有人"));
-      }
-    }
+   if (members.isEmpty()) {
+   members.add(new MembershipAuthorizationScopeObject("Role", "00000000-0000-0000-0000-000000000000", "所有人"));
+   }
+   }
 
-    return members;
-  }
+   return members;
+   }
    */
 
   /**
    private String memberScopeView = "";
 
-   public final String getMemberScopeView() {
-    if (StringUtil.isNullOrEmpty(memberScopeView) && !this.getMembers().isEmpty()) {
-      IAuthorizationObject authorizationObject = null;
+   public String getMemberScopeView() {
+   if (StringUtil.isNullOrEmpty(memberScopeView) && !this.getMembers().isEmpty()) {
+   IAuthorizationObject authorizationObject = null;
 
-      for (MembershipAuthorizationScopeObject authorizationScopeObject : this.getMembers()) {
-        authorizationObject = authorizationScopeObject.GetAuthorizationObject();
+   for (MembershipAuthorizationScopeObject authorizationScopeObject : this.getMembers()) {
+   authorizationObject = authorizationScopeObject.GetAuthorizationObject();
 
-        if (authorizationObject != null) {
-          memberScopeView += authorizationObject.Name + ";";
-        }
-      }
-    }
+   if (authorizationObject != null) {
+   memberScopeView += authorizationObject.Name + ";";
+   }
+   }
+   }
 
-    return memberScopeView;
-  }
+   return memberScopeView;
+   }
    */
 
   /**
    private String memberScopeText = "";
 
-  public final String getMemberScopeText() {
-    if (StringUtil.isNullOrEmpty(memberScopeText) && !this.getMembers().isEmpty()) {
-      for (MembershipAuthorizationScopeObject authorizationScopeObject : this.getMembers()) {
-        memberScopeText += authorizationScopeObject.toString();
-      }
-    }
+   public String getMemberScopeText() {
+   if (StringUtil.isNullOrEmpty(memberScopeText) && !this.getMembers().isEmpty()) {
+   for (MembershipAuthorizationScopeObject authorizationScopeObject : this.getMembers()) {
+   memberScopeText += authorizationScopeObject.toString();
+   }
+   }
 
-    return memberScopeText;
-  }
+   return memberScopeText;
+   }
    */
 
   // -------------------------------------------------------

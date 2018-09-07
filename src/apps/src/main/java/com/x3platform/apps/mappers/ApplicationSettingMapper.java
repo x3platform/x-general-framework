@@ -2,6 +2,7 @@ package com.x3platform.apps.mappers;
 
 import com.x3platform.apps.models.ApplicationSettingInfo;
 import com.x3platform.apps.models.ApplicationSettingQueryInfo;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.*;
 
@@ -14,33 +15,25 @@ public interface ApplicationSettingMapper {
   // -------------------------------------------------------
 
   /**
-   * 保存记录
-   *
-   * @param param 实例<see cref="ApplicationSettingInfo"/>详细信息
-   * @return 实例 ApplicationSettingInfo 详细信息
-   */
-  ApplicationSettingInfo save(ApplicationSettingInfo param);
-
-  /**
    * 添加记录
    *
    * @param param 实例<see cref="ApplicationSettingInfo"/>详细信息
    */
-  void insert(ApplicationSettingInfo param);
+  int insert(ApplicationSettingInfo param);
 
   /**
    * 修改记录
    *
    * @param param 实例<see cref="ApplicationSettingInfo"/>详细信息
    */
-  void update(ApplicationSettingInfo param);
+  int updateByPrimaryKey(ApplicationSettingInfo param);
 
   /**
    * 删除记录
    *
    * @param id 实例的标识
    */
-  void delete(String id);
+  int deleteByPrimaryKey(String id);
 
   // -------------------------------------------------------
   // 查询
@@ -52,7 +45,7 @@ public interface ApplicationSettingMapper {
    * @param id 标识
    * @return 返回实例 ApplicationSettingInfo 的详细信息
    */
-  ApplicationSettingInfo findOne(String id);
+  ApplicationSettingInfo selectByPrimaryKey(String id);
 
   /**
    * 查询所有相关记录
@@ -79,7 +72,7 @@ public interface ApplicationSettingMapper {
    * @param keyword                   文本信息关键字匹配
    * @return 返回所有实例 ApplicationSettingInfo 的详细信息
    */
-  List<ApplicationSettingInfo> findAllByApplicationSettingGroupId(String applicationSettingGroupId, String keyword, String scope);
+  List<ApplicationSettingInfo> findAllByApplicationSettingGroupId(@Param("applicationSettingGroupId") String applicationSettingGroupId, @Param("keyword") String keyword);
 
   /**
    * 根据参数分组信息查询所有相关记录
@@ -88,34 +81,11 @@ public interface ApplicationSettingMapper {
    * @param keyword                     文本信息关键字匹配
    * @return 返回所有实例 ApplicationSettingInfo 的详细信息
    */
-  List<ApplicationSettingInfo> findAllByApplicationSettingGroupName(String applicationSettingGroupName, String keyword, String scope);
+  List<ApplicationSettingInfo> findAllByApplicationSettingGroupName(@Param("applicationSettingGroupName") String applicationSettingGroupName, @Param("keyword") String keyword);
 
   // -------------------------------------------------------
   // 自定义功能
   // -------------------------------------------------------
-
-  /**
-   * 分页函数
-   *
-   * @param startIndex 开始行索引数,由0开始统计
-   * @param pageSize   页面大小
-   * @param query      数据查询参数
-   * @param rowCount   行数
-   * @return 返回一个列表实例 ApplicationSettingInfo
-   */
-  // List<ApplicationSettingInfo> getPaging(int startIndex, int pageSize, DataQuery query, tangible.RefObject<Integer> rowCount);
-
-  /**
-   * 分页函数
-   *
-   * @param startIndex  开始行索引数,由0开始统计
-   * @param pageSize    页面大小
-   * @param whereClause WHERE 查询条件
-   * @param orderBy     ORDER BY 排序条件
-   * @param rowCount    行数
-   * @return 返回一个列表实例<see       cref   =   "   ApplicationSettingQueryInfo   "   />
-   */
-  // List<ApplicationSettingQueryInfo> getQueryObjectPaging(int startIndex, int pageSize, String whereClause, String orderBy, tangible.RefObject<Integer> rowCount);
 
   /**
    * 查询是否存在相关的记录
@@ -133,7 +103,7 @@ public interface ApplicationSettingMapper {
    * @param value
    * @return
    */
-  String getText(String applicationId, String applicationSettingGroupName, String value);
+  String getText(@Param("applicationId") String applicationId, @Param("applicationSettingGroupName") String applicationSettingGroupName, @Param("value") String value);
 
   /**
    * 根据配置的文本获取值信息
@@ -143,5 +113,5 @@ public interface ApplicationSettingMapper {
    * @param text
    * @return
    */
-  String getValue(String applicationId, String applicationSettingGroupName, String text);
+  String getValue(@Param("applicationId") String applicationId, @Param("applicationSettingGroupName") String applicationSettingGroupName, @Param("text") String text);
 }

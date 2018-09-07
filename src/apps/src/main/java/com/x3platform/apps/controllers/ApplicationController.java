@@ -2,11 +2,21 @@ package com.x3platform.apps.controllers;
 
 import java.util.*;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.PageHelper;
 import com.x3platform.apps.AppsContext;
 import com.x3platform.apps.configuration.AppsConfiguration;
 import com.x3platform.apps.models.ApplicationInfo;
+import com.x3platform.apps.models.ApplicationMenuInfo;
 import com.x3platform.apps.services.IApplicationService;
+import com.x3platform.data.DataPaging;
+import com.x3platform.data.DataPagingUtil;
+import com.x3platform.data.DataQuery;
+import com.x3platform.globalization.I18n;
+import com.x3platform.util.StringUtil;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,30 +45,29 @@ public class ApplicationController {
    * @return 返回操作结果
    */
   @RequestMapping("/save")
-  public final String Save(HttpServletRequest req, HttpServletResponse res) {
-    ApplicationInfo param = new ApplicationInfo();
+  public String Save(@RequestBody String data) {
+    ApplicationInfo entity = JSON.parseObject(data, ApplicationInfo.class);
 
-    // param = AjaxUtil.<ApplicationInfo>Deserialize(param, doc);
+    this.service.save(entity);
 
-    this.service.save(param);
-
-    return "{\"message\":{\"returnCode\":0,\"value\":\"查询成功。\"}}";
+    return MessageObject.stringify("0", I18n.getStrings().text("msg_save_success"));
   }
 
   /**
    * 删除记录
    *
-   * @param doc Xml 文档对象
+   * @param data 请求的数据内容
    * @return 返回操作结果
    */
-  public final String delete(HttpServletRequest req, HttpServletResponse res) {
-    // String name = XmlHelper.Fetch("name", doc);
-    String name = req.getParameter("name");
+  @RequestMapping("/delete")
+  public String delete(@RequestBody String data) {
+    JSONObject req = JSON.parseObject(data);
 
-    this.service.delete(name);
+    String id = req.getString("id");
 
-    // return MessageObject.Stringify("0", I18n.Strings["msg_delete_success"]);
-    return MessageObject.stringify("0", "msg_delete_success");
+    this.service.delete(id);
+
+    return MessageObject.stringify("0", I18n.getStrings().text("msg_delete_success"));
   }
 
   // -------------------------------------------------------
@@ -66,25 +75,21 @@ public class ApplicationController {
   // -------------------------------------------------------
 
   /**
-   * 获取分页内容 / get paging.
+   * 获取详细信息
    *
-   * @param doc Xml 文档对象
-   * @return 返回一个相关的实例列表.
+   * @param data 请求的数据内容
+   * @return 返回一个相关的实例详细信息.
    */
-  public final String FindOne(HttpServletRequest req, HttpServletResponse res) {
-    StringBuilder outString = new StringBuilder();
+  @RequestMapping("/findOne")
+  public String findOne(@RequestBody String data) {
+    JSONObject req = JSON.parseObject(data);
 
-    // String name = XmlHelper.Fetch("name", doc);
-    String name = req.getParameter("name");
+    String id = req.getString("id");
 
-    ApplicationInfo param = this.service.findOne(name);
+    ApplicationInfo entity = this.service.findOne(id);
 
-    // outString.append("{\"data\":" + AjaxUtil.<ApplicationInfo>Parse(param) + ",");
-
-    // outString.append(MessageObject.Stringify("0", I18n.Strings["msg_query_success"], true) + "}");
-    outString.append(MessageObject.stringify("0", "msg_query_success", true) + "}");
-
-    return outString.toString();
+    return "{\"data\":" + JSON.toJSONString(entity) + ","
+      + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";
   }
 
   // -------------------------------------------------------
@@ -94,51 +99,82 @@ public class ApplicationController {
   /**
    * 获取分页内容
    *
-   * @param doc Xml 文档对象
-   * @return 返回操作结果
+   * @param data 请求的数据内容
+   * @return 返回一个相关的实例列表信息
    */
-  /*public final String GetPaging(HttpServletRequest req, HttpServletResponse res) {
-    StringBuilder outString = new StringBuilder();
+  @RequestMapping("/query")
+  public String Query(@RequestBody String data) {
+    JSONObject req = JSON.parseObject(data);
+    DataPaging paging = DataPagingUtil.Create(req.getString("paging"));
 
-    PagingHelper paging = PagingHelper.Create(XmlHelper.Fetch("paging", doc, "xml"), XmlHelper.Fetch("query", doc, "xml"));
+    DataQuery query = DataQuery.create(req.getString("query"));
 
-    int rowCount = 0;
+    PageHelper.startPage(paging.getCurrentPage(), paging.getPageSize());
 
-    tangible.RefObject<Integer> tempRef_rowCount = new tangible.RefObject<Integer>(rowCount);
-    List<ApplicationInfo> list = this.service.GetPaging(paging.RowIndex, paging.PageSize, paging.Query, tempRef_rowCount);
-    rowCount = tempRef_rowCount.argValue;
+    List<ApplicationInfo> list = this.service.findAll(query);
 
-    paging.RowCount = rowCount;
+    paging.setTotal(DataPagingUtil.getTotal(list));
 
-    outString.append("{\"data\":" + AjaxUtil.<ApplicationInfo>Parse(list) + ",");
+    return "{\"data\":" + JSON.toJSONString(list) + ",\"paging\":" + JSON.toJSONString(paging) + ","
+      + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";
+  }
 
-    outString.append("\"paging\":" + paging + ",");
-
-    outString.append(MessageObject.Stringify("0", I18n.Strings["msg_query_success"], true) + "}");
-
-    return outString.toString();
-  }*/
-
-  /**
-   * 创建新的对象
-   *
-   * @param doc Xml 文档对象
-   * @return 返回操作结果
-   */
   /*
-  public final String CreateNewObject(HttpServletRequest req, HttpServletResponse res) {
+   * 获取动态加载的树节点数据
+   *
+   * @param data 请求的数据内容
+   * @return 返回树型结构结果
+   */
+  @RequestMapping("/getDynamicTreeView")
+  public String getDynamicTreeView(@RequestBody String data) {
+    JSONObject req = JSON.parseObject(data);
+    // 必填字段
+    String tree = req.getString("tree");
+    String parentId = req.getString("parentId");
+
+    // 附加属性
+    String treeViewId = req.getString("treeViewId");
+    String treeViewName = req.getString("treeViewName");
+    String treeViewRootTreeNodeId = req.getString("treeViewRootTreeNodeId");
+
+    String url = req.getString("url");
+
+    // 树形控件默认根节点标识为0, 需要特殊处理.
+    parentId = (StringUtil.isNullOrEmpty(parentId) || parentId.equals("0")) ? treeViewRootTreeNodeId : parentId;
+
     StringBuilder outString = new StringBuilder();
 
-    ApplicationInfo param = new ApplicationInfo();
+    outString.append("{\"data\":");
+    outString.append("{\"tree\":\"" + tree + "\",");
+    outString.append("\"parentId\":\"" + parentId + "\",");
+    outString.append("\"childNodes\":[");
 
-    param.setName("");
+    // 查找树的子节点
+    DataQuery query = new DataQuery();
+    // String whereClause = String.format(" ParentId = ##%1$s## AND Status = 1 ORDER BY OrderId, Code ", parentId);
+    query.getWhere().put("parent_id", parentId);
+    query.getWhere().put("status", 1);
+    query.getOrders().add("order_id");
+    query.getOrders().add("code");
 
-    param.setCreatedDate = param.ModifiedDate = java.time.LocalDateTime.now();
+    List<ApplicationInfo> list = this.service.findAll(query);
 
-    outString.append("{\"data\":" + AjaxUtil.<ApplicationInfo>Parse(param) + ",");
+    for (ApplicationInfo item : list) {
+      outString.append("{");
+      outString.append("\"id\":\"" + item.getId() + "\",");
+      outString.append("\"parentId\":\"" + StringUtil.toSafeJson(item.getParentId().equals(treeViewRootTreeNodeId) ? "0" : item.getParentId()) + "\",");
+      outString.append("\"name\":\"" + StringUtil.toSafeJson(item.getApplicationDisplayName()) + "\",");
+      outString.append("\"url\":\"" + StringUtil.toSafeJson(url.replace("{treeNodeId}", item.getId()).replace("{treeNodeName}", item.getApplicationDisplayName())) + "\",");
+      outString.append("\"target\":\"_self\"");
+      outString.append("},");
+    }
 
-    outString.append(MessageObject.Stringify("0", I18n.Strings["msg_create_success"], true) + "}");
+    if (StringUtil.substring(outString.toString(), outString.length() - 1, 1).equals(",")) {
+      outString = outString.deleteCharAt(outString.length() - 1);
+    }
+
+    outString.append("]}," + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}");
 
     return outString.toString();
-  }*/
+  }
 }

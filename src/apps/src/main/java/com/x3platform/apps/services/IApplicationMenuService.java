@@ -20,14 +20,14 @@ public interface IApplicationMenuService {
    * @param param 实例 ApplicationMenuInfo 详细信息
    * @return 实例 ApplicationMenuInfo 详细信息
    */
-  ApplicationMenuInfo save(ApplicationMenuInfo param);
+  int save(ApplicationMenuInfo param);
 
   /**
    * 删除记录
    *
    * @param id 实例的标识
    */
-  void delete(String id);
+  int delete(String id);
 
   // -------------------------------------------------------
   // 查询
@@ -60,29 +60,6 @@ public interface IApplicationMenuService {
   // -------------------------------------------------------
   // 自定义功能
   // -------------------------------------------------------
-
-  /**
-   * 分页函数
-   *
-   * @param startIndex 开始行索引数,由0开始统计
-   * @param pageSize   页面大小
-   * @param query      数据查询参数
-   * @param rowCount   记录行数
-   * @return 返回一个列表实例ApplicationMenuInfo
-   */
-  // List<ApplicationMenuInfo> GetPaging(int startIndex, int pageSize, DataQuery query, tangible.RefObject<Integer> rowCount);
-
-  /**
-   * 分页函数
-   *
-   * @param startIndex  开始行索引数,由0开始统计
-   * @param pageSize    页面大小
-   * @param whereClause WHERE 查询条件
-   * @param orderBy     ORDER BY 排序条件
-   * @param rowCount    行数
-   * @return 返回一个列表实例<see       cref   =   "   ApplicationMenuQueryInfo   "   />
-   */
-  // List<ApplicationMenuQueryInfo> GetQueryObjectPaging(int startIndex, int pageSize, String whereClause, String orderBy, tangible.RefObject<Integer> rowCount);
 
   /**
    * 查询是否存在相关的记录

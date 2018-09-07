@@ -1,5 +1,6 @@
 package com.x3platform.apps.services.impl;
 
+import com.x3platform.KernelContext;
 import com.x3platform.apps.AppsSecurity;
 import com.x3platform.apps.configuration.AppsConfigurationView;
 import com.x3platform.apps.mappers.ApplicationMapper;
@@ -7,6 +8,7 @@ import com.x3platform.apps.models.ApplicationInfo;
 import com.x3platform.apps.services.IApplicationService;
 import com.x3platform.data.DataQuery;
 import com.x3platform.membership.IAccountInfo;
+import com.x3platform.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +17,6 @@ import java.util.*;
 /**
  * 应用配置服务
  */
-@Service
 public class ApplicationService implements IApplicationService {
   /**
    * 数据提供器
@@ -68,13 +69,30 @@ public class ApplicationService implements IApplicationService {
   /**
    * 保存记录
    *
-   * @param param 实例<see cref="ApplicationInfo"/>详细信息
+   * @param entity 实例 ApplicationInfo 详细信息
    * @return ApplicationInfo 实例详细信息
    */
-  public final ApplicationInfo save(ApplicationInfo param) {
+  @Override
+  public int save(ApplicationInfo entity) {
+    int affectedRows = -1;
+
+    String id = entity.getId();
+
+    if (StringUtil.isNullOrEmpty(id)) {
+      throw new NullPointerException("必须填写对象标识");
+    }
+
+    if (this.provider.selectByPrimaryKey(id) == null) {
+      affectedRows = this.provider.insert(entity);
+    } else {
+      affectedRows = this.provider.updateByPrimaryKey(entity);
+    }
+
+    KernelContext.getLog().debug("save entity id:'" + id + "', affectedRows:" + affectedRows);
+
     // 将应用信息设置到应用交互连接器
 
-    return provider.save(param);
+    return 0;
   }
 
   /**
@@ -82,8 +100,13 @@ public class ApplicationService implements IApplicationService {
    *
    * @param id 实例的标识信息
    */
-  public final void delete(String id) {
-    provider.delete(id);
+  @Override
+  public int delete(String id) {
+    int affectedRows = this.provider.deleteByPrimaryKey(id);
+
+    KernelContext.getLog().debug("delete entity id:'" + id + "', affectedRows:" + affectedRows);
+
+    return 0;
   }
 
   // -------------------------------------------------------
@@ -96,8 +119,9 @@ public class ApplicationService implements IApplicationService {
    * @param id ApplicationInfo Id号
    * @return 返回一个 ApplicationInfo 实例的详细信息
    */
-  public final ApplicationInfo findOne(String id) {
-    return provider.findOne(id);
+  @Override
+  public ApplicationInfo findOne(String id) {
+    return provider.selectByPrimaryKey(id);
   }
 
   /**
@@ -106,7 +130,8 @@ public class ApplicationService implements IApplicationService {
    * @param applicationName applicationName
    * @return 返回一个 ApplicationInfo 实例的详细信息
    */
-  public final ApplicationInfo findOneByApplicationName(String applicationName) {
+  @Override
+  public ApplicationInfo findOneByApplicationName(String applicationName) {
     ApplicationInfo param = null;
 
     // 初始化缓存
@@ -126,7 +151,7 @@ public class ApplicationService implements IApplicationService {
    *
    * @return 返回所有 ApplicationInfo 实例的详细信息
    */
-  public final List<ApplicationInfo> findAll() {
+  public List<ApplicationInfo> findAll() {
     return provider.findAll(new HashMap());
   }
 
@@ -136,7 +161,8 @@ public class ApplicationService implements IApplicationService {
    * @param query 数据查询参数
    * @return 返回所有 ApplicationInfo 实例的详细信息
    */
-  public final List<ApplicationInfo> findAll(DataQuery query) {
+  @Override
+  public List<ApplicationInfo> findAll(DataQuery query) {
     return provider.findAll(query.getMap());
   }
 
@@ -144,9 +170,10 @@ public class ApplicationService implements IApplicationService {
    * 根据帐号所属的标准角色信息对应的应用系统的功能点, 查询此帐号有权限启用的应用系统信息.
    *
    * @param accountId 帐号标识
-   * @return 返回所有<see                                                                                                                               cref                                                               =                                                               "                                                               ApplicationInfo                                                               "                                                               />实例的详细信息
+   * @return 返回所有<see                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               cref                                                                                                                                                                                                                                                               =                                                                                                                                                                                                                                                               "                                                                                                                                                                                                                                                               ApplicationInfo                                                                                                                                                                                                                                                               "                                                                                                                                                                                                                                                               />实例的详细信息
    */
-  public final List<ApplicationInfo> findAllByAccountId(String accountId) {
+  @Override
+  public List<ApplicationInfo> findAllByAccountId(String accountId) {
     return provider.findAllByAccountId(accountId);
   }
 
@@ -154,9 +181,10 @@ public class ApplicationService implements IApplicationService {
    * 根据角色所属的标准角色信息对应的应用系统的功能点, 查询此帐号有权限启用的应用系统信息.
    *
    * @param roleIds 角色标识
-   * @return 返回所有<see                                                                                                                               cref                                                               =                                                               "                                                               ApplicationInfo                                                               "                                                               />实例的详细信息
+   * @return 返回所有<see                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               cref                                                                                                                                                                                                                                                               =                                                                                                                                                                                                                                                               "                                                                                                                                                                                                                                                               ApplicationInfo                                                                                                                                                                                                                                                               "                                                                                                                                                                                                                                                               />实例的详细信息
    */
-  public final List<ApplicationInfo> findAllByRoleIds(String roleIds) {
+  @Override
+  public List<ApplicationInfo> findAllByRoleIds(String roleIds) {
     return provider.findAllByRoleIds(roleIds);
   }
 
@@ -173,7 +201,7 @@ public class ApplicationService implements IApplicationService {
    * @param rowCount   行数
    * @return 返回一个列表实例
    */
-  // public final List<ApplicationInfo> GetPaging(int startIndex, int pageSize, DataQuery query, tangible.RefObject<Integer> rowCount) {
+  // public List<ApplicationInfo> GetPaging(int startIndex, int pageSize, DataQuery query, tangible.RefObject<Integer> rowCount) {
   //  return provider.GetPaging(startIndex, pageSize, query, rowCount);
   // }
 
@@ -183,7 +211,8 @@ public class ApplicationService implements IApplicationService {
    * @param id 任务编码
    * @return 布尔值
    */
-  public final boolean isExist(String id) {
+  @Override
+  public boolean isExist(String id) {
     return provider.isExist(id);
   }
 
@@ -193,7 +222,8 @@ public class ApplicationService implements IApplicationService {
    * @param name 应用名称
    * @return 布尔值
    */
-  public final boolean isExistName(String name) {
+  @Override
+  public boolean isExistName(String name) {
     return provider.isExistName(name);
   }
 
@@ -205,7 +235,8 @@ public class ApplicationService implements IApplicationService {
    * @param authorityName 权限名称
    * @return 布尔值
    */
-  public final boolean hasAuthority(IAccountInfo account, String applicationId, String authorityName) {
+  @Override
+  public boolean hasAuthority(IAccountInfo account, String applicationId, String authorityName) {
     return hasAuthority(account.getId(), applicationId, authorityName);
   }
 
@@ -217,7 +248,8 @@ public class ApplicationService implements IApplicationService {
    * @param authorityName 权限名称
    * @return 布尔值
    */
-  public final boolean hasAuthority(String accountId, String applicationId, String authorityName) {
+  @Override
+  public boolean hasAuthority(String accountId, String applicationId, String authorityName) {
     return provider.hasAuthority(accountId, applicationId, authorityName);
   }
   ///#endregion
@@ -231,7 +263,8 @@ public class ApplicationService implements IApplicationService {
    * @param authorityName 权限名称
    * @param scopeText     权限范围的文本
    */
-  public final void bindAuthorizationScopeObjects(String applicationId, String authorityName, String scopeText) {
+  @Override
+  public void bindAuthorizationScopeObjects(String applicationId, String authorityName, String scopeText) {
     provider.bindAuthorizationScopeObjects(applicationId, authorityName, scopeText);
 
     // [重点]
@@ -250,7 +283,7 @@ public class ApplicationService implements IApplicationService {
    * @param authorityName 权限名称
    * @return
    */
-  // public final List<MembershipAuthorizationScopeObject> GetAuthorizationScopeObjects(String applicationId, String authorityName) {
+  // public List<MembershipAuthorizationScopeObject> GetAuthorizationScopeObjects(String applicationId, String authorityName) {
   //  return provider.getAuthorizationScopeObjects(applicationId, authorityName);
   // }
 
@@ -261,7 +294,8 @@ public class ApplicationService implements IApplicationService {
    * @param applicationId 应用的标识
    * @return 布尔值
    */
-  public final boolean isAdministrator(IAccountInfo account, String applicationId) {
+  @Override
+  public boolean isAdministrator(IAccountInfo account, String applicationId) {
     if (account == null) {
       return false;
     }
@@ -287,7 +321,8 @@ public class ApplicationService implements IApplicationService {
    * @param applicationId 应用的标识
    * @return 布尔值
    */
-  public final boolean isReviewer(IAccountInfo account, String applicationId) {
+  @Override
+  public boolean isReviewer(IAccountInfo account, String applicationId) {
     if (isAdministrator(account, applicationId)) {
       return true;
     }
@@ -302,7 +337,8 @@ public class ApplicationService implements IApplicationService {
    * @param applicationId 应用的标识
    * @return 布尔值
    */
-  public final boolean isMember(IAccountInfo account, String applicationId) {
+  @Override
+  public boolean isMember(IAccountInfo account, String applicationId) {
     if (isAdministrator(account, applicationId)) {
       return true;
     }

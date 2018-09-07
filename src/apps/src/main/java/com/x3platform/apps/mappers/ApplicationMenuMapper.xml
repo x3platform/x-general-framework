@@ -2,124 +2,120 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.x3platform.apps.mappers.ApplicationMenuMapper" >
   <resultMap id="findOne_Result" type="com.x3platform.apps.models.ApplicationMenuInfo">
-    <result property="mId" column="id" />
-    <result property="mApplicationId" column="application_id" />
-    <result property="mParentId" column="parent_id" />
-    <result property="mCode" column="code" />
-    <result property="mName" column="name" />
-    <result property="mDescription" column="description" />
-    <result property="mUrl" column="url" />
-    <result property="mTarget" column="target" />
-    <result property="mMenuType" column="menu_type" />
-    <result property="mIconPath" column="icon_path" />
-    <result property="mBigIconPath" column="big_icon_path" />
-    <result property="mDisplayType" column="display_type" />
-    <result property="mHasChild" column="has_child" />
-    <result property="mContextObject" column="context_object" />
-    <result property="mOrderId" column="order_id" />
-    <result property="mStatus" column="status" />
-    <result property="mRemark" column="remark" />
-    <result property="mFullPath" column="full_path" />
-    <result property="mModifiedDate" column="modified_date" />
-    <result property="mCreatedDate" column="created_date" />
+    <result property="id" column="id" />
+    <result property="applicationId" column="application_id" />
+    <result property="parentId" column="parent_id" />
+    <result property="code" column="code" />
+    <result property="name" column="name" />
+    <result property="description" column="description" />
+    <result property="url" column="url" />
+    <result property="target" column="target" />
+    <result property="menuType" column="menu_type" />
+    <result property="iconPath" column="icon_path" />
+    <result property="bigIconPath" column="big_icon_path" />
+    <result property="displayType" column="display_type" />
+    <result property="hasChild" column="has_child" />
+    <result property="contextObject" column="context_object" />
+    <result property="orderId" column="order_id" />
+    <result property="status" column="status" />
+    <result property="remark" column="remark" />
+    <result property="fullPath" column="full_path" />
+    <result property="modifiedDate" column="modified_date" />
+    <result property="createdDate" column="created_date" />
   </resultMap>
   <resultMap id="findAll_Result" type="com.x3platform.apps.models.ApplicationMenuInfo">
-    <result property="mId" column="id" />
-    <result property="mApplicationId" column="application_id" />
-    <result property="mParentId" column="parent_id" />
-    <result property="mCode" column="code" />
-    <result property="mName" column="name" />
-    <result property="mDescription" column="description" />
-    <result property="mUrl" column="url" />
-    <result property="mTarget" column="target" />
-    <result property="mMenuType" column="menu_type" />
-    <result property="mIconPath" column="icon_path" />
-    <result property="mBigIconPath" column="big_icon_path" />
-    <result property="mDisplayType" column="display_type" />
-    <result property="mHasChild" column="has_child" />
-    <result property="mOrderId" column="order_id" />
-    <result property="mStatus" column="status" />
-    <result property="mRemark" column="remark" />
-    <result property="mFullPath" column="full_path" />
-    <result property="mModifiedDate" column="modified_date" />
-    <result property="mCreatedDate" column="created_date" />
+    <result property="id" column="id" />
+    <result property="applicationId" column="application_id" />
+    <result property="parentId" column="parent_id" />
+    <result property="code" column="code" />
+    <result property="name" column="name" />
+    <result property="description" column="description" />
+    <result property="url" column="url" />
+    <result property="target" column="target" />
+    <result property="menuType" column="menu_type" />
+    <result property="iconPath" column="icon_path" />
+    <result property="bigIconPath" column="big_icon_path" />
+    <result property="displayType" column="display_type" />
+    <result property="hasChild" column="has_child" />
+    <result property="contextObject" column="context_object" />
+    <result property="orderId" column="order_id" />
+    <result property="status" column="status" />
+    <result property="remark" column="remark" />
+    <result property="fullPath" column="full_path" />
+    <result property="modifiedDate" column="modified_date" />
+    <result property="createdDate" column="created_date" />
   </resultMap>
   <insert id="insert" parameterType="com.x3platform.apps.models.ApplicationMenuInfo" >
-    INSERT INTO application
+    INSERT INTO application_menu
     (
       id,
-      account_id,
+      application_id,
       parent_id,
       code,
-      application_name,
-      application_display_name,
-      application_key,
-      application_secret,
-      pinyin,
+      name,
       description,
-      administrator_email,
+      url,
+      target,
+      menu_type,
       icon_path,
       big_icon_path,
-      help_url,
-      license_status,
-      hidden,
-      locking,
+      display_type,
+      has_child,
+      context_object,
       order_id,
       status,
       remark,
+      full_path,
       modified_date,
       created_date
     )
     VALUES
     (
-      #Id#,
-      #AccountId#,
-      #ParentId#,
-      #Code#,
-      #ApplicationName#,
-      #ApplicationDisplayName#,
-      #ApplicationKey#,
-      #ApplicationSecret#,
-      #PinYin#,
-      #Description#,
-      #AdministratorEmail#
-      #IconPath#,
-      #BigIconPath#,
-      #HelpUrl#,
-      #LicenseStatus#,
-      #Hidden#,
-      #Locking#,
-      #OrderId#,
-      #Status#,
-      #Remark#,
+      #{id,jdbcType=VARCHAR},
+      #{applicationId,jdbcType=VARCHAR},
+      #{parentId,jdbcType=VARCHAR},
+      #{code,jdbcType=VARCHAR},
+      #{name,jdbcType=VARCHAR},
+      #{description,jdbcType=VARCHAR},
+      #{url,jdbcType=VARCHAR},
+      #{target,jdbcType=VARCHAR},
+      #{menuType,jdbcType=VARCHAR},
+      #{iconPath,jdbcType=VARCHAR},
+      #{bigIconPath,jdbcType=VARCHAR},
+      #{displayType,jdbcType=VARCHAR},
+      #{hasChild,jdbcType=INTEGER},
+      #{contextObject,jdbcType=VARCHAR},
+      #{orderId,jdbcType=VARCHAR},
+      #{status,jdbcType=INTEGER},
+      #{remark,jdbcType=VARCHAR},
+      #{fullPath,jdbcType=VARCHAR},
       CURRENT_TIMESTAMP,
       CURRENT_TIMESTAMP
     )
   </insert>
-  <update id="update" parameterType="com.x3platform.apps.models.ApplicationMenuInfo" >
-    UPDATE application SET
+  <update id="updateByPrimaryKey" parameterType="com.x3platform.apps.models.ApplicationMenuInfo" >
+    UPDATE application_menu SET
 
-      parent_id = #{parentId},
-      code = #{code},
-      application_name = #{applicationName},
-      application_display_name = #{applicationDisplayName},
-      application_key = #{applicationKey},
-      application_secret = #{applicationSecret},
-      pinyin = #{pinyin},
-      description = #{description},
-      administrator_email = #{administratorEmail},
-      icon_path = #{iconPath},
-      big_icon_path = #{bigIconPath},
-      help_url = #{helpUrl},
-      license_status = #{licenseStatus},
-      hidden = #{hidden},
-      locking = #{locking},
-      order_id = #{orderId},
-      status = #{status},
-      remark = #{remark},
+      application_id = #{applicationId,jdbcType=VARCHAR},
+      parent_id = #{parentId,jdbcType=VARCHAR},
+      code = #{code,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
+      description = #{description,jdbcType=VARCHAR},
+      url = #{url,jdbcType=VARCHAR},
+      target = #{target,jdbcType=VARCHAR},
+      menu_type = #{menuType,jdbcType=VARCHAR},
+      icon_path = #{iconPath,jdbcType=VARCHAR},
+      big_icon_path = #{bigIconPath,jdbcType=VARCHAR},
+      display_type = #{displayType,jdbcType=VARCHAR},
+      has_child = #{hasChild,jdbcType=INTEGER},
+      context_object = #{contextObject,jdbcType=VARCHAR},
+      order_id = #{orderId,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      remark = #{remark,jdbcType=VARCHAR},
+      full_path = #{fullPath,jdbcType=VARCHAR},
       modified_date = CURRENT_TIMESTAMP
 
-    WHERE Id = #{Id} AND modified_date = #{ModifiedDate}
+    WHERE id = #{id}
   </update>
   <!--
       <update id="Sync_HasChildren" >
@@ -134,14 +130,11 @@
           DROP TEMPORARY TABLE tmp;
       </update>
       -->
-  <delete id="delete">
-    DELETE FROM application_menu WHERE $WhereClause$
+  <delete id="deleteByPrimaryKey">
+    DELETE FROM application_menu WHERE id = #{id}
   </delete>
-  <select id="findOne" parameterType="com.x3platform.apps.models.ApplicationMenuInfo" resultMap="findOne_Result" >
+  <select id="selectByPrimaryKey" parameterType="com.x3platform.apps.models.ApplicationMenuInfo" resultMap="findOne_Result" >
     SELECT * FROM application_menu WHERE id = #{id}
-  </select>
-  <select id="findOneByApplicationName" parameterType="com.x3platform.apps.models.ApplicationMenuInfo" resultMap="findOne_Result" >
-    SELECT * FROM application_menu WHERE application_name = #{applicationName}
   </select>
   <select id="findAll" resultMap="findAll_Result" >
     SELECT * FROM application_menu T
@@ -168,9 +161,6 @@
     <if test="length > 0">
       LIMIT 0, ${length}
     </if>
-  </select>
-  <select id="findAllByAccountId" resultMap="findAll_Result" >
-    SELECT * FROM application_menu where account_id = ${accountId}
   </select>
   <select id="isExist" resultType="boolean" >
     SELECT COUNT(0) AS "Count" FROM application_menu T WHERE id=#{id}

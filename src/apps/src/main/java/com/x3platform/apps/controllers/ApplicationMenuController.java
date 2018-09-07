@@ -46,13 +46,12 @@ public class ApplicationMenuController {
   /**
    * 保存记录
    *
+   * @param data 请求的数据内容
    * @return 返回操作结果
    */
   @RequestMapping("/save")
   public final String Save(@RequestBody String data) {
-    ApplicationMenuInfo entity = new ApplicationMenuInfo();
-
-    entity = JSON.parseObject(data, ApplicationMenuInfo.class);
+    ApplicationMenuInfo entity = JSON.parseObject(data, ApplicationMenuInfo.class);
 
     this.service.save(entity);
 
@@ -129,10 +128,11 @@ public class ApplicationMenuController {
   @RequestMapping("/query")
   public final String Query(@RequestBody String data) {
     JSONObject req = JSON.parseObject(data);
+
     DataPaging paging = DataPagingUtil.Create(req.getString("paging"));
 
     DataQuery query = DataQuery.create(req.getString("query"));
-    
+
     PageHelper.startPage(paging.getCurrentPage(), paging.getPageSize());
 
     List<ApplicationMenuInfo> list = this.service.findAll(query);
@@ -162,6 +162,8 @@ public class ApplicationMenuController {
   }
 
   /**
+   * 获取动态加载的树节点数据
+   *
    * @param data 请求的数据内容
    * @return 返回树型结构结果
    */
@@ -191,7 +193,7 @@ public class ApplicationMenuController {
     outString.append("\"childNodes\":[");
 
     // 特殊类型
-    if (parentId.equals("menu#applicationId#00000000-0000-0000-0000-000000000001#menuId#00000000-0000-0000-0000-000000000000")) {
+    if ("menu#applicationId#00000000-0000-0000-0000-000000000001#menuId#00000000-0000-0000-0000-000000000000".equals(parentId)) {
       if (AppsConfigurationView.getInstance().getHiddenStartMenu()) {
         outString.append("{");
         outString.append("\"id\":\"startMenu#applicationId#00000000-0000-0000-0000-000000000001#menuId#00000000-0000-0000-0000-000000000000\",");
@@ -223,7 +225,6 @@ public class ApplicationMenuController {
       }
     }
 
-    // String whereClause = null;
     DataQuery query = new DataQuery();
 
     String[] keys = parentId.split("#");

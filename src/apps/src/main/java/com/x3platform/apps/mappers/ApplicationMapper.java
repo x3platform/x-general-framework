@@ -11,69 +11,29 @@ import java.util.*;
 public interface ApplicationMapper {
 
   // -------------------------------------------------------
-  // 事务支持
+  // 添加 修改 删除
   // -------------------------------------------------------
-
-  /**
-   * 启动事务
-   */
-  // void BeginTransaction();
-
-  /**
-   * 启动事务
-   *
-   * @param isolationLevel 事务隔离级别
-   */
-  // void BeginTransaction(IsolationLevel isolationLevel);
-
-  /**
-   * 提交事务
-   */
-  // void CommitTransaction();
-
-  /**
-   * 回滚事务
-   */
-  // void RollBackTransaction();
-
-  // -------------------------------------------------------
-  // 保存 添加 修改 删除
-  // -------------------------------------------------------
-
-  ///#region 函数:Save(ApplicationInfo param)
-
-  /**
-   * 保存记录
-   *
-   * @param param 实例<see cref="ApplicationInfo"/>详细信息
-   * @return ApplicationInfo 实例详细信息
-   */
-  ApplicationInfo save(ApplicationInfo param);
-  ///#endregion
-
-  ///#region 函数:Insert(ApplicationInfo param)
 
   /**
    * 添加记录
    *
    * @param param ApplicationInfo 实例的详细信息
    */
-  void insert(ApplicationInfo param);
+  int insert(ApplicationInfo param);
 
   /**
    * 修改记录
    *
    * @param param ApplicationInfo 实例的详细信息
    */
-  void update(ApplicationInfo param);
+  int updateByPrimaryKey(ApplicationInfo param);
 
   /**
    * 删除记录
    *
-   * @param id 实例的标识信息
+   * @param id 标识
    */
-  void delete(String id);
-  ///#endregion
+  int deleteByPrimaryKey(String id);
 
   // -------------------------------------------------------
   // 查询
@@ -85,7 +45,7 @@ public interface ApplicationMapper {
    * @param id ApplicationInfo Id号
    * @return 返回一个 ApplicationInfo 实例的详细信息
    */
-  ApplicationInfo findOne(String id);
+  ApplicationInfo selectByPrimaryKey(String id);
 
   /**
    * 查询某条记录

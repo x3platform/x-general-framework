@@ -6,6 +6,8 @@ import com.x3platform.apps.mappers.ApplicationSettingMapper;
 import com.x3platform.apps.models.ApplicationSettingInfo;
 import com.x3platform.apps.models.ApplicationSettingQueryInfo;
 import com.x3platform.apps.services.IApplicationSettingService;
+import com.x3platform.util.StringUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 
@@ -15,6 +17,7 @@ public class ApplicationSettingService implements IApplicationSettingService {
   /**
    * 数据提供器
    */
+  @Autowired
   private ApplicationSettingMapper provider = null;
 
   /**
@@ -66,11 +69,28 @@ public class ApplicationSettingService implements IApplicationSettingService {
   /**
    * 保存记录
    *
-   * @param param 实例<see cref="ApplicationSettingInfo"/>详细信息
+   * @param entity 实例 ApplicationSettingInfo 详细信息
    * @return 实例 ApplicationSettingInfo 详细信息
    */
-  public final ApplicationSettingInfo save(ApplicationSettingInfo param) {
-    return this.provider.save(param);
+  @Override
+  public int save(ApplicationSettingInfo entity) {
+    int affectedRows = -1;
+
+    String id = entity.getId();
+
+    if (StringUtil.isNullOrEmpty(id)) {
+      throw new NullPointerException("必须填写对象标识");
+    }
+
+    if (this.provider.selectByPrimaryKey(id) == null) {
+      affectedRows = this.provider.insert(entity);
+    } else {
+      affectedRows = this.provider.updateByPrimaryKey(entity);
+    }
+
+    KernelContext.getLog().debug("save entity id:'" + id + "', affectedRows:" + affectedRows);
+
+    return 0;
   }
 
   /**
@@ -78,8 +98,13 @@ public class ApplicationSettingService implements IApplicationSettingService {
    *
    * @param id 实例的标识
    */
-  public final void delete(String id) {
-    this.provider.delete(id);
+  @Override
+  public int delete(String id) {
+    int affectedRows = this.provider.deleteByPrimaryKey(id);
+
+    KernelContext.getLog().debug("delete entity id:'" + id + "', affectedRows:" + affectedRows);
+
+    return 0;
   }
 
   // -------------------------------------------------------
@@ -92,19 +117,18 @@ public class ApplicationSettingService implements IApplicationSettingService {
    * @param id 标识
    * @return 返回实例 ApplicationSettingInfo 的详细信息
    */
-  public final ApplicationSettingInfo findOne(String id) {
-    return this.provider.findOne(id);
+  @Override
+  public ApplicationSettingInfo findOne(String id) {
+    return this.provider.selectByPrimaryKey(id);
   }
-  ///#endregion
-
-  ///#region 函数:FindAll()
 
   /**
    * 查询所有相关记录
    *
    * @return 返回所有实例 ApplicationSettingInfo 的详细信息
    */
-  public final List<ApplicationSettingInfo> findAll() {
+  @Override
+  public List<ApplicationSettingInfo> findAll() {
     return this.provider.findAll(new HashMap());
   }
 
@@ -114,7 +138,7 @@ public class ApplicationSettingService implements IApplicationSettingService {
    * @param whereClause SQL 查询条件
    * @return 返回所有实例 ApplicationSettingInfo 的详细信息
    */
-  // public final List<ApplicationSettingInfo> findAll(String whereClause) {
+  // public List<ApplicationSettingInfo> findAll(String whereClause) {
   //  return findAll(whereClause, 0);
   // }
 
@@ -125,7 +149,7 @@ public class ApplicationSettingService implements IApplicationSettingService {
    * @param length      条数
    * @return 返回所有实例 ApplicationSettingInfo 的详细信息
    */
-  // public final List<ApplicationSettingInfo> findAll(String whereClause, int length) {
+  // public List<ApplicationSettingInfo> findAll(String whereClause, int length) {
   //   return this.provider.findAll(whereClause, length);
   // }
 
@@ -136,7 +160,7 @@ public class ApplicationSettingService implements IApplicationSettingService {
    * @param length      条数
    * @return 返回所有实例 ApplicationSettingQueryInfo 的详细信息
    */
-  // public final List<ApplicationSettingQueryInfo> findAllQueryObject(String whereClause, int length) {
+  // public List<ApplicationSettingQueryInfo> findAllQueryObject(String whereClause, int length) {
   //   return this.provider.findAllQueryObject(whereClause, length);
   // }
 
@@ -146,8 +170,9 @@ public class ApplicationSettingService implements IApplicationSettingService {
    * @param applicationSettingGroupId 参数分组标识
    * @return 返回所有实例 ApplicationSettingInfo 的详细信息
    */
-  public final List<ApplicationSettingInfo> findAllByApplicationSettingGroupId(String applicationSettingGroupId) {
-    return this.provider.findAllByApplicationSettingGroupId(applicationSettingGroupId, null, "");
+  @Override
+  public List<ApplicationSettingInfo> findAllByApplicationSettingGroupId(String applicationSettingGroupId) {
+    return this.provider.findAllByApplicationSettingGroupId(applicationSettingGroupId, null);
   }
 
   /**
@@ -157,12 +182,14 @@ public class ApplicationSettingService implements IApplicationSettingService {
    * @param keyword                   文本信息关键字匹配
    * @return 返回所有实例 ApplicationSettingInfo 的详细信息
    */
-  public final List<ApplicationSettingInfo> findAllByApplicationSettingGroupId(String applicationSettingGroupId, String keyword) {
-    return this.provider.findAllByApplicationSettingGroupId(applicationSettingGroupId, keyword, "");
-  }
-  ///#endregion
+  @Override
+  public List<ApplicationSettingInfo> findAllByApplicationSettingGroupId(String applicationSettingGroupId, String keyword) {
+    if (!StringUtil.isNullOrEmpty(keyword)) {
+      keyword = "%" + keyword + "%";
+    }
 
-  ///#region 函数:FindAllByApplicationSettingGroupName(string applicationSettingGroupName)
+    return this.provider.findAllByApplicationSettingGroupId(applicationSettingGroupId, keyword);
+  }
 
   /**
    * 根据参数分组信息查询所有相关记录
@@ -170,12 +197,10 @@ public class ApplicationSettingService implements IApplicationSettingService {
    * @param applicationSettingGroupName 参数分组名称
    * @return 返回所有实例 ApplicationSettingInfo 的详细信息
    */
-  public final List<ApplicationSettingInfo> findAllByApplicationSettingGroupName(String applicationSettingGroupName) {
-    return this.provider.findAllByApplicationSettingGroupName(applicationSettingGroupName, null, "");
+  @Override
+  public List<ApplicationSettingInfo> findAllByApplicationSettingGroupName(String applicationSettingGroupName) {
+    return this.provider.findAllByApplicationSettingGroupName(applicationSettingGroupName, null);
   }
-  ///#endregion
-
-  ///#region 函数:FindAllByApplicationSettingGroupName(string applicationSettingGroupName, string keyword)
 
   /**
    * 根据参数分组信息查询所有相关记录
@@ -184,8 +209,13 @@ public class ApplicationSettingService implements IApplicationSettingService {
    * @param keyword                     文本信息关键字匹配
    * @return 返回所有实例 ApplicationSettingInfo 的详细信息
    */
-  public final List<ApplicationSettingInfo> findAllByApplicationSettingGroupName(String applicationSettingGroupName, String keyword) {
-    return this.provider.findAllByApplicationSettingGroupName(applicationSettingGroupName, keyword, "");
+  @Override
+  public List<ApplicationSettingInfo> findAllByApplicationSettingGroupName(String applicationSettingGroupName, String keyword) {
+    if (!StringUtil.isNullOrEmpty(keyword)) {
+      keyword = "%" + keyword + "%";
+    }
+
+    return this.provider.findAllByApplicationSettingGroupName(applicationSettingGroupName, keyword);
   }
 
   // -------------------------------------------------------
@@ -201,7 +231,7 @@ public class ApplicationSettingService implements IApplicationSettingService {
    * @param rowCount   行数
    * @return 返回一个列表实例 ApplicationSettingInfo
    */
-  // public final List<ApplicationSettingInfo> GetPaging(int startIndex, int pageSize, DataQuery query, tangible.RefObject<Integer> rowCount) {
+  // public List<ApplicationSettingInfo> GetPaging(int startIndex, int pageSize, DataQuery query, tangible.RefObject<Integer> rowCount) {
   //  return this.provider.GetPaging(startIndex, pageSize, query, rowCount);
   // }
 
@@ -213,9 +243,9 @@ public class ApplicationSettingService implements IApplicationSettingService {
    * @param whereClause WHERE 查询条件
    * @param orderBy     ORDER BY 排序条件
    * @param rowCount    行数
-   * @return 返回一个列表实例<see               cref       =       "       ApplicationSettingQueryInfo       "       />
+   * @return 返回一个列表实例<see                                                                                                                                                                                                                                                               cref                                                                                                                               =                                                                                                                               "                                                                                                                               ApplicationSettingQueryInfo                                                                                                                               "                                                                                                                               />
    */
-  // public final List<ApplicationSettingQueryInfo> GetQueryObjectPaging(int startIndex, int pageSize, String whereClause, String orderBy, tangible.RefObject<Integer> rowCount) {
+  // public List<ApplicationSettingQueryInfo> GetQueryObjectPaging(int startIndex, int pageSize, String whereClause, String orderBy, tangible.RefObject<Integer> rowCount) {
   //  return this.provider.GetQueryObjectPaging(startIndex, pageSize, whereClause, orderBy, rowCount);
   // }
 
@@ -225,7 +255,8 @@ public class ApplicationSettingService implements IApplicationSettingService {
    * @param id 标识
    * @return 布尔值
    */
-  public final boolean isExist(String id) {
+  @Override
+  public boolean isExist(String id) {
     return this.provider.isExist(id);
   }
 
@@ -237,7 +268,8 @@ public class ApplicationSettingService implements IApplicationSettingService {
    * @param value
    * @return
    */
-  public final String getText(String applicationId, String applicationSettingGroupName, String value) {
+  @Override
+  public String getText(String applicationId, String applicationSettingGroupName, String value) {
     ApplicationSettingInfo param = FetchDictionaryItem(applicationId, applicationSettingGroupName, "value", value);
 
     // 如果缓存中未找到相关数据，则查找数据库内容
@@ -252,7 +284,8 @@ public class ApplicationSettingService implements IApplicationSettingService {
    * @param text
    * @return
    */
-  public final String getValue(String applicationId, String applicationSettingGroupName, String text) {
+  @Override
+  public String getValue(String applicationId, String applicationSettingGroupName, String text) {
     ApplicationSettingInfo param = FetchDictionaryItem(applicationId, applicationSettingGroupName, "value", text);
 
     // 如果缓存中未找到相关数据，则查找数据库内容

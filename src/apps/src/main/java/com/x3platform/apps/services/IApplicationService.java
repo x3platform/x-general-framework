@@ -20,14 +20,14 @@ public interface IApplicationService {
    * @param param 实例 ApplicationInfo 详细信息
    * @return ApplicationInfo 实例详细信息
    */
-  ApplicationInfo save(ApplicationInfo param);
+  int save(ApplicationInfo param);
 
   /**
    * 删除记录
    *
    * @param id 实例的标识信息
    */
-  void delete(String id);
+  int delete(String id);
 
   // -------------------------------------------------------
   // 查询

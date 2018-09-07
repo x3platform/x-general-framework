@@ -23,43 +23,43 @@ public class ApplicationMenuInfo extends EntityClass {
   public ApplicationMenuInfo() {
   }
 
-  private String mId = "";
+  private String id = "";
 
   /**
    *
    */
   public final String getId() {
-    return mId;
+    return id;
   }
 
   public final void setId(String value) {
-    mId = value;
+    id = value;
   }
 
-  private ApplicationInfo mApplication;
+  private ApplicationInfo application;
 
   /**
    * 应用
    */
   @JSONField(serialize = false)
   public final ApplicationInfo getApplication() {
-    if (mApplication == null && !StringUtil.isNullOrEmpty(this.getApplicationId())) {
-      mApplication = AppsContext.getInstance().getApplicationService().findOne(this.getApplicationId());
+    if (application == null && !StringUtil.isNullOrEmpty(this.getApplicationId())) {
+      application = AppsContext.getInstance().getApplicationService().findOne(this.getApplicationId());
     }
 
-    return mApplication;
+    return application;
   }
 
-  private String mApplicationId = "";
+  private String applicationId = "";
 
   /**
    */
   public final String getApplicationId() {
-    return mApplicationId;
+    return applicationId;
   }
 
   public final void setApplicationId(String value) {
-    mApplicationId = value;
+    applicationId = value;
   }
 
   /**
@@ -75,7 +75,7 @@ public class ApplicationMenuInfo extends EntityClass {
   }
 
   @JSONField(serialize = false)
-  private ApplicationMenuInfo mParent;
+  private ApplicationMenuInfo parent;
 
   /**
    * 应用
@@ -85,24 +85,24 @@ public class ApplicationMenuInfo extends EntityClass {
       return null;
     }
 
-    if (mParent == null && !StringUtil.isNullOrEmpty(this.getParentId())) {
+    if (parent == null && !StringUtil.isNullOrEmpty(this.getParentId())) {
       // FIXME
-      // mParent = AppsContext.getInstance().getApplicationMenuService().FindOne(this.getParentId());
+      // parent = AppsContext.getInstance().getApplicationMenuService().FindOne(this.getParentId());
     }
 
-    return mParent;
+    return parent;
   }
 
-  private String mParentId = UUIDUtil.emptyString();
+  private String parentId = UUIDUtil.emptyString();
 
   /**
    */
   public final String getParentId() {
-    return mParentId;
+    return parentId;
   }
 
   public final void setParentId(String value) {
-    mParentId = value;
+    parentId = value;
   }
 
   /**
@@ -111,253 +111,253 @@ public class ApplicationMenuInfo extends EntityClass {
     return this.getParent() == null ? this.getApplicationDisplayName() : this.getParent().getName();
   }
 
-  private String mCode = "";
+  private String code = "";
 
   /**
    */
   public final String getCode() {
-    return mCode;
+    return code;
   }
 
   public final void setCode(String value) {
-    mCode = value;
+    code = value;
   }
 
-  private String mName = "";
+  private String name = "";
 
   /**
    */
   public final String getName() {
-    return mName;
+    return name;
   }
 
   public final void setName(String value) {
-    mName = value;
+    name = value;
   }
 
-  private String mDescription = "";
+  private String description = "";
 
   /**
    */
   public final String getDescription() {
-    return mDescription;
+    return description;
   }
 
   public final void setDescription(String value) {
-    mDescription = value;
+    description = value;
   }
 
-  private String mUrl = "";
+  private String url = "";
 
   /**
    */
   public final String getUrl() {
-    return mUrl;
+    return url;
   }
 
   public final void setUrl(String value) {
-    mUrl = value;
+    url = value;
   }
 
-  private String mTarget = "_self";
+  private String target = "_self";
 
   /**
    */
   public final String getTarget() {
-    return mTarget;
+    return target;
   }
 
   public final void setTarget(String value) {
-    mTarget = value;
+    target = value;
   }
 
-  private String mTargetView = "";
+  private String targetView = "";
 
   /**
    */
   public final String getTargetView() {
-    if (StringUtil.isNullOrEmpty(mTargetView) && !StringUtil.isNullOrEmpty(this.getTarget())) {
+    if (StringUtil.isNullOrEmpty(targetView) && !StringUtil.isNullOrEmpty(this.getTarget())) {
       // FIXME 待处理
       // this.mTargetView = AppsContext.getInstance().getApplicationSettingService().getText(AppsContext.getInstance().getApplicationService().findOneByApplicationName("ApplicationManagement").getId(), "应用管理_应用链接打开方式", this.getTarget());
     }
 
-    return mTargetView;
+    return targetView;
   }
 
-  private String mMenuType = "ApplicationMenu";
+  private String menuType = "ApplicationMenu";
 
   /**
    */
   public final String getMenuType() {
-    return mMenuType;
+    return menuType;
   }
 
   public final void setMenuType(String value) {
-    mMenuType = value;
+    menuType = value;
   }
 
-  private String mMenuTypeView = null;
+  private String menuTypeView = null;
 
   /**
    */
   public final String getMenuTypeView() {
-    if (StringUtil.isNullOrEmpty(mMenuTypeView) && !StringUtil.isNullOrEmpty(this.getMenuType())) {
+    if (StringUtil.isNullOrEmpty(menuTypeView) && !StringUtil.isNullOrEmpty(this.getMenuType())) {
       // FIXME 待处理
-      // this.mMenuTypeView = AppsContext.getInstance().getApplicationSettingService().GetText(AppsContext.Instance.ApplicationService["ApplicationManagement"].Id, "应用管理_应用菜单类别", mMenuType);
+      // this.mMenuTypeView = AppsContext.getInstance().getApplicationSettingService().GetText(AppsContext.Instance.ApplicationService["ApplicationManagement"].Id, "应用管理_应用菜单类别", menuType);
     }
 
-    return mMenuTypeView;
+    return menuTypeView;
   }
 
-  private String mIconPath = "";
+  private String iconPath = "";
 
   /**
    */
   public final String getIconPath() {
-    return mIconPath;
+    return iconPath;
   }
 
   public final void setIconPath(String value) {
-    mIconPath = value;
+    iconPath = value;
   }
   ///#endregion
 
   ///#region 属性:BigIconPath
-  private String mBigIconPath = "";
+  private String bigIconPath = "";
 
   /**
    */
   public final String getBigIconPath() {
-    return mBigIconPath;
+    return bigIconPath;
   }
 
   public final void setBigIconPath(String value) {
-    mBigIconPath = value;
+    bigIconPath = value;
   }
   ///#endregion
 
   ///#region 属性:DisplayType
-  private String mDisplayType = "";
+  private String displayType = "";
 
   /**
    * 显示方式
    */
   public final String getDisplayType() {
-    return mDisplayType;
+    return displayType;
   }
 
   public final void setDisplayType(String value) {
-    mDisplayType = value;
+    displayType = value;
   }
 
-  private String mDisplayTypeView = "";
+  private String displayTypeView = "";
 
   /**
    */
   public final String getDisplayTypeView() {
-    if (StringUtil.isNullOrEmpty(mDisplayTypeView) && !StringUtil.isNullOrEmpty(this.getDisplayType())) {
+    if (StringUtil.isNullOrEmpty(displayTypeView) && !StringUtil.isNullOrEmpty(this.getDisplayType())) {
       // FIXME
       // this.mDisplayTypeView = AppsContext.getInstance().getApplicationSettingService().getText(AppsContext.getInstance().getApplicationService().findOneByApplicationName("ApplicationManagement").getId(), "应用管理_应用菜单展现方式", this.getDisplayType());
     }
 
-    return mDisplayTypeView;
+    return displayTypeView;
   }
 
-  private int mHasChild;
+  private int hasChild;
 
   /**
    */
   public final int getHasChild() {
-    return mHasChild;
+    return hasChild;
   }
 
   public final void setHasChild(int value) {
-    mHasChild = value;
+    hasChild = value;
   }
 
-  private String mContextObject = "";
+  private String contextObject = "";
 
   /**
    * 上下文对象
    */
   public final String getContextObject() {
-    return mContextObject;
+    return contextObject;
   }
 
   public final void setContextObject(String value) {
-    mContextObject = value;
+    contextObject = value;
   }
 
-  private String mOrderId = "";
+  private String orderId = "";
 
   /**
    */
   public final String getOrderId() {
-    return mOrderId;
+    return orderId;
   }
 
   public final void setOrderId(String value) {
-    mOrderId = value;
+    orderId = value;
   }
 
-  private int mStatus;
+  private int status;
 
   /**
    */
   public final int getStatus() {
-    return mStatus;
+    return status;
   }
 
   public final void setStatus(int value) {
-    mStatus = value;
+    status = value;
   }
 
-  private String mRemark = "";
+  private String remark = "";
 
   /**
    */
   public final String getRemark() {
-    return mRemark;
+    return remark;
   }
 
   public final void setRemark(String value) {
-    mRemark = value;
+    remark = value;
   }
 
-  private String mFullPath = "";
+  private String fullPath = "";
 
   /**
    */
   public final String getFullPath() {
-    return mFullPath;
+    return fullPath;
   }
 
   public final void setFullPath(String value) {
-    mFullPath = value;
+    fullPath = value;
   }
 
-  private java.time.LocalDateTime mModifiedDate = java.time.LocalDateTime.MIN;
+  private java.time.LocalDateTime modifiedDate = java.time.LocalDateTime.MIN;
 
   /**
    */
   public final java.time.LocalDateTime getModifiedDate() {
-    return mModifiedDate;
+    return modifiedDate;
   }
 
   public final void setModifiedDate(java.time.LocalDateTime value) {
-    mModifiedDate = value;
+    modifiedDate = value;
   }
 
-  private java.time.LocalDateTime mCreatedDate = java.time.LocalDateTime.MIN;
+  private java.time.LocalDateTime createdDate = java.time.LocalDateTime.MIN;
 
   /**
    */
   public final java.time.LocalDateTime getCreatedDate() {
-    return mCreatedDate;
+    return createdDate;
   }
 
   public final void setCreatedDate(java.time.LocalDateTime value) {
-    mCreatedDate = value;
+    createdDate = value;
   }
 
   // -------------------------------------------------------
@@ -376,8 +376,8 @@ public class ApplicationMenuInfo extends EntityClass {
    */
   public final void BindAuthorizationReadScope(String scopeText) {
     // 清空缓存数据
-    this.mAuthorizationReadScopeObjectText = null;
-    this.mAuthorizationReadScopeObjectView = null;
+    this.authorizationReadScopeObjectText = null;
+    this.authorizationReadScopeObjectView = null;
 
     // TODO 待处理
     // if (this.mAuthorizationReadScopeObjects == null) {
@@ -387,38 +387,38 @@ public class ApplicationMenuInfo extends EntityClass {
     // MembershipAuthorizationScopeManagement.BindAuthorizationScopeObjects(this.mAuthorizationReadScopeObjects, scopeText);
   }
 
-  // private List<MembershipAuthorizationScopeObject> mAuthorizationReadScopeObjects = null;
+  // private List<MembershipAuthorizationScopeObject> authorizationReadScopeObjects = null;
 
   /**
    * 权限：应用_通用_查看权限范围
    */
   // public final List<MembershipAuthorizationScopeObject> getAuthorizationReadScopeObjects() {
   //   if (mAuthorizationReadScopeObjects == null) {
-  //     mAuthorizationReadScopeObjects = AppsContext.Instance.ApplicationMenuService.GetAuthorizationScopeObjects(this.getEntityId(), this.authorizationRead.Name);
+  //     authorizationReadScopeObjects = AppsContext.Instance.ApplicationMenuService.GetAuthorizationScopeObjects(this.getEntityId(), this.authorizationRead.Name);
   //
   //     // 设置默认权限是所有人
   //    if (mAuthorizationReadScopeObjects.isEmpty()) {
   //       IAuthorizationObject authorizationObject = MembershipManagement.Instance.RoleService.GetEveryoneObject();
 
-  //       mAuthorizationReadScopeObjects.add(new MembershipAuthorizationScopeObject(authorizationObject.getAuthorizationObjectType(), authorizationObject.getAuthorizationObjectId(), authorizationObject.getAuthorizationObjectName()));
+  //       authorizationReadScopeObjects.add(new MembershipAuthorizationScopeObject(authorizationObject.getAuthorizationObjectType(), authorizationObject.getAuthorizationObjectId(), authorizationObject.getAuthorizationObjectName()));
   //    }
   //  }
 
-  //   return mAuthorizationReadScopeObjects;
+  //   return authorizationReadScopeObjects;
   // }
 
-  private String mAuthorizationReadScopeObjectText = null;
+  private String authorizationReadScopeObjectText = null;
 
   /**
    * 权限：应用_通用_查看权限范围文本
    */
   public final String getAuthorizationReadScopeObjectText() {
-    if (StringUtil.isNullOrEmpty(mAuthorizationReadScopeObjectText)) {
+    if (StringUtil.isNullOrEmpty(authorizationReadScopeObjectText)) {
       // FIXME 待处理
-      // mAuthorizationReadScopeObjectText = MembershipAuthorizationScopeManagement.GetAuthorizationScopeObjectText(this.getAuthorizationReadScopeObjects());
+      // authorizationReadScopeObjectText = MembershipAuthorizationScopeManagement.GetAuthorizationScopeObjectText(this.getAuthorizationReadScopeObjects());
     }
 
-    return mAuthorizationReadScopeObjectText;
+    return authorizationReadScopeObjectText;
   }
 
   public final void setAuthorizationReadScopeObjectText(String value) {
@@ -427,17 +427,17 @@ public class ApplicationMenuInfo extends EntityClass {
     }
   }
 
-  private String mAuthorizationReadScopeObjectView = null;
+  private String authorizationReadScopeObjectView = null;
 
   /**
    * 权限：应用_通用_查看权限范围视图
    */
   public final String getAuthorizationReadScopeObjectView() {
-    if (StringUtil.isNullOrEmpty(mAuthorizationReadScopeObjectView)) {
-      // mAuthorizationReadScopeObjectView = MembershipAuthorizationScopeManagement.GetAuthorizationScopeObjectView(this.getAuthorizationReadScopeObjects());
+    if (StringUtil.isNullOrEmpty(authorizationReadScopeObjectView)) {
+      // authorizationReadScopeObjectView = MembershipAuthorizationScopeManagement.GetAuthorizationScopeObjectView(this.getAuthorizationReadScopeObjects());
     }
 
-    return mAuthorizationReadScopeObjectView;
+    return authorizationReadScopeObjectView;
   }
   ///#endregion
 

@@ -12,37 +12,29 @@ import java.util.*;
  */
 public interface ApplicationMenuMapper {
   // -------------------------------------------------------
-  // 保存 添加 修改 删除
+  // 添加 修改 删除
   // -------------------------------------------------------
-
-  /**
-   * 保存记录
-   *
-   * @param param 实例 ApplicationMenuInfo 详细信息
-   * @return ApplicationMenuInfo 实例详细信息
-   */
-  ApplicationMenuInfo save(ApplicationMenuInfo param);
 
   /**
    * 添加记录
    *
    * @param param ApplicationMenuInfo 实例的详细信息
    */
-  void insert(ApplicationMenuInfo param);
+  int insert(ApplicationMenuInfo param);
 
   /**
    * 修改记录
    *
    * @param param ApplicationMenuInfo 实例的详细信息
    */
-  void update(ApplicationMenuInfo param);
+  int updateByPrimaryKey(ApplicationMenuInfo param);
 
   /**
    * 删除记录
    *
    * @param id 实例的标识信息
    */
-  void delete(String id);
+  int deleteByPrimaryKey(String id);
 
   // -------------------------------------------------------
   // 查询
@@ -51,10 +43,10 @@ public interface ApplicationMenuMapper {
   /**
    * 查询某条记录
    *
-   * @param id ApplicationMenuInfo Id号
+   * @param id 标识
    * @return 返回一个 ApplicationMenuInfo 实例的详细信息
    */
-  ApplicationMenuInfo findOne(String id);
+  ApplicationMenuInfo selectByPrimaryKey(String id);
 
   /**
    * 查询所有相关记录

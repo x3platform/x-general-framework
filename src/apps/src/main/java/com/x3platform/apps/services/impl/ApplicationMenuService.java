@@ -47,13 +47,30 @@ public class ApplicationMenuService implements IApplicationMenuService {
   /**
    * 保存记录
    *
-   * @param param 实例<see cref="ApplicationMenuInfo"/>详细信息
+   * @param entity 实例 ApplicationMenuInfo 详细信息
    * @return
    */
-  public final ApplicationMenuInfo save(ApplicationMenuInfo param) {
-    param.setFullPath(this.combineFullPath(param));
+  public int save(ApplicationMenuInfo entity) {
+    int affectedRows = -1;
 
-    return this.provider.save(param);
+    String id = entity.getId();
+
+    if (StringUtil.isNullOrEmpty(id)) {
+      throw new NullPointerException("必须填写对象标识");
+    }
+
+    // 计算完整路径
+    entity.setFullPath(this.combineFullPath(entity));
+
+    if (this.provider.selectByPrimaryKey(id) == null) {
+      affectedRows = this.provider.insert(entity);
+    } else {
+      affectedRows = this.provider.updateByPrimaryKey(entity);
+    }
+
+    KernelContext.getLog().debug("save entity id:'" + id + "', affectedRows:" + affectedRows);
+
+    return 0;
   }
 
   /**
@@ -61,8 +78,12 @@ public class ApplicationMenuService implements IApplicationMenuService {
    *
    * @param id 实例的标识
    */
-  public final void delete(String id) {
-    provider.delete(id);
+  public int delete(String id) {
+    int affectedRows = this.provider.deleteByPrimaryKey(id);
+
+    KernelContext.getLog().debug("delete entity id:'" + id + "', affectedRows:" + affectedRows);
+
+    return 0;
   }
 
   // -------------------------------------------------------
@@ -75,8 +96,8 @@ public class ApplicationMenuService implements IApplicationMenuService {
    * @param id 标识
    * @return
    */
-  public final ApplicationMenuInfo findOne(String id) {
-    return this.provider.findOne(id);
+  public ApplicationMenuInfo findOne(String id) {
+    return this.provider.selectByPrimaryKey(id);
   }
 
   /**
@@ -85,7 +106,7 @@ public class ApplicationMenuService implements IApplicationMenuService {
    * @param query 数据查询参数
    * @return
    */
-  public final List<ApplicationMenuInfo> findAll(DataQuery query) {
+  public List<ApplicationMenuInfo> findAll(DataQuery query) {
     return this.provider.findAll(query.getMap());
   }
 
@@ -95,7 +116,7 @@ public class ApplicationMenuService implements IApplicationMenuService {
    * @param query 数据查询参数
    * @return
    */
-  public final List<ApplicationMenuQueryInfo> findAllQueryObject(DataQuery query) {
+  public List<ApplicationMenuQueryInfo> findAllQueryObject(DataQuery query) {
 //     // 验证管理员身份
 //    if (AppsSecurity.IsAdministrator(KernelContext.Current.User, AppsConfiguration.ApplicationName)) {
 //      return this.provider.findAllQueryObject(whereClause, length);
@@ -115,7 +136,7 @@ public class ApplicationMenuService implements IApplicationMenuService {
    * @param id 标识
    * @return 布尔值
    */
-  public final boolean isExist(String id) {
+  public boolean isExist(String id) {
     return this.provider.isExist(id);
   }
 
@@ -125,7 +146,7 @@ public class ApplicationMenuService implements IApplicationMenuService {
    * @param param 菜单信息
    * @return
    */
-  public final String combineFullPath(ApplicationMenuInfo param) {
+  public String combineFullPath(ApplicationMenuInfo param) {
     String fullPath = "";
 
     fullPath = param.getName();
@@ -168,7 +189,7 @@ public class ApplicationMenuService implements IApplicationMenuService {
    * @param account       帐号
    * @return 布尔值
    */
-  public final boolean hasAuthority(String entityId, String authorityName, IAccountInfo account) {
+  public boolean hasAuthority(String entityId, String authorityName, IAccountInfo account) {
     return provider.hasAuthority(entityId, authorityName, account);
   }
 
@@ -179,7 +200,7 @@ public class ApplicationMenuService implements IApplicationMenuService {
    * @param authorityName 权限名称
    * @param scopeText     权限范围的文本
    */
-  public final void bindAuthorizationScopeObjects(String entityId, String authorityName, String scopeText) {
+  public void bindAuthorizationScopeObjects(String entityId, String authorityName, String scopeText) {
     provider.bindAuthorizationScopeObjects(entityId, authorityName, scopeText);
   }
   ///#endregion
@@ -193,7 +214,7 @@ public class ApplicationMenuService implements IApplicationMenuService {
    * @param authorityName 权限名称
    * @return
    */
-  // public final List<MembershipAuthorizationScopeObject> GetAuthorizationScopeObjects(String entityId, String authorityName) {
+  // public List<MembershipAuthorizationScopeObject> GetAuthorizationScopeObjects(String entityId, String authorityName) {
   //  return provider.GetAuthorizationScopeObjects(entityId, authorityName);
   // }
   ///#endregion

@@ -30,12 +30,12 @@ public class ApplicationSettingServiceTests {
 
   @Test
   public void testFindOne() {
-    // 测试应用配置 标识:52cf89ba-7db5-4e64-9c64-3c868b6e7a99
+    // 测试应用配置 标识:20fc0681-9537-4955-a9ec-080205cc0865 名称:开始菜单
     IApplicationSettingService service = AppsContext.getInstance().getApplicationSettingService();
 
-    ApplicationSettingInfo param = service.findOne("00000000-0000-0000-0000-000000000001");
+    ApplicationSettingInfo entity = service.findOne("20fc0681-9537-4955-a9ec-080205cc0865");
 
-    assertNotNull("entity is not null.", param);
+    assertNotNull("entity is not null.", entity);
   }
 
   @Test
@@ -56,9 +56,10 @@ public class ApplicationSettingServiceTests {
 
     DataQuery query = new DataQuery();
 
-    String result = service.getText("", "", "0");
+    String result = service.getText("00000000-0000-0000-0000-000000000001", "应用管理_应用菜单类别", "StartMenu");
 
     assertNotNull("result is not null.", result);
+    assertEquals("result = 'StartMenu'.", "开始菜单", result);
   }
 
   @Test
@@ -67,8 +68,9 @@ public class ApplicationSettingServiceTests {
 
     DataQuery query = new DataQuery();
 
-    String result = service.getValue("", "", "0");
+    String result = service.getValue("00000000-0000-0000-0000-000000000001", "应用管理_应用菜单类别", "开始菜单");
 
     assertNotNull("result is not null.", result);
+    assertEquals("result = 'StartMenu'.", "StartMenu", result);
   }
 }

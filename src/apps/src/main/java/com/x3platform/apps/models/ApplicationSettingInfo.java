@@ -17,195 +17,193 @@ public class ApplicationSettingInfo extends EntityClass implements ICacheable {
   public ApplicationSettingInfo() {
   }
 
-  private String mId;
+  private String id;
 
   /**
    */
-  public final String getId() {
-    return mId;
+  public String getId() {
+    return id;
   }
 
-  public final void setId(String value) {
-    mId = value;
+  public void setId(String value) {
+    id = value;
   }
 
-  private ApplicationInfo mApplication;
+  private ApplicationInfo application;
 
   /**
    * 应用
    */
-  public final ApplicationInfo getApplication() {
-    if (mApplication == null && StringUtil.isNullOrEmpty(this.getApplicationId())) {
-      mApplication = AppsContext.getInstance().getApplicationService().findOne(this.getApplicationId());
+  public ApplicationInfo getApplication() {
+    if (application == null && StringUtil.isNullOrEmpty(this.getApplicationId())) {
+      application = AppsContext.getInstance().getApplicationService().findOne(this.getApplicationId());
     }
 
-    return mApplication;
+    return application;
   }
 
-  private String mApplicationId;
+  private String applicationId;
 
   /**
    *
    */
-  public final String getApplicationId() {
-    return mApplicationId;
+  public String getApplicationId() {
+    return applicationId;
   }
 
-  public final void setApplicationId(String value) {
-    mApplicationId = value;
+  public void setApplicationId(String value) {
+    applicationId = value;
   }
 
   /**
    */
-  public final String getApplicationName() {
+  public String getApplicationName() {
     return this.getApplication() == null ? "" : this.getApplication().getApplicationName();
   }
 
-  public final String getApplicationDisplayName() {
+  public String getApplicationDisplayName() {
     return this.getApplication() == null ? "" : this.getApplication().getApplicationDisplayName();
   }
 
-  private ApplicationSettingGroupInfo mApplicationSettingGroup;
+  private ApplicationSettingGroupInfo applicationSettingGroup;
 
   /**
    * 应用
    */
-  public final ApplicationSettingGroupInfo getApplicationSettingGroup() {
-    if (mApplicationSettingGroup == null && !StringUtil.isNullOrEmpty(this.getApplicationSettingGroupId())) {
+  public ApplicationSettingGroupInfo getApplicationSettingGroup() {
+    if (applicationSettingGroup == null && !StringUtil.isNullOrEmpty(this.getApplicationSettingGroupId())) {
       // FIXME
-      // mApplicationSettingGroup = AppsContext.getInstance().getApplicationSettingGroupService().findOne(this.getApplicationSettingGroupId());
+      // applicationSettingGroup = AppsContext.getInstance().getApplicationSettingGroupService().findOne(this.getApplicationSettingGroupId());
     }
 
-    return mApplicationSettingGroup;
+    return applicationSettingGroup;
   }
 
-  private String mApplicationSettingGroupId;
+  private String applicationSettingGroupId;
 
   /**
    */
-  public final String getApplicationSettingGroupId() {
-    return mApplicationSettingGroupId;
+  public String getApplicationSettingGroupId() {
+    return applicationSettingGroupId;
   }
 
-  public final void setApplicationSettingGroupId(String value) {
-    mApplicationSettingGroupId = value;
+  public void setApplicationSettingGroupId(String value) {
+    applicationSettingGroupId = value;
   }
 
-  public final String getApplicationSettingGroupName() {
+  public String getApplicationSettingGroupName() {
     return this.getApplicationSettingGroup() == null ? "" : this.getApplicationSettingGroup().getName();
   }
 
   /**
    */
-  public final String getApplicationSettingGroupDisplayName() {
+  public String getApplicationSettingGroupDisplayName() {
     return this.getApplicationSettingGroup() == null ? "" : this.getApplicationSettingGroup().getDisplayName();
   }
 
-  private String mCode;
+  private String code;
 
   /**
    * 代码
    */
-  public final String getCode() {
-    return mCode;
+  public String getCode() {
+    return code;
   }
 
-  public final void setCode(String value) {
-    mCode = value;
+  public void setCode(String value) {
+    code = value;
   }
 
-  private String mText;
+  private String text;
 
   /**
    * 文本
    */
-  public final String getText() {
-    return mText;
+  public String getText() {
+    return text;
   }
 
-  public final void setText(String value) {
-    mText = value;
+  public void setText(String value) {
+    text = value;
   }
 
-  private String mValue;
+  private String value;
 
   /**
    * 值
    */
-  public final String getValue() {
-    return mValue;
+  public String getValue() {
+    return value;
   }
 
-  public final void setValue(String value) {
-    mValue = value;
+  public void setValue(String value) {
+    this.value = value;
   }
 
-  private String mOrderId;
+  private String orderId;
 
   /**
    */
-  public final String getOrderId() {
-    return mOrderId;
+  public String getOrderId() {
+    return orderId;
   }
 
-  public final void setOrderId(String value) {
-    mOrderId = value;
+  public void setOrderId(String value) {
+    orderId = value;
   }
 
-  private int mStatus;
+  private int status;
 
   /**
    */
-  public final int getStatus() {
-    return mStatus;
+  public int getStatus() {
+    return status;
   }
 
-  public final void setStatus(int value) {
-    mStatus = value;
+  public void setStatus(int value) {
+    status = value;
   }
 
-  private String mRemark;
+  private String remark;
 
   /**
    */
-  public final String getRemark() {
-    return mRemark;
+  public String getRemark() {
+    return remark;
   }
 
-  public final void setRemark(String value) {
-    mRemark = value;
+  public void setRemark(String value) {
+    remark = value;
   }
 
-  private java.time.LocalDateTime mModifiedDate = java.time.LocalDateTime.MIN;
+  private java.time.LocalDateTime modifiedDate = java.time.LocalDateTime.MIN;
 
   /**
    */
-  public final java.time.LocalDateTime getModifiedDate() {
-    return mModifiedDate;
+  public java.time.LocalDateTime getModifiedDate() {
+    return modifiedDate;
   }
 
-  public final void setModifiedDate(java.time.LocalDateTime value) {
-    mModifiedDate = value;
+  public void setModifiedDate(java.time.LocalDateTime value) {
+    modifiedDate = value;
   }
 
-  private java.time.LocalDateTime mCreatedDate = java.time.LocalDateTime.MIN;
+  private java.time.LocalDateTime createdDate = java.time.LocalDateTime.MIN;
 
   /**
    */
-  public final java.time.LocalDateTime getCreatedDate() {
-    return mCreatedDate;
+  public java.time.LocalDateTime getCreatedDate() {
+    return createdDate;
   }
 
-  public final void setCreatedDate(java.time.LocalDateTime value) {
-    mCreatedDate = value;
+  public void setCreatedDate(java.time.LocalDateTime value) {
+    createdDate = value;
   }
   ///#endregion
 
   // -------------------------------------------------------
   // 设置 EntityClass 标识
   // -------------------------------------------------------
-
-  ///#region 属性:EntityId
 
   /**
    * 实体对象标识
@@ -214,26 +212,24 @@ public class ApplicationSettingInfo extends EntityClass implements ICacheable {
   public String getEntityId() {
     return this.getId();
   }
-  ///#endregion
 
   // -------------------------------------------------------
   // 显式实现 ICacheable
   // -------------------------------------------------------
 
-  ///#region 属性:Expires
-  private java.time.LocalDateTime mExpires = java.time.LocalDateTime.MAX;
+  private java.time.LocalDateTime expires = java.time.LocalDateTime.MAX;
 
   /**
    * 过期时间
    */
   @Override
   public java.time.LocalDateTime getExpires() {
-    return mExpires;
+    return expires;
   }
 
   @Override
   public void setExpires(java.time.LocalDateTime value) {
-    mExpires = value;
+    expires = value;
   }
 
   // -------------------------------------------------------
@@ -327,6 +323,6 @@ public class ApplicationSettingInfo extends EntityClass implements ICacheable {
     this.setStatus(Integer.parseInt(element.selectSingleNode("status").getText()));
     this.setRemark(element.selectSingleNode("remark").getText());
 
-    this.setModifiedDate(java.time.LocalDateTime.parse(element.selectSingleNode("updateDate").getText()));
+    this.setModifiedDate(java.time.LocalDateTime.parse(element.selectSingleNode("modifiedDate").getText()));
   }
 }

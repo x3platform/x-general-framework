@@ -1,76 +1,65 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.x3platform.apps.mappers.ApplicationSettingMapper" >
-  <resultMap id="findOne_Result" type="com.x3platform.apps.models.ApplicationInfo">
-    <result property="id" column="id" />
-    <result property="accountId" column="account_id" />
-    <result property="parentId" column="parent_id" />
-    <result property="code" column="code" />
-    <result property="applicationName" column="application_name" />
-    <result property="applicationDisplayName" column="application_display_name" />
-    <result property="applicationKey" column="application_key" />
-    <result property="applicationSecret" column="application_secret" />
-    <result property="pinyin" column="pinyin" />
-    <result property="description" column="description" />
-    <result property="hasChildren" column="has_children" />
-    <result property="administratorEmail" column="administrator_email" />
-    <result property="iconPath" column="icon_path" />
-    <result property="bigIconPath" column="big_icon_path" />
-    <result property="helpUrl" column="help_url" />
-    <result property="licenseStatus" column="license_status" />
-    <result property="hidden" column="hidden" />
-    <result property="locking" column="locking" />
-    <result property="orderId" column="order_id" />
-    <result property="status" column="status" />
-    <result property="remark" column="remark" />
-    <result property="modifiedDate" column="modified_date" />
-    <result property="createdDate" column="created_date" />
+<mapper namespace="com.x3platform.apps.mappers.ApplicationSettingMapper">
+  <resultMap id="BaseResultMap" type="com.x3platform.apps.models.ApplicationSettingInfo">
+    <result property="id" jdbcType="VARCHAR" column="id" />
+    <result property="applicationId" jdbcType="VARCHAR" column="application_id" />
+    <result property="applicationSettingGroupId" jdbcType="VARCHAR" column="application_setting_group_id" />
+    <result property="code" jdbcType="VARCHAR" column="code" />
+    <result property="text" jdbcType="VARCHAR" column="text" />
+    <result property="value" jdbcType="VARCHAR" column="value" />
+    <result property="orderId" jdbcType="VARCHAR" column="order_id" />
+    <result property="status" jdbcType="INTEGER" column="status" />
+    <result property="remark" jdbcType="VARCHAR" column="remark" />
+    <result property="modifiedDate" jdbcType="TIMESTAMP" column="modified_date" />
+    <result property="createdDate" jdbcType="TIMESTAMP" column="created_date" />
   </resultMap>
-  <resultMap id="findAll_Result" type="com.x3platform.apps.models.ApplicationInfo">
-    <result property="id" column="id" />
-    <result property="accountId" column="account_id" />
-    <result property="parentId" column="parent_id" />
-    <result property="code" column="code" />
-    <result property="applicationName" column="application_name" />
-    <result property="applicationDisplayName" column="application_display_name" />
-    <result property="applicationKey" column="application_key" />
-    <result property="applicationSecret" column="application_secret" />
-    <result property="pinyin" column="pinyin" />
-    <result property="description" column="description" />
-    <result property="hasChildren" column="has_children" />
-    <result property="administratorEmail" column="administrator_email" />
-    <result property="iconPath" column="icon_path" />
-    <result property="bigIconPath" column="big_icon_path" />
-    <result property="helpUrl" column="help_url" />
-    <result property="licenseStatus" column="license_status" />
-    <result property="hidden" column="hidden" />
-    <result property="locking" column="locking" />
-    <result property="orderId" column="order_id" />
-    <result property="status" column="status" />
-    <result property="remark" column="remark" />
-    <result property="modifiedDate" column="modified_date" />
-    <result property="createdDate" column="created_date" />
-  </resultMap>
-  <insert id="insert" parameterType="com.x3platform.apps.models.ApplicationInfo" >
-    INSERT INTO application
+  <sql id="Select_Where_Clause">
+    <where>
+      <if test="param_id != null and param_id != ''">
+        AND id = #{param_id}
+      </if>
+      <if test="param_application_id != null and param_application_id != ''">
+        AND application_id = #{param_application_id}
+      </if>
+      <if test="param_application_setting_group_id != null and param_application_setting_group_id != ''">
+        AND application_setting_group_id = #{param_application_setting_group_id}
+      </if>
+      <if test="param_code != null and param_code != ''">
+        AND code = #{param_code}
+      </if>
+      <if test="param_text != null and param_text != ''">
+        AND text = #{param_text}
+      </if>
+      <if test="param_value != null and param_value != ''">
+        AND value = #{param_value}
+      </if>
+      <if test="param_order_id != null and param_order_id != ''">
+        AND order_id = #{param_order_id}
+      </if>
+      <if test="param_status != null">
+        AND status = #{param_status}
+      </if>
+      <if test="param_remark != null and param_remark != ''">
+        AND remark = #{param_remark}
+      </if>
+      <if test="param_modified_date != null">
+        AND modified_date = #{param_modified_date}
+      </if>
+      <if test="param_created_date != null">
+        AND created_date = #{param_created_date}
+      </if>
+    </where>
+  </sql>
+  <insert id="insert" parameterType="com.x3platform.apps.models.ApplicationSettingInfo">
+    INSERT INTO application_setting
     (
       id,
-      account_id,
-      parent_id,
+      application_id,
+      application_setting_group_id,
       code,
-      application_name,
-      application_display_name,
-      application_key,
-      application_secret,
-      pinyin,
-      description,
-      administrator_email,
-      icon_path,
-      big_icon_path,
-      help_url,
-      license_status,
-      hidden,
-      locking,
+      text,
+      value,
       order_id,
       status,
       remark,
@@ -79,116 +68,104 @@
     )
     VALUES
     (
-      #Id#,
-      #AccountId#,
-      #ParentId#,
-      #Code#,
-      #ApplicationName#,
-      #ApplicationDisplayName#,
-      #ApplicationKey#,
-      #ApplicationSecret#,
-      #PinYin#,
-      #Description#,
-      #AdministratorEmail#
-      #IconPath#,
-      #BigIconPath#,
-      #HelpUrl#,
-      #LicenseStatus#,
-      #Hidden#,
-      #Locking#,
-      #OrderId#,
-      #Status#,
-      #Remark#,
-      CURRENT_TIMESTAMP,
-      CURRENT_TIMESTAMP
+      #{id,jdbcType=VARCHAR},
+      #{applicationId,jdbcType=VARCHAR},
+      #{applicationSettingGroupId,jdbcType=VARCHAR},
+      #{code,jdbcType=VARCHAR},
+      #{text,jdbcType=VARCHAR},
+      #{value,jdbcType=VARCHAR},
+      #{orderId,jdbcType=VARCHAR},
+      #{status,jdbcType=INTEGER},
+      #{remark,jdbcType=VARCHAR},
+      #{modifiedDate,jdbcType=TIMESTAMP},
+      #{createdDate,jdbcType=TIMESTAMP}
     )
   </insert>
-  <update id="update" parameterType="com.x3platform.apps.models.ApplicationInfo" >
-    UPDATE application SET
+  <update id="updateByPrimaryKey" parameterType="com.x3platform.apps.models.ApplicationSettingInfo">
+    UPDATE application_setting SET
 
-      parent_id = #{parentId},
-      code = #{code},
-      application_name = #{applicationName},
-      application_display_name = #{applicationDisplayName},
-      application_key = #{applicationKey},
-      application_secret = #{applicationSecret},
-      pinyin = #{pinyin},
-      description = #{description},
-      administrator_email = #{administratorEmail},
-      icon_path = #{iconPath},
-      big_icon_path = #{bigIconPath},
-      help_url = #{helpUrl},
-      license_status = #{licenseStatus},
-      hidden = #{hidden},
-      locking = #{locking},
-      order_id = #{orderId},
-      status = #{status},
-      remark = #{remark},
-      modified_date = CURRENT_TIMESTAMP
+    application_id = #{applicationId,jdbcType=VARCHAR},
+    application_setting_group_id = #{applicationSettingGroupId,jdbcType=VARCHAR},
+    code = #{code,jdbcType=VARCHAR},
+    text = #{text,jdbcType=VARCHAR},
+    value = #{value,jdbcType=VARCHAR},
+    order_id = #{orderId,jdbcType=VARCHAR},
+    status = #{status,jdbcType=INTEGER},
+    remark = #{remark,jdbcType=VARCHAR},
+    modified_date = #{modifiedDate,jdbcType=TIMESTAMP},
+    created_date = #{createdDate,jdbcType=TIMESTAMP}
 
-    WHERE Id = #{Id} AND modified_date = #{ModifiedDate}
+    WHERE id = #{id}
   </update>
-  <!--
-      <update id="Sync_HasChildren" >
-          CREATE TEMPORARY TABLE tmp (Id VARCHAR(36) PRIMARY KEY, ParentId VARCHAR(36), Status INT);
-
-          INSERT INTO tmp SELECT Id, ParentId, Status FROM application;
-
-          UPDATE application SET HasChildren = (
-            SELECT CASE COUNT(Id) WHEN  0 THEN 0 ELSE 1 END
-            FROM tmp WHERE tmp.ParentId = application.Id AND tmp.Status = 1) ;
-
-          DROP TEMPORARY TABLE tmp;
-      </update>
-      -->
-  <delete id="delete">
-    DELETE FROM application WHERE $WhereClause$
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    DELETE FROM application_setting WHERE id = #{id}
   </delete>
-  <select id="findOne" parameterType="com.x3platform.apps.models.ApplicationInfo" resultMap="findOne_Result" >
-    SELECT * FROM application WHERE id = #{id}
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap" >
+    SELECT * FROM application_setting WHERE id = #{id}
   </select>
-  <select id="findOneByApplicationName" parameterType="com.x3platform.apps.models.ApplicationInfo" resultMap="findOne_Result" >
-    SELECT * FROM application WHERE application_name = #{applicationName}
-  </select>
-  <select id="findAll" resultMap="findAll_Result" >
-    SELECT * FROM application T
-    <!--<where>
-      <if test="whereClause != null and whereClause !=''">
-        ${whereClause}
-      </if>
-    </where>
-    <if test="orderBy != null and orderBy !=''">
-      ORDER BY ${orderBy}
+  <select id="findAll" parameterType="java.util.Map" resultMap="BaseResultMap" >
+    SELECT * FROM application_setting
+    <if test="_parameter != null">
+      <include refid="Select_Where_Clause" />
+    </if>
+    <if test="orders != null and orders.size() > 0">
+      ORDER BY
+      <foreach collection="orders" item="order" index="index" separator="," >
+        #{order}
+      </foreach>
     </if>
     <if test="length > 0">
       LIMIT 0, ${length}
-    </if>-->
+    </if>
   </select>
-  <select id="findAllByAccountId" resultMap="findAll_Result" >
-    SELECT * FROM application where account_id = ${accountId}
+  <select id="findAllByApplicationSettingGroupId" resultMap="BaseResultMap" >
+    SELECT * FROM application_setting
+    WHERE application_setting_group_id = #{applicationSettingGroupId}
+    <if test="keyword != null and keyword != '' and keyword != '%%' ">
+      AND text LIKE #{keyword}
+    </if>
+    ORDER BY order_id, text
   </select>
-  <select id="isExist" >
-    SELECT COUNT(*) AS "Count" FROM application T WHERE $WhereClause$
+  <select id="findAllByApplicationSettingGroupName" resultMap="BaseResultMap" >
+    SELECT * FROM application_setting
+    WHERE application_setting_group_id = ( SELECT id FROM application_setting_group WHERE name = #{applicationSettingGroupName} )
+    <if test="keyword != null and keyword != '' and keyword != '%%' ">
+      AND text LIKE #{keyword}
+    </if>
+    ORDER BY order_id, text
   </select>
-  <select id="hasAuthority" >
-    SELECT COUNT(*) AS "Count" FROM view_AuthObject_Account view1, application_scope Scope
+  <select id="isExist" resultType="boolean" >
+    SELECT COUNT(0) AS "Count" FROM application_setting WHERE id = #{id}
+  </select>
+  <select id="getText" resultType="String" >
+    SELECT text FROM application_setting
     WHERE
-    view1.AccountId = #accountId#
-    AND View1.AuthorizationObjectId = Scope.AuthorizationObjectId
-    AND View1.AuthorizationObjectType = Scope.AuthorizationObjectType
-    AND Scope.AuthorityId = #AuthorityId#
-    AND Scope.ApplicationId = #ApplicationId#
+    application_id = #{applicationId}
+    <choose>
+      <when test="applicationSettingGroupName == null or applicationSettingGroupName == ''">
+        AND application_setting_group_id = '00000000-0000-0000-0000-000000000000'
+      </when>
+      <otherwise>
+        AND application_setting_group_id IN ( SELECT id FROM application_setting_group WHERE name = #{applicationSettingGroupName} )
+      </otherwise>
+    </choose>
+    AND value = #{value}
+    LIMIT 0, 1
   </select>
-  <insert id="addAuthorizationScopeObject">
-    INSERT INTO application_scope
-    (authorization_object_type, authorization_object_id, authority_id, application_id, modified_date, created_date)
-    VALUES
-    (#AuthorizationObjectType#, #AuthorizationObjectId#, #AuthorityId#, #ApplicationId#, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-  </insert>
-  <delete id="removeAuthorizationScopeObjects">
-    DELETE FROM application_scope WHERE application_id = #applicationId# AND authority_id = #authorityId#
-  </delete>
-  <select id="getAuthorizationScopeObjects" >
-    SELECT * FROM application_Scope T WHERE application_id = #applicationId# AND authority_id = #authorityId#
+  <select id="getValue" resultType="String" >
+    SELECT value FROM application_setting
+    WHERE
+    application_id = #{applicationId}
+    <choose>
+      <when test="applicationSettingGroupName == null or applicationSettingGroupName == ''">
+        AND application_setting_group_id = '00000000-0000-0000-0000-000000000000'
+      </when>
+      <otherwise>
+        AND application_setting_group_id IN ( SELECT id FROM application_setting_group WHERE name = #{applicationSettingGroupName} )
+      </otherwise>
+    </choose>
+    AND text = #{text}
+    LIMIT 0, 1
   </select>
+
 </mapper>

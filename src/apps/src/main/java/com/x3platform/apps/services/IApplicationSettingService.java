@@ -21,14 +21,14 @@ public interface IApplicationSettingService {
    * @param param 实例<see cref="ApplicationSettingInfo"/>详细信息
    * @return 实例  ApplicationSettingInfo 详细信息
    */
-  ApplicationSettingInfo save(ApplicationSettingInfo param);
+  int save(ApplicationSettingInfo param);
 
   /**
    * 删除记录
    *
    * @param id 实例的标识
    */
-  void delete(String id);
+  int delete(String id);
 
   // -------------------------------------------------------
   // 查询
