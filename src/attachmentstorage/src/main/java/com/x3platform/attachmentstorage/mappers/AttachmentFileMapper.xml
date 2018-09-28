@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.x3platform.attachmentstorage.mappers.AttachmentFileMapper">
+  <resultMap id="findOne_Result" type="com.x3platform.attachmentstorage.AttachmentFileInfo">
+    <result property="id" column="id"/>
+    <result property="entityId" column="entity_id" />
+    <result property="entityClassName" column="entity_elass_name" />
+    <result property="attachmentName" column="attachment_name" />
+    <result property="virtualPath" column="virtual_path" />
+    <result property="folderRule" column="folder_rule" />
+    <result property="fileType" column="file_type" />
+    <result property="fileSize" column="file_size" />
+    <result property="fileStatus" column="file_status" />
+    <result property="createdDate" column="created_date"/>
+  </resultMap>
+  <resultMap id="findAll_Result" type="com.x3platform.attachmentstorage.AttachmentFileInfo">
+    <result property="id" column="id"/>
+    <result property="entityId" column="entity_id" />
+    <result property="entityClassName" column="entity_elass_name" />
+    <result property="attachmentName" column="attachment_name" />
+    <result property="virtualPath" column="virtual_path" />
+    <result property="folderRule" column="folder_rule" />
+    <result property="fileType" column="file_type" />
+    <result property="fileSize" column="file_size" />
+    <result property="fileStatus" column="file_status" />
+    <result property="createdDate" column="created_date"/>
+  </resultMap>
+  <insert id="save" parameterType="com.x3platform.attachmentstorage.AttachmentFileInfo">
+    INSERT INTO attachment_file
+    (
+      id,
+      entity_id,
+      entity_class_name,
+      attachment_name,
+      virtual_path,
+      folder_rule,
+      file_type,
+      file_size,
+      file_status,
+      created_date
+    )
+    VALUES
+    (
+      #{id},
+      #{entityId},
+      #{entityClassName},
+      #{attachmentName},
+      #{virtualPath},
+      #{folderRule},
+      #{fileType},
+      #{fileSize},
+      #{fileStatus},
+      CURRENT_TIMESTAMP
+    )
+  </insert>
+  <delete id="deleteByPrimaryKey">
+    DELETE FROM attachment_file WHERE id = #{id}
+  </delete>
+  <select id="selectByPrimaryKey" parameterType="com.x3platform.attachmentstorage.AttachmentFileInfo" resultMap="findOne_Result">
+    SELECT * FROM attachment_file WHERE id = #{id}
+  </select>
+  <select id="findAll" resultMap="findAll_Result">
+    SELECT * FROM attachment_file T
+    <where>
+      <!-- 列表查询 -->
+      <if test="var_scence == 'Query'">
+        <if test="param_search_text != null and param_search_text != ''">
+          AND attachment_name LIKE #{param_search_text} OR application_display_name LIKE #{param_search_text} OR description LIKE #{param_search_text}
+        </if>
+      </if>
+      <if test="var_scence == 'default'">
+        <if test="param_status != null and param_status != ''">
+          AND status = #{param_status}
+        </if>
+      </if>
+    </where>
+    <if test="orders != null and orders.size() > 0">
+      ORDER BY
+      <foreach collection="orders" item="order" index="index" separator=",">
+        #{order}
+      </foreach>
+    </if>
+    <if test="length > 0">
+      LIMIT 0, ${length}
+    </if>
+  </select>
+  <update id="rename" >
+    UPDATE attachment_file SET AttachmentName = #AttachmentName# WHERE Id = #Id#
+  </update>
+  <update id="setFileStatus" >
+    UPDATE attachment_file SET FileStatus = #FileStatus# WHERE $WhereClause$
+  </update>
+</mapper>
