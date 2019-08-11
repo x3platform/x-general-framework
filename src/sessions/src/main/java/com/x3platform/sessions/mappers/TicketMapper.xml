@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.x3platform.sessions.mappers.TicketMapper">
+  <resultMap id="BaseResultMap" type="com.x3platform.sessions.Ticket">
+    <result property="ticketId" column="ticket_id"/>
+    <result property="appKey" column="app_key"/>
+    <result property="ticketValue" column="ticket_value"/>
+    <result property="accountObject" column="account_object"/>
+    <result property="accountObjectType" column="account_object_type"/>
+    <result property="ip" column="IP"/>
+    <result property="location" column="location"/>
+    <result property="httpUserAgent" column="http_user_agent"/>
+    <result property="validFrom" column="valid_from"/>
+    <result property="validTo" column="valid_to"/>
+    <result property="createdDate" jdbcType="TIMESTAMP" column="created_date"/>
+  </resultMap>
+  <insert id="insert" parameterType="com.x3platform.sessions.Ticket">
+    INSERT INTO sys_session_ticket
+    (
+      ticket_id,
+      app_key,
+      ticket_value,
+      account_object,
+      account_object_type,
+      ip,
+      location,
+      http_user_agent,
+      valid_from,
+      valid_to,
+      created_date
+    )
+    VALUES
+    (
+      #{ticketId},
+      #{appKey},
+      #{ticketValue},
+      #{accountObject},
+      #{accountObjectType},
+      #{ip},
+      #{location},
+      #{httpUserAgent},
+      #{validFrom},
+      #{validTo},
+      CURRENT_TIMESTAMP
+    )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.x3platform.sessions.Ticket">
+    UPDATE sys_session_ticket SET
+
+    account_object = #{accountObject},
+    account_object_type = #{accountObjectType},
+    valid_to = #{validTo},
+    created_date = CURRENT_TIMESTAMP
+
+    WHERE ticket_id = #{ticketId}
+  </update>
+  <delete id="delete">
+    DELETE FROM sys_session_ticket WHERE ticket_id = #{ticket_id}
+  </delete>
+  <select id="findByTicketId" resultMap="BaseResultMap">
+    SELECT * FROM sys_session_ticket WHERE ticket_id = #{ticket_id}
+  </select>
+  <select id="findByTicketValue" resultMap="BaseResultMap">
+    SELECT * FROM sys_session_ticket WHERE ticket_value = #{ticket_value}
+  </select>
+  <select id="dump" resultMap="BaseResultMap">
+    SELECT * FROM sys_session_ticket
+    <where>
+      <if test="param_ticket_id != null and param_ticket_id != ''">
+        AND t.ticket_id = #{param_ticket_id}
+      </if>
+    </where>
+  </select>
+  <select id="isExist" resultType="boolean">
+    SELECT COUNT(0) AS "Count" FROM sys_session_ticket WHERE ticket_id = #{ticket_id}
+  </select>
+  <select id="isExistTicketValue" resultType="boolean">
+    SELECT COUNT(0) AS "Count" FROM sys_session_ticket WHERE ticket_value = #{ticket_value}
+  </select>
+  <delete id="clear" databaseId="mysql">
+    DELETE FROM sys_session_ticket WHERE valid_to &lt; '$ExpiryTime$'
+  </delete>
+  <delete id="clear" databaseId="oracle">
+    DELETE FROM sys_session_ticket WHERE valid_to &lt; to_date('$ExpiryTime$','yyyy-mm-dd hh24:mi:ss')
+  </delete>
+</mapper>

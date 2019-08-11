@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.x3platform.connect.mappers.ConnectMapper">
+  <resultMap id="BaseResultMap" type="com.x3platform.connect.models.Connect">
+    <result property="id" jdbcType="VARCHAR" column="id" />
+    <result property="accountId" jdbcType="VARCHAR" column="account_id" />
+    <result property="accountName" jdbcType="VARCHAR" column="account_name" />
+    <result property="appKey" jdbcType="VARCHAR" column="app_key" />
+    <result property="appSecret" jdbcType="VARCHAR" column="app_secret" />
+    <result property="appType" jdbcType="VARCHAR" column="app_type" />
+    <result property="code" jdbcType="VARCHAR" column="code" />
+    <result property="name" jdbcType="VARCHAR" column="name" />
+    <result property="description" jdbcType="VARCHAR" column="description" />
+    <result property="domain" jdbcType="VARCHAR" column="domain" />
+    <result property="redirectUri" jdbcType="VARCHAR" column="redirect_uri" />
+    <result property="options" jdbcType="VARCHAR" column="options" />
+    <result property="isInternal" jdbcType="BOOLEAN" column="is_internal" />
+    <result property="authorizationScope" jdbcType="VARCHAR" column="authorization_scope" />
+    <result property="certifiedCode" jdbcType="VARCHAR" column="certified_code" />
+    <result property="status" jdbcType="INTEGER" column="status" />
+    <result property="modifiedDate" jdbcType="TIMESTAMP" column="modified_date" />
+    <result property="createdDate" jdbcType="TIMESTAMP" column="created_date" />
+  </resultMap>
+  <sql id="Select_Where_Clause">
+    <where>
+      <if test="param_id != null and param_id != ''">
+        AND t.id = #{param_id}
+      </if>
+      <if test="param_account_id != null and param_account_id != ''">
+        AND t.account_id = #{param_account_id}
+      </if>
+      <if test="param_account_name != null and param_account_name != ''">
+        AND t.account_name = #{param_account_name}
+      </if>
+      <if test="param_app_key != null and param_app_key != ''">
+        AND t.app_key = #{param_app_key}
+      </if>
+      <if test="param_app_secret != null and param_app_secret != ''">
+        AND t.app_secret = #{param_app_secret}
+      </if>
+      <if test="param_app_type != null and param_app_type != ''">
+        AND t.app_type = #{param_app_type}
+      </if>
+      <if test="param_code != null and param_code != ''">
+        AND t.code = #{param_code}
+      </if>
+      <if test="param_name != null and param_name != ''">
+        AND t.name = #{param_name}
+      </if>
+      <if test="param_description != null and param_description != ''">
+        AND t.description = #{param_description}
+      </if>
+      <if test="param_domain != null and param_domain != ''">
+        AND t.domain = #{param_domain}
+      </if>
+      <if test="param_redirect_uri != null and param_redirect_uri != ''">
+        AND t.redirect_uri = #{param_redirect_uri}
+      </if>
+      <if test="param_options != null and param_options != ''">
+        AND t.options = #{param_options}
+      </if>
+      <if test="param_is_internal != null">
+        AND t.is_internal = #{param_is_internal}
+      </if>
+      <if test="param_authorization_scope != null and param_authorization_scope != ''">
+        AND t.authorization_scope = #{param_authorization_scope}
+      </if>
+      <if test="param_certified_code != null and param_certified_code != ''">
+        AND t.certified_code = #{param_certified_code}
+      </if>
+      <if test="param_status != null">
+        AND t.status = #{param_status}
+      </if>
+      <if test="param_modified_date != null">
+        AND t.modified_date = #{param_modified_date}
+      </if>
+      <if test="param_created_date != null">
+        AND t.created_date = #{param_created_date}
+      </if>
+    </where>
+  </sql>
+  <insert id="insert" parameterType="com.x3platform.connect.models.Connect">
+    INSERT INTO connect
+    (
+    id,
+    account_id,
+    account_name,
+    app_key,
+    app_secret,
+    app_type,
+    code,
+    name,
+    description,
+    domain,
+    redirect_uri,
+    options,
+    is_internal,
+    authorization_scope,
+    certified_code,
+    status,
+    modified_date,
+    created_date
+    )
+    VALUES
+    (
+    #{id,jdbcType=VARCHAR},
+    #{accountId,jdbcType=VARCHAR},
+    #{accountName,jdbcType=VARCHAR},
+    #{appKey,jdbcType=VARCHAR},
+    #{appSecret,jdbcType=VARCHAR},
+    #{appType,jdbcType=VARCHAR},
+    #{code,jdbcType=VARCHAR},
+    #{name,jdbcType=VARCHAR},
+    #{description,jdbcType=VARCHAR},
+    #{domain,jdbcType=VARCHAR},
+    #{redirectUri,jdbcType=VARCHAR},
+    #{options,jdbcType=VARCHAR},
+    #{isInternal,jdbcType=BOOLEAN},
+    #{authorizationScope,jdbcType=VARCHAR},
+    #{certifiedCode,jdbcType=VARCHAR},
+    #{status,jdbcType=INTEGER},
+    #{modifiedDate,jdbcType=TIMESTAMP},
+    #{createdDate,jdbcType=TIMESTAMP}
+    )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.x3platform.connect.models.Connect">
+    UPDATE connect SET
+
+    id = #{id,jdbcType=VARCHAR},
+    account_id = #{accountId,jdbcType=VARCHAR},
+    account_name = #{accountName,jdbcType=VARCHAR},
+    app_key = #{appKey,jdbcType=VARCHAR},
+    app_secret = #{appSecret,jdbcType=VARCHAR},
+    app_type = #{appType,jdbcType=VARCHAR},
+    code = #{code,jdbcType=VARCHAR},
+    name = #{name,jdbcType=VARCHAR},
+    description = #{description,jdbcType=VARCHAR},
+    domain = #{domain,jdbcType=VARCHAR},
+    redirect_uri = #{redirectUri,jdbcType=VARCHAR},
+    options = #{options,jdbcType=VARCHAR},
+    is_internal = #{isInternal,jdbcType=BOOLEAN},
+    authorization_scope = #{authorizationScope,jdbcType=VARCHAR},
+    certified_code = #{certifiedCode,jdbcType=VARCHAR},
+    status = #{status,jdbcType=INTEGER},
+    modified_date = #{modifiedDate,jdbcType=TIMESTAMP},
+    created_date = #{createdDate,jdbcType=TIMESTAMP}
+
+    WHERE id = #{id}
+  </update>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    DELETE FROM connect WHERE id = #{id}
+  </delete>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap" >
+    SELECT * FROM connect WHERE id = #{id}
+  </select>
+  <select id="findAll" parameterType="java.util.Map" resultMap="BaseResultMap" >
+    SELECT * FROM connect t
+    <if test="_parameter != null">
+      <include refid="Select_Where_Clause" />
+    </if>
+    <if test="orders != null and orders.size() > 0">
+      ORDER BY
+      <foreach collection="orders" item="order" index="index" separator="," >
+        #{order}
+      </foreach>
+    </if>
+    <if test="length > 0">
+      LIMIT 0, ${length}
+    </if>
+  </select>
+  <select id="getRowCount" >
+    SELECT COUNT(0) AS "RowCount" FROM connect t
+    <if test="_parameter != null">
+      <include refid="Select_Where_Clause" />
+    </if>
+  </select>
+  <select id="isExist" resultType="boolean" >
+    SELECT COUNT(0) AS "Count" FROM connect WHERE id = #{id}
+  </select>
+</mapper>

@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.x3platform.membership.mappers.OrganizationMapper">
+  <resultMap id="findOne_Result" type="com.x3platform.membership.models.OrganizationInfo">
+    <result property="id" column="id"/>
+    <result property="accountId" column="account_id"/>
+    <result property="name" column="name"/>
+    <result property="domain" column="domain"/>
+    <result property="pattern" column="pattern"/>
+    <result property="modifiedDate" column="modified_date"/>
+    <result property="createdDate" column="created_date"/>
+  </resultMap>
+
+  <insert id="insert" parameterType="com.x3platform.membership.models.OrganizationInfo">
+    INSERT INTO sys_organization
+    (
+      name,
+      expression,
+      seed,
+      modifiedDate,
+      createdDate
+    )
+    VALUES
+    (
+      #{name},
+      #{expression},
+      #{seed},
+      CURRENT_TIMESTAMP,
+      CURRENT_TIMESTAMP
+    )
+  </insert>
+  <update id="update" parameterType="com.x3platform.membership.models.OrganizationInfo">
+    UPDATE sys_organization SET
+    expression = #{expression},
+    seed = #{seed},
+    modifiedDate = CURRENT_TIMESTAMP
+    WHERE Name = #{name}
+  </update>
+  <insert id="save" parameterType="com.x3platform.membership.models.OrganizationInfo">
+    INSERT INTO sys_organization_unit
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+    <if test="mId != null">
+      id,
+    </if>
+    <if test="mParentId != null">
+      parent_id,
+    </if>
+    <if test="mCode != null">
+      code,
+    </if>
+    <if test="mName != null">
+      name,
+    </if>
+    <if test="mGlobalName != null">
+      global_name,
+    </if>
+    <if test="mFullName != null">
+      full_name,
+    </if>
+    <if test="mPinYin != null">
+      pinyin,
+    </if>
+    <if test="mType != null">
+      type,
+    </if>
+    <if test="mLevel!= null">
+      level,
+    </if>
+    <if test="mStandardOrganizationUnitId!= null">
+      standard_organization_id,
+    </if>
+    <if test="mEnableEmail!= null">
+      enable_email,
+    </if>
+    <if test="mEffectScope!= null">
+      effect_scope,
+    </if>
+<!--    <if test=" mTreeViewScope!= null">
+      tree_view_scope,
+    </if>-->
+    <if test=" mLocking!= null">
+      locking,
+    </if>
+    <if test=" mOrderId!= null">
+      order_id,
+    </if>
+    <if test=" mStatus!= null">
+      status,
+    </if>
+    <if test=" mRemark!= null">
+      remark,
+    </if>
+    <if test=" mFullPath!= null">
+      full_path,
+    </if>
+    <if test=" mDistinguishedName!= null">
+      distinguished_name,
+    </if>
+    <if test=" mModifiedDate!= null">
+      modified_date,
+    </if>
+    <if test=" mCreatedDate!= null">
+      created_date,
+    </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+    <if test="mId != null">
+      #{mId},
+    </if>
+    <if test="mParentId != null">
+      #{mParentId},
+    </if>
+    <if test="mCode != null">
+      #{mCode},
+    </if>
+    <if test="mName != null">
+      #{mName},
+    </if>
+    <if test="mGlobalName != null">
+      #{mGlobalName},
+    </if>
+    <if test="mFullName != null">
+      #{mFullName},
+    </if>
+    <if test="mPinYin != null">
+      #{mPinYin},
+    </if>
+    <if test="mType != null">
+      #{mType},
+    </if>
+    <if test=" mLevel!= null">
+      #{mLevel},
+    </if>
+    <if test=" mStandardOrganizationUnitId!= null">
+      #{mStandardOrganizationUnitId},
+    </if>
+    <if test=" mEnableEmail!= null">
+      #{mEnableEmail},
+    </if>
+    <if test=" mEffectScope!= null">
+      #{mEffectScope},
+    </if>
+<!--    <if test=" mTreeViewScope!= null">
+      #{mTreeViewScope},
+    </if>-->
+    <if test=" mLocking!= null">
+      #{mLocking},
+    </if>
+    <if test=" mOrderId!= null">
+      #{mOrderId},
+    </if>
+    <if test=" mStatus!= null">
+      #{mStatus},
+    </if>
+    <if test=" mRemark!= null">
+      #{mRemark},
+    </if>
+    <if test=" mFullPath!= null">
+      #{mFullPath},
+    </if>
+    <if test=" mDistinguishedName!= null">
+      #{mDistinguishedName},
+    </if>
+    <if test=" mModifiedDate!= null">
+      CURRENT_TIMESTAMP,
+    </if>
+    <if test=" mCreatedDate!= null">
+      CURRENT_TIMESTAMP,
+    </if>
+    </trim>
+  </insert>
+  <delete id="delete">
+    update  sys_organization set status = 0  WHERE id = #{id}
+  </delete>
+
+  <select id="findOne" resultMap="findOne_Result">
+    SELECT * FROM sys_organization WHERE id = #{id}
+  </select>
+  <select id="isExist">
+    SELECT COUNT(0) AS "Count" FROM sys_organization WHERE $WhereClause$
+  </select>
+  <select id="isExistName" resultType="boolean">
+    SELECT COUNT(0) AS "Count" FROM sys_organization WHERE Name = #{name}
+  </select>
+
+  <insert id="addRelation">
+    insert into
+      sys_account_organization_unit
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="accountId != null">
+        account_id,
+      </if>
+      <if test="organizationId != null">
+        organization_unit_id,
+      </if>
+      <if test="isDefault != null">
+        is_default,
+      </if>
+      <if test="beginDate != null">
+        begin_date,
+      </if>
+      <if test="endDate != null">
+        end_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="accountId != null">
+        #{accountId},
+      </if>
+      <if test="organizationId != null">
+        #{organizationId},
+      </if>
+      <if test="isDefault != null">
+        #{isDefault},
+      </if>
+      <if test="beginDate != null">
+        #{beginDate},
+      </if>
+      <if test="endDate != null">
+        #{endDate},
+      </if>
+    </trim>
+  </insert>
+  <delete id="removeAllRelation">
+    delete from sys_account_organization_unit  where  account_id=#{accountId}
+  </delete>
+  <select id="hasDefaultRelation" resultType="java.lang.Boolean">
+    select COUNT(0) AS "Count" from sys_account_organization_unit  where  account_id=#{accountId}
+  </select>
+  <delete id="clearupRelation">
+    delete from sys_account_organization_unit  where  organization_unit_id=#{organizationId}
+  </delete>
+
+
+</mapper>

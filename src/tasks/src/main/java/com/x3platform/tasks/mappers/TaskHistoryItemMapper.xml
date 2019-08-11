@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.x3platform.tasks.mappers.TaskHistoryItemMapper">
+  <resultMap id="BaseResultMap" type="com.x3platform.tasks.models.TaskHistoryItem">
+    <result property="id" jdbcType="VARCHAR" column="id" />
+    <result property="applicationId" jdbcType="VARCHAR" column="application_id" />
+    <result property="taskCode" jdbcType="VARCHAR" column="task_code" />
+    <result property="type" jdbcType="VARCHAR" column="type" />
+    <result property="title" jdbcType="VARCHAR" column="title" />
+    <result property="content" jdbcType="VARCHAR" column="content" />
+    <result property="tags" jdbcType="VARCHAR" column="tags" />
+    <result property="senderId" jdbcType="VARCHAR" column="sender_id" />
+    <result property="receiverId" jdbcType="VARCHAR" column="receiver_id" />
+    <result property="isRead" jdbcType="BOOLEAN" column="is_read" />
+    <result property="status" jdbcType="INTEGER" column="status" />
+    <result property="finishTime" jdbcType="TIMESTAMP" column="finish_time" />
+    <result property="createDate" jdbcType="TIMESTAMP" column="create_date" />
+  </resultMap>
+  <sql id="Select_Where_Clause">
+    <where>
+      <if test="param_id != null and param_id != ''">
+        AND t.id = #{param_id}
+      </if>
+      <if test="param_application_id != null and param_application_id != ''">
+        AND t.application_id = #{param_application_id}
+      </if>
+      <if test="param_task_code != null and param_task_code != ''">
+        AND t.task_code = #{param_task_code}
+      </if>
+      <if test="param_type != null and param_type != ''">
+        AND t.type = #{param_type}
+      </if>
+      <if test="param_title != null and param_title != ''">
+        AND t.title = #{param_title}
+      </if>
+      <if test="param_content != null and param_content != ''">
+        AND t.content = #{param_content}
+      </if>
+      <if test="param_tags != null and param_tags != ''">
+        AND t.tags = #{param_tags}
+      </if>
+      <if test="param_sender_id != null and param_sender_id != ''">
+        AND t.sender_id = #{param_sender_id}
+      </if>
+      <if test="param_receiver_id != null and param_receiver_id != ''">
+        AND t.receiver_id = #{param_receiver_id}
+      </if>
+      <if test="param_is_read != null">
+        AND t.is_read = #{param_is_read}
+      </if>
+      <if test="param_status != null">
+        AND t.status = #{param_status}
+      </if>
+      <if test="param_finish_time != null">
+        AND t.finish_time = #{param_finish_time}
+      </if>
+      <if test="param_create_date != null">
+        AND t.create_date = #{param_create_date}
+      </if>
+    </where>
+  </sql>
+  <insert id="insert" parameterType="com.x3platform.tasks.models.TaskHistoryItem">
+    INSERT INTO task_history_item 
+    (
+      id,
+      application_id,
+      task_code,
+      type,
+      title,
+      content,
+      tags,
+      sender_id,
+      receiver_id,
+      is_read,
+      status,
+      finish_time,
+      create_date
+    )
+    VALUES
+    (
+      #{id,jdbcType=VARCHAR},
+      #{applicationId,jdbcType=VARCHAR},
+      #{taskCode,jdbcType=VARCHAR},
+      #{type,jdbcType=VARCHAR},
+      #{title,jdbcType=VARCHAR},
+      #{content,jdbcType=VARCHAR},
+      #{tags,jdbcType=VARCHAR},
+      #{senderId,jdbcType=VARCHAR},
+      #{receiverId,jdbcType=VARCHAR},
+      #{isRead,jdbcType=BOOLEAN},
+      #{status,jdbcType=INTEGER},
+      #{finishTime,jdbcType=TIMESTAMP},
+      #{createDate,jdbcType=TIMESTAMP}
+    )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.x3platform.tasks.models.TaskHistoryItem">
+    UPDATE task_history_item SET
+
+      id = #{id,jdbcType=VARCHAR},
+      application_id = #{applicationId,jdbcType=VARCHAR},
+      task_code = #{taskCode,jdbcType=VARCHAR},
+      type = #{type,jdbcType=VARCHAR},
+      title = #{title,jdbcType=VARCHAR},
+      content = #{content,jdbcType=VARCHAR},
+      tags = #{tags,jdbcType=VARCHAR},
+      sender_id = #{senderId,jdbcType=VARCHAR},
+      receiver_id = #{receiverId,jdbcType=VARCHAR},
+      is_read = #{isRead,jdbcType=BOOLEAN},
+      status = #{status,jdbcType=INTEGER},
+      finish_time = #{finishTime,jdbcType=TIMESTAMP},
+      create_date = #{createDate,jdbcType=TIMESTAMP}
+
+    WHERE id = #{id}
+  </update>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    DELETE FROM task_history_item WHERE id = #{id}
+  </delete>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap" >
+    SELECT * FROM task_history_item WHERE id = #{id}
+  </select>  
+  <select id="findAll" parameterType="java.util.Map" resultMap="BaseResultMap" >
+    SELECT * FROM task_history_item t
+    <if test="_parameter != null">
+      <include refid="Select_Where_Clause" />
+    </if>
+    <if test="orders != null and orders.size() > 0">
+      ORDER BY
+      <foreach collection="orders" item="order" index="index" separator="," >
+        #{order}
+      </foreach>
+    </if>
+    <if test="length > 0">
+      LIMIT 0, ${length}
+    </if>
+  </select>
+  <select id="getRowCount" >
+    SELECT COUNT(0) AS "RowCount" FROM task_history_item t
+    <if test="_parameter != null">
+      <include refid="Select_Where_Clause" />
+    </if>
+  </select>
+  <select id="isExist" resultType="boolean" >
+    SELECT COUNT(0) AS "Count" FROM task_history_item WHERE id = #{id}
+  </select>
+</mapper>

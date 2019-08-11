@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.x3platform.apps.mappers.ApplicationFeatureMapper">
+  <resultMap id="findOne_Result" type="com.x3platform.apps.models.ApplicationFeature">
+    <result property="id" column="id"/>
+    <result property="applicationId" column="application_id"/>
+    <result property="applicationName" column="application_name"/>
+    <result property="parentId" column="parent_id"/>
+    <result property="parentName" column="parent_name"/>
+    <result property="code" column="code"/>
+    <result property="name" column="name"/>
+    <result property="displayName" column="display_name"/>
+    <result property="type" column="type"/>
+    <result property="url" column="url"/>
+    <result property="target" column="target"/>
+    <result property="iconPath" column="icon_path"/>
+    <result property="bigIconPath" column="big_icon_path"/>
+    <result property="helpUrl" column="help_url"/>
+    <result property="hidden" column="hidden"/>
+    <result property="effectScope" column="effect_scope"/>
+    <result property="treeViewScope" column="tree_view_scope"/>
+    <result property="locking" column="locking"/>
+    <result property="orderId" column="order_id"/>
+    <result property="status" column="status"/>
+    <result property="remark" column="remark"/>
+    <result property="modifiedDate" column="modified_date"/>
+    <result property="createdDate" column="created_date"/>
+  </resultMap>
+  <resultMap id="findAll_Result" type="com.x3platform.apps.models.ApplicationFeature">
+    <result property="id" column="id"/>
+    <result property="applicationId" column="application_id"/>
+    <result property="applicationName" column="application_name"/>
+    <result property="parentId" column="parent_id"/>
+    <result property="parentName" column="parent_name"/>
+    <result property="code" column="code"/>
+    <result property="name" column="name"/>
+    <result property="displayName" column="display_name"/>
+    <result property="type" column="type"/>
+    <result property="url" column="url"/>
+    <result property="target" column="target"/>
+    <result property="iconPath" column="icon_path"/>
+    <result property="bigIconPath" column="big_icon_path"/>
+    <result property="helpUrl" column="help_url"/>
+    <result property="hidden" column="hidden"/>
+    <result property="effectScope" column="effect_scope"/>
+    <result property="treeViewScope" column="tree_view_scope"/>
+    <result property="locking" column="locking"/>
+    <result property="orderId" column="order_id"/>
+    <result property="status" column="status"/>
+    <result property="remark" column="remark"/>
+    <result property="modifiedDate" column="modified_date"/>
+    <result property="createdDate" column="created_date"/>
+  </resultMap>
+  <insert id="insert" parameterType="com.x3platform.apps.models.ApplicationFeature">
+    INSERT INTO application_feature
+    (
+      id,
+      application_id,
+      parent_id,
+      code,
+      name,
+      display_name,
+      type,
+      icon_path,
+      big_icon_path,
+      hidden,
+      effect_scope,
+      tree_view_scope,
+      locking,
+      order_id,
+      status,
+      remark,
+      modified_date,
+      created_date
+    )
+    VALUES
+    (
+      #{id},
+      #{applicationId},
+      #{parentId},
+      #{code},
+      #{name},
+      #{displayName},
+      #{type},
+      #{iconPath},
+      #{bigIconPath},
+      #{hidden},
+      #{effectScope},
+      #{treeViewScope},
+      #{locking},
+      #{orderId},
+      #{status},
+      #{remark},
+      CURRENT_TIMESTAMP,
+      CURRENT_TIMESTAMP
+    )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.x3platform.apps.models.ApplicationFeature">
+    UPDATE application_feature SET
+                       id= #{id},
+                       application_id = #{applicationId},
+                       parent_id =  #{parentId},
+                       code =  #{code},
+                       name =  #{name},
+                       display_name = #{displayName},
+                       type = #{type},
+                       icon_path = #{iconPath},
+                       big_icon_path = #{bigIconPath},
+                       hidden =  #{hidden},
+                       effect_scope =  #{effectScope},
+                       tree_view_scope = #{treeViewScope},
+                       locking = #{locking},
+                       order_id = #{orderId},
+                       status =  #{status},
+                       remark =  #{remark},
+                       modified_date =CURRENT_TIMESTAMP
+    WHERE id = #{id}
+  </update>
+  <!--
+      <update id="Sync_HasChildren" >
+          CREATE TEMPORARY TABLE tmp (Id VARCHAR(36) PRIMARY KEY, ParentId VARCHAR(36), Status INT);
+
+          INSERT INTO tmp SELECT Id, ParentId, Status FROM application;
+
+          UPDATE application SET HasChildren = (
+            SELECT CASE COUNT(Id) WHEN  0 THEN 0 ELSE 1 END
+            FROM tmp WHERE tmp.ParentId = application.Id AND tmp.Status = 1) ;
+
+          DROP TEMPORARY TABLE tmp;
+      </update>
+      -->
+  <delete id="deleteByPrimaryKey">
+    DELETE FROM application_feature WHERE id = #{id}
+  </delete>
+  <select id="selectByPrimaryKey" parameterType="com.x3platform.apps.models.ApplicationFeature" resultMap="findOne_Result">
+    SELECT * FROM application_feature WHERE id = #{id}
+  </select>
+  <select id="findOneByApplicationKey" parameterType="com.x3platform.apps.models.ApplicationFeature" resultMap="findOne_Result">
+    SELECT * FROM application_feature WHERE application_key = #{applicationKey}
+  </select>
+  <select id="findAll" resultMap="findAll_Result">
+    SELECT * FROM application_feature T
+    <where>
+      <!-- 列表查询 -->
+      <if test="var_scence == 'Query'">
+        <if test="param_search_text != null and param_search_text != ''">
+          AND application_name LIKE #{param_search_text} OR application_display_name LIKE #{param_search_text} OR description LIKE #{param_search_text}
+        </if>
+      </if>
+      <if test="var_scence == 'default'">
+        <if test="param_parent_id != null and param_parent_id != ''">
+          AND parent_id = #{param_parent_id}
+        </if>
+        <if test="param_status != null and param_status != ''">
+          AND status = #{param_status}
+        </if>
+      </if>
+    </where>
+    <if test="orders != null and orders.size() > 0">
+      ORDER BY
+      <foreach collection="orders" item="order" index="index" separator=",">
+        #{order}
+      </foreach>
+    </if>
+    <if test="length > 0">
+      LIMIT 0, ${length}
+    </if>
+  </select>
+  <select id="findAllByMenu" resultMap="findAll_Result">
+    SELECT * FROM application_feature T WHERE T.application_id = #{applicationId} and parent_id=#{menuId} and status = 1
+  </select>
+  <select id="findAllAuthorizationScopeByMenu" resultMap="findAll_Result">
+    select * from application_feature T
+    where T.id in (
+      SELECT s.entity_id  FROM application_feature_scope s
+      WHERE  s.authorization_object_type = 'Role'
+       AND authorization_object_id = #{roleId}
+      ) and T.`status` = 1
+      and T.application_id = #{applicationId}
+      and parent_id = #{menuId}
+  </select>
+  <select id="findAllByAccountId" resultMap="findAll_Result">
+    select * from application_feature where id in (select ac.entity_id from application_scope ac where ac.authorization_object_id=#{accountId})
+  </select>
+  <select id="isExist">
+    SELECT COUNT(*) AS "Count" FROM application_feature T WHERE $WhereClause$
+  </select>
+  <select id="hasAuthority" resultType="java.lang.Boolean">
+    SELECT
+    COUNT(*) AS "Count"
+    FROM
+    application a,
+    application_scope asd,
+    sys_authority sys
+    WHERE
+     a.id = #{applicationId}
+    AND a.id = asd.entity_id
+    AND sys.id = asd.authority_id
+    AND asd.authorization_object_id = #{accountId}
+    AND sys.description = #{authorityName}
+    <!--
+        SELECT COUNT(*) AS "Count" FROM view_authobject_account view1, application_scope Scope,sys_authority Auth
+        WHERE
+          view1.AccountId = #accountId#
+          AND view1.AuthorizationObjectId = Scope.AuthorizationObjectId
+          AND view1.AuthorizationObjectType = Scope.AuthorizationObjectType
+          AND Scope.AuthorityId = #AuthorityId#
+          AND Scope.ApplicationId = #ApplicationId#
+          and Auth.id = Scope.AuthorityId
+          and Auth.description=#{authorityName}
+          -->
+  </select>
+  <insert id="addAuthorizationScopeObject">
+    INSERT INTO application_scope
+    (authorization_object_type, authorization_object_id, authority_id, application_id, modified_date, created_date)
+    VALUES
+    (#AuthorizationObjectType#, #AuthorizationObjectId#, #AuthorityId#, #ApplicationId#, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+  </insert>
+  <insert id="bindAuthorizationScopeObjects" parameterType="com.x3platform.apps.models.ApplicationScopeInfo">
+    insert into application_scope
+    (authorization_object_type, authorization_object_id, authority_id, entity_id,entity_class_name)
+    VALUES
+    (#{authorizationObjectType}, #{authorizationObjectId}, #{authorityId}, #{entityId},#{entityClassName})
+  </insert>
+  <delete id="removeAuthorizationScopeObjects">
+    DELETE FROM application_scope WHERE application_id = #applicationId# AND authority_id = #authorityId#
+  </delete>
+  <select id="getAuthorizationScopeObjects">
+    SELECT * FROM application_Scope T WHERE application_id = #applicationId# AND authority_id = #authorityId#
+  </select>
+  <select id="isScopeInfoExist" resultType="java.lang.Boolean">
+    SELECT COUNT(*) AS "Count" FROM application_scope T WHERE
+    entity_id=#{entityId}
+    <if test="entityClassName!=null and entityClassName!=''">
+      and entity_class_name=#{entityClassName}
+    </if>
+    and authorization_object_type = #{authorizationObjectType}
+    and authorization_object_id = #{authorizationObjectId}
+  </select>
+  <select id="findAllAccountByApplicationId" resultType="com.x3platform.membership.models.AccountInfo">
+    select a.* from application_scope appc , sys_account a where appc.authorization_object_id = a.id and appc.authorization_object_type=#{applicationMembersType} and entity_id=#{applicationId}
+  </select>
+
+  <delete id="unBindFeature">
+    delete from application_feature_scope where entity_id=#{entityId}
+    and entity_class_name=#{entityClassName} and authority_id=#{authorityId}
+    and authorization_object_type=#{authorizationObjectType}
+    and authorization_object_id=#{authorizationObjectId}
+  </delete>
+  <insert id="bindFeature">
+      insert into application_feature_scope (entity_id,entity_class_name,authority_id,authorization_object_type,authorization_object_id)
+      values (#{entityId},#{entityClassName},#{authorityId},#{authorizationObjectType},#{authorizationObjectId})
+  </insert>
+
+
+</mapper>
