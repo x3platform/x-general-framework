@@ -1,3 +1,4 @@
+/*
 package com.x3platform.membership;
 
 import com.x3platform.membership.MembershipManagement;
@@ -13,9 +14,11 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import static org.junit.Assert.*;
 
+*/
 /**
  *
- */
+ *//*
+
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class MembershipManagementTests {
@@ -29,3 +32,4 @@ public class MembershipManagementTests {
     assertNotNull("AccountService is not null.", instance.getAccountService());
   }
 }
+*/

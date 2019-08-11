@@ -1,6 +1,7 @@
 package com.x3platform.membership.configuration;
 
 import com.x3platform.SpringContext;
+import com.x3platform.util.BooleanUtil;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,4 +64,18 @@ public class MembershipConfigurationView {
   public String getAvatarVirtualFolder() {
     return configuration.getAvatarVirtualFolder();
   }
+
+  public String getAccountIdentityCookieToken() {
+    return configuration.getAccountIdentityCookieToken();
+  }
+
+  public boolean getSingleSignOn() {
+    return BooleanUtil.bool(configuration.getSingleSignOn());
+  }
+
+  public String getCacheRedis() {  return configuration.getCacheRedis(); }
+
+  public String getRelationShip() {  return configuration.getRelationShip(); }
+
+  public String getRelationshipManagement() {  return configuration.getRelationshipManagement(); }
 }

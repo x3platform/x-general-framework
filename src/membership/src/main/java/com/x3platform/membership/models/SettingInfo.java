@@ -1,5 +1,9 @@
 package com.x3platform.membership.models;
 
+import com.x3platform.util.DateUtil;
+
+import java.util.Date;
+
 /**
  * 参数设置信息
  */
@@ -9,6 +13,7 @@ public class SettingInfo {
    * 默认构造函数
    */
   public SettingInfo() {
+
   }
 
   private String mId;
@@ -118,27 +123,27 @@ public class SettingInfo {
     mRemark = value;
   }
 
-  private java.time.LocalDateTime mModifiedDate = java.time.LocalDateTime.MIN;
+  private Date mModifiedDate = DateUtil.getDefaultDate();
 
   /**
    */
-  public final java.time.LocalDateTime getModifiedDate() {
+  public final Date getModifiedDate() {
     return mModifiedDate;
   }
 
-  public final void setModifiedDate(java.time.LocalDateTime value) {
+  public final void setModifiedDate(Date value) {
     mModifiedDate = value;
   }
 
-  private java.time.LocalDateTime mCreatedDate = java.time.LocalDateTime.MIN;
+  private Date mCreatedDate = DateUtil.getDefaultDate();
 
   /**
    */
-  public final java.time.LocalDateTime getCreatedDate() {
+  public final Date getCreatedDate() {
     return mCreatedDate;
   }
 
-  public final void setCreatedDate(java.time.LocalDateTime value) {
+  public final void setCreatedDate(Date value) {
     mCreatedDate = value;
   }
 }

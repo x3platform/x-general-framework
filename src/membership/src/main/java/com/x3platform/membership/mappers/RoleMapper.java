@@ -1,12 +1,15 @@
 package com.x3platform.membership.mappers;
 
-import com.x3platform.membership.IAccountRoleRelationInfo;
-import com.x3platform.membership.IRoleInfo;
-import com.x3platform.security.authority.AuthorityInfo;
-
-import java.util.*;
+import com.x3platform.membership.AccountRoleRelation;
+import com.x3platform.membership.Role;
+import com.x3platform.security.authority.Authority;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import org.apache.ibatis.annotations.Param;
 
 /**
+ *
  */
 public interface RoleMapper {
 
@@ -20,21 +23,21 @@ public interface RoleMapper {
    * @param param IAccount 实例详细信息
    * @return IAccount 实例详细信息
    */
-  IRoleInfo save(IRoleInfo param);
+  int save(Role param);
 
   /**
    * 添加记录
    *
    * @param param IAccount 实例的详细信息
    */
-  void insert(IRoleInfo param);
+  void insert(Role param);
 
   /**
    * 修改记录
    *
    * @param param IAccount 实例的详细信息
    */
-  void update(IRoleInfo param);
+  void update(Role param);
 
   /**
    * 删除记录
@@ -53,90 +56,111 @@ public interface RoleMapper {
    * @param id IAccount id号
    * @return 返回一个 IAccount 实例的详细信息
    */
-  IRoleInfo findOne(String id);
+  Role findOne(String id);
 
   /**
    * 查询某条记录
    *
    * @param globalName 角色的全局名称
-   * @return 返回一个<see cref="IRoleInfo"/>实例的详细信息
+   * @return 返回一个<see       cref   =   "   Role   "   />实例的详细信息
    */
-  IRoleInfo findOneByGlobalName(String globalName);
+  Role findOneByGlobalName(String globalName);
 
   /**
    * 递归查询某个公司下面对应某标准角色相对应的角色
    *
    * @param corporationId  组织标识
    * @param standardRoleId 标准角色标识
-   * @return 返回一个<see cref="IRoleInfo"/>实例的详细信息
+   * @return 返回一个<see       cref   =   "   Role   "   />实例的详细信息
    */
-  IRoleInfo findOneByCorporationIdAndStandardRoleId(String corporationId, String standardRoleId);
+  Role findOneByCorporationIdAndStandardRoleId(String corporationId, String standardRoleId);
+
+
+  /**
+   * @param parentId
+   * @return
+   */
+  Role findMaxCodeByParentId(String parentId);
+
+  /**
+   * @param organizationUnitId
+   * @return
+   */
+  Role findMaxCodeByOrganizationUnitId(String organizationUnitId);
 
   /**
    * 查询所有相关记录
    *
    * @param whereClause SQL 查询条件
    * @param length      条数
-   * @return 返回所有<see cref="IRoleInfo" />实例的详细信息
+   * @return 返回所有<see       cref   =   "   Role   "       />实例的详细信息
    */
-  List<IRoleInfo> findAll(String whereClause, int length);
+  List<Role> findAll(String whereClause, int length);
+
+
+  /**
+   * 查询所有相关记录
+   *
+   * @return 返回所有实例的详细信息
+   */
+  List<Role> findAll(Map params);
 
   /**
    * 查询某个父节点下的所有组织单位
    *
    * @param parentId 父节标识
-   * @return 返回一个 IOrganizationUnitInfo 实例的详细信息
+   * @return 返回一个 OrganizationUnit 实例的详细信息
    */
-  List<IRoleInfo> findAllByParentId(String parentId);
+  List<Role> findAllByParentId(String parentId);
 
   /**
    * 查询某条记录
    *
    * @param accountId 帐号标识
-   * @return 返回一个 IRoleInfo 实例的详细信息
+   * @return 返回一个 Role 实例的详细信息
    */
-  List<IRoleInfo> findAllByAccountId(String accountId);
+  List<Role> findAllByAccountId(@Param("accountId") String accountId);
 
   /**
    * 查询某个组织下面所有的角色
    *
    * @param organizationId 组织标识
-   * @return 返回一个 IRoleInfo 实例的详细信息
+   * @return 返回一个 Role 实例的详细信息
    */
-  List<IRoleInfo> findAllByOrganizationUnitId(String organizationId);
+  List<Role> findAllByOrganizationUnitId(String organizationId);
 
   /**
    * 递归查询某个公司下面所有的角色
    *
    * @param generalRoleId 组织标识
-   * @return 返回所有<see cref="IRoleInfo"/>实例的详细信息
+   * @return 返回所有<see       cref   =   "   Role   "   />实例的详细信息
    */
-  List<IRoleInfo> findAllByGeneralRoleId(String generalRoleId);
+  List<Role> findAllByGeneralRoleId(String generalRoleId);
 
   /**
    * 递归查询某个标准组织下面所有的角色
    *
    * @param standardOrganizationUnitId 组织标识
-   * @return 返回所有<see cref="IRoleInfo"/>实例的详细信息
+   * @return 返回所有<see       cref   =   "   Role   "   />实例的详细信息
    */
-  List<IRoleInfo> findAllByStandardOrganizationUnitId(String standardOrganizationUnitId);
+  List<Role> findAllByStandardOrganizationUnitId(String standardOrganizationUnitId);
 
   /**
    * 递归查询某个标准角色下面所有的角色
    *
    * @param standardRoleId 组织标识
-   * @return 返回所有<see cref="IRoleInfo"/>实例的详细信息
+   * @return 返回所有<see       cref   =   "   Role   "   />实例的详细信息
    */
-  List<IRoleInfo> findAllByStandardRoleId(String standardRoleId);
+  List<Role> findAllByStandardRoleId(String standardRoleId);
 
   /**
    * 递归查询某个组织下面相关的职位对应的角色信息
    *
    * @param organizationId 组织标识
    * @param jobId          职位标识
-   * @return 返回一个<see cref="IRoleInfo"/>实例的详细信息
+   * @return 返回一个<see       cref   =   "   Role   "   />实例的详细信息
    */
-  List<IRoleInfo> findAllByOrganizationUnitIdAndJobId(String organizationId, String jobId);
+  List<Role> findAllByOrganizationUnitIdAndJobId(String organizationId, String jobId);
   ///#endregion
 
   ///#region 函数:FindAllByAssignedJobId(string assignedJobId)
@@ -145,9 +169,9 @@ public interface RoleMapper {
    * 递归查询某个组织下面相关的岗位对应的角色信息
    *
    * @param assignedJobId 岗位标识
-   * @return 返回一个<see cref="IRoleInfo"/>实例的详细信息
+   * @return 返回一个<see       cref   =   "   Role   "   />实例的详细信息
    */
-  List<IRoleInfo> findAllByAssignedJobId(String assignedJobId);
+  List<Role> findAllByAssignedJobId(String assignedJobId);
   ///#endregion
 
   ///#region 函数:FindAllByCorporationIdAndStandardRoleIds(string corporationId, string standardRoleIds)
@@ -157,9 +181,9 @@ public interface RoleMapper {
    *
    * @param corporationId   组织标识
    * @param standardRoleIds 标准角色标识
-   * @return 返回所有<see cref="IRoleInfo"/>实例的详细信息
+   * @return 返回所有<see       cref   =   "   Role   "   />实例的详细信息
    */
-  List<IRoleInfo> findAllByCorporationIdAndStandardRoleIds(String corporationId, String standardRoleIds);
+  List<Role> findAllByCorporationIdAndStandardRoleIds(String corporationId, String standardRoleIds);
   ///#endregion
 
   ///#region 函数:FindAllBetweenPriority(string corporationId, string standardRoleIds)
@@ -170,9 +194,9 @@ public interface RoleMapper {
    * @param organizationId 组织标识
    * @param minPriority    最小权重值
    * @param maxPriority    最大权重值
-   * @return 返回所有<see cref="IRoleInfo"/>实例的详细信息
+   * @return 返回所有<see       cref   =   "   Role   "   />实例的详细信息
    */
-  List<IRoleInfo> findAllBetweenPriority(String organizationId, int minPriority, int maxPriority);
+  List<Role> findAllBetweenPriority(String organizationId, int minPriority, int maxPriority);
   ///#endregion
 
   ///#region 函数:FindAllWithoutMember(int length, bool includeAllRole)
@@ -182,9 +206,9 @@ public interface RoleMapper {
    *
    * @param length         条数, 0表示全部
    * @param includeAllRole 包含全部角色
-   * @return 返回所有<see cref="IRoleInfo"/>实例的详细信息
+   * @return 返回所有<see       cref   =   "   Role   "   />实例的详细信息
    */
-  List<IRoleInfo> findAllWithoutMember(int length, boolean includeAllRole);
+  List<Role> findAllWithoutMember(int length, boolean includeAllRole);
   ///#endregion
 
   ///#region 函数:FindForwardLeadersByOrganizationUnitId(string organizationId, int level)
@@ -194,9 +218,9 @@ public interface RoleMapper {
    *
    * @param organizationId 组织标识
    * @param level          层次
-   * @return 返回所有<see cref="IRoleInfo"/>实例的详细信息
+   * @return 返回所有<see       cref   =   "   Role   "   />实例的详细信息
    */
-  List<IRoleInfo> findForwardLeadersByOrganizationUnitId(String organizationId, int level);
+  List<Role> findForwardLeadersByOrganizationUnitId(String organizationId, int level);
   ///#endregion
 
   ///#region 函数:FindBackwardLeadersByOrganizationUnitId(string organizationId, int level)
@@ -206,9 +230,9 @@ public interface RoleMapper {
    *
    * @param organizationId 组织标识
    * @param level          层次
-   * @return 返回所有<see cref="IRoleInfo"/>实例的详细信息
+   * @return 返回所有<see       cref   =   "   Role   "   />实例的详细信息
    */
-  List<IRoleInfo> findBackwardLeadersByOrganizationUnitId(String organizationId, int level);
+  List<Role> findBackwardLeadersByOrganizationUnitId(String organizationId, int level);
   ///#endregion
 
   ///#region 函数:FindStandardGeneralRolesByOrganizationUnitId(string organizationId, string standardGeneralRoleId)
@@ -218,9 +242,9 @@ public interface RoleMapper {
    *
    * @param organizationId        组织标识
    * @param standardGeneralRoleId 标准通用角色标识
-   * @return 返回所有<see cref="IRoleInfo"/>实例的详细信息
+   * @return 返回所有<see       cref   =   "   Role   "   />实例的详细信息
    */
-  List<IRoleInfo> findStandardGeneralRolesByOrganizationUnitId(String organizationId, String standardGeneralRoleId);
+  List<Role> findStandardGeneralRolesByOrganizationUnitId(String organizationId, String standardGeneralRoleId);
   ///#endregion
 
   // -------------------------------------------------------
@@ -235,7 +259,7 @@ public interface RoleMapper {
    @param rowCount 记录行数
    @return 返回一个列表
    */
-  // List<IRoleInfo> GetPaging(int startIndex, int pageSize, DataQuery query, tangible.RefObject<Integer> rowCount);
+  // List<Role> GetPaging(int startIndex, int pageSize, DataQuery query, tangible.RefObject<Integer> rowCount);
 
   /**
    * 检测是否存在相关的记录.
@@ -302,14 +326,14 @@ public interface RoleMapper {
    *
    * @param roleId 角色标识
    */
-  List<AuthorityInfo> getAuthorities(String roleId);
+  List<Authority> getAuthorities(String roleId);
 
   /**
    * 同步信息
    *
    * @param param 角色信息
    */
-  // int SyncFromPackPage(IRoleInfo param);
+  // int SyncFromPackPage(Role param);
 
   // -------------------------------------------------------
   // 设置帐号和角色关系
@@ -321,7 +345,7 @@ public interface RoleMapper {
    * @param accountId 帐号标识
    * @return Table Columns：AccountId, RoleId, IsDefault, BeginDate, EndDate
    */
-  List<IAccountRoleRelationInfo> findAllRelationByAccountId(String accountId);
+  List<AccountRoleRelation> findAllRelationByAccountId(String accountId);
 
   /**
    * 根据角色查询相关帐号的关系
@@ -329,7 +353,7 @@ public interface RoleMapper {
    * @param roleId 角色标识
    * @return Table Columns：AccountId, RoleId, IsDefault, BeginDate, EndDate
    */
-  List<IAccountRoleRelationInfo> findAllRelationByRoleId(String roleId);
+  List<AccountRoleRelation> findAllRelationByRoleId(String roleId);
 
   /**
    * 添加帐号与相关角色的关系
@@ -340,7 +364,11 @@ public interface RoleMapper {
    * @param beginDate 启用时间
    * @param endDate   停用时间
    */
-  int addRelation(String accountId, String roleId, boolean isDefault, java.time.LocalDateTime beginDate, java.time.LocalDateTime endDate);
+  int addRelation(@Param("accountId") String accountId,
+                  @Param("roleId") String roleId,
+                  @Param("isDefault") boolean isDefault,
+                  @Param("beginDate") Date beginDate,
+                  @Param("endDate") Date endDate);
 
   /**
    * 续约帐号与相关角色的关系
@@ -349,7 +377,7 @@ public interface RoleMapper {
    * @param roleId    角色标识
    * @param endDate   新的截止时间
    */
-  int extendRelation(String accountId, String roleId, java.time.LocalDateTime endDate);
+  int extendRelation(String accountId, String roleId, Date endDate);
 
   /**
    * 移除帐号与相关角色的关系
@@ -385,14 +413,22 @@ public interface RoleMapper {
    *
    * @param accountId 帐号标识
    */
-  int removeAllRelation(String accountId);
+  int removeAllRelation(@Param("accountId") String accountId);
 
   /**
    * 检测帐号是否有默认角色
    *
    * @param accountId 帐号标识
    */
-  boolean hasDefaultRelation(String accountId);
+  boolean hasDefaultRelation(@Param("accountId") String accountId);
+
+  /**
+   * 检测帐号是否有默认角色
+   *
+   * @param accountId 帐号标识
+   */
+  boolean hasRelation(@Param("accountId") String accountId, @Param("roleId") String roleId);
+
 
   /**
    * 设置帐号的默认岗位

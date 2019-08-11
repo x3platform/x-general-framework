@@ -1,28 +1,44 @@
 package com.x3platform.membership.controllers;
 
-import java.util.*;
-
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.PageHelper;
+import com.x3platform.KernelContext;
+import com.x3platform.data.DataPaging;
+import com.x3platform.data.DataPagingUtil;
+import com.x3platform.data.DataQuery;
+import com.x3platform.globalization.I18n;
+import com.x3platform.membership.Account;
+import com.x3platform.membership.MembershipManagement;
+import com.x3platform.membership.Role;
+import com.x3platform.membership.models.OrganizationUnitInfo;
+import com.x3platform.membership.models.RoleInfo;
+import com.x3platform.membership.services.RoleService;
+import com.x3platform.messages.MessageObject;
+import com.x3platform.util.StringUtil;
+import java.util.List;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.x3platform.messages.MessageObject;
-import com.x3platform.digitalNumber.DigitalNumberContext;
-import com.x3platform.digitalNumber.models.*;
-import com.x3platform.digitalNumber.services.*;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 /**
+ * 角色 API 接口
  *
+ * @author ruanyu
  */
 @Lazy(true)
 @RestController
 @RequestMapping("/api/membership/role")
 public class RoleController {
-  // 数据提供器
-  private IDigitalNumberService service = DigitalNumberContext.getInstance().getDigitalNumberService();
+
+  // AccountService accountService = MembershipManagement.getInstance().getAccountService();
+
+  RoleService service = MembershipManagement.getInstance().getRoleService();
+
+  // @Autowired
+  // OrganizationUnitService organizationUnitService  ;
 
   // -------------------------------------------------------
   // 保存 删除
@@ -34,30 +50,43 @@ public class RoleController {
    * @return 返回操作结果
    */
   @RequestMapping("/save")
-  public final String save(HttpServletRequest req, HttpServletResponse res) {
-    DigitalNumberInfo param = new DigitalNumberInfo();
-
-    // param = AjaxUtil.<DigitalNumberInfo>Deserialize(param, doc);
-
-    this.service.save(param);
-
-    return "{\"message\":{\"returnCode\":0,\"value\":\"查询成功。\"}}";
+  public final String save(@RequestBody String data) {
+    RoleInfo param = JSON.parseObject(data, RoleInfo.class);
+    service.save(param);
+    if (StringUtil.isNullOrEmpty(param.getId())) {
+      return MessageObject.stringify("0", I18n.getStrings().text("msg_save_success"));
+    } else {
+      return MessageObject.stringify("0", I18n.getStrings().text("msg_save_success"));
+    }
   }
 
   /**
-   * 删除记录
+   * 删除记录,删除记录分为逻辑删除和物理删除
    *
-   * @param doc Xml 文档对象
+   * @param data Xml 文档对象
    * @return 返回操作结果
    */
-  public final String delete(HttpServletRequest req, HttpServletResponse res) {
-    // String name = XmlHelper.Fetch("name", doc);
-    String name = req.getParameter("name");
-
-    this.service.delete(name);
-
-    // return MessageObject.Stringify("0", I18n.Strings["msg_delete_success"]);
-    return MessageObject.stringify("0", "msg_delete_success");
+  @RequestMapping("/delete")
+  public final String delete(@RequestBody String data) {
+    JSONObject req = JSON.parseObject(data);
+    String id = req.getString("id");
+    // 判断当前角色下，是否有子角色 ；
+    List<Role> isExistRoleList = service.findAllByParentId(id);
+    if (isExistRoleList != null && isExistRoleList.size() > 0) {
+      return MessageObject.stringify("1", I18n.getStrings().text("membership_role_children_role_failed"));
+    }
+    // 判断当前角色下，是否存在是否存在人 ；
+    List<Account> isExistAccountList = MembershipManagement.getInstance().getAccountService().findAllByRoleId(id);
+    if (isExistAccountList != null && isExistAccountList.size() > 0) {
+      return MessageObject.stringify("1", I18n.getStrings().text("membership_role_children_account_failed"));
+    }
+    try {
+      service.delete(id);
+    } catch (Exception e) {
+      return MessageObject.stringify("1", I18n.getStrings().text("msg_delete_failed"));
+      // e.printStackTrace();
+    }
+    return MessageObject.stringify("0", I18n.getStrings().text("msg_delete_success"));
   }
 
   // -------------------------------------------------------
@@ -65,94 +94,177 @@ public class RoleController {
   // -------------------------------------------------------
 
   /**
-   * 获取分页内容 / get paging.
-   *
-   * @param doc Xml 文档对象
-   * @return 返回一个相关的实例列表.
+   * 返回对应消息 返回一个相关的实例列表.
    */
-  public final String findOne(HttpServletRequest req, HttpServletResponse res) {
+  @RequestMapping("/findOne")
+  public final String findOne(@RequestBody String data) {
     StringBuilder outString = new StringBuilder();
-
-    // String name = XmlHelper.Fetch("name", doc);
-    String name = req.getParameter("name");
-
-    DigitalNumberInfo param = this.service.findOne(name);
-
-    // outString.append("{\"data\":" + AjaxUtil.<DigitalNumberInfo>Parse(param) + ",");
-
-    // outString.append(MessageObject.Stringify("0", I18n.Strings["msg_query_success"], true) + "}");
-    outString.append(MessageObject.stringify("0", "msg_query_success", true) + "}");
-
+    JSONObject req = JSON.parseObject(data);
+    String id = req.getString("id");
+    Role param = service.findOne(id);
+    outString.append("{\"data\":" + JSON.toJSONString(param) + ",");
+    outString.append(MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}");
     return outString.toString();
   }
 
-  // -------------------------------------------------------
-  // 自定义功能
-  // -------------------------------------------------------
+  /**
+   * @param data JSON 格式文本
+   * @return 返回一个相关的实例列表.
+   */
+  @RequestMapping("/query")
+  public final String query(@RequestBody String data) {
+    JSONObject req = JSON.parseObject(data);
+    DataPaging paging = DataPagingUtil.create(req.getString("paging"));
+    DataQuery query = DataQuery.create(req.getString("query"));
+    Object organizationUnitId = query.getWhere().get("organizationUnitId");
+    if (organizationUnitId != null && "0".equals(organizationUnitId.toString())) {
+      // 当设置为哦
+      Object global = query.getWhere().get("global");
+      if (global != null) {
+        if ("true".equals(global.toString())) {
+          query.getWhere().put("organizationUnitId", "");
+        } else {
+          query.getWhere().put("organizationUnitId", organizationUnitId); // 查询不出来，设置
+        }
+      } else {
+        query.getWhere().put("organizationUnitId", '1'); // 查询不出来，设置
+      }
+    }
+
+    PageHelper.startPage(paging.getCurrentPage(), paging.getPageSize());
+
+    List<Role> list = service.findAll(query);
+
+    paging.setTotal(DataPagingUtil.getTotal(list));
+
+    return "{\"data\":" + JSON.toJSONString(list) + ",\"paging\":" + JSON.toJSONString(paging) + ","
+      + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";
+  }
 
   /**
-   * 获取分页内容
-   *
-   * @param doc Xml 文档对象
-   * @return 返回操作结果
+   * 获取角色树 remark 1： 角色树是加载在组织机构上，进行展示的， 然后对角色进行操作
    */
-  /*public final String GetPaging(HttpServletRequest req, HttpServletResponse res) {
+  @RequestMapping("/getDynamicTreeView")
+  public final String getDynamicTreeView(@RequestBody String data) {
+    JSONObject req = JSON.parseObject(data);
+    // 必填字段
+    String tree = req.getString("tree");
+    String parentId = req.getString("parentId");
+    // 附加属性
+    String treeViewRootTreeNodeId = req.getString("treeViewRootTreeNodeId");
+    String url = req.getString("url");
+    String organizationUnitId = "";
+    // 树形控件默认根节点标识为0, 需要特殊处理.
+    if ("0".equals(parentId)) {
+      String global = req.getString("global");
+      if ("false".equals(global)) {
+        // 判断获取， 然后进行支撑
+        Account userInfo = KernelContext.getCurrent().getUser();
+        List<OrganizationUnitInfo> info = MembershipManagement.getInstance()
+          .getOrganizationUnitService().findAllByAccountId(userInfo.getId());
+
+        OrganizationUnitInfo organizationUnit = MembershipManagement.getInstance()
+          .getOrganizationUnitService().findCorporationByOrganizationUnitId(info.get(0).getId());
+
+        // 需要进行组织结构控制
+        organizationUnitId = organizationUnit.getId();
+      }
+    }
+
+    parentId = (StringUtil.isNullOrEmpty(parentId) || parentId.equals("0")) ? treeViewRootTreeNodeId : parentId;
+
     StringBuilder outString = new StringBuilder();
-
-    PagingHelper paging = PagingHelper.Create(XmlHelper.Fetch("paging", doc, "xml"), XmlHelper.Fetch("query", doc, "xml"));
-
-    int rowCount = 0;
-
-    tangible.RefObject<Integer> tempRef_rowCount = new tangible.RefObject<Integer>(rowCount);
-    List<DigitalNumberInfo> list = this.service.GetPaging(paging.RowIndex, paging.PageSize, paging.Query, tempRef_rowCount);
-    rowCount = tempRef_rowCount.argValue;
-
-    paging.RowCount = rowCount;
-
-    outString.append("{\"data\":" + AjaxUtil.<DigitalNumberInfo>Parse(list) + ",");
-
-    outString.append("\"paging\":" + paging + ",");
-
-    outString.append(MessageObject.Stringify("0", I18n.Strings["msg_query_success"], true) + "}");
-
+    outString.append("{\"data\":");
+    outString.append("{\"tree\":\"" + tree + "\",");
+    outString.append("\"parentId\":\"" + parentId + "\",");
+    outString.append("\"childNodes\":[");
+    // 查找树的子节点
+    DataQuery query = new DataQuery();
+    query.getVariables().put("scence", "QueryChild");
+    query.getWhere().put("parent_id", parentId);
+    query.getWhere().put("organizationUnitId", organizationUnitId);
+    query.getWhere().put("status", 1);
+    query.getOrders().add("order_id");
+    query.getOrders().add("code");
+    // 1、 根据当前登录人的组织机构 和 加载树形方式
+    List<Role> roleInfoList = service.findAll(query);
+    for (Role item : roleInfoList) {
+      String mParentId = "0";
+      if (!StringUtil.isNullOrEmpty(item.getParent().getId())) {
+        mParentId = item.getParent().getId();
+      }
+      outString.append("{");
+      outString.append("\"id\":\"" + item.getId() + "\",");
+      outString.append("\"parentId\":\"" + StringUtil.toSafeJson(mParentId) + "\",");
+      outString.append("\"name\":\"" + StringUtil.toSafeJson(item.getName()) + "\",");
+      outString.append("\"url\":\"" + StringUtil
+        .toSafeJson(url.replace("{treeNodeId}", item.getId()).replace("{treeNodeName}", item.getName())) + "\",");
+      outString.append("\"target\":\"_self\"");
+      outString.append("},");
+    }
+    if (StringUtil.substring(outString.toString(), outString.length() - 1, 1).equals(",")) {
+      outString = outString.deleteCharAt(outString.length() - 1);
+    }
+    outString.append("]}," + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}");
     return outString.toString();
-  }*/
+  }
 
   /**
-   * 创建新的对象
-   *
-   * @param doc Xml 文档对象
-   * @return 返回操作结果
+   * 获取角色树 remark 1： 角色树是加载在组织机构上，进行展示的， 然后对角色进行操作
    */
-  /*
-  public final String CreateNewObject(HttpServletRequest req, HttpServletResponse res) {
-    StringBuilder outString = new StringBuilder();
-
-    DigitalNumberInfo param = new DigitalNumberInfo();
-
-    param.setName("");
-
-    param.setCreatedDate = param.ModifiedDate = java.time.LocalDateTime.now();
-
-    outString.append("{\"data\":" + AjaxUtil.<DigitalNumberInfo>Parse(param) + ",");
-
-    outString.append(MessageObject.Stringify("0", I18n.Strings["msg_create_success"], true) + "}");
-
-    return outString.toString();
-  }*/
+  @RequestMapping("/getMaxCode")
+  public final String getMaxCode(@RequestBody String data) {
+    Role role = null;
+    JSONObject req = JSON.parseObject(data);
+    // 必填字段
+    String search = req.getString("search");
+    String value = req.getString("value");
+    if (search.equals("organization")) {
+      role = service.findMaxCodeByOrganizationUnitId(value);
+    } else if (search.equals("role")) {
+      role = service.findMaxCodeByParentId(value);
+    }
+    if (StringUtils.isEmpty(role)) {
+      return "0001";
+    } else {
+      String code = role.getCode();
+      return StringUtil.numberToStr(Integer.valueOf(code) + 1, "0000");
+    }
+  }
 
   /**
-   * 生成流水号
-   *
-   * @param doc Xml 文档对象
-   * @return 返回操作结果
+   * 组织机构获得所拥有的人员
    */
-  public final String Generate(HttpServletRequest req, HttpServletResponse res) {
-    // String name = XmlHelper.Fetch("name", doc);
-    String name = req.getParameter("name");
+  @RequestMapping("/getOwnRoles")
+  public final String getOwnRoles(@RequestBody String data) {
+    JSONObject req = JSON.parseObject(data);
+    String orgainzationUnitId = req.getString("orgainzationUnitId");
+    service.findAllRolesByOrganization(orgainzationUnitId);
+    // Account accountInfo = this.service.findMaxCode(req);
+    // String result = StringUtil.numberToStr(Integer.parseInt(accountInfo.getCode()) + 1, "00000");
+    // return "{\"data\":" + result + ",\"paging\":" + JSON.toJSONString(accountInfo) + ","
+    //   + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";
 
-    String result = this.service.generate(name);
+    return "";
+  }
 
-    return "{\"data\":\"" + result + "\",\"message\":{\"returnCode\":0,\"value\":\"查询成功。\"}}";
+  /**
+   * 根据角色。查询组织结构; 用途，使用在 默认角色带入组织结构;
+   */
+  @RequestMapping("/findOrganizationUnitInfo")
+  public final String findOrganizationUnitInfo(@RequestBody String data) {
+    JSONObject req = JSON.parseObject(data);
+    String id = req.getString("id");
+    Role role = service.findOne(id);
+
+    if (role != null && role.getOrganizationUnitId() != null) {
+      // 判断当前是否为 顶级节点
+    }
+
+    OrganizationUnitInfo organizationUnit = MembershipManagement.getInstance()
+      .getOrganizationUnitService().findOne(role.getOrganizationUnitId());
+
+    return "{\"data\":" + JSON.toJSONString(organizationUnit) + ","
+      + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";
   }
 }

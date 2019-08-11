@@ -1,651 +1,550 @@
 package com.x3platform.membership.models;
 
-import java.util.*;
-
 import com.alibaba.fastjson.annotation.JSONField;
-import com.x3platform.IAuthorizationObject;
-import com.x3platform.IAuthorizationScope;
-import com.x3platform.membership.*;
+import com.x3platform.AuthorizationObject;
+import com.x3platform.AuthorizationScope;
+import com.x3platform.membership.Account;
+import com.x3platform.membership.AccountGroupRelation;
+import com.x3platform.membership.AccountOrganizationUnitRelation;
+import com.x3platform.membership.AccountRoleRelation;
+import com.x3platform.membership.MembershipManagement;
 import com.x3platform.membership.configuration.MembershipConfigurationView;
 import com.x3platform.util.DateUtil;
 import com.x3platform.util.StringUtil;
-import com.x3platform.util.UUIDUtil;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import org.dom4j.Element;
 import org.dom4j.Node;
 
-// import com.x3platform.CacheBuffer.*;
-// import com.x3platform.Util.*;
-// import com.x3platform.Membership.Configuration.*;
-
 /**
  * 帐户信息
+ *
+ * @author ruanyu
  */
-public class AccountInfo implements IAccountInfo {
+public class AccountInfo implements Account {
 
   /**
+   *
    */
   public AccountInfo() {
+
   }
 
-  //
-  // 属性, 可存放扩展属性, 临时属性
-  //
-  // 可添加的属性 例如: OriginalPassword, OriginalNickName
-  //
-
-  private HashMap<String, Object> mProperties = new HashMap<String, Object>();
+  /**
+   * 属性, 可存放扩展属性, 临时属性
+   *
+   * 可添加的属性 例如: OriginalPassword, OriginalNickName
+   */
+  private HashMap<String, Object> properties = new HashMap<String, Object>();
 
   /**
    * 属性
    */
-  public final HashMap<String, Object> getProperties() {
-    return mProperties;
+  public HashMap<String, Object> getProperties() {
+    return properties;
   }
 
-  //
-  // 具体属性
-  //
+  private String id = "";
+  private String code = "";
 
-  private String mId = "";
+  /**
+   * 具体属性
+   */
+  private String name = "";
+  private String globalName = "";
+  private String displayName = "";
+  private String pinyin = "";
+  private String loginName = "";
+  @JSONField(serialize = false)
+  private String password;
+  private Date passwordChangedDate = DateUtil.getDefaultDate();
+  private String identityCard = "";
+  private int type = 0;
+  private String typeView;
+  private String certifiedMobile;
+  private String certifiedEmail;
+
+  private String certifiedAvatar = "";
+  private int enableEmail;
+  private AuthorizationObject parent;
+
+  private List<AccountOrganizationUnitRelation> organizationUnitRelations = null;
+  private String organizationUnitIds = "";
+
+  /**
+   * 所属组织信息
+   */
+  private String[] organizationUnitText;
+  private String organizationUnitView;
+
+  private List<AccountRoleRelation> roleRelations = null;
+
+  /**
+   * 所属角色信息
+   */
+  private String[] roleText;
+  /**
+   * 所属角色名称
+   */
+  private String roleView = "";
+
+  private List<AccountGroupRelation> groupRelations = null;
+  private String groupText;
+
+  private String groupView;
+  private List<AuthorizationScope> scopes = new ArrayList<AuthorizationScope>();
+  private boolean isDraft;
+  private int locking = 1;
+  private String orderId;
+  private int status;
+  private String remark;
+  private String ip;
+  private String createdBy;
+  private Date loginDate = DateUtil.getDefaultDate();
+  private String distinguishedName = null;
+  private Date modifiedDate = DateUtil.getDefaultDate();
+  private Date createdDate = DateUtil.getDefaultDate();
+  private Date expires = new Date((new Date()).getTime() + 6 * 60 * 60 * 1000L);
 
   /**
    * 用户标识
    */
-  public final String getId() {
-    return mId;
+  @Override
+  public String getId() {
+    return id;
   }
 
-  public final void setId(String value) {
-    mId = value;
+  @Override
+  public void setId(String value) {
+    id = value;
   }
-
-  ///#region 属性:Code
-  private String mCode = "";
 
   /**
    * 编码
    */
-  public final String getCode() {
-    return mCode;
+  @Override
+  public String getCode() {
+    return code;
   }
 
-  public final void setCode(String value) {
-    mCode = value;
+  @Override
+  public void setCode(String value) {
+    code = value;
   }
-  ///#endregion
-
-  ///#region 属性:Name
-  private String mName = "";
 
   /**
    * 名称
    */
   @Override
-  public final String getName() {
-    return mName;
+  public String getName() {
+    return name;
   }
 
   @Override
-  public final void setName(String value) {
-    mName = value;
+  public void setName(String value) {
+    name = value;
   }
-  ///#endregion
 
-  ///#region 属性:GlobalName
-  private String mGlobalName = "";
+  @Override
+  public String getCreatedBy() {
+    return createdBy;
+  }
+
+  @Override
+  public void setCreatedBy(String createdBy) {
+    this.createdBy = createdBy;
+  }
 
   /**
    * 全局名称
    */
-  public final String getGlobalName() {
-    return mGlobalName;
+  @Override
+  public String getGlobalName() {
+    if (StringUtil.isNullOrEmpty(globalName)) {
+      globalName = getDisplayName();
+    }
+    return globalName;
   }
 
-  public final void setGlobalName(String value) {
-    mGlobalName = value;
+  public void setGlobalName(String value) {
+    globalName = value;
   }
-
-  private String mDisplayName = "";
 
   /**
    * 显示名称
    */
-  public final String getDisplayName() {
-    if (StringUtil.isNullOrEmpty(mDisplayName)) {
-      mDisplayName = this.getName();
+  @Override
+  public String getDisplayName() {
+    if (StringUtil.isNullOrEmpty(displayName)) {
+      displayName = getName();
     }
 
-    return mDisplayName;
+    return displayName;
   }
 
-  public final void setDisplayName(String value) {
-    mDisplayName = value;
+  @Override
+  public void setDisplayName(String value) {
+    displayName = value;
   }
-
-  private String mPinYin = "";
 
   /**
    * 拼音
    */
-  public final String getPinYin() {
-    return mPinYin;
+  @Override
+  public String getPinYin() {
+    return pinyin;
   }
 
-  public final void setPinYin(String value) {
-    mPinYin = value;
+  @Override
+  public void setPinYin(String value) {
+    pinyin = value;
   }
-
-  private String mLoginName = "";
 
   /**
    * 登录名
    */
-  public final String getLoginName() {
-    return mLoginName;
+  @Override
+  public String getLoginName() {
+    return loginName;
   }
 
-  public final void setLoginName(String value) {
-    mLoginName = value;
+  @Override
+  public void setLoginName(String value) {
+    loginName = value;
   }
-
-  private String mPassword;
 
   /**
    * 密码
    */
-  public final String getPassword() {
-    return this.mPassword;
+  public String getPassword() {
+    return password;
   }
 
-  public final void setPassword(String value) {
-    this.mPassword = value;
+  public void setPassword(String value) {
+    password = value;
   }
-
-  private java.time.LocalDateTime mPasswordChangedDate =  DateUtil.getDefaultTime();
 
   /**
    * 密码更新时间
    */
-  public final java.time.LocalDateTime getPasswordChangedDate() {
-    return this.mPasswordChangedDate;
+  @Override
+  public Date getPasswordChangedDate() {
+    return passwordChangedDate;
   }
 
-  public final void setPasswordChangedDate(java.time.LocalDateTime value) {
-    this.mPasswordChangedDate = value;
+  @Override
+  public void setPasswordChangedDate(Date value) {
+    passwordChangedDate = value;
   }
-
-  private String mIdentityCard = "";
 
   /**
    * 身份证
    */
-  public final String getIdentityCard() {
-    return mIdentityCard;
+  @Override
+  public String getIdentityCard() {
+    return identityCard;
   }
 
-  public final void setIdentityCard(String value) {
-    mIdentityCard = value;
+  @Override
+  public void setIdentityCard(String value) {
+    identityCard = value;
   }
-  ///#endregion
-
-  ///#region 属性:Type
-  private int mType = 0;
 
   /**
    * 帐号类型 0:普通帐号 1:邮箱帐号 2:Rtx帐号 3:CRM帐号 1000:供应商帐号 2000:客户帐号
    */
-  public final int getType() {
-    return mType;
+  @Override
+  public int getType() {
+    return type;
   }
 
-  public final void setType(int value) {
-    mType = value;
+  @Override
+  public void setType(int value) {
+    type = value;
   }
-
-  private String mTypeView;
 
   /**
    * 帐号类别视图 0:普通帐号 1:邮箱帐号 2:CRM帐号 3:RTX帐号 1000:供应商帐号 2000:客户帐号
    */
-  @JSONField(serialize=false)
-  public final String getTypeView() {
-    if (StringUtil.isNullOrEmpty(mTypeView)) {
-      mTypeView = MembershipManagement.getInstance().getSettingService().getText("应用管理_协同平台_人员及权限管理_帐号管理_帐号类别", String.valueOf(this.getType()));
+  @JSONField(serialize = false)
+  public String getTypeView() {
+    if (StringUtil.isNullOrEmpty(typeView)) {
+      typeView = MembershipManagement.getInstance().getSettingService()
+        .getText("应用管理_协同平台_人员及权限管理_帐号管理_帐号类别", String.valueOf(
+          getType()));
     }
 
-    return mTypeView;
+    return typeView;
   }
-
-  private String mCertifiedMobile;
+  ///#endregion
 
   /**
    * 已验证的电话
    */
-  public final String getCertifiedMobile() {
-    return mCertifiedMobile;
+
+  @Override
+  public String getCertifiedMobile() {
+    return certifiedMobile;
   }
 
-  public final void setCertifiedMobile(String value) {
-    mCertifiedMobile = value;
+  @Override
+  public void setCertifiedMobile(String value) {
+    certifiedMobile = value;
   }
-  ///#endregion
-
-  ///#region 属性:CertifiedEmail
-  private String mCertifiedEmail;
 
   /**
    * 已验证的邮箱
    */
-  public final String getCertifiedEmail() {
-    return mCertifiedEmail;
+
+  @Override
+  public String getCertifiedEmail() {
+    return certifiedEmail;
   }
 
-  public final void setCertifiedEmail(String value) {
-    mCertifiedEmail = value;
+  @Override
+  public void setCertifiedEmail(String value) {
+    certifiedEmail = value;
   }
-  ///#endregion
-
-  ///#region 属性:CertifiedAvatar
-  private String mCertifiedAvatar = "";
 
   /**
    * 已验证的头像
    */
-  public final String getCertifiedAvatar() {
-    return mCertifiedAvatar;
+  @Override
+  public String getCertifiedAvatar() {
+    return certifiedAvatar;
   }
 
-  public final void setCertifiedAvatar(String value) {
-    mCertifiedAvatar = value;
+  @Override
+  public void setCertifiedAvatar(String value) {
+    certifiedAvatar = value;
   }
 
   /**
    * 已验证的头像虚拟路径
    */
-  public final String getCertifiedAvatarView() {
-    return this.getCertifiedAvatar().replace("{avatar}", MembershipConfigurationView.getInstance().getAvatarVirtualFolder());
+  @Override
+  public String getCertifiedAvatarView() {
+    return getCertifiedAvatar().replace("{avatar}", MembershipConfigurationView.getInstance().getAvatarVirtualFolder());
   }
-
-  private int mEnableEmail;
 
   /**
    * 启用企业邮箱
    */
-  public final int getEnableEmail() {
-    return mEnableEmail;
+  @Override
+  public int getEnableEmail() {
+    return enableEmail;
   }
 
-  public final void setEnableEmail(int value) {
-    mEnableEmail = value;
+  @Override
+  public void setEnableEmail(int value) {
+    enableEmail = value;
   }
-
-  private IAuthorizationObject mParent;
 
   /**
    * 父级权限对象接口集合
    */
-  public final IAuthorizationObject getParent() {
-    return mParent;
+  public AuthorizationObject getParent() {
+    return parent;
   }
 
-  public final void setParent(IAuthorizationObject value) {
-    mParent = value;
+  public void setParent(AuthorizationObject value) {
+    parent = value;
   }
-
-  private List<IAccountOrganizationUnitRelationInfo> mOrganizationUnitRelations = null;
 
   /**
    * 帐号和角色接口集合
    */
-  @JSONField(serialize=false)
-  public final List<IAccountOrganizationUnitRelationInfo> getOrganizationUnitRelations() {
-    if (mOrganizationUnitRelations == null && !StringUtil.isNullOrEmpty(this.getId())) {
-      // TODO 待处理
-      mOrganizationUnitRelations = MembershipManagement.getInstance().getOrganizationUnitService().findAllRelationByAccountId(this.getId());
-    }
-
-    return mOrganizationUnitRelations;
+  @Override
+  public List<AccountOrganizationUnitRelation> getOrganizationUnitRelations() {
+    return organizationUnitRelations;
   }
 
-  private String mOrganizationUnitText = "";
-
-  /**
-   * 所属组织视图
-   */
-  @JSONField(serialize=false)
-  public final String getOrganizationUnitText() {
-    if (StringUtil.isNullOrEmpty(mOrganizationUnitText) && !this.getOrganizationUnitRelations().isEmpty()) {
-      for (IAccountOrganizationUnitRelationInfo relation : this.getOrganizationUnitRelations()) {
-        mOrganizationUnitText += String.format("organization#%1$s#%2$s#%3$s#%4$s,", relation.getOrganizationUnitId(), relation.getOrganizationUnitGlobalName(), StringUtil.toDateFormat(relation.getEndDate(), "yyyy-MM-dd HH:mm:ss.fff"), relation.getIsDefault());
-      }
-    }
-
-    return mOrganizationUnitText;
+  public String getOrganizationUnitView() {
+    return organizationUnitView;
   }
 
-  private String mOrganizationUnitView = "";
-
-  /**
-   * 所属组织视图
-   */
-  @JSONField(serialize=false)
-  public final String getOrganizationUnitView() {
-    if (StringUtil.isNullOrEmpty(mOrganizationUnitView) && !this.getOrganizationUnitRelations().isEmpty()) {
-      for (IAccountOrganizationUnitRelationInfo relation : this.getOrganizationUnitRelations()) {
-        mOrganizationUnitView += relation.getOrganizationUnitGlobalName() + ((StringUtil.toDateFormat(relation.getEndDate(), "yyyy-MM-dd HH:mm:ss").equals(StringUtil.toDateFormat(java.time.LocalDateTime.MAX, "yyyy-MM-dd HH:mm:ss"))) ? "" : ("(" + StringUtil.toDate(relation.getEndDate()) + ")")) + ";";
-      }
-    }
-
-    return mOrganizationUnitView;
+  public void setOrganizationUnitView(String organizationUnitView) {
+    this.organizationUnitView = organizationUnitView;
   }
-
-  private List<IAccountRoleRelationInfo> mRoleRelations = null;
 
   /**
    * 帐号和角色接口集合
    */
-  @JSONField(serialize=false)
-  public final List<IAccountRoleRelationInfo> getRoleRelations() {
-    if (mRoleRelations == null && !StringUtil.isNullOrEmpty(this.getId())) {
-      mRoleRelations = MembershipManagement.getInstance().getRoleService().findAllRelationByAccountId(this.getId());
-    }
-
-    return mRoleRelations;
+  @Override
+  public List<AccountRoleRelation> getRoleRelations() {
+    return roleRelations;
   }
 
-  private String mRoleText = "";
 
   /**
    * 所属角色视图
    */
-  @JSONField(serialize=false)
-  public final String getRoleText() {
-    if (StringUtil.isNullOrEmpty(mRoleText) && !this.getRoleRelations().isEmpty()) {
-      for (IAccountRoleRelationInfo relation : this.getRoleRelations()) {
-        mRoleText += String.format("role#%1$s#%2$s#%3$s#%4$s,", relation.getRoleId(), relation.getRoleGlobalName(), StringUtil.toDateFormat(relation.getEndDate(), "yyyy-MM-dd HH:mm:ss.fff"), relation.getIsDefault());
-      }
-    }
-
-    return mRoleText;
+  public String getRoleView() {
+    return roleView;
   }
-  ///#endregion
-
-  ///#region 属性:RoleView
-  private String mRoleView = "";
-
-  /**
-   * 所属角色视图
-   */
-  @JSONField(serialize=false)
-  public final String getRoleView() {
-    if (StringUtil.isNullOrEmpty(mRoleView) && !this.getRoleRelations().isEmpty()) {
-      for (IAccountRoleRelationInfo relation : this.getRoleRelations()) {
-        mRoleView += relation.getRoleGlobalName() + ((StringUtil.toDateFormat(relation.getEndDate(), "yyyy-MM-dd HH:mm:ss").equals(StringUtil.toDateFormat(java.time.LocalDateTime.MAX, "yyyy-MM-dd HH:mm:ss"))) ? "" : ("(" + StringUtil.toDate(relation.getEndDate()) + ")")) + ";";
-      }
-    }
-
-    return mRoleView;
-  }
-  ///#endregion
-
-  ///#region 属性:GroupRelations
-  private List<IAccountGroupRelationInfo> mGroupRelations = null;
 
   /**
    * 帐号和角色接口集合
    */
-  @JSONField(serialize=false)
-  public final List<IAccountGroupRelationInfo> getGroupRelations() {
-    if (mGroupRelations == null && !StringUtil.isNullOrEmpty(this.getId())) {
-      // TODO 待处理
-      // mGroupRelations = MembershipManagement.getInstance().getGroupService().FindAllRelationByAccountId(this.getId());
-      mGroupRelations = new ArrayList<IAccountGroupRelationInfo>();
-    }
-
-    return mGroupRelations;
+  @Override
+  public List<AccountGroupRelation> getGroupRelations() {
+    return groupRelations;
   }
-  ///#endregion
-
-  ///#region 属性:GroupText
-  private String mGroupText;
 
   /**
    * 所属群组文本信息
    */
-  @JSONField(serialize=false)
-  public final String getGroupText() {
-    if (StringUtil.isNullOrEmpty(mGroupText) && !this.getGroupRelations().isEmpty()) {
-      for (IAccountGroupRelationInfo relation : this.getGroupRelations()) {
-        mGroupText += String.format("group#%1$s#%2$s#%3$s,", relation.getGroupId(), relation.getGroupGlobalName(), StringUtil.toDateFormat(relation.getEndDate(), "yyyy-MM-dd HH:mm:ss.fff"));
-      }
-    }
-
-    return mGroupText;
+  public String getGroupText() {
+    return groupText;
   }
-  ///#endregion
-
-  ///#region 属性:GroupView
-  private String mGroupView;
 
   /**
    * 所属群组视图
    */
-  @JSONField(serialize=false)
-  public final String getGroupView() {
-    if (StringUtil.isNullOrEmpty(mGroupView) && !this.getGroupRelations().isEmpty()) {
-      for (IAccountGroupRelationInfo relation : this.getGroupRelations()) {
-        // TODO 待处理
-        // mGroupView += relation.getGroupGlobalName() + ((relation.EndDate.toString("yyyy-MM-dd HH:mm:ss").equals(java.time.LocalDateTime.MAX.toString("yyyy-MM-dd HH:mm:ss"))) ? "" : ("(" + StringUtil.ToDate(relation.getEndDate()) + ")")) + ";";
-      }
-    }
-
-    return mGroupView;
+  public String getGroupView() {
+    return groupView;
   }
-  ///#endregion
-
-  ///#region 属性:Scopes
-  private List<IAuthorizationScope> mScopes = new ArrayList<IAuthorizationScope>();
 
   /**
    * 范围接口集合
    */
-  public final List<IAuthorizationScope> getScopes() {
-    return mScopes;
+  public List<AuthorizationScope> getScopes() {
+    return scopes;
   }
-  ///#endregion
-
-  ///#region 属性:IsDraft
-  private boolean mIsDraft;
 
   /**
    * 是否是草稿
    */
-  public final boolean getIsDraft() {
-    return mIsDraft;
+  public boolean getIsDraft() {
+    return isDraft;
   }
 
-  public final void setIsDraft(boolean value) {
-    mIsDraft = value;
+  public void setIsDraft(boolean value) {
+    isDraft = value;
   }
-  ///#endregion
-
-  ///#region 属性:Locking
-  private int mLocking = 1;
 
   /**
    * 防止意外删除 0 不锁定 | 1 锁定(默认)
    */
-  public final int getLocking() {
-    return mLocking;
+  @Override
+  public int getLocking() {
+    return locking;
   }
 
-  public final void setLocking(int value) {
-    mLocking = value;
+  @Override
+  public void setLocking(int value) {
+    locking = value;
   }
-  ///#endregion
-
-  ///#region 属性:OrderId
-  private String mOrderId;
 
   /**
+   *
    */
-  public final String getOrderId() {
-    return mOrderId;
+  @Override
+  public String getOrderId() {
+    return orderId;
   }
 
-  public final void setOrderId(String value) {
-    mOrderId = value;
+  @Override
+  public void setOrderId(String value) {
+    orderId = value;
   }
-  ///#endregion
-
-  ///#region 属性:Status
-  private int mStatus;
 
   /**
    * 状态
    */
-  public final int getStatus() {
-    return mStatus;
+  @Override
+  public int getStatus() {
+    return status;
   }
 
-  public final void setStatus(int value) {
-    mStatus = value;
+  @Override
+  public void setStatus(int value) {
+    status = value;
   }
-  ///#endregion
-
-  ///#region 属性:Remark
-  private String mRemark;
 
   /**
    * 备注
    */
-  public final String getRemark() {
-    return mRemark;
+  @Override
+  public String getRemark() {
+    return remark;
   }
 
-  public final void setRemark(String value) {
-    mRemark = value;
+  @Override
+  public void setRemark(String value) {
+    remark = value;
   }
-  ///#endregion
-
-  ///#region 属性:IP
-  private String mIP;
 
   /**
    * IP
    */
-  public final String getIP() {
-    return mIP;
+  @Override
+  public String getIP() {
+    return ip;
   }
 
-  public final void setIP(String value) {
-    mIP = value;
+  @Override
+  public void setIP(String value) {
+    ip = value;
   }
-
-  private java.time.LocalDateTime mLoginDate = DateUtil.getDefaultTime();
 
   /**
    * 最近一次的登录时间
    */
-  public final java.time.LocalDateTime getLoginDate() {
-    return mLoginDate;
+  @Override
+  public Date getLoginDate() {
+    return loginDate;
   }
 
-  public final void setLoginDate(java.time.LocalDateTime value) {
-    mLoginDate = value;
+  @Override
+  public void setLoginDate(Date value) {
+    loginDate = value;
   }
-  ///#endregion
-
-  ///#region 属性:DistinguishedName
-  private String mDistinguishedName = null;
 
   /**
    * 唯一名称
    */
-  public final String getDistinguishedName() {
-    return mDistinguishedName;
+  @Override
+  public String getDistinguishedName() {
+    return distinguishedName;
   }
 
-  public final void setDistinguishedName(String value) {
-    mDistinguishedName = value;
+  @Override
+  public void setDistinguishedName(String value) {
+    distinguishedName = value;
   }
-  ///#endregion
-
-  ///#region 属性:ModifiedDate
-  private java.time.LocalDateTime mModifiedDate = DateUtil.getDefaultTime();
 
   /**
    * 修改时间
    */
-  public final java.time.LocalDateTime getModifiedDate() {
-    return mModifiedDate;
+  @Override
+  public Date getModifiedDate() {
+    return modifiedDate;
   }
 
-  public final void setModifiedDate(java.time.LocalDateTime value) {
-    mModifiedDate = value;
+  @Override
+  public void setModifiedDate(Date value) {
+    modifiedDate = value;
   }
 
-  private java.time.LocalDateTime mCreatedDate = DateUtil.getDefaultTime();
 
   /**
    * 创建时间
    */
-  public final java.time.LocalDateTime getCreatedDate() {
-    return mCreatedDate;
+  @Override
+  public Date getCreatedDate() {
+    return createdDate;
   }
 
-  public final void setCreatedDate(java.time.LocalDateTime value) {
-    mCreatedDate = value;
-  }
-
-  //
+  // -------------------------------------------------------
   // 重置关系
-  //
+  // -------------------------------------------------------
 
-  /**
-   * @param relationType
-   * @param relationText
-   */
-  public final void ResetRelations(String relationType, String relationText) {
-    String[] list = relationText.split(",|;");
-
-    if (relationType.equals("organization")) {
-      this.getOrganizationUnitRelations().clear();
-    }
-
-    if (relationType.equals("role")) {
-      this.getRoleRelations().clear();
-    }
-
-    if (relationType.equals("group")) {
-      this.getGroupRelations().clear();
-    }
-
-    // 设置组织关系
-
-    for (String item : list) {
-      String[] keys = item.split("#");
-
-      if (keys.length > 2) {
-        switch (keys[0]) {
-          case "organization":
-            if (relationType.equals("organization")) {
-              this.getOrganizationUnitRelations().add(new AccountOrganizationUnitRelationInfo(this.getId(), keys[1]));
-            }
-            break;
-          case "role":
-            if (relationType.equals("role")) {
-              this.getRoleRelations().add(new AccountRoleRelationInfo(this.getId(), keys[1]));
-            }
-            break;
-          case "group":
-            if (relationType.equals("group")) {
-              this.getGroupRelations().add(new AccountGroupRelationInfo(this.getId(), keys[1]));
-            }
-            break;
-        }
-      }
-    }
+  @Override
+  public void setCreatedDate(Date value) {
+    createdDate = value;
   }
 
   // -------------------------------------------------------
@@ -655,18 +554,17 @@ public class AccountInfo implements IAccountInfo {
   ///#region 属性:AuthenticationType
 
   /**
+   * @param relationType
+   * @param relationText
    */
-  public final String getAuthenticationType() {
-    return "MembershipAuthentication";
+  public void resetRelations(String relationType, String relationText) {
   }
-  ///#endregion
-
-  ///#region 属性:IsAuthenticated
 
   /**
+   *
    */
-  public final boolean getIsAuthenticated() {
-    return this.getId().equals("00000000-0000-0000-0000-000000000000") ? false : true;
+  public String getAuthenticationType() {
+    return "MembershipAuthentication";
   }
   ///#endregion
 
@@ -674,25 +572,38 @@ public class AccountInfo implements IAccountInfo {
   // 显式实现 ICacheable 接口
   // -------------------------------------------------------
 
-  ///#region 属性:Expires
-  private java.time.LocalDateTime mExpires = java.time.LocalDateTime.now().plusHours(6);
-
-  private java.time.LocalDateTime getExpires() {
-    return mExpires;
+  /**
+   *
+   */
+  public boolean getIsAuthenticated() {
+    return getId() != "00000000-0000-0000-0000-000000000000";
   }
 
-  private void setExpires(java.time.LocalDateTime value) {
-    mExpires = value;
+  private Date getExpires() {
+    return expires;
   }
-  ///#endregion
+
+
+  public String getOrganizationUnitIds() {
+    return organizationUnitIds;
+  }
+
+  public void setOrganizationUnitIds(String organizationUnitIds) {
+    this.organizationUnitIds = organizationUnitIds;
+  }
+
+  private void setExpires(Date value) {
+    expires = value;
+  }
 
   // -------------------------------------------------------
-  // 实现 IAuthorizationObject 接口
+  // 实现 AuthorizationObject 接口
   // -------------------------------------------------------
 
   /**
    * 类型
    */
+  @Override
   public String getAuthorizationObjectType() {
     return "Account";
   }
@@ -700,31 +611,56 @@ public class AccountInfo implements IAccountInfo {
   /**
    * 名称
    */
+  @Override
   public String getAuthorizationObjectId() {
-    return this.getId();
+    return getId();
   }
 
+  @Override
   public void setAuthorizationObjectId(String value) {
-    this.setAuthorizationObjectId(value);
+    setId(value);
   }
 
   /**
    * 名称
    */
+  @Override
   public String getAuthorizationObjectName() {
-    return String.format("%1$s", this.getName(), this.getLoginName());
+    return String.format("%1$s", getName(), getLoginName());
   }
 
+  @Override
   public void setAuthorizationObjectName(String value) {
     int index = value.indexOf("(");
     if (index > -1) {
-      this.setName(value.substring(0, index));
-      this.setLoginName(value.substring((index + 1), (index + 1) + (value.length() - index - 2)));
+      setName(value.substring(0, index));
+      setLoginName(value.substring((index + 1), (index + 1) + (value.length() - index - 2)));
     }
   }
 
+
+  public void setRoleView(String roleView) {
+    this.roleView = roleView;
+  }
+
+  public String[] getOrganizationUnitText() {
+    return organizationUnitText;
+  }
+
+  public void setOrganizationUnitText(String[] organizationUnitText) {
+    this.organizationUnitText = organizationUnitText;
+  }
+
+  public String[] getRoleText() {
+    return roleText;
+  }
+
+  public void setRoleText(String[] roleText) {
+    this.roleText = roleText;
+  }
+
   // -------------------------------------------------------
-  // 实现 ISerializedObject 序列化
+  // 实现 SerializedObject 序列化
   // -------------------------------------------------------
 
   /**
@@ -732,7 +668,8 @@ public class AccountInfo implements IAccountInfo {
    *
    * @return
    */
-  public final String serializable() {
+  @Override
+  public String serializable() {
     return serializable(false, false);
   }
 
@@ -743,21 +680,24 @@ public class AccountInfo implements IAccountInfo {
    * @param displayFriendlyName 显示友好名称
    * @return
    */
-  public final String serializable(boolean displayComment, boolean displayFriendlyName) {
+  @Override
+  public String serializable(boolean displayComment, boolean displayFriendlyName) {
     StringBuilder outString = new StringBuilder();
 
     outString.append("<account>");
-    outString.append(String.format("<id><![CDATA[%1$s]]></id>", this.getId()));
-    outString.append(String.format("<code><![CDATA[%1$s]]></code>", this.getCode()));
-    outString.append(String.format("<loginName><![CDATA[%1$s]]></loginName>", this.getLoginName()));
-    outString.append(String.format("<name><![CDATA[%1$s]]></name>", this.getName()));
-    outString.append(String.format("<globalName><![CDATA[%1$s]]></globalName>", this.getGlobalName()));
-    outString.append(String.format("<alias><![CDATA[%1$s]]></alias>", this.getDisplayName()));
-    outString.append(String.format("<pinyin><![CDATA[%1$s]]></pinyin>", this.getPinYin()));
-    outString.append(String.format("<orderId><![CDATA[%1$s]]></orderId>", this.getOrderId()));
-    outString.append(String.format("<status><![CDATA[%1$s]]></status>", this.getStatus()));
-    outString.append(String.format("<remark><![CDATA[%1$s]]></remark>", this.getRemark()));
-    outString.append(String.format("<updateDate><![CDATA[%1$s]]></updateDate>", this.getModifiedDate()));
+    outString.append(String.format("<id><![CDATA[%1$s]]></id>", getId()));
+    /// 临时移除
+    // outString.append(String.format("<roleId><![CDATA[%1$s]]></roleId>", this.getRoleText()));
+    outString.append(String.format("<code><![CDATA[%1$s]]></code>", getCode()));
+    outString.append(String.format("<loginName><![CDATA[%1$s]]></loginName>", getLoginName()));
+    outString.append(String.format("<name><![CDATA[%1$s]]></name>", getName()));
+    outString.append(String.format("<globalName><![CDATA[%1$s]]></globalName>", getGlobalName()));
+    outString.append(String.format("<alias><![CDATA[%1$s]]></alias>", getDisplayName()));
+    outString.append(String.format("<pinyin><![CDATA[%1$s]]></pinyin>", getPinYin()));
+    outString.append(String.format("<orderId><![CDATA[%1$s]]></orderId>", getOrderId()));
+    outString.append(String.format("<status><![CDATA[%1$s]]></status>", getStatus()));
+    outString.append(String.format("<remark><![CDATA[%1$s]]></remark>", getRemark()));
+    outString.append(String.format("<modifiedDate><![CDATA[%1$s]]></modifiedDate>", getModifiedDate()));
     outString.append("</account>");
 
     return outString.toString();
@@ -768,55 +708,38 @@ public class AccountInfo implements IAccountInfo {
    *
    * @param element Xml元素
    */
-  public final void deserialize(Element element) {
-    this.setId(element.selectSingleNode("id").getText());
-
-    this.setCode(element.selectSingleNode("code").getText());
-
-    if (element.selectSingleNode("loginName") != null) {
-      this.setLoginName(element.selectSingleNode("loginName").getText());
+  @Override
+  public void deserialize(Element element) {
+    Node node = null;
+    setId(element.selectSingleNode("id").getText());
+    setPinYin(element.selectSingleNode("roleId").getText());
+    setCode(element.selectSingleNode("code").getText());
+    node = element.selectSingleNode("loginName");
+    if (node != null) {
+      setLoginName(node.getText());
     }
 
-    this.setName(element.selectSingleNode("name").getText());
+    setName(element.selectSingleNode("name").getText());
 
-    if (element.selectSingleNode("globalName") != null) {
-      this.setGlobalName(element.selectSingleNode("globalName").getText());
+    node = element.selectSingleNode("globalName");
+    if (node != null) {
+      setGlobalName(node.getText());
     }
 
-    if (element.selectSingleNode("alias") != null) {
-      this.setDisplayName(element.selectSingleNode("alias").getText());
+    node = element.selectSingleNode("alias");
+    if (node != null) {
+      setDisplayName(node.getText());
     }
 
-    if (element.selectSingleNode("pinyin") != null) {
-      this.setPinYin(element.selectSingleNode("pinyin").getText());
+    node = element.selectSingleNode("pinyin");
+    if (node != null) {
+      setPinYin(node.getText());
     }
 
     // 关系列表
     List list = element.selectNodes("relationObjects/relationObject");
 
     // 由于设置了Id
-    this.mOrganizationUnitRelations = new ArrayList<IAccountOrganizationUnitRelationInfo>();
-    this.mRoleRelations = new ArrayList<IAccountRoleRelationInfo>();
-    this.mGroupRelations = new ArrayList<IAccountGroupRelationInfo>();
-
-    for (Object item : list) {
-      Node node = (Node) item;
-      /*
-      switch (node.Attributes["type"].Value) {
-        case "OrganizationUnit":
-          this.getOrganizationUnitRelations().add(new AccountOrganizationUnitRelationInfo(this.getId(), node.Attributes["id"].Value));
-          break;
-
-        case "Role":
-          this.getRoleRelations().add(new AccountRoleRelationInfo(this.getId(), node.Attributes["id"].Value));
-          break;
-
-        case "Group":
-          this.getGroupRelations().add(new AccountGroupRelationInfo(this.getId(), node.Attributes["id"].Value));
-          break;
-      }*/
-    }
-
-    this.setStatus(Integer.parseInt(element.selectSingleNode("status").getText()));
+    setStatus(Integer.parseInt(element.selectSingleNode("status").getText()));
   }
 }

@@ -2,160 +2,520 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.x3platform.membership.mappers.AccountMapper">
   <resultMap id="findOne_Result" type="com.x3platform.membership.models.AccountInfo" >
-    <result property="mId" column="id" />
-    <result property="mCode" column="code" />
-    <result property="mName" column="name" />
-    <result property="mGlobalName" column="global_name" />
-    <result property="mDisplayName" column="display_name" />
-    <result property="mPinYin" column="pinyin" />
-    <result property="mLoginName" column="login_name" />
-    <result property="mIdentityCard" column="identity_card" />
-    <result property="mType" column="type" />
-    <result property="mCertifiedMobile" column="certified_mobile" />
-    <result property="mCertifiedEmail" column="certified_email" />
-    <result property="mCertifiedAvatar" column="certified_avatar" />
-    <result property="mEnableEmail" column="enable_email" />
-    <result property="mIsDraft" column="is_draft" />
-    <result property="mLocking" column="locking" />
-    <result property="mOrderId" column="order_id" />
-    <result property="mStatus" column="status" />
-    <result property="mRemark" column="remark" />
-    <result property="mIP" column="ip" />
-    <result property="mLoginDate" column="login_date" />
-    <result property="mDistinguishedName" column="distinguished_name" />
-    <result property="mModifiedDate" column="modified_date" />
-    <result property="mCreatedDate" column="created_date" />
+    <result property="id" column="id" />
+    <result property="code" column="code" />
+    <result property="name" column="name" />
+    <result property="globalName" column="global_name" />
+    <result property="displayName" column="display_name" />
+    <result property="pinyin" column="pinyin" />
+    <result property="loginName" column="login_name" />
+    <result property="identityCard" column="identity_card" />
+    <result property="type" column="type" />
+    <result property="certifiedMobile" column="certified_telephone" />
+    <result property="certifiedEmail" column="certified_email" />
+    <result property="certifiedAvatar" column="certified_avatar" />
+    <result property="enableEmail" column="enable_email" />
+    <result property="locking" column="locking" />
+    <result property="orderId" column="order_id" />
+    <result property="status" column="status" />
+    <result property="remark" column="remark" />
+    <result property="ip" column="ip" />
+    <result property="loginDate" column="login_date" />
+    <result property="distinguishedName" column="distinguished_name" />
+    <result property="modifiedDate" column="modified_date" />
+    <result property="createdDate" column="created_date" />
   </resultMap>
   <resultMap id="findAll_Result" type="com.x3platform.membership.models.AccountInfo">
-    <result property="mId" column="id" />
-    <result property="mCode" column="code" />
-    <result property="mName" column="name" />
-    <result property="mGlobalName" column="global_name" />
-    <result property="mDisplayName" column="display_name" />
-    <result property="mPinYin" column="pinyin" />
-    <result property="mLoginName" column="login_name" />
-    <result property="mIdentityCard" column="identity_card" />
-    <result property="mType" column="type" />
-    <result property="mCertifiedMobile" column="certified_mobile" />
-    <result property="mCertifiedEmail" column="certified_email" />
-    <result property="mCertifiedAvatar" column="certified_avatar" />
-    <result property="mEnableEmail" column="enable_email" />
-    <result property="mIsDraft" column="is_draft" />
-    <result property="mLocking" column="locking" />
-    <result property="mOrderId" column="order_id" />
-    <result property="mStatus" column="status" />
-    <result property="mRemark" column="remark" />
-    <result property="mIP" column="ip" />
-    <result property="mLoginDate" column="login_date" />
-    <result property="mDistinguishedName" column="distinguished_name" />
-    <result property="mModifiedDate" column="modified_date" />
-    <result property="mCreatedDate" column="created_date" />
+    <result property="id" column="id" />
+    <result property="code" column="code" />
+    <result property="name" column="name" />
+    <result property="globalName" column="global_name" />
+    <result property="displayName" column="display_name" />
+    <result property="pinyin" column="pinyin" />
+    <result property="loginName" column="login_name" />
+    <result property="identityCard" column="identity_card" />
+    <result property="type" column="type" />
+    <result property="certifiedMobile" column="certified_telephone" />
+    <result property="certifiedEmail" column="certified_email" />
+    <result property="certifiedAvatar" column="certified_avatar" />
+    <result property="enableEmail" column="enable_email" />
+    <result property="locking" column="locking" />
+    <result property="orderId" column="order_id" />
+    <result property="status" column="status" />
+    <result property="remark" column="remark" />
+    <result property="ip" column="ip" />
+    <result property="loginDate" column="login_date" />
+    <result property="distinguishedName" column="distinguished_name" />
+    <result property="modifiedDate" column="modified_date" />
+    <result property="createdDate" column="created_date" />
   </resultMap>
   <insert id="insert" parameterType="com.x3platform.membership.models.AccountInfo">
     INSERT INTO sys_account
-    (
-      id,
-      code,
-      name,
-      global_name,
-      display_name,
-      pinyin,
-      login_name,
-      password,
-      identity_card,
-      type,
-      certified_telephone,
-      certified_email,
-      certified_avatar,
-      enable_email,
-      is_draft,
-      locking,
-      order_id,
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="code != null">
+        code,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="globalName != null">
+        global_name,
+      </if>
+      <if test="displayName != null">
+        display_name,
+      </if>
+      <if test="pinYin != null">
+        pinyin,
+      </if>
+      <if test="loginName != null">
+        login_name,
+      </if>
+      <if test="password != null">
+        password,
+      </if>
+      <if test="identityCard != null">
+        identity_card,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="certifiedMobile != null">
+        certified_telephone,
+      </if>
+      <if test="certifiedEmail != null">
+        certified_email,
+      </if>
+      <if test="certifiedAvatar != null">
+        certified_avatar,
+      </if>
+      <if test="enableEmail != null">
+        enable_email,
+      </if>
+      <if test="isDraft != null">
+        is_draft,
+      </if>
+      <if test="locking != null">
+        locking,
+      </if>
+      <if test="orderId != null">
+        order_id,
+      </if>
+      <if test="status != null">
       status,
-      remark,
-      ip,
-      login_date,
-      distinguished_name,
-      modified_date,
-      created_date
-    )
-    VALUES
-    (
-      #{mId},
-      #{mCode},
-      #{mName},
-      #{mGlobalName},
-      #{mDisplayName},
-      #{mPinYin},
-      #{mLoginName},
-      #{mPassword},
-      #{mIdentityCard},
-      #{mType},
-      #{mCertifiedMobile},
-      #{mCertifiedEmail},
-      #{mCertifiedAvatar},
-      #{mEnableEmail},
-      #{mIsDraft},
-      #{mLocking},
-      #{mOrderId},
-      #{mStatus},
-      #{mRemark},
-      #{mIP},
-      #{mLoginDate},
-      #{mDistinguishedName},
-      CURRENT_TIMESTAMP,
-      CURRENT_TIMESTAMP
-    )
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+      <if test="ip != null">
+        ip,
+      </if>
+      <if test="loginDate != null">
+        login_date,
+      </if>
+      <if test="distinguishedName != null">
+        distinguished_name,
+      </if>
+      <if test="modifiedDate != null">
+        modified_date,
+      </if>
+      <if test="createdDate != null">
+        created_date,
+      </if>
+      <if test="createdBy != null">
+        created_by,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id},
+      </if>
+      <if test="code != null">
+        #{code},
+      </if>
+      <if test="name != null">
+        #{name},
+      </if>
+      <if test="globalName != null">
+        #{globalName},
+      </if>
+      <if test="displayName != null">
+        #{displayName},
+      </if>
+      <if test="pinYin != null">
+        #{pinYin},
+      </if>
+      <if test="loginName != null">
+        #{loginName},
+      </if>
+      <if test="password != null">
+        #{password},
+      </if>
+      <if test="identityCard != null">
+        #{identityCard},
+      </if>
+      <if test="type != null">
+        #{type},
+      </if>
+      <if test="certifiedMobile != null">
+        #{certifiedMobile},
+      </if>
+      <if test="certifiedEmail != null">
+        #{certifiedEmail},
+      </if>
+      <if test="certifiedAvatar != null">
+        #{certifiedAvatar},
+      </if>
+      <if test="enableEmail != null">
+        #{enableEmail},
+      </if>
+      <if test="isDraft != null">
+        #{isDraft},
+      </if>
+      <if test="locking != null">
+        #{locking},
+      </if>
+      <if test="orderId != null">
+        #{orderId},
+      </if>
+      <if test="status != null">
+        #{status},
+      </if>
+      <if test="remark != null">
+        #{remark},
+      </if>
+      <if test="ip != null">
+        #{ip},
+      </if>
+      <if test="loginDate != null">
+        #{loginDate},
+      </if>
+      <if test="distinguishedName != null">
+        #{distinguishedName},
+      </if>
+      <if test="modifiedDate != null">
+        CURRENT_TIMESTAMP,
+      </if>
+      <if test="createdDate != null">
+        CURRENT_TIMESTAMP,
+      </if>
+      <if test="createdBy != null">
+        #{createdBy},
+      </if>
+    </trim>
   </insert>
   <update id="update" parameterType="com.x3platform.membership.models.AccountInfo">
-    UPDATE sys_account SET
-
-      code = #{mCode},
-      name = #{mName},
-      global_name = #{mGlobalName},
-      display_name = #{mDisplayName},
-      pinyin = #{mPinYin},
-      login_name = #{mLoginName},
-      identity_card = #{mIdentityCard},
-      type = #{mType},
-      enable_email = #{mEnableEmail},
-      locking = #{mLocking},
-      order_id = #{mOrderId},
-      status = #{mStatus},
-      remark = #{mRemark},
-      distinguished_name = #{mDistinguishedName},
-      modified_date = CURRENT_TIMESTAMP
-
+    UPDATE sys_account
+    <set>
+      <if test="code != null">
+        code = #{code},
+      </if>
+      <if test="name != null">
+      name = #{name},
+      </if>
+      <if test="globalName != null">
+        global_name = #{globalName},
+      </if>
+      <if test="displayName != null">
+        display_name = #{displayName},
+      </if>
+      <if test="pinYin != null">
+        pinyin = #{pinYin},
+      </if>
+      <if test="loginName != null">
+        login_name = #{loginName},
+      </if>
+      <if test="identityCard != null">
+        identity_card = #{identityCard},
+      </if>
+      <if test="type != null">
+        type = #{type},
+      </if>
+      <if test="enableEmail != null">
+        enable_email = #{enableEmail},
+      </if>
+      <if test="certifiedEmail != null">
+        certified_email = #{certifiedEmail},
+      </if>
+      <if test="certifiedMobile!= null">
+        certified_telephone = #{certifiedMobile},
+      </if>
+      <if test="locking != null">
+        locking = #{locking},
+      </if>
+      <if test="orderId != null">
+        order_id = #{orderId},
+      </if>
+      <if test="status != null">
+        status = #{status},
+      </if>
+      <if test="remark != null">
+        remark = #{remark},
+      </if>
+      <if test="distinguishedName != null">
+        distinguished_name = #{distinguishedName},
+      </if>
+      <if test="distinguishedName != null">
+        distinguished_name = #{distinguishedName},
+      </if>
+      <if test="id != null">
+        modified_date = CURRENT_TIMESTAMP,
+      </if>
+      <if test="createdBy != null">
+        created_by = #{createdBy}
+      </if>
+    </set>
     WHERE id = #{id}
   </update>
 
   <delete id="delete">
     DELETE FROM sys_account WHERE id = #{id}
   </delete>
+
   <select id="findOne" resultMap="findOne_Result">
     SELECT * FROM sys_account WHERE id = #{id}
   </select>
+
+  <select id="findOneById" resultMap="findOne_Result">
+    SELECT * FROM sys_account WHERE id = #{id}
+  </select>
+
+
+  <select id="findOneByLoginName" resultMap="findOne_Result">
+    SELECT *  FROM sys_account WHERE login_name = #{loginName}
+  </select>
+
+  <sql id="Select_Where_Clause">
+      <if test="code != null and code != ''">
+        AND t.code = #{param_code}
+      </if>
+      <if test="param_name != null and param_name != ''">
+        AND t.name Like CONCAT('%',#{param_name},'%')
+      </if>
+      <if test="param_loginName != null and param_loginName != ''">
+        AND t.login_name Like CONCAT('%',#{param_loginName},'%')
+      </if>
+      <if test="param_globalName != null and param_globalName != ''">
+        AND t.global_name Like CONCAT('%',#{param_globalName},'%')
+      </if>
+      <if test="param_displayName != null and param_displayName != ''">
+        AND t.display_name Like CONCAT('%',#{param_displayName},'%')
+      </if>
+      <if test="param_pinYin != null and param_pinYin != ''">
+        AND t.pinyin Like CONCAT('%',#{param_pinYin},'%')
+      </if>
+      <if test="param_type != null and param_type != ''">
+        AND t.type = #{param_type}
+      </if>
+      <if test="param_locking != null and param_locking != ''">
+        AND t.locking = #{param_locking}
+      </if>
+      <if test="param_status != null and param_status != ''">
+        AND t.status = #{param_status}
+      </if>
+  </sql>
   <select id="findAll" parameterType="java.util.Map" resultMap="findAll_Result">
     SELECT * FROM sys_account T
-    <where>
-      <if test="whereClause != null and whereClause !=''">
-        ${whereClause}
-      </if>
-    </where>
-    <if test="orderBy != null and orderBy !=''">
-      ORDER BY ${orderBy}
+    <if test="_parameter != null">
+      <include refid="Select_Where_Clause" />
+    </if>
+    <if test="orders != null and orders.size() > 0">
+      <foreach collection="orders" item="order" index="index" separator="," >
+        ${order}
+      </foreach>
     </if>
     <if test="length > 0">
       LIMIT 0, ${length}
     </if>
   </select>
+
+  <select id="queryAll" parameterType="java.util.Map" resultMap="findAll_Result">
+    SELECT DISTINCT
+    t.*
+    FROM
+    sys_account t left join sys_account_organization_unit o on (t.id = o.account_id)
+    left JOIN sys_account_role ar on ( t.id = ar.account_id)
+    left join sys_role r on (ar.role_id = r.id)
+    WHERE
+    /*t.`status` = 1*/
+    1=1
+    <if test="_parameter != null">
+      <if test="param_name != null and param_name != ''">
+        AND t.name Like CONCAT('%',#{param_name},'%')
+      </if>
+      <if test="param_loginName != null and param_loginName != ''">
+        AND t.login_name Like CONCAT('%',#{param_loginName},'%')
+      </if>
+      <if test="param_displayName != null and param_displayName != ''">
+        AND t.display_name Like CONCAT('%',#{param_displayName},'%')
+      </if>
+      <if test="param_certifiedMobile != null and param_certifiedMobile != ''">
+        AND t.certified_telephone Like CONCAT('%',#{param_certifiedMobile},'%')
+      </if>
+      <if test="param_status != null and param_status != ''">
+        AND t.status = #{param_status}
+      </if>
+      <if test="param_roleName != null and param_status != ''">
+        AND r.name Like CONCAT('%',#{param_roleName},'%')
+      </if>
+      <if test="param_organizationUnitText != null and param_organizationUnitText != ''">
+        AND o.organization_unit_id IN (
+        SELECT
+        id
+        FROM
+        sys_organization_unit
+        WHERE
+        FIND_IN_SET(
+        id,
+        func_GetChildrenIdByOrganizationUnitId (
+        #{param_organizationUnitText}
+        )
+        )
+        )
+      </if>
+
+    </if>
+    <if test="orders != null and orders.size() > 0">
+      ORDER BY t.modified_date
+      <foreach collection="orders" item="order" index="index" separator="," >
+        ${order}
+      </foreach>
+    </if>
+    ORDER BY t.modified_date desc
+    <if test="length > 0">
+      LIMIT 0, ${length}
+    </if>
+
+  </select>
+
+
   <select id="findAllByOrganizationUnitId" resultMap="findAll_Result">
     SELECT * FROM sys_account where id IN (SELECT account_id from sys_account_organization_unit WHERE organization_unit_id = #{organizationUnitId})
   </select>
+
+  <select id="findAllByRoleId" resultMap="findAll_Result">
+    select DISTINCT s.* from sys_account s , sys_account_role t where s.id = t.account_id and t.role_id=#{roleId}
+   </select>
+
+
   <select id="isExist" resultType="boolean">
     SELECT COUNT(0) AS "Count" FROM sys_account WHERE id = #{id}
   </select>
+
   <select id="isExistName" resultType="boolean">
     SELECT COUNT(0) AS "Count" FROM sys_account WHERE Name = #{name}
+  </select>
+
+  <select id="isExistCertifiedMobile" resultType="boolean">
+    SELECT COUNT(0) AS "Count" FROM sys_account WHERE certified_telephone = #{certifiedMobile}
+  </select>
+
+
+  <select id="isExistLoginName" resultType="boolean">
+    SELECT COUNT(0) AS "Count" FROM sys_account WHERE login_name = #{loginName}
+  </select>
+
+  <select id="isExistDisplayName" resultType="boolean">
+    SELECT COUNT(0) AS "Count" FROM sys_account WHERE display_name = #{displayName}
+  </select>
+
+  <select id="existCertifiedEmail" resultType="boolean">
+    SELECT COUNT(0) AS "Count" FROM sys_account WHERE certified_email = #{certifiedEmail}
+  </select>
+
+
+  <select id="isExistIdentityCard" resultType="boolean">
+    SELECT COUNT(0) AS "Count" FROM sys_account WHERE identity_card = #{identityCard}
+  </select>
+
+  <select id="loginCheck" parameterType="java.util.Map" resultMap="findOne_Result" >
+    SELECT * FROM sys_account WHERE login_name = #{loginName} AND password = #{password}
+  </select>
+  <select id="findMaxCode" parameterType="java.util.Map" resultMap="findOne_Result" >
+    SELECT * FROM sys_account WHERE code in (
+      select max(code) from sys_account
+    )
+  </select>
+
+  <update id="rename" parameterType="com.x3platform.membership.models.AccountInfo" >
+    UPDATE sys_account SET name = #{name}, modified_date = CURRENT_TIMESTAMP WHERE id = #{id}
+  </update>
+  <update id="setGlobalName" >
+    UPDATE sys_account SET global_name = #{globalName}, modified_date = CURRENT_TIMESTAMP WHERE id = #{id}
+  </update>
+  <select id="getPassword" resultType="String">
+    SELECT Password FROM sys_account WHERE login_name = #{loginName}
+  </select>
+  <update id="setPassword" >
+    UPDATE sys_account SET password = #{password} WHERE id = #{accountId}
+  </update>
+  <update id="setLoginName" >
+    UPDATE sys_account SET login_name = #{loginName}, modified_date = CURRENT_TIMESTAMP WHERE id = #{id}
+  </update>
+  <update id="setCertifiedMobile" >
+    UPDATE sys_account SET certified_mobile = #{certifiedMobile}, modified_date = CURRENT_TIMESTAMP WHERE id = #{id}
+  </update>
+  <update id="setCertifiedEmail" >
+    UPDATE sys_account SET certified_email = #{certifiedEmail}, modified_date = CURRENT_TIMESTAMP WHERE id = #{id}
+  </update>
+  <update id="setCertifiedAvatar" >
+    UPDATE sys_account SET certified_avatar = #{certifiedAvatar}, modified_date = CURRENT_TIMESTAMP WHERE id = #{id}
+  </update>
+  <update id="setExchangeStatus" >
+    UPDATE sys_account SET EnableExchangeEmail = #{enableExchangeEmail}, modified_date = CURRENT_TIMESTAMP WHERE id = #{id}
+  </update>
+  <update id="setStatus" >
+    UPDATE sys_account SET status = #{status},created_by = #{CreatedBy}, modified_date = CURRENT_TIMESTAMP WHERE id = #{id}
+  </update>
+
+  <update id="setLocking" >
+    UPDATE sys_account SET locking = #{locking}, modified_date = CURRENT_TIMESTAMP WHERE id = #{id}
+  </update>
+
+  <update id="setCreatedBy" >
+    UPDATE sys_account SET created_by = #{CreatedBy} WHERE id = #{id}
+  </update>
+  <update id="setIPAndLoginDate" parameterType="com.x3platform.membership.models.AccountInfo" >
+    UPDATE sys_account SET ip = #{ip} , login_date = #{loginDate} WHERE id = #{id}
+  </update>
+  <select id="checkPassword" >
+    SELECT COUNT(*) AS "Count" FROM sys_account T WHERE login_name = #{loginName} AND password = #{password}
+  </select>
+  <update id="changePassword" parameterType="com.x3platform.membership.models.AccountInfo"  >
+    UPDATE sys_account SET password = #{password} WHERE login_name = #{loginName}
+  </update>
+  <update id="refresh_Table_Account" >
+    UPDATE sys_account SET modified_date = CURRENT_TIMESTAMP WHERE id = #{id}
+  </update>
+  <update id="refresh_Table_Member" >
+    UPDATE sys_Member SET modified_date = CURRENT_TIMESTAMP WHERE account_id = #{id}
+  </update>
+  <select id="findAllAccountByAccountName" resultMap="findAll_Result" >
+    SELECT
+    sa.*,
+    sc.authorization_object_id
+    FROM
+    sys_account sa
+    LEFT JOIN application_scope sc
+    ON (
+    sa.id = sc.authorization_object_id
+    AND sc.authorization_object_type =#{authType}
+    ) left join application a on (
+    sc.entity_id = a.id
+    )
+    WHERE
+    sa.STATUS = 1
+    and  a.application_name = #{applicationName}
+    <if test="selectKey !='' and selectKey != null ">
+      and (sa.global_name like '%${selectKey}%' or  sa.name like '%${selectKey}%')
+    </if>
+  </select>
+  <select id="findDefaultPassword" resultType="string">
+    select `value` from application_option where  name = 'Membership.DefaultPassword'
+    <if test="applicationId !='' and applicationId != null ">
+      and application_id = #{applicationId}
+    </if>
   </select>
 </mapper>

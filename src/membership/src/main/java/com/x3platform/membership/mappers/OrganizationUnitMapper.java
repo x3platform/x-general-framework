@@ -1,7 +1,9 @@
 package com.x3platform.membership.mappers;
 
-import com.x3platform.membership.IAccountOrganizationUnitRelationInfo;
-import com.x3platform.membership.IOrganizationUnitInfo;
+import com.x3platform.membership.AccountOrganizationUnitRelation;
+import com.x3platform.membership.OrganizationUnit;
+import com.x3platform.membership.models.OrganizationUnitInfo;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.*;
 
@@ -16,24 +18,24 @@ public interface OrganizationUnitMapper {
   /**
    * 保存记录
    *
-   * @param param IOrganizationUnitInfo 实例详细信息
-   * @return IOrganizationUnitInfo 实例详细信息
+   * @param param OrganizationUnit 实例详细信息
+   * @return OrganizationUnit 实例详细信息
    */
-  IOrganizationUnitInfo save(IOrganizationUnitInfo param);
+  int save(OrganizationUnitInfo param);
 
   /**
    * 添加记录
    *
-   * @param param IOrganizationUnitInfo 实例的详细信息
+   * @param param OrganizationUnit 实例的详细信息
    */
-  void insert(IOrganizationUnitInfo param);
+  void insert(OrganizationUnitInfo param);
 
   /**
    * 修改记录
    *
-   * @param param IOrganizationUnitInfo 实例的详细信息
+   * @param param OrganizationUnit 实例的详细信息
    */
-  void update(IOrganizationUnitInfo param);
+  void update(OrganizationUnitInfo param);
 
   /**
    * 删除记录
@@ -49,10 +51,13 @@ public interface OrganizationUnitMapper {
   /**
    * 查询某条记录
    *
-   * @param id IOrganizationUnitInfo id号
-   * @return 返回一个<see cref="IOrganizationUnitInfo" />实例的详细信息
+   * @param id OrganizationUnit id号
+   * @return 返回一个<see cref="OrganizationUnit" />实例的详细信息
    */
-  IOrganizationUnitInfo findOne(String id);
+  OrganizationUnitInfo findOne(String id);
+
+
+  OrganizationUnitInfo findMaxCode();
 
   /**
    * 查询某条记录
@@ -60,15 +65,15 @@ public interface OrganizationUnitMapper {
    * @param globalName 组织的全局名称
    * @return 返回一个实例的详细信息
    */
-  IOrganizationUnitInfo findOneByGlobalName(String globalName);
+  OrganizationUnitInfo findOneByGlobalName(String globalName);
 
   /**
    * 查询角色所属的组织信息
    *
    * @param roleId 角色标识
-   * @return 返回一个<see cref="IOrganizationUnitInfo" />实例的详细信息
+   * @return 返回一个<see cref="OrganizationUnit" />实例的详细信息
    */
-  IOrganizationUnitInfo findOneByRoleId(String roleId);
+  OrganizationUnitInfo findOneByRoleId(String roleId);
 
   /**
    * 查询某个角色所属的某一级次的组织信息
@@ -77,7 +82,7 @@ public interface OrganizationUnitMapper {
    * @param level  层次
    * @return 返回所有实例的详细信息
    */
-  IOrganizationUnitInfo findOneByRoleId(String roleId, int level);
+  OrganizationUnitInfo findOneByRoleId(String roleId, int level);
 
   /**
    * 查询某个组织所属的公司信息
@@ -85,7 +90,7 @@ public interface OrganizationUnitMapper {
    * @param id 组织标识
    * @return 返回所有实例的详细信息
    */
-  IOrganizationUnitInfo findCorporationByOrganizationUnitId(String id);
+  OrganizationUnitInfo findCorporationByOrganizationUnitId(String id);
 
   /**
    * 查询某个组织的所属某个上级部门信息
@@ -94,16 +99,16 @@ public interface OrganizationUnitMapper {
    * @param level          层次
    * @return 返回所有实例的详细信息
    */
-  IOrganizationUnitInfo findDepartmentByOrganizationUnitId(String organizationId, int level);
+  OrganizationUnitInfo findDepartmentByOrganizationUnitId(String organizationId, int level);
 
   /**
    * 查询所有相关记录
    *
    * @param whereClause SQL 查询条件
    * @param length      条数
-   * @return 返回所有 IOrganizationUnitInfo 实例的详细信息
+   * @return 返回所有 OrganizationUnit 实例的详细信息
    */
-  List<IOrganizationUnitInfo> findAll(Map params);
+  List<OrganizationUnitInfo> findAll(Map params);
 
   /**
    * 查询某个父节点下的所有组织单位
@@ -111,15 +116,22 @@ public interface OrganizationUnitMapper {
    * @param parentId 父节标识
    * @return 返回所有实例实例的详细信息
    */
-  List<IOrganizationUnitInfo> findAllByParentId(String parentId);
+  List<OrganizationUnitInfo> findAllByParentId(String parentId);
+
+  /**
+   * 查询所有的组织机构 包含本组织机构
+   * @param organizationUnitId
+   * @return
+   */
+  List<OrganizationUnitInfo> getChildOrganizationByOrganizationUnitId(String organizationUnitId);
+
 
   /**
    * 查询某条记录
-   *
    * @param accountId 帐号标识
-   * @return 返回一个 IOrganizationUnitInfo 实例的详细信息
+   * @return 返回一个 OrganizationUnit 实例的详细信息
    */
-  List<IOrganizationUnitInfo> findAllByAccountId(String accountId);
+  List<OrganizationUnitInfo> findAllByAccountId(@Param("accountId") String accountId);
 
   /**
    * 查询某个帐户所属的所有公司信息
@@ -127,7 +139,7 @@ public interface OrganizationUnitMapper {
    * @param accountId 帐号标识
    * @return 返回所有实例的详细信息
    */
-  List<IOrganizationUnitInfo> findCorporationsByAccountId(String accountId);
+  List<OrganizationUnitInfo> findCorporationsByAccountId(String accountId);
 
   // -------------------------------------------------------
   // 自定义功能
@@ -142,7 +154,7 @@ public interface OrganizationUnitMapper {
    * @param rowCount   记录行数
    * @return 返回一个列表
    */
-  // List<IOrganizationUnitInfo> GetPaging(int startIndex, int pageSize, DataQuery query, tangible.RefObject<Integer> rowCount);
+  // List<OrganizationUnit> GetPaging(int startIndex, int pageSize, DataQuery query, tangible.RefObject<Integer> rowCount);
 
   /**
    * 检测是否存在相关的记录.
@@ -150,7 +162,7 @@ public interface OrganizationUnitMapper {
    * @param id 帐号标识
    * @return 布尔值
    */
-  boolean isExist(String id);
+  boolean isExist(@Param("id") String id);
 
   /**
    * 检测是否存在相关的记录.
@@ -209,7 +221,7 @@ public interface OrganizationUnitMapper {
    *
    * @param param 组织信息
    */
-  // int SyncFromPackPage(IOrganizationUnitInfo param);
+  // int SyncFromPackPage(OrganizationUnit param);
 
   // -------------------------------------------------------
   // 设置帐号和组织关系
@@ -221,7 +233,7 @@ public interface OrganizationUnitMapper {
    * @param accountId 帐号标识
    * @return Table Columns：AccountId, OrganizationUnitId, isDefault, BeginDate, EndDate
    */
-  List<IAccountOrganizationUnitRelationInfo> findAllRelationByAccountId(String accountId);
+  List<AccountOrganizationUnitRelation> findAllRelationByAccountId(String accountId);
 
   /**
    * 根据组织查询相关帐号的关系
@@ -229,7 +241,7 @@ public interface OrganizationUnitMapper {
    * @param organizationId 组织标识
    * @return Table Columns：AccountId, OrganizationUnitId, isDefault, BeginDate, EndDate
    */
-  List<IAccountOrganizationUnitRelationInfo> findAllRelationByRoleId(String organizationId);
+  List<AccountOrganizationUnitRelation> findAllRelationByRoleId(String organizationId);
 
   /**
    * 添加帐号与相关组织的关系
@@ -240,7 +252,11 @@ public interface OrganizationUnitMapper {
    * @param beginDate      启用时间
    * @param endDate        停用时间
    */
-  int addRelation(String accountId, String organizationId, boolean isDefault, java.time.LocalDateTime beginDate, java.time.LocalDateTime endDate);
+  int addRelation(@Param("accountId") String accountId,
+                  @Param("organizationId") String organizationId,
+                  @Param("isDefault") boolean isDefault,
+                  @Param("beginDate")Date beginDate,
+                  @Param("endDate")Date endDate);
 
   /**
    * 续约帐号与相关组织的关系
@@ -249,7 +265,7 @@ public interface OrganizationUnitMapper {
    * @param organizationId 组织标识
    * @param endDate        新的截止时间
    */
-  int extendRelation(String accountId, String organizationId, java.time.LocalDateTime endDate);
+  int extendRelation(String accountId, String organizationId, Date endDate);
 
   /**
    * 移除帐号与相关组织的关系
@@ -282,17 +298,16 @@ public interface OrganizationUnitMapper {
 
   /**
    * 移除帐号相关组织的所有关系
-   *
    * @param accountId 帐号标识
    */
-  int removeAllRelation(String accountId);
+  int removeAllRelation(@Param("accountId") String accountId);
 
   /**
    * 检测帐号是否有默认组织
    *
    * @param accountId 帐号标识
    */
-  boolean hasDefaultRelation(String accountId);
+  boolean hasDefaultRelation(@Param("accountId") String accountId);
 
   /**
    * 设置帐号的默认岗位
@@ -304,8 +319,7 @@ public interface OrganizationUnitMapper {
 
   /**
    * 清理组织与帐号的关系
-   *
    * @param organizationId 组织标识
    */
-  int clearupRelation(String organizationId);
+  int clearupRelation(@Param("organizationId") String organizationId);
 }

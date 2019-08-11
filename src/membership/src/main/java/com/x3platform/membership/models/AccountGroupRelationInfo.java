@@ -1,15 +1,17 @@
 package com.x3platform.membership.models;
 
-import com.x3platform.membership.IAccountGroupRelationInfo;
-import com.x3platform.membership.IAccountInfo;
-import com.x3platform.membership.IGroupInfo;
+import com.x3platform.membership.AccountGroupRelation;
+import com.x3platform.membership.Account;
+import com.x3platform.membership.Group;
 import com.x3platform.membership.MembershipManagement;
 import com.x3platform.util.DateUtil;
+
+import java.util.Date;
 
 /**
  * 帐户和群组的关联信息
  */
-public class AccountGroupRelationInfo implements IAccountGroupRelationInfo {
+public class AccountGroupRelationInfo implements AccountGroupRelation {
 
   /**
    */
@@ -28,11 +30,11 @@ public class AccountGroupRelationInfo implements IAccountGroupRelationInfo {
   /**
    * 帐号标识
    */
-  public final String getAccountId() {
+  public String getAccountId() {
     return mAccountId;
   }
 
-  public final void setAccountId(String value) {
+  public void setAccountId(String value) {
     mAccountId = value;
   }
 
@@ -41,11 +43,11 @@ public class AccountGroupRelationInfo implements IAccountGroupRelationInfo {
   /**
    * 帐号全局名称
    */
-  public final String getAccountGlobalName() {
+  public String getAccountGlobalName() {
     return mAccountGlobalName;
   }
 
-  public final void setAccountGlobalName(String value) {
+  public void setAccountGlobalName(String value) {
     mAccountGlobalName = value;
   }
 
@@ -54,11 +56,11 @@ public class AccountGroupRelationInfo implements IAccountGroupRelationInfo {
   /**
    * 群组标识
    */
-  public final String getGroupId() {
+  public String getGroupId() {
     return mGroupId;
   }
 
-  public final void setGroupId(String value) {
+  public void setGroupId(String value) {
     mGroupId = value;
   }
 
@@ -67,51 +69,52 @@ public class AccountGroupRelationInfo implements IAccountGroupRelationInfo {
   /**
    * 群组全局名称
    */
-  public final String getGroupGlobalName() {
+  public String getGroupGlobalName() {
     return mGroupGlobalName;
   }
 
-  public final void setGroupGlobalName(String value) {
+  public void setGroupGlobalName(String value) {
     mGroupGlobalName = value;
   }
 
-  private java.time.LocalDateTime mBeginDate = DateUtil.getDefaultTime();
+  private Date mBeginDate = DateUtil.getDefaultDate();
 
   /**
    * 生效时间
    */
-  public final java.time.LocalDateTime getBeginDate() {
+  public Date getBeginDate() {
     return mBeginDate;
   }
 
-  public final void setBeginDate(java.time.LocalDateTime value) {
+  public void setBeginDate(Date value) {
     mBeginDate = value;
   }
 
-  private java.time.LocalDateTime mEndDate = java.time.LocalDateTime.MAX;
+  private Date mEndDate = DateUtil.getDefaultDate();
 
   /**
    * 失效时间
    */
-  public final java.time.LocalDateTime getEndDate() {
+  public Date getEndDate() {
     return mEndDate;
   }
 
-  public final void setEndDate(java.time.LocalDateTime value) {
+  public void setEndDate(Date value) {
     mEndDate = value;
   }
 
   /**
    * 获取相关帐号信息
    */
-  public final IAccountInfo GetAccount() {
+  @Override
+  public Account GetAccount() {
     return MembershipManagement.getInstance().getAccountService().findOne(this.getAccountId());
   }
 
   /**
    * 获取相关组织信息
    */
-  public final IGroupInfo GetGroup() {
+  public Group GetGroup() {
     // TODO 待处理
     // return MembershipManagement.getInstance().getGroupService().findOne(this.getGroupId());
     return null;

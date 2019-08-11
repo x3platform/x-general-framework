@@ -1,15 +1,17 @@
 package com.x3platform.membership.models;
 
-import com.x3platform.membership.IAccountInfo;
-import com.x3platform.membership.IAccountRoleRelationInfo;
-import com.x3platform.membership.IRoleInfo;
+import com.x3platform.membership.Account;
+import com.x3platform.membership.AccountRoleRelation;
+import com.x3platform.membership.Role;
 import com.x3platform.membership.MembershipManagement;
 import com.x3platform.util.DateUtil;
+
+import java.util.Date;
 
 /**
  * 帐户和角色的关联信息
  */
-public class AccountRoleRelationInfo implements IAccountRoleRelationInfo {
+public class AccountRoleRelationInfo implements AccountRoleRelation {
 
   /**
    */
@@ -28,11 +30,11 @@ public class AccountRoleRelationInfo implements IAccountRoleRelationInfo {
   /**
    * 帐号标识
    */
-  public final String getAccountId() {
+  public String getAccountId() {
     return mAccountId;
   }
 
-  public final void setAccountId(String value) {
+  public void setAccountId(String value) {
     mAccountId = value;
   }
 
@@ -41,11 +43,11 @@ public class AccountRoleRelationInfo implements IAccountRoleRelationInfo {
   /**
    * 帐号全局名称
    */
-  public final String getAccountGlobalName() {
+  public String getAccountGlobalName() {
     return mAccountGlobalName;
   }
 
-  public final void setAccountGlobalName(String value) {
+  public void setAccountGlobalName(String value) {
     mAccountGlobalName = value;
   }
 
@@ -54,11 +56,11 @@ public class AccountRoleRelationInfo implements IAccountRoleRelationInfo {
   /**
    * 角色标识
    */
-  public final String getRoleId() {
+  public String getRoleId() {
     return mRoleId;
   }
 
-  public final void setRoleId(String value) {
+  public void setRoleId(String value) {
     mRoleId = value;
   }
 
@@ -67,11 +69,11 @@ public class AccountRoleRelationInfo implements IAccountRoleRelationInfo {
   /**
    * 角色全局名称
    */
-  public final String getRoleGlobalName() {
+  public String getRoleGlobalName() {
     return mRoleGlobalName;
   }
 
-  public final void setRoleGlobalName(String value) {
+  public void setRoleGlobalName(String value) {
     mRoleGlobalName = value;
   }
 
@@ -80,51 +82,51 @@ public class AccountRoleRelationInfo implements IAccountRoleRelationInfo {
   /**
    * 是否默认角色
    */
-  public final int getIsDefault() {
+  public int getIsDefault() {
     return mIsDefault;
   }
 
-  public final void setIsDefault(int value) {
+  public void setIsDefault(int value) {
     mIsDefault = value;
   }
 
-  private java.time.LocalDateTime mBeginDate = DateUtil.getDefaultTime();
+  private Date mBeginDate = DateUtil.getDefaultDate();
 
   /**
    * 生效时间
    */
-  public final java.time.LocalDateTime getBeginDate() {
+  public Date getBeginDate() {
     return mBeginDate;
   }
 
-  public final void setBeginDate(java.time.LocalDateTime value) {
+  public void setBeginDate(Date value) {
     mBeginDate = value;
   }
 
-  private java.time.LocalDateTime mEndDate = java.time.LocalDateTime.MAX;
+  private Date mEndDate = DateUtil.getDefaultDate();
 
   /**
    * 失效时间
    */
-  public final java.time.LocalDateTime getEndDate() {
+  public Date getEndDate() {
     return mEndDate;
   }
 
-  public final void setEndDate(java.time.LocalDateTime value) {
+  public void setEndDate(Date value) {
     mEndDate = value;
   }
 
   /**
    * 获取相关帐号信息
    */
-  public final IAccountInfo getAccount() {
+  public Account getAccount() {
     return MembershipManagement.getInstance().getAccountService().findOne(this.getAccountId());
   }
 
   /**
    * 获取相关角色信息
    */
-  public final IRoleInfo getRole() {
+  public Role getRole() {
     // TODO 待处理
     // return MembershipManagement.getInstance().getRoleService().findOne(this.getRoleId());
     return null;

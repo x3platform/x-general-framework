@@ -1,15 +1,17 @@
 package com.x3platform.membership.models;
 
-import com.x3platform.membership.IAccountInfo;
-import com.x3platform.membership.IAccountOrganizationUnitRelationInfo;
-import com.x3platform.membership.IOrganizationUnitInfo;
+import com.x3platform.membership.Account;
+import com.x3platform.membership.AccountOrganizationUnitRelation;
+import com.x3platform.membership.OrganizationUnit;
 import com.x3platform.membership.MembershipManagement;
 import com.x3platform.util.DateUtil;
+
+import java.util.Date;
 
 /**
  * 帐户和组织的关联信息
  */
-public class AccountOrganizationUnitRelationInfo implements IAccountOrganizationUnitRelationInfo {
+public class AccountOrganizationUnitRelationInfo implements AccountOrganizationUnitRelation {
   /**
    */
   public AccountOrganizationUnitRelationInfo() {
@@ -27,11 +29,11 @@ public class AccountOrganizationUnitRelationInfo implements IAccountOrganization
   /**
    * 帐号标识
    */
-  public final String getAccountId() {
+  public String getAccountId() {
     return mAccountId;
   }
 
-  public final void setAccountId(String value) {
+  public void setAccountId(String value) {
     mAccountId = value;
   }
 
@@ -40,11 +42,11 @@ public class AccountOrganizationUnitRelationInfo implements IAccountOrganization
   /**
    * 帐号名称
    */
-  public final String getAccountGlobalName() {
+  public String getAccountGlobalName() {
     return mAccountGlobalName;
   }
 
-  public final void setAccountGlobalName(String value) {
+  public void setAccountGlobalName(String value) {
     mAccountGlobalName = value;
   }
 
@@ -53,11 +55,11 @@ public class AccountOrganizationUnitRelationInfo implements IAccountOrganization
   /**
    * 组织标识
    */
-  public final String getOrganizationUnitId() {
+  public String getOrganizationUnitId() {
     return mOrganizationUnitId;
   }
 
-  public final void setOrganizationUnitId(String value) {
+  public void setOrganizationUnitId(String value) {
     mOrganizationUnitId = value;
   }
 
@@ -66,11 +68,11 @@ public class AccountOrganizationUnitRelationInfo implements IAccountOrganization
   /**
    * 组织全局名称
    */
-  public final String getOrganizationUnitGlobalName() {
+  public String getOrganizationUnitGlobalName() {
     return mOrganizationUnitGlobalName;
   }
 
-  public final void setOrganizationUnitGlobalName(String value) {
+  public void setOrganizationUnitGlobalName(String value) {
     mOrganizationUnitGlobalName = value;
   }
 
@@ -79,51 +81,51 @@ public class AccountOrganizationUnitRelationInfo implements IAccountOrganization
   /**
    * 是否默认组织
    */
-  public final int getIsDefault() {
+  public int getIsDefault() {
     return mIsDefault;
   }
 
-  public final void setIsDefault(int value) {
+  public void setIsDefault(int value) {
     mIsDefault = value;
   }
 
-  private java.time.LocalDateTime mBeginDate = DateUtil.getDefaultTime();
+  private Date mBeginDate = DateUtil.getDefaultDate();
 
   /**
    * 生效时间
    */
-  public final java.time.LocalDateTime getBeginDate() {
+  public Date getBeginDate() {
     return mBeginDate;
   }
 
-  public final void setBeginDate(java.time.LocalDateTime value) {
+  public void setBeginDate(Date value) {
     mBeginDate = value;
   }
 
-  private java.time.LocalDateTime mEndDate = java.time.LocalDateTime.MAX;
+  private Date mEndDate = DateUtil.getDefaultDate();
 
   /**
    * 失效时间
    */
-  public final java.time.LocalDateTime getEndDate() {
+  public Date getEndDate() {
     return mEndDate;
   }
 
-  public final void setEndDate(java.time.LocalDateTime value) {
+  public void setEndDate(Date value) {
     mEndDate = value;
   }
 
   /**
    * 获取相关帐号信息
    */
-  public final IAccountInfo getAccount() {
+  public Account getAccount() {
     return MembershipManagement.getInstance().getAccountService().findOne(this.getAccountId());
   }
 
   /**
    * 获取相关组织信息
    */
-  public final IOrganizationUnitInfo getOrganizationUnit() {
+  public OrganizationUnit getOrganizationUnit() {
     // TODO 待处理
     // return MembershipManagement.getInstance().getOrganizationUnitService().findOne(this.getOrganizationUnitId());
     return null;

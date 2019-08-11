@@ -1,239 +1,549 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.x3platform.membership.mappers.RoleMapper">
-  <resultMap id="findOne_Result" type="com.x3platform.digitalNumber.models.DigitalNumberInfo">
+  <resultMap id="findOne_Result" type="com.x3platform.membership.models.RoleInfo">
+    <result property="id" column="id"/>
+    <result property="code" column="code"/>
     <result property="name" column="name"/>
-    <result property="expression" column="expression"/>
-    <result property="seed" column="seed"/>
+    <result property="globalName" column="global_name"/>
+    <result property="pinYin" column="pinyin"/>
+    <result property="type" column="type"/>
+    <result property="parentId" column="parent_id"/>
+    <result property="standardRoleId" column="standard_role_id"/>
+    <result property="organizationUnitId" column="organization_unit_id"/>
+    <result property="generalRoleId" column="general_role_id"/>
+    <result property="enableEmail" column="enable_email"/>
+    <result property="effectScope" column="effect_scope"/>
+    <result property="locking" column="locking"/>
+    <result property="orderId" column="order_id"/>
+    <result property="status" column="status"/>
+    <result property="remark" column="remark"/>
+    <result property="fullPath" column="full_path"/>
+    <result property="distinguishedName" column="distinguished_name"/>
     <result property="modifiedDate" column="modifiedDate"/>
     <result property="createdDate" column="createdDate"/>
   </resultMap>
-  <resultMap id="findAll_Result" type="com.x3platform.digitalNumber.models.DigitalNumberInfo">
+  <resultMap id="findAll_Result" type="com.x3platform.membership.models.RoleInfo">
+    <result property="id" column="id"/>
+    <result property="code" column="code"/>
     <result property="name" column="name"/>
-    <result property="expression" column="expression"/>
-    <result property="seed" column="seed"/>
-    <result property="modifiedDate" column="modifiedDate"/>
-    <result property="createdDate" column="createdDate"/>
+    <result property="globalName" column="global_name"/>
+    <result property="pinYin" column="pinyin"/>
+    <result property="type" column="type"/>
+    <result property="parentId" column="parent_id"/>
+    <result property="parentName" column="parent_name"/>
+    <result property="standardRoleId" column="standard_role_id"/>
+    <result property="organizationUnitId" column="organization_unit_id"/>
+    <result property="organizationUnitName" column="organization_name"/>
+    <result property="generalRoleId" column="general_role_id"/>
+    <result property="enableEmail" column="enable_email"/>
+    <result property="effectScope" column="effect_scope"/>
+    <result property="locking" column="locking"/>
+    <result property="orderId" column="order_id"/>
+    <result property="status" column="status"/>
+    <result property="remark" column="remark"/>
+    <result property="fullPath" column="full_path"/>
+    <result property="distinguishedName" column="distinguished_name"/>
+    <result property="modifiedDate" column="modified_date"/>
+    <result property="createdDate" column="created_date"/>
   </resultMap>
-  <insert id="insert" parameterType="com.x3platform.digitalNumber.models.DigitalNumberInfo">
-    INSERT INTO sys_digital_number
-    (
-      name,
-      expression,
-      seed,
-      modifiedDate,
-      createdDate
-    )
-    VALUES
-    (
-      #{name},
-      #{expression},
-      #{seed},
-      CURRENT_TIMESTAMP,
-      CURRENT_TIMESTAMP
-    )
+  <insert id="insert" parameterType="com.x3platform.membership.models.RoleInfo">
+    INSERT INTO sys_role
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+    <if test="id != null">
+      id,
+    </if>
+    <if test="code != null">
+      code,
+    </if>
+    <if test="globalName != null">
+      global_name,
+    </if>
+    <if test="pinYin != null">
+      pinyin,
+    </if>
+    <if test="type != null">
+      type,
+    </if>
+    <if test="parentId != null">
+      parent_id,
+    </if>
+    <if test="standardRoleId != null">
+      standard_role_id,
+    </if>
+    <if test="organizationUnitId != null">
+      organization_id,
+    </if>
+    <if test="generalRoleId != null">
+      general_role_id,
+    </if>
+    <if test="enableEmail != null">
+      enable_email,
+    </if>
+    <if test="effectScope != null">
+      effect_scope,
+    </if>
+    <if test="locking != null">
+      locking,
+    </if>
+    <if test="orderId != null">
+      order_id,
+    </if>
+    <if test="status != null">
+      status,
+    </if>
+    <if test="remark != null">
+      remark,
+    </if>
+    <if test="fullPath != null">
+      full_path,
+    </if>
+    <if test="distinguishedName != null">
+      distinguished_name,
+    </if>
+    <if test="modifiedDate != null">
+      modified_date,
+    </if>
+    <if test="createdDate != null">
+      created_date,
+    </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id},
+      </if>
+      <if test="code != null">
+        #{code},
+      </if>
+      <if test="globalName != null">
+        #{globalName},
+      </if>
+      <if test="pinYin != null">
+        #{pinYin},
+      </if>
+      <if test="type != null">
+        #{type},
+      </if>
+      <if test="parentId != null">
+        #{parentId},
+      </if>
+      <if test="standardRoleId != null">
+        #{standardRoleId},
+      </if>
+      <if test="organizationUnitId != null">
+        #{organizationUnitId},
+      </if>
+      <if test="generalRoleId != null">
+        #{generalRoleId},
+      </if>
+      <if test="enableEmail != null">
+        #{enableEmail},
+      </if>
+      <if test="effectScope != null">
+        #{effectScope},
+      </if>
+      <if test="locking != null">
+        #{locking},
+      </if>
+      <if test="orderId != null">
+        #{orderId},
+      </if>
+      <if test="status != null">
+        #{status},
+      </if>
+      <if test="remark != null">
+        #{remark},
+      </if>
+      <if test="fullPath != null">
+        #{fullPath},
+      </if>
+      <if test="distinguishedName != null">
+        #{distinguishedName},
+      </if>
+      <if test="modifiedDate != null">
+        CURRENT_TIMESTAMP,
+      </if>
+      <if test="createdDate != null">
+        CURRENT_TIMESTAMP,
+      </if>
+    </trim>
   </insert>
-  <update id="update" parameterType="com.x3platform.digitalNumber.models.DigitalNumberInfo">
-    UPDATE sys_digital_number SET
-
-    expression = #{expression},
-    seed = #{seed},
-    modifiedDate = CURRENT_TIMESTAMP
-
-    WHERE Name = #{name}
+  <update id="update" parameterType="com.x3platform.membership.models.RoleInfo">
+    UPDATE sys_role
+      <set>
+        <if test="code != null">
+          code = #{code},
+        </if>
+        <if test="name != null">
+          name = #{name},
+        </if>
+        <if test="globalName != null">
+          global_name = #{globalName},
+        </if>
+        <if test="pinYin != null">
+          pinyin = #{pinYin},
+        </if>
+        <if test="type != null">
+          type = #{type},
+        </if>
+        <if test="parentId != null">
+          parent_id = #{parentId},
+        </if>
+        <if test="standardRoleId != null">
+          standard_role_id = #{standardRoleId},
+        </if>
+        <if test="organizationUnitId != null">
+          organization_id = #{organizationUnitId},
+        </if>
+        <if test="generalRoleId != null">
+          general_role_id = #{generalRoleId},
+        </if>
+        <if test="locking != null">
+          locking = #{locking},
+        </if>
+        <if test="orderId != null">
+          order_id = #{orderId},
+        </if>
+        <if test="status != null">
+          status = #{status},
+        </if>
+        <if test="remark != null">
+          remark = #{remark},
+        </if>
+        <if test="distinguishedName != null">
+          distinguished_name = #{distinguishedName},
+        </if>
+        <if test="modifiedDate != null">
+          modified_date = CURRENT_TIMESTAMP ,
+        </if>
+    </set>
+    WHERE id = #{id}
   </update>
-  <insert id="save" parameterType="com.x3platform.digitalNumber.models.DigitalNumberInfo">
-      IF EXISTS(SELECT 0 FROM sys_digital_number WHERE Name = #name#)
-      BEGIN
-      UPDATE sys_digital_number SET
-
-      Expression = #Expression#,
-      Seed = #Seed#,
-      ModifiedDate = CURRENT_TIMESTAMP
-
-      WHERE Name = #Name#
-      END
-      ELSE
-      BEGIN
-      INSERT INTO sys_digital_number
-      (
-      Name,
-      Expression,
-      Seed,
-      ModifiedDate,
-      CreatedDate
-      )
-      VALUES
-      (
-      #Name#,
-      #Expression#,
-      #Seed#,
-      CURRENT_TIMESTAMP,
-      CURRENT_TIMESTAMP
-      )
-      END
+  <insert id="save" parameterType="com.x3platform.membership.models.RoleInfo">
+    INSERT INTO sys_role
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="code != null">
+        code,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="globalName != null">
+        global_name,
+      </if>
+      <if test="pinYin != null">
+        pinyin,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="parentId != null">
+        parent_id,
+      </if>
+      <if test="standardRoleId != null">
+        standard_role_id,
+      </if>
+      <if test="organizationUnitId != null">
+        organization_id,
+      </if>
+      <if test="generalRoleId != null">
+        general_role_id,
+      </if>
+      <if test="locking != null">
+        locking,
+      </if>
+      <if test="orderId != null">
+        order_id,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+      <if test="distinguishedName != null">
+        distinguished_name,
+      </if>
+      <if test="modifiedDate != null">
+        modified_date,
+      </if>
+      <if test="createdDate != null">
+        created_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id},
+      </if>
+      <if test="code != null">
+        #{code},
+      </if>
+      <if test="name != null">
+        #{name},
+      </if>
+      <if test="globalName != null">
+        #{globalName},
+      </if>
+      <if test="pinYin != null">
+        #{pinYin},
+      </if>
+      <if test="type != null">
+        #{type},
+      </if>
+      <if test="parentId != null">
+        #{parentId},
+      </if>
+      <if test="standardRoleId != null">
+        #{standardRoleId},
+      </if>
+      <if test="organizationUnitId != null">
+        #{organizationUnitId},
+      </if>
+      <if test="generalRoleId != null">
+        #{generalRoleId},
+      </if>
+      <if test="locking != null">
+        #{locking},
+      </if>
+      <if test="orderId != null">
+        #{orderId},
+      </if>
+      <if test="status != null">
+        #{status},
+      </if>
+      <if test="remark != null">
+        #{remark},
+      </if>
+      <if test="distinguishedName != null">
+        #{distinguishedName},
+      </if>
+      <if test="modifiedDate != null">
+        CURRENT_TIMESTAMP,
+      </if>
+      <if test="createdDate != null">
+        CURRENT_TIMESTAMP,
+      </if>
+    </trim>
   </insert>
-  <delete id="delete">
-    DELETE FROM sys_digital_number WHERE Name = #{name}
-  </delete>
+
+  <insert id="addRelation" parameterType="com.x3platform.membership.models.RoleInfo">
+    INSERT INTO sys_account_role
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="accountId != null">
+        account_id,
+      </if>
+      <if test="roleId != null">
+        role_id,
+      </if>
+      <if test="isDefault != null">
+        is_default,
+      </if>
+      <if test="beginDate != null">
+        begin_date,
+      </if>
+      <if test="endDate != null">
+        end_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="accountId != null">
+        #{accountId},
+      </if>
+      <if test="roleId != null">
+        #{roleId},
+      </if>
+      <if test="isDefault != null">
+        #{isDefault},
+      </if>
+      <if test="beginDate != null">
+        #{beginDate},
+      </if>
+      <if test="endDate != null">
+        #{endDate},
+      </if>
+    </trim>
+  </insert>
+  <update id="delete">
+    update sys_role set status = 0 where id = #{id}
+  </update>
   <select id="findOne" resultMap="findOne_Result">
-    SELECT * FROM sys_digital_number WHERE Name = #{name}
+    SELECT * FROM sys_role WHERE id = #{id}
+  </select>
+  <select id="findMaxCodeByParentId" resultMap="findOne_Result">
+    select * from sys_role t where t.parent_id = #{parentId} and code in (
+      select max(code) from sys_role  where parent_id = #{parentId}
+    )
+  </select>
+  <select id="findMaxCodeByOrganizationUnitId" resultMap="findOne_Result">
+    select * from sys_role t where t.organization_id = #{organizationUnitId} and code in (
+      select max(code) from sys_role t where organization_id = #{organizationUnitId}
+    )
   </select>
   <select id="findAll" resultMap="findAll_Result">
-    SELECT * FROM sys_digital_number T
+    SELECT
+    T.* , r.name AS parent_name ,ou.name as organization_name
+    FROM
+    sys_role T
+    LEFT JOIN sys_role r ON (t.parent_id = r.id)
+    LEFT JOIN sys_organization_unit ou ON (t.organization_unit_id = ou.id)
     <where>
-      <if test="whereClause != null and whereClause !=''">
-        ${whereClause}
+      <!-- 列表查询 -->
+      <if test="var_scence == 'Query'">
+        T.status = 1
+        <if test="param_search_text != null and param_search_text != ''">
+          and t.global_name LIKE concat('%',#{param_search_text},'%') OR name LIKE concat('%',#{param_search_text},'%')
+        </if>
+        <if test='param_parent_id != null and param_parent_id != "" and param_parent_id!="0" '>
+          and t.id IN (
+          SELECT
+          id
+          FROM
+          (
+          SELECT
+          t1.id,
+          IF
+          ( find_in_set( parent_id, @pids ) > 0, @pids := concat( @pids, ',', id ), '0' ) AS ischild
+          FROM
+          ( SELECT id, parent_id FROM sys_role t ORDER BY parent_id, id ) t1,
+          ( SELECT @pids := #{param_parent_id}) t2
+          ) t3
+          WHERE
+          ischild != '0'
+          )
+        </if>
+        <if test="param_organizationUnitId !=null and param_organizationUnitId !=''">
+          and t.organization_unit_id in (
+          SELECT
+          id
+          FROM
+          sys_organization_unit
+          WHERE
+          FIND_IN_SET(
+          id,
+          func_GetChildrenIdByOrganizationUnitId (
+          #{param_organizationUnitId}
+          )
+          )
+          )
+        </if>
+      </if>
+      <if test="var_scence == 'default'">
+        T.status = 1
+        <if test='param_parent_id != null and param_parent_id != "" and param_parent_id!="0" '>
+          and T.id IN (
+          SELECT
+          id
+          FROM
+          (
+          SELECT
+          t1.id,
+          IF
+          ( find_in_set( parent_id, @pids ) > 0, @pids := concat( @pids, ',', id ), '0' ) AS ischild
+          FROM
+          ( SELECT id, parent_id FROM sys_role t ORDER BY parent_id, id ) t1,
+          ( SELECT @pids := #{param_parent_id}) t2
+          ) t3
+          WHERE
+          ischild != '0'
+          )
+        </if>
+        <if test="param_organizationUnitId !=null and param_organizationUnitId !=''">
+          and T.organization_unit_id in (
+          SELECT
+          id
+          FROM
+          sys_organization_unit
+          WHERE
+          FIND_IN_SET(
+          id,
+          func_GetChildrenIdByOrganizationUnitId (
+          #{param_organizationUnitId}
+          )
+          )
+          )
+        </if>
+      </if>
+      <if test="var_scence == 'QueryChild'">
+        <if test='param_parent_id != null and param_parent_id != "" and param_parent_id!="0" '>
+          T.parent_id = #{param_parent_id} and T.status = 1
+        </if>
+        <if test="param_organizationUnitId !=null and param_organizationUnitId !=''">
+          and T.organization_unit_id in (
+          SELECT
+          id
+          FROM
+          sys_organization_unit
+          WHERE
+          FIND_IN_SET(
+          id,
+          func_GetChildrenIdByOrganizationUnitId (
+          #{param_organizationUnitId}
+          )
+          )
+          )
+        </if>
       </if>
     </where>
-    <if test="orderBy != null and orderBy !=''">
-      ORDER BY ${orderBy}
+    <if test="orders != null and orders.size() > 0">
+      ORDER BY
+      <foreach collection="orders" item="order" index="index" separator=",">
+        #{order}
+      </foreach>
     </if>
     <if test="length > 0">
       LIMIT 0, ${length}
     </if>
   </select>
-  <select id="findAllByOrganizationUnitId" resultMap="findAll_Result">
-    SELECT * FROM sys_role where id IN (SELECT account_id from sys_account_role WHERE organization_unit_id = #{organizationUnitId})
+  <select id="findAllByParentId" resultMap="findAll_Result">
+    SELECT * FROM sys_role WHERE id IN (
+      SELECT
+        id
+      FROM
+        (
+          SELECT
+            t1.id,
+            IF
+              ( find_in_set( parent_id, @pids ) > 0, @pids := concat( @pids, ',', id ), '0' ) AS ischild
+          FROM
+              ( SELECT id, parent_id FROM sys_role t ORDER BY parent_id, id ) t1,
+              ( SELECT @pids := #{parentId}) t2
+        ) t3
+      WHERE
+        ischild != '0'
+    )
+    AND status = 1
+    ORDER BY order_id desc
   </select>
-  <!--
-      <select id="FindAll#MySql" resultMap="findAll_Result" >
-        SELECT * FROM sys_digital_number T
 
-        <dynamic prepend="WHERE">
-          <isParameterPresent>
-            <isNotEmpty prepend="AND" property="WhereClause" >
-              $WhereClause$
-            </isNotEmpty>
-          </isParameterPresent>
-        </dynamic>
+  <select id="findAllByAccountId" resultMap="findAll_Result">
+    select DISTINCT r.* from sys_account_role ar , sys_role r where ar.role_id = r.id and ar.account_id = #{accountId}
+  </select>
 
-        <dynamic prepend="ORDER BY">
-          <isNotEmpty prepend="AND" property="OrderBy" >
-            $OrderBy$
-          </isNotEmpty>
-        </dynamic>
-
-        <dynamic prepend="LIMIT">
-          <isNotEqual prepend="LIMIT" property="Length" compareValue="0">
-            0, $Length$
-          </isNotEqual>
-        </dynamic>
-      </select>
-      <select id="FindAll#SqlServer" resultMap="findAll_Result" >
-        SELECT
-
-        <dynamic prepend="TOP">
-          <isNotEqual prepend="TOP" property="Length" compareValue = "0">
-            $Length$
-          </isNotEqual>
-        </dynamic>
-
-        * FROM sys_digital_number T
-
-        <dynamic prepend="WHERE">
-          <isParameterPresent>
-            <isNotEmpty prepend="AND" property="WhereClause" >
-              $WhereClause$
-            </isNotEmpty>
-          </isParameterPresent>
-        </dynamic>
-
-        <dynamic prepend="ORDER BY">
-          <isParameterPresent>
-            <isNotEmpty prepend="AND" property="OrderBy" >
-              $OrderBy$
-            </isNotEmpty>
-          </isParameterPresent>
-        </dynamic>
-      </select>
-      <select id="GetPaging#MySql"  resultMap="findAll_Result" >
-        SELECT * FROM sys_digital_number T
-
-        <dynamic prepend="WHERE">
-          <isParameterPresent>
-            <isNotEmpty prepend="AND" property="WhereClause" >
-              $WhereClause$
-            </isNotEmpty>
-          </isParameterPresent>
-        </dynamic>
-
-        <dynamic prepend="ORDER BY">
-          <isNotEmpty prepend="AND" property="OrderBy" >
-            $OrderBy$
-          </isNotEmpty>
-        </dynamic>
-
-        LIMIT $StartIndex$, $PageSize$
-      </select>
-
-      <select id="GetPaging#Oracle" resultMap="findAll_Result" >
-        SELECT T2.* FROM (
-        SELECT ROWNUM RowIndex, T1.* FROM (
-        SELECT * FROM sys_digital_number T
-
-        <where>
-          <if test="WhereClause != null">
-            $WhereClause$
-          </if>
-        </where>
-        ORDER BY $OrderBy$
-
-        ) T1 WHERE ROWNUM &lt;= ($StartIndex$ + $PageSize$)
-        ) T2 WHERE T2.RowIndex &gt; $StartIndex$
-      </select>
-      <select id="GetPaging#SqlServer" resultMap="findAll_Result" >
-        SELECT *
-
-        FROM (SELECT *, ROW_NUMBER() OVER(ORDER BY $OrderBy$) AS RowIndex
-
-        FROM sys_digital_number T
-
-        <where>
-          <if test="WhereClause != null">
-            $WhereClause$
-          </if>
-        </where>) TableIndex
-
-        WHERE TableIndex.RowIndex BETWEEN $StartIndex$ + 1 AND $StartIndex$ + $PageSize$
-      </select>
-      <select id="GetRowCount" >
-        SELECT COUNT(0) AS "RowCount" FROM sys_digital_number T
-        <where>
-          <if test="WhereClause != null">
-              $WhereClause$
-          </if>
-        </where>
-      </select>
-      -->
-  <select id="isExist">
-    SELECT COUNT(0) AS "Count" FROM sys_digital_number WHERE $WhereClause$
+  <select id="findAllByOrganizationUnitId" resultMap="findAll_Result">
+    select * from sys_role where organization_unit_id=#{organizationUnitId}  and status = 1 order by id
+  </select>
+  <select id="isExist" resultType="boolean">
+    SELECT COUNT(0) AS "Count" FROM sys_role WHERE id = #{id}
   </select>
   <select id="isExistName" resultType="boolean">
-    SELECT COUNT(0) AS "Count" FROM sys_digital_number WHERE Name = #{name}
+    SELECT COUNT(0) AS "Count" FROM sys_role WHERE Name = #{name}
   </select>
-  <select id="GetMaxSeedByPrefix#MySql">
-      SELECT
-      IF( COUNT(0)>0,
-      (SELECT CAST(MAX(REPLACE(Code, '$Prefix$', '')) AS SIGNED) FROM $EntityTableName$ WHERE Code LIKE '$Prefix$%'),
-      0
-      ) AS MaxCode
-      FROM $EntityTableName$
-      WHERE Code LIKE '$Prefix$%' ;
-    </select>
-  <select id="GetMaxSeedByPrefix#SqlServer">
-      IF EXISTS ( SELECT 0 FROM $EntityTableName$ WHERE Code LIKE '$Prefix$%' )
-      BEGIN
-      SELECT CONVERT(int, MAX(REPLACE(Code, '$Prefix$', '')))
-      FROM $EntityTableName$
-      WHERE Code LIKE '$Prefix$%'
-      END
-      ELSE
-      BEGIN
-      SELECT 0
-      END
-    </select>
-  <select id="GetPrefixCodeByCategoryId">
-      SELECT PrefixCode FROM $EntityCategoryTableName$ T WHERE Id = '$EntityCategoryId$'
-    </select>
+  <delete id="removeAllRelation">
+    delete from sys_account_role where account_id=#{accountId}
+  </delete>
+
+
+  <select id="hasDefaultRelation" resultType="java.lang.Boolean">
+    SELECT COUNT(0) AS "Count" FROM sys_account_role WHERE account_id = #{accountId}
+  </select>
+  <select id="hasRelation" resultType="java.lang.Boolean">
+    SELECT COUNT(0) AS "Count" FROM sys_account_role WHERE account_id = #{accountId} and role_id=#{roleId}
+  </select>
+  <delete id="clearupRelation">
+    delete from  application_menu_scope where authorization_object_id = #{roleId}and authorization_object_type='Role'
+  </delete>
+
 </mapper>

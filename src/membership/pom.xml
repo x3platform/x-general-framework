@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.x3platform</groupId>
   <artifactId>x3platform-membership</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>x3platform-membership</name>
   <url>http://maven.apache.org</url>
@@ -11,17 +11,13 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>1.8</java.version>
-    <!-- <start-class>com.x3platform.App</start-class> -->
-    <lib.path>${basedir}/lib</lib.path>
   </properties>
 
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
     <version>2.0.2.RELEASE</version>
-    <relativePath/> <!-- lookup parent from repository -->
   </parent>
-
   <dependencies>
 
     <dependency>
@@ -34,7 +30,12 @@
         </exclusion>
       </exclusions>
     </dependency>
-
+    <!-- Spring Test -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>com.alibaba</groupId>
       <artifactId>fastjson</artifactId>
@@ -46,8 +47,8 @@
       <artifactId>commons-lang3</artifactId>
       <version>3.7</version>
     </dependency>
-     <!--数据库设置-->
-     <!--alibaba druid-->
+    <!--数据库设置-->
+    <!--alibaba druid-->
     <dependency>
       <groupId>com.alibaba</groupId>
       <artifactId>druid</artifactId>
@@ -63,34 +64,38 @@
       <artifactId>mybatis-spring-boot-starter</artifactId>
       <version>1.3.2</version>
     </dependency>
-    <dependency>
-      <groupId>com.x3platform</groupId>
-      <artifactId>x3platform-support</artifactId>
-      <version>0.0.1</version>
-    </dependency>
-    <!-- 测试依赖 -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <version>2.0.2.RELEASE</version>
-      <scope>test</scope>
-    </dependency>
+    <!-- junit -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.12</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+    </dependency>
+    <!-- 汉字转拼音 -->
+    <dependency>
+      <groupId>com.belerweb</groupId>
+      <artifactId>pinyin4j</artifactId>
+      <version>2.5.1</version>
+    </dependency>
     <!-- x3platform -->
     <dependency>
       <groupId>com.x3platform</groupId>
       <artifactId>x3platform-support</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
+      <version>0.1.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.x3platform</groupId>
       <artifactId>x3platform-abstractions</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
+      <version>0.1.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>com.x3platform</groupId>
+      <artifactId>x3platform-sessions</artifactId>
+      <version>0.1.0-SNAPSHOT</version>
     </dependency>
   </dependencies>
   <build>
@@ -116,13 +121,13 @@
       <uniqueVersion>false</uniqueVersion>
       <id>releases</id>
       <name>Nexus Release Repository</name>
-      <url>http://dev.amiintellect.com:27070/repository/maven-releases/</url>
+      <url>http://nexus.amiintellect.com/repository/maven-releases/</url>
     </repository>
     <snapshotRepository>
       <uniqueVersion>true</uniqueVersion>
       <id>snapshots</id>
       <name>Nexus Snapshot Repository</name>
-      <url>http://dev.amiintellect.com:27070/repository/maven-snapshots/</url>
+      <url>http://nexus.amiintellect.com/repository/maven-snapshots/</url>
     </snapshotRepository>
   </distributionManagement>
 </project>
