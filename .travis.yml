@@ -1,8 +1,16 @@
 language: java
 os:
   - linux
+services:
+  - mysql
+  - redis-server
+before_install:
+  - mysql -e 'CREATE DATABASE IF NOT EXISTS x3_base;'
 install:
   - echo install ok.
+before_script:
+  - echo "USE mysql;\nUPDATE user SET password=PASSWORD('root') WHERE user='root';\nFLUSH PRIVILEGES;\n" | mysql -u root
+  - mysql -u root -p root x3_base < db/x3_base_1.0.0.sql
 script:
   - mvn clean resources:resources install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 after_success:
