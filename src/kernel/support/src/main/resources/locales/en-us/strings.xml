@@ -17,6 +17,21 @@
   <string name="msg_the_same_name_already_exists">The same name already exists.</string>
   <string name="msg_field_is_required">${field} is_required.</string>
   <string name="msg_id_is_required">Id is_required.</string>
+
+  <!-- msg file text -->
+  <string name="msg_file_server_exception">File server exception</string>
+  <string name="msg_file_size_max">The file is too large</string>
+  <string name="msg_file_size_min">The file is too small</string>
+  <string name="msg_file_path_isnull">File path is empty</string>
+  <string name="msg_file_upload_success">Successful file upload</string>
+  <string name="msg_file_upload_failed">File upload failed</string>
+
+  <string name="msg_file_download_failed">File download failed</string>
+  <string name="msg_file_download_success">File download successfully</string>
+  <string name="msg_file_download_group_exit">File group does not exist</string>
+  <string name="msg_file_download_io_exception">IO exception: failed to get files from fast DFS</string>
+  <string name="msg_file_download_non_exception">Non IO exception: failed to get files from fast DFS</string>
+
   <!-- msg net error -->
   <string name="msg_net_error_401">访问被拒绝，客户试图未经授权访问受密码保护的页面。</string>
   <string name="msg_net_error_404">无法找到指定位置的资源。</string>

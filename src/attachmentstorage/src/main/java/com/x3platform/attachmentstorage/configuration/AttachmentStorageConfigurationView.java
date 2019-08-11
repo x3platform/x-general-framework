@@ -1,6 +1,8 @@
 package com.x3platform.attachmentstorage.configuration;
 
 import com.x3platform.SpringContext;
+import com.x3platform.configuration.KernelConfigurationView;
+import com.x3platform.util.BooleanUtil;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,23 +59,43 @@ public class AttachmentStorageConfigurationView {
     return configuration.getIdentityFormat();
   }
 
-  public String getAllowMaxFileSize() {
-    return configuration.getAllowMaxFileSize();
+  public String getPathSeparator() {
+    return configuration.getPathSeparator();
   }
 
-  public String getAllowMinFileSize() {
-    return configuration.getAllowMinFileSize();
+  public int getAllowMaxFileSize() {
+    return Integer.valueOf(configuration.getAllowMaxFileSize());
+  }
+
+  public int getAllowMinFileSize() {
+    return Integer.valueOf(configuration.getAllowMinFileSize());
   }
 
   public String getAllowFileTypes() {
     return configuration.getAllowFileTypes();
   }
 
-  public String getDistributedFileStorageMode() {
-    return configuration.getDistributedFileStorageMode();
+  public String getDefaultFileHeight() {
+    return configuration.getDefaultFileHeight();
+  }
+
+  public String getDefaultFileWidth() {
+    return configuration.getDefaultFileWidth();
+  }
+
+  public String getDefaultFileAuthor() {
+    return configuration.getDefaultFileAuthor();
   }
 
   public String getDefaultThumbnails() {
     return configuration.getDefaultThumbnails();
+  }
+
+  public Boolean getFastDFSMode() {
+    return BooleanUtil.bool(configuration.getFastDFSMode());
+  }
+
+  public String getFastDFSClientConfigFile() {
+    return configuration.getFastDFSClientConfigFile();
   }
 }

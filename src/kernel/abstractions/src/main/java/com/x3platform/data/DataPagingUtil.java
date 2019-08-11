@@ -8,13 +8,15 @@ import java.util.List;
 
 /**
  * 数据分页辅助类
+ *
+ * @author ruanyu
  */
 public class DataPagingUtil {
 
   /**
    * 根据Xml字符串创建对象
    */
-  public static DataPaging Create(String jsonText) {
+  public static DataPaging create(String jsonText) {
   /*
    xml = String.format("<?xml version=\"1.0\" encoding=\"utf-8\" ?>\r\n<root>%1$s</root>", xml);
 
@@ -32,8 +34,8 @@ public class DataPagingUtil {
   /**
    * 根据Xml字符串创建对象
    */
-  public static DataPaging Create(String jsonText, String queryJsonText) {
-    DataPaging paging = Create(jsonText);
+  public static DataPaging create(String jsonText, String queryJsonText) {
+    DataPaging paging = create(jsonText);
 
     if (!StringUtil.isNullOrEmpty(queryJsonText)) {
       paging.getQuery().fromJSON(queryJsonText);

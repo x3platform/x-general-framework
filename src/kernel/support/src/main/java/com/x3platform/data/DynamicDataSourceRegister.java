@@ -39,7 +39,9 @@ public class DynamicDataSourceRegister
   private ConversionService conversionService = new DefaultConversionService();
   private PropertyValues dataSourcePropertyValues;
 
-  // 如配置文件中未指定数据源类型，使用该默认值
+  /**
+   * 如配置文件中未指定数据源类型，使用该默认值
+   */
   private static final Object DATASOURCE_TYPE_DEFAULT = "org.apache.tomcat.jdbc.pool.DataSource";
   // private static final Object DATASOURCE_TYPE_DEFAULT =
   // "com.zaxxer.hikari.HikariDataSource";
@@ -53,16 +55,16 @@ public class DynamicDataSourceRegister
     Map<Object, Object> targetDataSources = new HashMap<Object, Object>();
     // 将主数据源添加到更多数据源中
     targetDataSources.put("dataSource", defaultDataSource);
-    DynamicDataSourceContextHolder.dataSourceIds.add("dataSource");
+    DynamicDataSourceContextHolder.dataSourceKeys.add("dataSource");
     // 添加更多数据源
     targetDataSources.putAll(customDataSources);
     for (String key : customDataSources.keySet()) {
-      DynamicDataSourceContextHolder.dataSourceIds.add(key);
+      DynamicDataSourceContextHolder.dataSourceKeys.add(key);
     }
 
-    // 创建DynamicDataSource
+    // 创建 DynamicRoutingDataSource
     GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
-    beanDefinition.setBeanClass(DynamicDataSource.class);
+    beanDefinition.setBeanClass(DynamicRoutingDataSource.class);
     beanDefinition.setSynthetic(true);
     MutablePropertyValues mpv = beanDefinition.getPropertyValues();
     mpv.addPropertyValue("defaultTargetDataSource", defaultDataSource);
@@ -73,16 +75,10 @@ public class DynamicDataSourceRegister
   }
 
   /**
-   * 创建DataSource
+   * 创建 DataSource
    *
-   * @param type
-   * @param driverClassName
-   * @param url
-   * @param username
-   * @param password
-   * @return
-   * @author SHANHY
-   * @create 2016年1月24日
+   * @param map 数据源参数, 可选的键值: type | driverClassName | url | username | password
+   * @return 返回 {@link DataSource} 对象
    */
   @SuppressWarnings("unchecked")
   public DataSource buildDataSource(Map<String, Object> map) {

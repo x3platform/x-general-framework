@@ -20,6 +20,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit4.SpringRunner;
+
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -27,9 +29,6 @@ public class MessageObjectTests {
 
   @Autowired
   private KernelConfiguration config;
-
-  @Value("${testname}")
-  private String name;
 
   @Test
   public void testCreateMessageObjectFormatter() {
@@ -50,7 +49,7 @@ public class MessageObjectTests {
     // System.out.println(formatterClassName);
 
     try {
-      IMessageObjectFormatter formatter = (IMessageObjectFormatter) Class.forName(formatterClassName).newInstance();
+      MessageObjectFormatter formatter = (MessageObjectFormatter) Class.forName(formatterClassName).newInstance();
     } catch (InstantiationException e) {
       e.printStackTrace();
     } catch (IllegalAccessException e) {

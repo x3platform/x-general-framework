@@ -10,7 +10,7 @@ public class TaskWorkReceiverInfo {
    */
   public TaskWorkReceiverInfo() {
     this.mStatus = 0;
-    this.mFinishTime = DateUtil.getDefaultTime();
+    this.mFinishTime = DateUtil.getDefaultLocalDateTime();
   }
 
   /**

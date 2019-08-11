@@ -4,6 +4,8 @@ import com.alibaba.fastjson.annotation.JSONField;
 
 /**
  * 数据分页辅助类
+ *
+ * @author ruanyu
  */
 public class DataPaging {
   /**
@@ -35,7 +37,7 @@ public class DataPaging {
   /**
    * 分析
    */
-  private void Parse() {
+  private void parse() {
     // Get [rowIndex] [pageCount]
 
     if (mPageSize > 0) {
@@ -62,15 +64,15 @@ public class DataPaging {
   /**
    * 每页显示行数
    */
-  public final int getPageSize() {
+  public int getPageSize() {
     return mPageSize;
   }
 
-  public final void setPageSize(int value) {
+  public void setPageSize(int value) {
     if (value > 0) {
       mPageSize = value;
 
-      this.Parse();
+      this.parse();
     }
   }
 
@@ -79,15 +81,15 @@ public class DataPaging {
   /**
    * 行索引号
    */
-  public final int getOffset() {
+  public int getOffset() {
     return mOffset;
   }
 
-  public final void setRowIndex(int value) {
+  public void setRowIndex(int value) {
     if (value > 0) {
       mOffset = value;
 
-      this.Parse();
+      this.parse();
     }
   }
 
@@ -96,14 +98,14 @@ public class DataPaging {
   /**
    * 行数统计.
    */
-  public final int getTotal() {
+  public int getTotal() {
     return mTotal;
   }
 
-  public final void setTotal(int value) {
+  public void setTotal(int value) {
     mTotal = value;
 
-    this.Parse();
+    this.parse();
   }
 
   private int mPageCount;
@@ -111,7 +113,7 @@ public class DataPaging {
   /**
    * 页数统计
    */
-  public final int getPageCount() {
+  public int getPageCount() {
     return mPageCount;
   }
 
@@ -120,24 +122,24 @@ public class DataPaging {
   /**
    * 当前页码
    */
-  public final int getCurrentPage() {
+  public int getCurrentPage() {
     return mCurrentPage;
   }
 
-  public final void setCurrentPage(int value) {
+  public void setCurrentPage(int value) {
     if (value > 0) {
       mCurrentPage = value;
 
-      this.Parse();
+      this.parse();
     }
   }
 
-  public int mFirstPage;
+  private int mFirstPage;
 
   /**
    * 首页
    */
-  public final int getFirstPage() {
+  public int getFirstPage() {
     return mFirstPage;
   }
 
@@ -146,7 +148,7 @@ public class DataPaging {
    */
   private int mPreviousPage;
 
-  public final int getPreviousPage() {
+  public int getPreviousPage() {
     return mPreviousPage;
   }
 
@@ -155,7 +157,7 @@ public class DataPaging {
   /**
    * 下页
    */
-  public final int getNextPage() {
+  public int getNextPage() {
     return mNextPage;
   }
 
@@ -164,7 +166,7 @@ public class DataPaging {
   /**
    * 末页
    */
-  public final int getLastPage() {
+  public int getLastPage() {
     return mLastPage;
   }
 
@@ -178,19 +180,19 @@ public class DataPaging {
    * 数据查询对象
    */
   @JSONField(serialize = false)
-  public final DataQuery getQuery() {
+  public DataQuery getQuery() {
     return this.mQuery;
   }
 
   /**
    * SQL 排序规则
    */
-  public final String getOrderBy() {
+  public String getOrderBy() {
     return this.getQuery().getOrderBySql();
   }
 
   /**
-   * @return
+   * @return JSON 格式字符串
    */
   @Override
   public String toString() {

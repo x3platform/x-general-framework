@@ -11,24 +11,24 @@ public class AppsConfiguration {
   /**
    * 所属应用的名称
    */
-  public static final String ApplicationName = "ApplicationManagement";
+  public static final String APPLICATION_NAME = "apps";
 
   /**
    * 配置区的名称
    */
-  public static final String SectionName = "apps";
+  // public static final String SectionName = "apps";
 
-  @Value("${x3platform." + SectionName + ".administrators:#}")
-  private String mAdministrators;
+  @Value("${x3platform." + APPLICATION_NAME + ".administrators:#}")
+  private String administrators;
 
   /**
    * 内置超级管理员帐号,多个人以逗号隔开
    */
   public String getAdministrators() {
-    return mAdministrators;
+    return administrators;
   }
 
-  @Value("${x3platform." + SectionName + ".hidden-start-menu:Off}")
+  @Value("${x3platform." + APPLICATION_NAME + ".hidden-start-menu:Off}")
   private String mHiddenStartMenu;
 
   /**
@@ -38,7 +38,7 @@ public class AppsConfiguration {
     return mHiddenStartMenu;
   }
 
-  @Value("${x3platform." + SectionName + ".hidden-top-menu:Off}")
+  @Value("${x3platform." + APPLICATION_NAME + ".hidden-top-menu:Off}")
   private String mHiddenTopMenu;
 
   /**
@@ -48,7 +48,7 @@ public class AppsConfiguration {
     return mHiddenTopMenu;
   }
 
-  @Value("${x3platform." + SectionName + ".hidden-shortcut-menu:Off}")
+  @Value("${x3platform." + APPLICATION_NAME + ".hidden-shortcut-menu:Off}")
   private String mHiddenShortcutMenu;
 
   /**

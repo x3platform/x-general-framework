@@ -6,39 +6,43 @@ import java.util.List;
 
 public class DynamicDataSourceContextHolder {
 
-  public static final ThreadLocal<String> contextHolder = new ThreadLocal<String>();
+  public static final ThreadLocal<String> contextHolder = new ThreadLocal<String>() {
 
-  public static List<String> dataSourceIds = new ArrayList<>();
+    /** * 将 dataSource 数据源的 key 作为默认数据源的 key */
+    @Override
+    protected String initialValue() {
+      return "dataSource";
+    }
+  };
+
+  public static List<Object> dataSourceKeys = new ArrayList<>();
 
   // public static void putDataSource(String name) {
   //  contextHolder.set(name);
   // }
 
-  public static String getDataSouce() {
+  // public static String getDataSouce() {
+  //  return contextHolder.get();
+  // }
+
+  public static void setDataSourceKey(String key) {
+    contextHolder.set(key);
+  }
+
+  public static String getDataSourceKey() {
     return contextHolder.get();
   }
 
-  public static void setDataSourceType(String dataSourceType) {
-    contextHolder.set(dataSourceType);
-  }
-
-  public static String getDataSourceType() {
-    return contextHolder.get();
-  }
-
-  public static void clearDataSourceType() {
+  public static void clearDataSourceKey() {
     contextHolder.remove();
   }
 
   /**
-   * 判断指定DataSrouce当前是否存在
+   * 判断指定 DataSrouce 当前是否存在
    *
-   * @param dataSourceId
-   * @return
-   * @author SHANHY
-   * @create 2016年1月24日
+   * @param key
    */
-  public static boolean containsDataSource(String dataSourceId) {
-    return dataSourceIds.contains(dataSourceId);
+  public static boolean containsDataSourceKey(String key) {
+    return dataSourceKeys.contains(key);
   }
 }

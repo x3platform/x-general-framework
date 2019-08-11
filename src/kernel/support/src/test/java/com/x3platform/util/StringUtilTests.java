@@ -40,18 +40,24 @@ public class StringUtilTests {
   @Test
   public void testToBase64() {
     String result = StringUtil.toBase64("abc");
-    assertTrue("StringHelper.toBase64 should return 'true'", result.length() > 0);
+    assertTrue("StringUtil.toBase64 should return 'true'", result.length() > 0);
   }
 
   @Test
   public void testToUuid() {
     String result = StringUtil.toUuid();
-    assertTrue("StringHelper.toBase64 should return 'true'", result.length() > 0);
+    assertTrue("StringUtil.toBase64 should return 'true'", result.length() > 0);
   }
 
   @Test
   public void testTo8DigitUuid() {
     String result = StringUtil.to8DigitUuid();
-    assertTrue("StringHelper.toBase64 should return 'true'", result.length() > 0);
+    assertTrue("StringUtil.to8DigitUuid should return 'true'", result.length() > 0);
+  }
+
+  @Test
+  public void testFormat() {
+    String result = StringUtil.format("a {} c", "b");
+    assertEquals("StringUtil.format should return 'a b c'", "a b c", result);
   }
 }

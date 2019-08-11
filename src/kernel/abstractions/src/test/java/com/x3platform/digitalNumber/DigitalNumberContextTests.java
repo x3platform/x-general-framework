@@ -1,16 +1,14 @@
-package com.x3platform.digitalNumber;
+package com.x3platform.digitalnumber;
+
+import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-
-import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-// @WebAppConfiguration
 public class DigitalNumberContextTests {
   @Test
   public void testLoad() {
@@ -21,6 +19,21 @@ public class DigitalNumberContextTests {
   @Test
   public void testGenerate() {
     String result = DigitalNumberContext.generate("Key_Guid");
+
+    assertNotNull("result is not null.", result);
+
+    result = DigitalNumberContext.generate("test2");
+
+    assertNotNull("result is not null.", result);
+
+    result = DigitalNumberContext.generate("test3");
+
+    assertNotNull("result is not null.", result);
+  }
+
+  @Test
+  public void testGenerateDailyIncrement() {
+    String result = DigitalNumberContext.generate("test3");
 
     assertNotNull("result is not null.", result);
   }

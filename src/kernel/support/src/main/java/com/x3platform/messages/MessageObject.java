@@ -7,45 +7,47 @@ import org.dom4j.Element;
 
 // import com.x3platform.Ajax.*;
 // import com.x3platform.Ajax.Configuration.*;
-// import com.x3platform.CacheBuffer.*;
+// import com.x3platform.cachebuffer.*;
 // import com.x3platform.Configuration.*;
 import com.x3platform.util.*;
 
 /**
  * 消息对象
+ *
+ * @author ruanyu
  */
-public final class MessageObject implements IMessageObject {
+public class MessageObject implements com.x3platform.messages.abstractions.MessageObject {
 
   /**
    * 返回的代码
    */
-  private String m_Code;
+  private String mCode;
 
   public String getCode() {
-    return m_Code;
+    return mCode;
   }
 
   public void setCode(String value) {
-    m_Code = value;
+    mCode = value;
   }
 
   /**
    * 返回的消息
    */
-  private String m_Message;
+  private String mMessage;
 
   public String getMessage() {
-    return m_Message;
+    return mMessage;
   }
 
   public void setMessage(String value) {
-    m_Message = value;
+    mMessage = value;
   }
 
   /**
    * 设置信息
    *
-   * @param code   代码
+   * @param code    代码
    * @param message 消息
    */
   public void set(String code, String message) {
@@ -76,19 +78,9 @@ public final class MessageObject implements IMessageObject {
       outString.append("{");
     }
 
-    // TODO 需要修改
-    // Code:
-    // if (AjaxConfigurationView.Instance.NamingRule.equals("underline")) {
-    //   outString.append(String.format("\"return_code\":\"%1$s\",", StringUtil.toSafeJson(this.getReturnCode())));
-    // } else {
-    //   outString.append(String.format("\"returnCode\":\"%1$s\",", StringUtil.toSafeJson(this.getReturnCode())));
-    // }
     outString.append(String.format("\"code\":\"%1$s\",", StringUtil.toSafeJson(this.getCode())));
 
     outString.append(String.format("\"message\":\"%1$s\"", StringUtil.toSafeJson(this.getMessage())));
-
-    // 是否成功执行
-    // outString.append("\"success\":1,\"msg\":\"success\"");
 
     if (!nobrace) {
       outString.append("}");
@@ -97,17 +89,17 @@ public final class MessageObject implements IMessageObject {
     String result = null;
 
     try {
-      IMessageObjectFormatter formatter = null;
+      MessageObjectFormatter formatter = null;
 
-      formatter = (IMessageObjectFormatter) Class.forName(KernelConfigurationView.getInstance().getMessageObjectFormatter()).newInstance();
+      formatter = (MessageObjectFormatter) Class.forName(KernelConfigurationView.getInstance().getMessageObjectFormatter()).newInstance();
 
-      result = !nobrace ? formatter.Format(outString.toString(), nobrace) : formatter.Format("{" + outString.toString() + "}", nobrace);
-    } catch (InstantiationException e) {
-      e.printStackTrace();
-    } catch (IllegalAccessException e) {
-      e.printStackTrace();
-    } catch (ClassNotFoundException e) {
-      e.printStackTrace();
+      result = !nobrace ? formatter.format(outString.toString(), nobrace) : formatter.format("{" + outString.toString() + "}", nobrace);
+    } catch (InstantiationException ex) {
+      ex.printStackTrace();
+    } catch (IllegalAccessException ex) {
+      ex.printStackTrace();
+    } catch (ClassNotFoundException ex) {
+      ex.printStackTrace();
     }
 
     return result;
@@ -120,6 +112,7 @@ public final class MessageObject implements IMessageObject {
   /**
    * 序列化对象
    */
+  @Override
   public String serializable() {
     return serializable(false, false);
   }
@@ -131,15 +124,13 @@ public final class MessageObject implements IMessageObject {
    * @param displayFriendlyName 显示友好名称信息
    * @return
    */
+  @Override
   public String serializable(boolean displayComment, boolean displayFriendlyName) {
     StringBuilder outString = new StringBuilder();
 
     outString.append("<response>");
-
     outString.append("<code>" + this.getCode() + "</code>");
     outString.append("<message>" + this.getMessage() + "</message>");
-    //outString.Append("<description>" + this.Description + "</description>");
-    //outString.Append("<url>" + this.Url + "</url>");
     outString.append("</response>");
 
     return outString.toString();
@@ -150,10 +141,10 @@ public final class MessageObject implements IMessageObject {
    *
    * @param element Xml 元素
    */
+  @Override
   public void deserialize(Element element) {
-    // TODO 需求修改
-    // this.setValue(XmlHelper.Fetch("value", element));
-    // this.setReturnCode(XmlHelper.Fetch("returnCode", element));
+    this.setCode(element.selectSingleNode("code").getText());
+    this.setMessage(element.selectSingleNode("message").getText());
   }
 
   // -------------------------------------------------------
@@ -163,32 +154,33 @@ public final class MessageObject implements IMessageObject {
   /**
    * 格式化为 JOSN 格式字符串
    *
-   * @param returnCode 返回的代码
-   * @param value      消息
+   * @param code    返回的代码
+   * @param message 消息
    * @return
    */
-  public static String stringify(String returnCode, String value) {
-    MessageObject message = new MessageObject();
+  public static String stringify(String code, String message) {
+    MessageObject m = new MessageObject();
 
-    message.setCode(returnCode);
-    message.setMessage(value);
+    m.setCode(code);
+    m.setMessage(message);
 
-    return message.toString();
+    return m.toString();
   }
 
   /**
    * 格式化为 JOSN 格式字符串
    *
-   * @param returnCode 返回的代码
-   * @param value      消息
-   * @param nobrace    对象不包含最外面的大括号
+   * @param code    返回的代码
+   * @param message 消息
+   * @param nobrace 对象不包含最外面的大括号
    * @return JOSN 格式字符串
    */
-  public static String stringify(String returnCode, String value, boolean nobrace) {
-    MessageObject message = new MessageObject();
-    message.setCode(returnCode);
-    message.setMessage(value);
+  public static String stringify(String code, String message, boolean nobrace) {
+    MessageObject m = new MessageObject();
 
-    return message.toString(nobrace);
+    m.setCode(code);
+    m.setMessage(message);
+
+    return m.toString(nobrace);
   }
 }

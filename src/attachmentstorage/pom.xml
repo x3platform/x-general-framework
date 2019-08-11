@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.x3platform</groupId>
   <artifactId>x3platform-attachmentstorage</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>x3platform-attachmentstorage</name>
   <url>http://maven.apache.org</url>
@@ -18,7 +18,6 @@
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
     <version>2.0.2.RELEASE</version>
-    <relativePath/> <!-- lookup parent from repository -->
   </parent>
 
   <dependencies>
@@ -33,25 +32,42 @@
         </exclusion>
       </exclusions>
     </dependency>
-
+    <!-- Spring Test -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <!-- Alibaba Fastjson -->
     <dependency>
       <groupId>com.alibaba</groupId>
       <artifactId>fastjson</artifactId>
       <version>1.2.31</version>
     </dependency>
-
+    <!-- Common Lang3 -->
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
       <version>3.7</version>
     </dependency>
-    <!-- 日志 -->
+    <!-- Common IO -->
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>2.6</version>
+    </dependency>
+    <!-- Slf4j Log4j12 -->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
       <version>1.7.21</version>
     </dependency>
-    <!-- 数据库设置 -->
+    <!-- Alibaba Fastjson -->
+    <dependency>
+      <groupId>com.alibaba</groupId>
+      <artifactId>fastjson</artifactId>
+      <version>1.2.31</version>
+    </dependency>
     <!-- Alibaba Druid -->
     <dependency>
       <groupId>com.alibaba</groupId>
@@ -69,34 +85,40 @@
       <artifactId>mybatis-spring-boot-starter</artifactId>
       <version>1.3.2</version>
     </dependency>
-    <!-- 测试依赖 -->
+    <!-- PageHelper Spring Boot -->
     <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <version>2.0.2.RELEASE</version>
-      <scope>test</scope>
+      <groupId>com.github.pagehelper</groupId>
+      <artifactId>pagehelper-spring-boot-starter</artifactId>
+      <version>1.2.5</version>
     </dependency>
+    <!-- JUnit -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.12</version>
       <scope>test</scope>
     </dependency>
-    <!-- x3platform -->
+    <!-- FastDFS Client -->
+    <dependency>
+      <groupId>cn.bestwu</groupId>
+      <artifactId>fastdfs-client-java</artifactId>
+      <version>1.27</version>
+    </dependency>
+    <!-- X3Platform -->
     <dependency>
       <groupId>com.x3platform</groupId>
       <artifactId>x3platform-support</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
+      <version>0.1.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.x3platform</groupId>
       <artifactId>x3platform-abstractions</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
+      <version>0.1.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.x3platform</groupId>
       <artifactId>x3platform-apps</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
+      <version>0.1.0-SNAPSHOT</version>
     </dependency>
   </dependencies>
   <build>
@@ -117,4 +139,18 @@
       </resource>
     </resources>
   </build>
+  <distributionManagement>
+    <repository>
+      <uniqueVersion>false</uniqueVersion>
+      <id>releases</id>
+      <name>Nexus Release Repository</name>
+      <url>http://nexus.amiintellect.com/repository/maven-releases/</url>
+    </repository>
+    <snapshotRepository>
+      <uniqueVersion>true</uniqueVersion>
+      <id>snapshots</id>
+      <name>Nexus Snapshot Repository</name>
+      <url>http://nexus.amiintellect.com/repository/maven-snapshots/</url>
+    </snapshotRepository>
+  </distributionManagement>
 </project>

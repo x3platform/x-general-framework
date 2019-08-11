@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.x3platform.apps.mappers.ApplicationSettingMapper">
-  <resultMap id="BaseResultMap" type="com.x3platform.apps.models.ApplicationSettingInfo">
+  <resultMap id="BaseResultMap" type="com.x3platform.apps.models.ApplicationSetting">
     <result property="id" jdbcType="VARCHAR" column="id" />
     <result property="applicationId" jdbcType="VARCHAR" column="application_id" />
     <result property="applicationSettingGroupId" jdbcType="VARCHAR" column="application_setting_group_id" />
@@ -51,7 +51,7 @@
       </if>
     </where>
   </sql>
-  <insert id="insert" parameterType="com.x3platform.apps.models.ApplicationSettingInfo">
+  <insert id="insert" parameterType="com.x3platform.apps.models.ApplicationSetting">
     INSERT INTO application_setting
     (
       id,
@@ -81,7 +81,7 @@
       #{createdDate,jdbcType=TIMESTAMP}
     )
   </insert>
-  <update id="updateByPrimaryKey" parameterType="com.x3platform.apps.models.ApplicationSettingInfo">
+  <update id="updateByPrimaryKey" parameterType="com.x3platform.apps.models.ApplicationSetting">
     UPDATE application_setting SET
 
     application_id = #{applicationId,jdbcType=VARCHAR},

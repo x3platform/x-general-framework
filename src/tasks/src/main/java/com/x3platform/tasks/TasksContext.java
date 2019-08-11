@@ -3,17 +3,23 @@ package com.x3platform.tasks;
 import com.x3platform.KernelContext;
 import com.x3platform.SpringContext;
 import com.x3platform.globalization.I18n;
-import com.x3platform.membership.configuration.MembershipConfiguration;
 import com.x3platform.plugins.CustomPlugin;
 import com.x3platform.tasks.configuration.TasksConfiguration;
 import com.x3platform.tasks.configuration.TasksConfigurationView;
-import com.x3platform.tasks.services.ITaskWorkItemService;
-import com.x3platform.tasks.services.ITaskWorkService;
+import com.x3platform.tasks.services.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+/**
+ * 任务管理上下文对象
+ *
+ * @author ruanyu
+ */
 public class TasksContext extends CustomPlugin {
+
   @Override
   public String getName() {
-    return "人员及权限管理";
+    return "任务管理";
   }
 
   private static volatile TasksContext sInstance = null;
@@ -35,21 +41,30 @@ public class TasksContext extends CustomPlugin {
     return sInstance;
   }
 
-  private ITaskWorkService mTaskWorkService = null;
+  private Logger logger = LoggerFactory.getLogger(this.getClass());
+
+  /**
+   * 日志记录器
+   */
+  public static Logger getLogger() {
+    return getInstance().logger;
+  }
+
+  private TaskWaitingItemService mTaskWaitingItemService = null;
 
   /**
    * 任务服务提供者
    */
-  public final ITaskWorkService getTaskWorkService() {
-    return mTaskWorkService;
+  public TaskWaitingItemService getTaskWorkService() {
+    return mTaskWaitingItemService;
   }
 
-  private ITaskWorkItemService mTaskWorkItemService = null;
+  private TaskWorkItemService mTaskWorkItemService = null;
 
   /**
    * 任务工作项服务提供者
    */
-  public final ITaskWorkItemService getTaskWorkItemService() {
+  public TaskWorkItemService getTaskWorkItemService() {
     return mTaskWorkItemService;
   }
 
@@ -71,7 +86,6 @@ public class TasksContext extends CustomPlugin {
   public int restart() {
     try {
       this.reload();
-
       // 自增重启次数计数器
       this.restartCount++;
     } catch (RuntimeException ex) {
@@ -84,19 +98,17 @@ public class TasksContext extends CustomPlugin {
 
   private void reload() {
     if (this.restartCount > 0) {
-      KernelContext.getLog().info(String.format(I18n.getStrings().text("application_is_reloading"), TasksConfiguration.ApplicationName))
-      ;
+      KernelContext.getLog().info(String.format(I18n.getStrings().text("application_is_reloading"), TasksConfiguration.APPLICATION_NAME));
 
       // 重新加载配置信息
       TasksConfigurationView.getInstance().reload();
     } else {
-      KernelContext.getLog().info(String.format(I18n.getStrings().text("application_is_loading"), TasksConfiguration.ApplicationName));
+      KernelContext.getLog().info(String.format(I18n.getStrings().text("application_is_loading"), TasksConfiguration.APPLICATION_NAME));
     }
 
     // 创建数据服务对象
-    // this.mTaskWorkService = SpringContext.getBean("com.x3platform.tasks.services.ITaskWorkService", ITaskWorkService.class);
-    this.mTaskWorkItemService = SpringContext.getBean("com.x3platform.tasks.services.ITaskWorkItemService", ITaskWorkItemService.class);
+    this.mTaskWorkItemService = SpringContext.getBean("com.x3platform.tasks.services.TaskWorkItemService", TaskWorkItemService.class);
 
-    KernelContext.getLog().info(String.format(I18n.getStrings().text("application_is_successfully_loaded"), TasksConfiguration.ApplicationName));
+    KernelContext.getLog().info(String.format(I18n.getStrings().text("application_is_successfully_loaded"), TasksConfiguration.APPLICATION_NAME));
   }
 }

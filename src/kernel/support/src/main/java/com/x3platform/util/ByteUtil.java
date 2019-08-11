@@ -12,7 +12,7 @@ public class ByteUtil {
   /**
    * 将字节数组保存到文件
    */
-  public static long ToFile(byte[] buffer, String path) throws IOException {
+  public static long toFile(byte[] buffer, String path) throws IOException {
     FileOutputStream stream = new FileOutputStream(path);
 
     stream.write(buffer);

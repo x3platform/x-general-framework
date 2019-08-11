@@ -24,6 +24,7 @@
     <translate name="SignIn">登录</translate>
     <translate name="SignUp">注册</translate>
     <translate name="SignOut">退出</translate>
+
   </application>
   <!-- Bugs -->
   <application name="Bugs">

@@ -2,25 +2,22 @@ package com.x3platform.attachmentstorage.services.impl;
 
 import com.x3platform.KernelContext;
 import com.x3platform.apps.AppsSecurity;
-import com.x3platform.attachmentstorage.AttachmentFileInfo;
-import com.x3platform.attachmentstorage.AttachmentParentObject;
-import com.x3platform.attachmentstorage.IAttachmentFileInfo;
-import com.x3platform.attachmentstorage.IAttachmentParentObject;
+import com.x3platform.attachmentstorage.GeneralAttachmentFile;
+import com.x3platform.attachmentstorage.AttachmentFile;
 import com.x3platform.attachmentstorage.configuration.AttachmentStorageConfiguration;
-import com.x3platform.attachmentstorage.configuration.AttachmentStorageConfigurationView;
 import com.x3platform.attachmentstorage.mappers.AttachmentFileMapper;
-import com.x3platform.attachmentstorage.services.IAttachmentFileService;
+import com.x3platform.attachmentstorage.services.AttachmentFileService;
 import com.x3platform.attachmentstorage.util.UploadFileUtil;
 import com.x3platform.attachmentstorage.util.UploadPathUtil;
 import com.x3platform.data.DataQuery;
-import com.x3platform.membership.IAccountInfo;
+import com.x3platform.membership.Account;
 import com.x3platform.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.List;
 
-public final class AttachmentFileServiceImpl implements IAttachmentFileService {
+public final class AttachmentFileServiceImpl implements AttachmentFileService {
   /**
    * 数据提供器
    */
@@ -34,11 +31,11 @@ public final class AttachmentFileServiceImpl implements IAttachmentFileService {
   /**
    * 保存记录
    *
-   * @param param 实例 IAttachmentFileInfo 详细信息
-   * @return 实例 IAttachmentFileInfo 详细信息
+   * @param param 实例 AttachmentFile 详细信息
+   * @return 实例 AttachmentFile 详细信息
    */
   @Override
-  public int save(IAttachmentFileInfo param) {
+  public int save(AttachmentFile param) {
     if (StringUtil.isNullOrEmpty(param.getAttachmentName())) {
       throw new IllegalArgumentException("附件名称必填。");
     }
@@ -57,14 +54,12 @@ public final class AttachmentFileServiceImpl implements IAttachmentFileService {
    */
   @Override
   public int delete(String id) {
-    // FIXME 待处理
-    // IAccountInfo account = KernelContext.getCurrent().getUser();
-    IAccountInfo account = null;
+    Account account = KernelContext.getCurrent().getUser();
 
-    if (AppsSecurity.isAdministrator(account, AttachmentStorageConfiguration.ApplicationName)) {
+    if (AppsSecurity.isAdministrator(account, AttachmentStorageConfiguration.APPLICATION_NAME)) {
       this.provider.delete(id);
     } else {
-      IAttachmentFileInfo file = this.findOne(id);
+      AttachmentFile file = this.findOne(id);
 
       if (file.getCreatedBy().equals(account.getId())) {
         this.provider.delete(id);
@@ -81,22 +76,14 @@ public final class AttachmentFileServiceImpl implements IAttachmentFileService {
   /**
    * 查询某条记录
    *
-   * @param id AccountInfo Id号
-   * @return 返回一个 实例 IAttachmentFileInfo 的详细信息
+   * @param id AttachmentFile 唯一标识
+   * @return 返回一个 实例 AttachmentFile 的详细信息
    */
   @Override
-  public IAttachmentFileInfo findOne(String id) {
-    AttachmentFileInfo param = (AttachmentFileInfo) provider.findOne(id);
+  public AttachmentFile findOne(String id) {
+    GeneralAttachmentFile param = (GeneralAttachmentFile) provider.findOne(id);
 
-    // IAttachmentParentObject parent = new AttachmentParentObject();
-
-    // parent.setEntityId(param.getEntityId());
-    // parent.setEntityClassName(param.getEntityClassName());
-    // parent.setAttachmentEntityClassName(KernelContext.parseObjectType(AttachmentFileInfo.class));
-    // parent.setAttachmentFolder();
-    // param.setAttachmentFolder();
     param.setAttachmentFolder(UploadPathUtil.getAttachmentFolder(param.getVirtualPath(), param.getFolderRule()));
-    // param.setParent(parent);
 
     return param;
   }
@@ -105,10 +92,10 @@ public final class AttachmentFileServiceImpl implements IAttachmentFileService {
    * 查询所有相关记录
    *
    * @param query 数据查询参数
-   * @return 返回所有实例 IAttachmentFileInfo 的详细信息
+   * @return 返回所有实例 AttachmentFile 的详细信息
    */
   @Override
-  public List<IAttachmentFileInfo> findAll(DataQuery query) {
+  public List<AttachmentFile> findAll(DataQuery query) {
     return this.provider.findAll(query.getMap());
   }
 
@@ -117,11 +104,11 @@ public final class AttachmentFileServiceImpl implements IAttachmentFileService {
    *
    * @param entityClassName 实体类名称
    * @param entityId        实体类标识
-   * @return 返回所有实例 IAttachmentFileInfo 的详细信息
+   * @return 返回所有实例 AttachmentFile 的详细信息
    */
   @Override
-  public List<IAttachmentFileInfo> findAllByEntityId(String entityClassName, String entityId) {
-    return provider.findAllByEntityId(entityClassName, entityId);
+  public List<AttachmentFile> findAllByEntityId(String entityClassName, String entityId) {
+    return provider.findAllByEntityId(entityClassName, entityId, -1);
   }
 
   // -------------------------------------------------------
@@ -137,7 +124,7 @@ public final class AttachmentFileServiceImpl implements IAttachmentFileService {
    * @param rowCount   行数
    * @return 返回一个列表实例
    */
-  // public List<IAttachmentFileInfo> GetPaging(int startIndex, int pageSize, DataQuery query, tangible.RefObject<Integer> rowCount) {
+  // public List<AttachmentFile> GetPaging(int startIndex, int pageSize, DataQuery query, tangible.RefObject<Integer> rowCount) {
   //   return provider.GetPaging(startIndex, pageSize, query, rowCount);
   // }
 
@@ -185,30 +172,30 @@ public final class AttachmentFileServiceImpl implements IAttachmentFileService {
    */
   @Override
   public void setValid(String entityClassName, String entityId, String attachmentFileIds, boolean append) {
-    this.provider.setValid(entityClassName, entityId, attachmentFileIds, append);
+    if (append) {
+      // 所有文件设置为失效
+      this.provider.setFileStatus(entityClassName, entityId, null, 0);
+    }
+
+    // 指定文件设置为有效
+    this.provider.setFileStatus(entityClassName, entityId, attachmentFileIds.split(","), 1);
   }
 
   /**
    * 物理复制全部附件信息到实体类
    *
-   * @param param           IAttachmentFileInfo 实例详细信息
+   * @param param           AttachmentFile 实例详细信息
    * @param entityId        实体标识
    * @param entityClassName 实体类名称
-   * @return 新的 IAttachmentFileInfo 实例详细信息
+   * @return 新的 AttachmentFile 实例详细信息
    */
   @Override
-  public IAttachmentFileInfo copy(IAttachmentFileInfo param, String entityClassName, String entityId) {
-    // IAttachmentParentObject parent = new AttachmentParentObject();
+  public AttachmentFile copy(AttachmentFile param, String entityClassName, String entityId) {
 
-    // parent.setEntityId(entityId);
-    // parent.setEntityClassName(entityClassName);
-    // parent.setAttachmentEntityClassName(KernelContext.parseObjectType(AttachmentFileInfo.class));
-    // parent.setAttachmentFolder(UploadPathUtil.getAttachmentFolder(param.getVirtualPath(), param.getFolderRule()));
-
-    IAttachmentFileInfo attachment = UploadFileUtil.createAttachmentFile(
+    AttachmentFile attachment = UploadFileUtil.createAttachmentFile(
       entityId,
       entityClassName,
-      KernelContext.parseObjectType(AttachmentFileInfo.class),
+      KernelContext.parseObjectType(GeneralAttachmentFile.class),
       UploadPathUtil.getAttachmentFolder(param.getVirtualPath(), param.getFolderRule()),
       param.getAttachmentName(),
       param.getFileType(),
@@ -227,12 +214,12 @@ public final class AttachmentFileServiceImpl implements IAttachmentFileService {
   /**
    * 物理移动附件路径
    *
-   * @param param 实例 IAttachmentFileInfo 详细信息
+   * @param param 实例 AttachmentFile 详细信息
    * @param path  文件目标路径
-   * @return 新的 实例 IAttachmentFileInfo 详细信息
+   * @return 新的 实例 AttachmentFile 详细信息
    */
   @Override
-  public IAttachmentFileInfo move(IAttachmentFileInfo param, String path) {
+  public AttachmentFile move(AttachmentFile param, String path) {
     throw new UnsupportedOperationException();
   }
 }

@@ -14,7 +14,7 @@ import com.x3platform.util.*;
 /**
  * 数据查询参数对象
  */
-public class DataQuery implements ISerializedObject, ISerializedJavaScriptObject {
+public class DataQuery implements SerializedObject, SerializedJSON {
 
   public DataQuery() {
     this.mVariables.put("elevatedPrivileges", "0");
@@ -250,7 +250,7 @@ public class DataQuery implements ISerializedObject, ISerializedJavaScriptObject
   }
 
   // -------------------------------------------------------
-  // 实现 ISerializedObject 接口
+  // 实现 SerializedObject 接口
   // -------------------------------------------------------
 
   /**
@@ -258,6 +258,7 @@ public class DataQuery implements ISerializedObject, ISerializedJavaScriptObject
    *
    * @return
    */
+  @Override
   public final String serializable() {
     return serializable(false, false);
   }
@@ -269,6 +270,7 @@ public class DataQuery implements ISerializedObject, ISerializedJavaScriptObject
    * @param displayFriendlyName 显示友好名称
    * @return
    */
+  @Override
   public String serializable(boolean displayComment, boolean displayFriendlyName) {
     StringBuilder outString = new StringBuilder();
 

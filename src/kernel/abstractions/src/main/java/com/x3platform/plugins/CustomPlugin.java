@@ -4,8 +4,10 @@ import java.util.*;
 
 /**
  * 自定义插件
+ *
+ * @author ruanyu
  */
-public abstract class CustomPlugin implements ICustomPlugin {
+public abstract class CustomPlugin implements com.x3platform.plugins.abstractions.CustomPlugin {
   private String mId = "";
 
   /**
@@ -86,6 +88,7 @@ public abstract class CustomPlugin implements ICustomPlugin {
   /**
    * 描述信息
    */
+  @Override
   public String getDescription() {
     return mDescription;
   }
@@ -95,10 +98,12 @@ public abstract class CustomPlugin implements ICustomPlugin {
   /**
    * 状态, 0 未激活, 1 已激活.
    */
+  @Override
   public int getStatus() {
     return mStatus;
   }
 
+  @Override
   public void setStatus(int value) {
     mStatus = value;
   }
@@ -108,10 +113,12 @@ public abstract class CustomPlugin implements ICustomPlugin {
   /**
    * 菜单支持
    */
+  @Override
   public int getSupportMenu() {
     return mSupportMenu;
   }
 
+  @Override
   public void setSupportMenu(int value) {
     mSupportMenu = value;
   }
@@ -121,6 +128,7 @@ public abstract class CustomPlugin implements ICustomPlugin {
    *
    * @return 返回信息. =0代表安装成功, >0代表安装失败.
    */
+  @Override
   public int install() {
     throw new RuntimeException("Oops |-_-||, the method or operation is not implemented.");
   }
@@ -128,8 +136,9 @@ public abstract class CustomPlugin implements ICustomPlugin {
   /**
    * 卸载插件
    *
-   * @return 返回信息. =0代表卸载成功, >0代表卸载失败.
+   * @return 返回信息. 0 代表卸载成功, 大于 0 代表卸载失败.
    */
+  @Override
   public int uninstall() {
     throw new RuntimeException("Oops |-_-||, the method or operation is not implemented.");
   }
@@ -137,8 +146,9 @@ public abstract class CustomPlugin implements ICustomPlugin {
   /**
    * 重启插件
    *
-   * @return 返回信息. =0代表重启成功, >0代表重启失败.
+   * @return 返回消息代码. 0 代表重启成功, 大于 0 代表重启失败.
    */
+  @Override
   public int restart() {
     throw new RuntimeException("Oops |-_-||, the method or operation is not implemented.");
   }
@@ -146,9 +156,10 @@ public abstract class CustomPlugin implements ICustomPlugin {
   /**
    * 执行命令
    *
-   * @return 返回信息. =0代表执行成功, >0代表执行失败.
+   * @return 返回信息. 0 表示执行成功, 大于 0 表示执行失败.
    */
-  public int command(Hashtable agrs) {
+  @Override
+  public int command(Map agrs) {
     throw new RuntimeException("Oops |-_-||, the method or operation is not implemented.");
   }
 }

@@ -1,7 +1,7 @@
 package com.x3platform.apps;
 
-import com.x3platform.apps.models.ApplicationInfo;
-import com.x3platform.membership.IAccountInfo;
+import com.x3platform.apps.models.Application;
+import com.x3platform.membership.Account;
 
 import java.util.*;
 
@@ -9,19 +9,19 @@ import java.util.*;
  * 应用安全管理
  */
 public final class AppsSecurity {
-  private static Map<String, ApplicationInfo> applicationCache = null;
+  private static Map<String, Application> applicationCache = null;
 
   private static Object lockObject = new Object();
 
   /**
    * 查找应用的信息
    */
-  public static ApplicationInfo findApplication(String applicationName) {
-    ApplicationInfo application = null;
+  public static Application findApplication(String applicationName) {
+    Application application = null;
 
     synchronized (lockObject) {
       if (applicationCache == null) {
-        applicationCache = new HashMap<String, ApplicationInfo>();
+        applicationCache = new HashMap<String, Application>();
       }
 
       if (applicationCache.containsKey(applicationName)) {
@@ -48,21 +48,19 @@ public final class AppsSecurity {
       }
     }
   }
-
   /**
    * 判断用户是否是应用的默认管理员
    */
-  public static boolean isAdministrator(IAccountInfo account, String applicationName) {
-    ApplicationInfo application = findApplication(applicationName);
-
+  public static boolean isAdministrator(Account account, String applicationName) {
+    Application application = findApplication(applicationName);
     return application == null ? false : AppsContext.getInstance().getApplicationService().isAdministrator(account, application.getId());
   }
 
   /**
    * 判断用户是否是应用的默认审查员
    */
-  public static boolean isReviewer(IAccountInfo account, String applicationName) {
-    ApplicationInfo application = findApplication(applicationName);
+  public static boolean isReviewer(Account account, String applicationName) {
+    Application application = findApplication(applicationName);
 
     return application == null ? false : AppsContext.getInstance().getApplicationService().isReviewer(account, application.getId());
   }
@@ -70,8 +68,8 @@ public final class AppsSecurity {
   /**
    * 判断用户是否是应用的默认可访问成员
    */
-  public static boolean isMember(IAccountInfo account, String applicationName) {
-    ApplicationInfo application = findApplication(applicationName);
+  public static boolean isMember(Account account, String applicationName) {
+    Application application = findApplication(applicationName);
 
     if (application == null) {
       return false;
@@ -94,10 +92,10 @@ public final class AppsSecurity {
   /**
    * 判断用户是否是拥有授权的功能的
    */
-  public static boolean hasAuthorizedFeature(IAccountInfo account, String applicationFeatureName) {
+  public static boolean hasAuthorizedFeature(Account account, String applicationFeatureName) {
     // TODO 待处理
     //
-    ApplicationInfo application = findApplication(applicationFeatureName);
+    Application application = findApplication(applicationFeatureName);
 
     if (application == null) {
       return false;

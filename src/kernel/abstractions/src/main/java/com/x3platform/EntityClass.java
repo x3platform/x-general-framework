@@ -3,12 +3,13 @@ package com.x3platform;
 import com.alibaba.fastjson.annotation.JSONField;
 import org.dom4j.Element;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
  * 抽象实体类
  */
-public abstract class EntityClass implements ISerializedObject {
+public abstract class EntityClass implements SerializedObject, Serializable {
 
   /**
    * 实体类名称
@@ -38,6 +39,7 @@ public abstract class EntityClass implements ISerializedObject {
   /**
    * 序列化对象
    */
+  @Override
   public String serializable() {
     // 实现类需要重新实现此方法.
     throw new UnsupportedOperationException("此对象未实现方法：String serializable()。");
@@ -50,6 +52,7 @@ public abstract class EntityClass implements ISerializedObject {
    * @param displayFriendlyName 显示友好名称信息
    * @return
    */
+  @Override
   public String serializable(boolean displayComment, boolean displayFriendlyName) {
     // 实现类需要重新实现此方法.
     throw new UnsupportedOperationException("此对象未实现方法：string Serializable(bool displayComment, bool displayFriendlyName)。");
@@ -60,6 +63,7 @@ public abstract class EntityClass implements ISerializedObject {
    *
    * @param element Xml元素
    */
+  @Override
   public void deserialize(Element element) {
     // 实现类需要重新实现此方法.
     throw new UnsupportedOperationException("此对象未实现方法：void Deserialize(XmlElement element)。");

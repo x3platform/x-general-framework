@@ -8,9 +8,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * 人员及权限的配置信息视图
+ * 连接器的配置信息视图
  */
-
 @Configuration
 public class ConnectConfigurationView {
   private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -26,7 +25,6 @@ public class ConnectConfigurationView {
     if (instance == null) {
       synchronized (lockObject) {
         if (instance == null) {
-          // instance = new DigitalNumberConfigurationView();
           instance = SpringContext.getBean(ConnectConfigurationView.class);
         }
       }
@@ -43,19 +41,27 @@ public class ConnectConfigurationView {
   @Qualifier("com.x3platform.connect.configuration.ConnectConfiguration")
   ConnectConfiguration configuration;
 
-  public String getAdministrators() {
-    return configuration.getAdministrators();
+  public String getApiHostName() {
+    return configuration.getApiHostName();
   }
 
-  public String getHiddenStartMenu() {
-    return configuration.getHiddenStartMenu();
+  public int getSessionTimerInterval() {
+    return Integer.parseInt(configuration.getSessionTimerInterval());
   }
 
-  public int getHiddenTopMenu() {
-    return Integer.parseInt(configuration.getHiddenTopMenu());
+  public int getSessionTimeLimit() {
+    return Integer.parseInt(configuration.getSessionTimeLimit());
   }
 
-  public int getHiddenShortcutMenu() {
-    return Integer.parseInt(configuration.getHiddenShortcutMenu());
+  public String getMessageQueueUsername() {
+    return configuration.getMessageQueueUsername();
+  }
+
+  public int getMessageQueuePassword() {
+    return Integer.parseInt(configuration.getMessageQueuePassword());
+  }
+
+  public int getMessageQueueReceivingInterval() {
+    return Integer.parseInt(configuration.getMessageQueueReceivingInterval());
   }
 }

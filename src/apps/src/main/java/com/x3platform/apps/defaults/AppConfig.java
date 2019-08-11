@@ -8,18 +8,27 @@ import org.springframework.context.annotation.Configuration;
 @Configuration("com.x3platform.apps.defaults.AppConfig")
 public class AppConfig {
 
-  @Bean("com.x3platform.apps.services.IApplicationService")
-  public IApplicationService iApplicationService() {
-    return new ApplicationService();
+  @Bean("com.x3platform.apps.services.ApplicationService")
+  public ApplicationService ApplicationService() {
+    return new ApplicationServiceImpl();
   }
 
-  @Bean("com.x3platform.apps.services.IApplicationMenuService")
-  public IApplicationMenuService iApplicationMenuService() {
-    return new ApplicationMenuService();
+  @Bean("com.x3platform.apps.services.ApplicationMenuService")
+  public ApplicationMenuService ApplicationMenuService() {
+    return new ApplicationMenuServiceImpl();
   }
 
-  @Bean("com.x3platform.apps.services.IApplicationSettingService")
-  public IApplicationSettingService iApplicationSettingService() {
-    return new ApplicationSettingService();
+  @Bean("com.x3platform.apps.services.ApplicationSettingService")
+  public ApplicationSettingService ApplicationSettingService() {
+    return new ApplicationSettingServiceImpl();
   }
+  /**
+   * 应用功能管理
+   */
+  @Bean("com.x3platform.apps.services.ApplicationFeatureService")
+  public ApplicationFeatureService ApplicationFeatureService() {
+    return new ApplicationFeatureServiceImpl();
+  }
+
+
 }

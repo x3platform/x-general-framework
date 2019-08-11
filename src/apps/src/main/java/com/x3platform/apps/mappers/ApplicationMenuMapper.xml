@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.x3platform.apps.mappers.ApplicationMenuMapper" >
-  <resultMap id="findOne_Result" type="com.x3platform.apps.models.ApplicationMenuInfo">
+  <resultMap id="findOne_Result" type="com.x3platform.apps.models.ApplicationMenu">
     <result property="id" column="id" />
     <result property="applicationId" column="application_id" />
     <result property="parentId" column="parent_id" />
@@ -23,7 +23,7 @@
     <result property="modifiedDate" column="modified_date" />
     <result property="createdDate" column="created_date" />
   </resultMap>
-  <resultMap id="findAll_Result" type="com.x3platform.apps.models.ApplicationMenuInfo">
+  <resultMap id="findAll_Result" type="com.x3platform.apps.models.ApplicationMenu">
     <result property="id" column="id" />
     <result property="applicationId" column="application_id" />
     <result property="parentId" column="parent_id" />
@@ -45,7 +45,39 @@
     <result property="modifiedDate" column="modified_date" />
     <result property="createdDate" column="created_date" />
   </resultMap>
-  <insert id="insert" parameterType="com.x3platform.apps.models.ApplicationMenuInfo" >
+  <resultMap id="findApplicationMenuViewInfoAll_Result" type="com.x3platform.apps.models.ApplicationMenuViewInfo">
+    <result property="id" column="id" />
+    <result property="applicationId" column="application_id" />
+    <result property="parentId" column="parent_id" />
+    <result property="code" column="code" />
+    <result property="name" column="name" />
+    <result property="description" column="description" />
+    <result property="url" column="url" />
+    <result property="target" column="target" />
+    <result property="menuType" column="menu_type" />
+    <result property="iconPath" column="icon_path" />
+    <result property="bigIconPath" column="big_icon_path" />
+    <result property="displayType" column="display_type" />
+    <result property="hasChild" column="has_child" />
+    <result property="contextObject" column="context_object" />
+    <result property="orderId" column="order_id" />
+    <result property="status" column="status" />
+    <result property="remark" column="remark" />
+    <result property="fullPath" column="full_path" />
+    <result property="modifiedDate" column="modified_date" />
+    <result property="createdDate" column="created_date" />
+  </resultMap>
+
+
+  <resultMap id="findAll_Scope_Result" type="com.x3platform.apps.models.ApplicationMenuScopeInfo">
+    <result property="entityId" column="entity_id" />
+    <result property="entityClassName" column="entity_class_name" />
+    <result property="authorityId" column="authority_id" />
+    <result property="authorizationObjectType" column="authorization_object_type" />
+    <result property="authorizationObjectId" column="authorization_object_id" />
+  </resultMap>
+
+  <insert id="insert" parameterType="com.x3platform.apps.models.ApplicationMenu" >
     INSERT INTO application_menu
     (
       id,
@@ -93,7 +125,7 @@
       CURRENT_TIMESTAMP
     )
   </insert>
-  <update id="updateByPrimaryKey" parameterType="com.x3platform.apps.models.ApplicationMenuInfo" >
+  <update id="updateByPrimaryKey" parameterType="com.x3platform.apps.models.ApplicationMenu" >
     UPDATE application_menu SET
 
       application_id = #{applicationId,jdbcType=VARCHAR},
@@ -114,26 +146,22 @@
       remark = #{remark,jdbcType=VARCHAR},
       full_path = #{fullPath,jdbcType=VARCHAR},
       modified_date = CURRENT_TIMESTAMP
-
     WHERE id = #{id}
   </update>
   <!--
       <update id="Sync_HasChildren" >
           CREATE TEMPORARY TABLE tmp (Id VARCHAR(36) PRIMARY KEY, ParentId VARCHAR(36), Status INT);
-
           INSERT INTO tmp SELECT Id, ParentId, Status FROM application;
-
           UPDATE application SET HasChildren = (
             SELECT CASE COUNT(Id) WHEN  0 THEN 0 ELSE 1 END
             FROM tmp WHERE tmp.ParentId = application.Id AND tmp.Status = 1) ;
-
           DROP TEMPORARY TABLE tmp;
       </update>
       -->
   <delete id="deleteByPrimaryKey">
-    DELETE FROM application_menu WHERE id = #{id}
+    update application_menu set status = 0 WHERE id = #{id}
   </delete>
-  <select id="selectByPrimaryKey" parameterType="com.x3platform.apps.models.ApplicationMenuInfo" resultMap="findOne_Result" >
+  <select id="selectByPrimaryKey" parameterType="com.x3platform.apps.models.ApplicationMenu" resultMap="findOne_Result" >
     SELECT * FROM application_menu WHERE id = #{id}
   </select>
   <select id="findAll" resultMap="findAll_Result" >
@@ -162,8 +190,96 @@
       LIMIT 0, ${length}
     </if>
   </select>
+
+  <select id="findApplicationMenuViewInfoAll" resultMap="findApplicationMenuViewInfoAll_Result" >
+    SELECT * FROM application_menu T
+    <where>
+      <if test="param_menu_type != null and param_menu_type != ''">
+        AND menu_type = #{param_menu_type}
+      </if>
+      <if test="param_application_id != null and param_application_id != ''">
+        AND application_id = #{param_application_id}
+      </if>
+      <if test="param_parent_id != null and param_parent_id != ''">
+        AND parent_id = #{param_parent_id}
+      </if>
+      <if test="param_status != null and param_status != ''">
+        AND status = #{param_status}
+      </if>
+    </where>
+    <if test="orders != null and orders.size() > 0">
+      ORDER BY
+      <foreach collection="orders" item="order" index="index" separator="," >
+        #{order}
+      </foreach>
+    </if>
+    <if test="length > 0">
+      LIMIT 0, ${length}
+    </if>
+  </select>
+
+
   <select id="isExist" resultType="boolean" >
     SELECT COUNT(0) AS "Count" FROM application_menu T WHERE id=#{id}
+  </select>
+  <select id="getMenusByParentId" resultMap="findAll_Result" >
+    SELECT * FROM application_menu T
+    <where>
+      status = 1
+      <if test="application_id != null and application_id != ''">
+        AND application_id = #{application_id}
+      </if>
+      <if test="parent_id != null and parent_id != ''">
+        AND parent_id = #{parent_id}
+      </if>
+      <if test="menu_type != null and menu_type != ''">
+        AND menu_type = #{menu_type}
+      </if>
+      <if test="authorization_scope_sql != null and authorization_scope_sql != ''">
+        AND ${authorization_scope_sql}
+      </if>
+    </where>
+    ORDER BY order_id
+  </select>
+
+  <select id="getMenusScopeByParentId" resultMap="findAll_Result" >
+        select * from application_menu where application_id = #{applicationId} and menu_type=#{menuType} and parent_id=#{parentId} and `status` = 1 and id in (
+        select t.entity_id from application_menu_scope t where t.authorization_object_type='Role' and t.authorization_object_id in (
+        select b.role_id from sys_account_role b where account_id=#{accountId}
+        )
+        union
+        select t.entity_id from application_menu_scope t where t.authorization_object_type='Account' and t.authorization_object_id=#{accountId}
+        union
+        select t.entity_id from application_menu_scope t where t.authorization_object_type='EveryOne'
+        )
+        ORDER by order_id asc
+  </select>
+
+  <select id="getMenusByFullPath" resultMap="findAll_Result" >
+    SELECT * FROM application_menu T
+    <where>
+      status = 1
+      <if test="applicationId != null and applicationId != ''">
+        AND application_id = #{applicationId}
+      </if>
+      <if test="fullPath != null and fullPath != ''">
+        AND full_path Like #{fullPath}
+      </if>
+      <if test="menuType != null and menuType != ''">
+        AND menu_type = #{menuType}
+      </if>
+    </where>
+    ORDER BY order_id
+  </select>
+  <select id="getMenusByApplicationId" resultMap="findAll_Result" >
+    SELECT * FROM application_menu T
+    <where>
+      status = 1
+      <if test="applicationId != null and applicationId != ''">
+        AND application_id = #{applicationId}
+      </if>
+    </where>
+    ORDER BY order_id
   </select>
   <select id="hasAuthority" >
     SELECT COUNT(*) AS "Count" FROM view_AuthObject_Account view1, application_scope Scope
@@ -174,16 +290,63 @@
     AND Scope.AuthorityId = #AuthorityId#
     AND Scope.ApplicationId = #ApplicationId#
   </select>
-  <insert id="addAuthorizationScopeObject">
-    INSERT INTO application_scope
-    (authorization_object_type, authorization_object_id, authority_id, application_id, modified_date, created_date)
+  <insert id="addAuthorizationScopeObject" parameterType="com.x3platform.apps.models.ApplicationMenuScopeInfo">
+    INSERT INTO application_menu_scope
+    (entity_id, entity_class_name, authority_id, authorization_object_type, authorization_object_id)
     VALUES
-    (#AuthorizationObjectType#, #AuthorizationObjectId#, #AuthorityId#, #ApplicationId#, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+    (#{entityId}, #{entityClassName}, #{authorityId}, #{authorizationObjectType}, #{authorizationObjectId})
   </insert>
-  <delete id="removeAuthorizationScopeObjects">
-    DELETE FROM application_scope WHERE application_id = #applicationId# AND authority_id = #authorityId#
-  </delete>
-  <select id="getAuthorizationScopeObjects" >
-    SELECT * FROM application_Scope T WHERE application_id = #applicationId# AND authority_id = #authorityId#
+  <select id="selectAuthorizationScopeObject" resultMap="findAll_Scope_Result" parameterType="com.x3platform.apps.models.ApplicationMenuScopeInfo">
+        select * from application_menu_scope
+        where
+          and entity_id = #{entityId}
+          and authority_id=#{authorityId}
+          and authorization_object_type=#{authorizationObjectType}
+          and authorization_object_id=#{authorizationObjectId}
   </select>
+  <delete id="removeAuthorizationScopeObjects">
+    DELETE FROM application_menu_scope WHERE application_id = #applicationId# AND authority_id = #authorityId#
+  </delete>
+
+  <delete id="deleteAuthorizationScopeObjects">
+    DELETE FROM application_menu_scope WHERE entity_id=#{entityId}
+     and entity_class_name=#{entityClassName}
+     and authority_id=#{authorityId}
+     and authorization_object_type=#{authorizationObjectType}
+     and authorization_object_id=#{authorizationObjectId}
+  </delete>
+  <insert id="bindAuthorizationScope">
+    insert into application_menu_scope (entity_id,entity_class_name,authority_id,authorization_object_type,authorization_object_id)
+      values
+     (#{entityId},#{entityClassName},#{authorityId},#{authorizationObjectType},#{authorizationObjectId})
+  </insert>
+
+  <delete id="removeMenuScopeByRole">
+   delete from application_menu_scope where authorization_object_type='Role'  and authorization_object_id = #{roleId}
+   </delete>
+
+  <select id="getAuthorizationScopeObjects" >
+     select * from application_menu_scope where authority_id=#{authorityId}
+  </select>
+  <select id="isExistScope" resultType="boolean" >
+    SELECT COUNT(0) AS "Count" FROM application_menu_scope
+    WHERE authorization_object_type = #{authorizationObjectType}
+      AND entity_id = #{entityId}
+      AND authorization_object_id = #{authorizationObjectId}
+  </select>
+
+  <select id="isExistAuthorizationScope" resultType="boolean" >
+    SELECT COUNT(0) AS "Count" FROM application_menu_scope
+    WHERE  entity_id=#{entityId}
+      and entity_class_name=#{entityClassName}
+      and authority_id=#{authorityId}
+      and authorization_object_type=#{authorizationObjectType}
+      and authorization_object_id=#{authorizationObjectId}
+  </select>
+
+  <select id="getMenusScopeByRoleId" resultType="java.util.Map">
+    select entity_id from application_menu_scope where authorization_object_type = 'Role' and authorization_object_id = #{id}
+  </select>
+
+
 </mapper>

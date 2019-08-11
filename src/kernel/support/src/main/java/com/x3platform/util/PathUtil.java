@@ -24,7 +24,7 @@ public class PathUtil {
     if ((path != null) && (path.length() > 0)) {
       int dot = path.lastIndexOf('.');
       if ((dot > -1) && (dot < (path.length() - 1))) {
-        return path.substring(dot + 1);
+        return path.substring(dot);
       }
     }
     return path;
@@ -70,9 +70,10 @@ public class PathUtil {
    *
    * @return programPath
    */
-  public static String getProgramPath() {
+  public static String getClassPath(Class cls) {
 
-    Class<KernelConfigurationView> cls = KernelConfigurationView.class;
+    // Class cls = obj.getClass();
+
     ClassLoader loader = cls.getClassLoader();
     //
     // Get the full name of the class.
@@ -104,6 +105,7 @@ public class PathUtil {
       }
       path = path + "/";
     }
+
     URL url = loader.getResource(path + clsName);
     //
     // Get path information form the instance of URL.
@@ -137,5 +139,14 @@ public class PathUtil {
     }
 
     return retPath;
+  }
+
+  /**
+   * 获取程序启动路径
+   *
+   * @return programPath
+   */
+  public static String getProgramPath() {
+    return Thread.currentThread().getContextClassLoader().getResource("").getPath();
   }
 }

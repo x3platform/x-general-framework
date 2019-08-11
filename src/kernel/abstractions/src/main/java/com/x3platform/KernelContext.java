@@ -1,9 +1,12 @@
 package com.x3platform;
 
+import com.x3platform.configuration.KernelConfigurationView;
+import com.x3platform.membership.Account;
+import com.x3platform.security.authentication.AuthenticationManagement;
+import com.x3platform.util.StringUtil;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.x3platform.util.StringUtil;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Timer;
@@ -11,7 +14,7 @@ import java.util.Timer;
 /**
  * 核心环境
  */
-public final class KernelContext implements IContext {
+public final class KernelContext implements Context {
   /**
    * 日志记录器
    */
@@ -56,10 +59,9 @@ public final class KernelContext implements IContext {
   /**
    * 用户信息
    */
-
-  // public IAccountInfo getUser() {
-  //   return this.getAuthenticationManagement().GetAuthUser();
-  // }
+  public Account getUser() {
+    return this.getAuthenticationManagement().getAuthUser();
+  }
 
   // private KernelConfiguration configuration = null;
 
@@ -71,15 +73,15 @@ public final class KernelContext implements IContext {
   // }
   ///#endregion
 
-  ///#region 属性:AuthenticationManagement
-  // private IAuthenticationManagement authenticationManagement = null;
+  private AuthenticationManagement authenticationManagement = null;
 
   /**
    * 验证管理
    */
-  // public IAuthenticationManagement getAuthenticationManagement() {
-  //   return authenticationManagement;
-  // }
+  public AuthenticationManagement getAuthenticationManagement() {
+    return authenticationManagement;
+  }
+
   private KernelContext() {
     this.reload();
   }
@@ -91,9 +93,11 @@ public final class KernelContext implements IContext {
   public void reload() {
     // this.configuration = KernelConfigurationView.Instance.Configuration;
 
-    // String authenticationManagementType = KernelConfigurationView.Instance.AuthenticationManagementType;
+    String authenticationManagementType = KernelConfigurationView.getInstance().getAuthenticationManagementType();
 
-    // this.authenticationManagement = (IAuthenticationManagement) CreateObject(authenticationManagementType);
+    this.authenticationManagement = (AuthenticationManagement) createObject(authenticationManagementType);
+
+    logger.info("AuthenticationManagementType:" + authenticationManagementType);
 
     // -------------------------------------------------------
     // 设置定时器

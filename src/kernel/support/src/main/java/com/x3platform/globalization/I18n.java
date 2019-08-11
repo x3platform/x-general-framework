@@ -7,7 +7,6 @@ import java.util.*;
  */
 public class I18n {
   private static HashMap<String, Object> lockObjects = new HashMap<String, Object>();
-
   static {
     lockObjects.put("translates", new Object());
     lockObjects.put("strings", new Object());
@@ -19,6 +18,7 @@ public class I18n {
 
   /**
    * 本地化的翻译信息
+   * @return 返回 {@link Localization} 翻译信息
    */
   public static Localization getTranslates() {
     if (values == null) {
@@ -36,6 +36,8 @@ public class I18n {
 
   /**
    * 本地化的文本信息 系统提示信息 警告信息 错误信息
+   *
+   * @return 返回 {@link Localization} 字符串信息
    */
   public static Localization getStrings() {
     if (strings == null) {
@@ -52,7 +54,8 @@ public class I18n {
   private static volatile Localization menu = null;
 
   /**
-   * 本地化的菜单信息
+   * 获取本地化的菜单信息
+   * @return 返回 {@link Localization} 菜单信息
    */
   public static Localization getMenu() {
     if (menu == null) {
@@ -69,7 +72,9 @@ public class I18n {
   private static volatile Localization m_Exceptions = null;
 
   /**
-   * 本地化的异常信息
+   * 获取本地化的异常信息
+   *
+   * @return 返回 {@link Localization} 异常信息
    */
   public static Localization getExceptions() {
     if (m_Exceptions == null) {
@@ -83,6 +88,9 @@ public class I18n {
     return m_Exceptions;
   }
 
+  /**
+   * 构造函数
+   */
   private I18n() {
   }
 }

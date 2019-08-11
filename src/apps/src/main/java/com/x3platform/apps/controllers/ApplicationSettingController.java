@@ -1,26 +1,21 @@
 package com.x3platform.apps.controllers;
 
-import java.util.*;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.x3platform.apps.AppsContext;
-import com.x3platform.apps.configuration.AppsConfiguration;
-import com.x3platform.apps.models.ApplicationSettingInfo;
-import com.x3platform.apps.models.ApplicationSettingInfo;
-import com.x3platform.apps.services.IApplicationService;
-import com.x3platform.apps.services.IApplicationSettingService;
+import com.x3platform.apps.models.ApplicationSetting;
+import com.x3platform.apps.services.ApplicationSettingService;
 import com.x3platform.globalization.I18n;
+import com.x3platform.messages.MessageObject;
 import com.x3platform.util.StringUtil;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.x3platform.messages.MessageObject;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  *
@@ -29,8 +24,10 @@ import javax.servlet.http.HttpServletResponse;
 @RestController
 @RequestMapping("/api/apps/applicationSetting")
 public class ApplicationSettingController {
-  // 数据提供器
-  private IApplicationSettingService service = AppsContext.getInstance().getApplicationSettingService();
+  /**
+   * 数据服务
+   */
+  private ApplicationSettingService service = AppsContext.getInstance().getApplicationSettingService();
 
   // -------------------------------------------------------
   // 保存 删除
@@ -42,11 +39,9 @@ public class ApplicationSettingController {
    * @return 返回操作结果
    */
   @RequestMapping("/save")
-  public final String Save(HttpServletRequest req, HttpServletResponse res) {
-    ApplicationSettingInfo param = new ApplicationSettingInfo();
-
-    // param = AjaxUtil.<ApplicationSettingInfo>Deserialize(param, doc);
-
+  public final String save(HttpServletRequest req, HttpServletResponse res) {
+    ApplicationSetting param = new ApplicationSetting();
+    // param = AjaxUtil.<ApplicationSetting>Deserialize(param, doc);
     this.service.save(param);
 
     return "{\"message\":{\"returnCode\":0,\"value\":\"查询成功。\"}}";
@@ -78,15 +73,15 @@ public class ApplicationSettingController {
    * @param doc Xml 文档对象
    * @return 返回一个相关的实例列表.
    */
-  public final String FindOne(HttpServletRequest req, HttpServletResponse res) {
+  public final String findOne(HttpServletRequest req, HttpServletResponse res) {
     StringBuilder outString = new StringBuilder();
 
     // String name = XmlHelper.Fetch("name", doc);
     String name = req.getParameter("name");
 
-    ApplicationSettingInfo param = this.service.findOne(name);
+    ApplicationSetting param = this.service.findOne(name);
 
-    // outString.append("{\"data\":" + AjaxUtil.<ApplicationSettingInfo>Parse(param) + ",");
+    // outString.append("{\"data\":" + AjaxUtil.<ApplicationSetting>Parse(param) + ",");
 
     // outString.append(MessageObject.Stringify("0", I18n.Strings["msg_query_success"], true) + "}");
     outString.append(MessageObject.stringify("0", "msg_query_success", true) + "}");
@@ -112,12 +107,12 @@ public class ApplicationSettingController {
     int rowCount = 0;
 
     tangible.RefObject<Integer> tempRef_rowCount = new tangible.RefObject<Integer>(rowCount);
-    List<ApplicationSettingInfo> list = this.service.GetPaging(paging.RowIndex, paging.PageSize, paging.Query, tempRef_rowCount);
+    List<ApplicationSetting> list = this.service.GetPaging(paging.RowIndex, paging.PageSize, paging.Query, tempRef_rowCount);
     rowCount = tempRef_rowCount.argValue;
 
     paging.RowCount = rowCount;
 
-    outString.append("{\"data\":" + AjaxUtil.<ApplicationSettingInfo>Parse(list) + ",");
+    outString.append("{\"data\":" + AjaxUtil.<ApplicationSetting>Parse(list) + ",");
 
     outString.append("\"paging\":" + paging + ",");
 
@@ -136,13 +131,13 @@ public class ApplicationSettingController {
   public final String CreateNewObject(HttpServletRequest req, HttpServletResponse res) {
     StringBuilder outString = new StringBuilder();
 
-    ApplicationSettingInfo param = new ApplicationSettingInfo();
+    ApplicationSetting param = new ApplicationSetting();
 
     param.setName("");
 
     param.setCreatedDate = param.ModifiedDate = java.time.LocalDateTime.now();
 
-    outString.append("{\"data\":" + AjaxUtil.<ApplicationSettingInfo>Parse(param) + ",");
+    outString.append("{\"data\":" + AjaxUtil.<ApplicationSetting>Parse(param) + ",");
 
     outString.append(MessageObject.Stringify("0", I18n.Strings["msg_create_success"], true) + "}");
 
@@ -176,16 +171,16 @@ public class ApplicationSettingController {
 
     // if (whereClause.toUpperCase().indexOf(" Status ") == -1) {
     //  // 只读取启用状态的数据
-//      whereClause = " Status = 1 AND " + whereClause;
-//    }
-//
-//    if (whereClause.toUpperCase().indexOf("ORDER BY") == -1) {
-//      whereClause = whereClause + " ORDER BY OrderId ";
-//    }
+    //      whereClause = " Status = 1 AND " + whereClause;
+    //    }
+    //
+    //    if (whereClause.toUpperCase().indexOf("ORDER BY") == -1) {
+    //      whereClause = whereClause + " ORDER BY OrderId ";
+    //    }
 
     StringBuilder outString = new StringBuilder();
 
-    List<ApplicationSettingInfo> list = this.service.findAllByApplicationSettingGroupName(applicationSettingGroupName);
+    List<ApplicationSetting> list = this.service.findAllByApplicationSettingGroupName(applicationSettingGroupName);
 
     outString.append("{\"data\":[");
 
@@ -193,7 +188,7 @@ public class ApplicationSettingController {
       outString.append("{\"text\":\"" + emptyItemText + "\",\"value\":\"\"}" + ",");
     }
 
-    for (ApplicationSettingInfo item : list) {
+    for (ApplicationSetting item : list) {
       outString.append("{\"text\":\"" + item.getText() + "\",\"value\":\"" + item.getValue() + "\",\"selected\":" + ((item.getValue().equals(selectedValue)) ? 1 : 0) + "}" + ",");
     }
 
@@ -209,5 +204,4 @@ public class ApplicationSettingController {
 
     return outString.toString();
   }
-
 }

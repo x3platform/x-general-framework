@@ -1,8 +1,13 @@
 package com.x3platform.globalization;
 
+import java.io.*;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 import java.util.Locale;
 
+import com.x3platform.util.DirectoryUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,29 +57,74 @@ public class Localization {
 
     this.warnNullValue = warnNullValue;
 
-    String file = KernelConfigurationView.getInstance().getApplicationPathRoot() + "locales/" + KernelConfigurationView.getInstance().getCultureName() + "/" + fileName;
+    String file = KernelConfigurationView.getInstance().getApplicationPathRoot() + "/locales/" + KernelConfigurationView.getInstance().getCultureName() + "/" + fileName;
 
     // 初始化默认翻译
-    this.defaultLocalizer = new Localizer(file, nodeName);
+    File fileInfo = new File(file);
+
+    if (fileInfo.exists()) {
+      this.defaultLocalizer = new Localizer(file, nodeName);
+    } else {
+      // 写入默认文件
+      try {
+        String localePath = KernelConfigurationView.getInstance().getApplicationPathRoot() + "/locales/" + KernelConfigurationView.getInstance().getCultureName() + "/";
+
+        // 判断目标目录是否存在如果不存在则新建之
+        if (!(new File(localePath)).isDirectory()) {
+          (new File(localePath)).mkdirs();
+        }
+
+        InputStream inputStream = KernelConfigurationView.class.getResourceAsStream("/locales/" + KernelConfigurationView.getInstance().getCultureName() + "/" + fileName);
+
+        writeFile(inputStream, file);
+        this.defaultLocalizer = new Localizer(file, nodeName);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
 
     // 初始化默认翻译
     dictionary = new HashMap<String, Localizer>();
   }
 
+  public static void writeFile(InputStream is, String fileName) throws IOException {
+    BufferedInputStream in = null;
+    BufferedOutputStream out = null;
+    try {
+      // DirectoryUtil.create(fileName);
+      FileOutputStream fileOutputStream = new FileOutputStream(fileName);
+      in = new BufferedInputStream(is);
+      out = new BufferedOutputStream(fileOutputStream);
+      int len = -1;
+      byte[] b = new byte[1024];
+      while ((len = in.read(b)) != -1) {
+        out.write(b, 0, len);
+      }
+      // fileOutputStream.close();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    finally {
+      in.close();
+      out.close();
+    }
+
+  }
+
   /**
-   * @param name
-   * @return
+   * @param name 名称
+   * @return 字符串内容
    */
-  public final String text(String name) {
+  public String text(String name) {
     return this.text(name, StringCase.Default);
   }
 
   /**
-   * @param name
-   * @param stringCase
-   * @return
+   * @param name       名称
+   * @param stringCase 字符串大小写格式
+   * @return 字符串内容
    */
-  public final String text(String name, StringCase stringCase) {
+  public String text(String name, StringCase stringCase) {
     String text = this.getLocalizer().getText(name);
 
     text = text == null ? this.defaultLocalizer.getText(name) : text;
@@ -87,27 +137,86 @@ public class Localization {
   }
 
   /**
-   * @param applicationName
-   * @param name
+   * @param applicationName 应用名称
+   * @param name            名称
    * @return
    */
-  public final String text(String applicationName, String name) {
+  public String text(String applicationName, String name) {
     return this.text(applicationName, name, StringCase.Default);
   }
 
   /**
-   * @param applicationName
-   * @param name
-   * @param stringCase
-   * @return
+   * @param applicationName 应用名称
+   * @param name 名称
+   * @param stringCase 字符串大小写格式
+   * @return 字符串内容
    */
-  public final String text(String applicationName, String name, StringCase stringCase) {
+  public String text(String applicationName, String name, StringCase stringCase) {
     String text = this.getLocalizer().getText(applicationName, name);
 
     text = text == null ? this.defaultLocalizer.getText(applicationName, name) : text;
 
     if (this.warnNullValue && text == null) {
       logger.warn(String.format("locale file node %1$s name %2$s is null", this.nodeName, name));
+    }
+
+    return toStringCase(text, stringCase);
+  }
+
+  /**
+   * 格式化文本输出
+   *
+   * @param name 文本名称
+   * @param args 字符参数
+   * @return 字符串内容
+   */
+  public String format(String name, String... args) {
+    return this.format(name, StringCase.Default, args);
+  }
+
+  /**
+   * 格式化文本输出
+   *
+   * @param name       文本名称
+   * @param stringCase 字符串大小写格式
+   * @return 字符串内容
+   */
+  public String format(String name, StringCase stringCase, String... args) {
+    String text = this.getLocalizer().getText(name);
+
+    text = text == null ? this.defaultLocalizer.getText(name) : text;
+
+    if (this.warnNullValue && text == null) {
+      logger.warn(String.format("locale file node %1$s name %2$s is null", this.nodeName, name));
+    }
+
+    if (args.length > 0) {
+      text = StringUtil.format(text, args);
+    }
+
+    return toStringCase(text, stringCase);
+  }
+
+  /**
+   * 格式化文本输出
+   *
+   * @param applicationName 应用名称
+   * @param name 名称
+   * @param stringCase 字符串大小写格式
+   * @param args 字符参数
+   * @return 字符串内容
+   */
+  public String format(String applicationName, String name, StringCase stringCase, String... args) {
+    String text = this.getLocalizer().getText(applicationName, name);
+
+    text = text == null ? this.defaultLocalizer.getText(applicationName, name) : text;
+
+    if (this.warnNullValue && text == null) {
+      logger.warn(String.format("locale file node %1$s name %2$s is null", this.nodeName, name));
+    }
+
+    if (args.length > 0) {
+      text = StringUtil.format(text, args);
     }
 
     return toStringCase(text, stringCase);

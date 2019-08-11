@@ -1,6 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <!-- common -->
-  <exception name="code_parameter_is_null">1000</exception>
-  <exception name="text_parameter_is_null">参数 {0} 为空</exception>
+  <!-- general -->
+  <exception name="code_general_param_is_null">100001</exception>
+  <exception name="text_general_param_is_null">参数 {} 为空</exception>
+  <exception name="code_general_param_is_required">100002</exception>
+  <exception name="text_general_param_is_required">参数 {} 必须填写</exception>
+  <exception name="code_general_object_is_null">100003</exception>
+  <exception name="text_general_object_is_null">{} 为空</exception>
+  <exception name="text_general_object_is_null_default">对象为空</exception>
+  <exception name="code_general_object_is_required">100004</exception>
+  <exception name="text_general_object_is_required">{} 必须填写</exception>
+  <exception name="code_general_property_is_null">100005</exception>
+  <exception name="text_general_property_is_null">对象属性 {} 为空</exception>
+  <exception name="code_general_property_is_required">100006</exception>
+  <exception name="text_general_property_is_required">对象属性 {} 必须填写</exception>
+  <exception name="code_general_text_is_null">100007</exception>
+  <exception name="text_general_text_is_null">文本信息为空</exception>
+  <exception name="code_general_file_not_exists">100008</exception>
+  <exception name="text_general_file_not_exists">文件 {} 不存在</exception>
+  <exception name="code_general_file_already_exists">100009</exception>
+  <exception name="text_general_file_already_exists">文件 {} 已存在</exception>
+  <exception name="code_general_image_not_exists">100010</exception>
+  <exception name="text_general_image_not_exists">文件 {} 不存在</exception>
+  <exception name="code_general_image_format_invalid">100011</exception>
+  <exception name="text_general_image_format_invalid">图像 {} 格式错误</exception>
+  <exception name="text_kernel_image_format_invalid_default">图像格式错误</exception>
+  <!-- http_status 100400 - 100599 -->
+  <exception name="code_http_status_unauthorized">100401</exception>
+  <exception name="text_http_status_unauthorized">未验证的身份</exception>
+  <exception name="code_http_status_not_found">100404</exception>
+  <exception name="text_http_status_not_found">未找到相关的内容</exception>
+  <exception name="code_http_status_service_unavailable">100503</exception>
+  <exception name="text_http_status_service_unavailable">服务不可用</exception>
+  <!-- security 100600 - 100699 -->
+  <exception name="code_web_api_request_exceed_limit">100603</exception>
+  <exception name="text_web_api_request_exceed_limit">您发送的请求太频繁，请稍后再试。</exception>
+  <exception name="code_web_api_ban_search_engine_spider">100604</exception>
+  <exception name="text_web_api_ban_search_engine_spider">Web APIs 禁止爬虫机器人调用</exception>
+  <exception name="code_web_api_method_not_exists">100600</exception>
+  <exception name="text_web_api_method_not_exists">[{}]方法不存在，请联系管理员检查配置信息。</exception>
+  <exception name="code_web_api_method_is_disabled">100601</exception>
+  <exception name="text_web_api_method_is_disabled">[{}]方法被禁用。</exception>
+  <exception name="code_web_api_method_need_elevated_privileges">100601</exception>
+  <exception name="text_web_api_method_need_elevated_privileges">[{}]此方法需要[{}]级别才能调用此方法。</exception>
+  <!-- apps               101000 - 101999 -->
+  <!-- memebership        102000 - 102999 -->
+  <!-- connect            103000 - 103999 -->
+  <!-- tasks              104000 - 104999 -->
+  <!-- attachmentstorage  105000 - 105999 -->
 </resources>

@@ -1,4 +1,4 @@
-package com.amiintellect.config;
+package com.x3platform.config;
 
 import java.util.Properties;
 

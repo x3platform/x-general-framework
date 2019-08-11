@@ -1,12 +1,7 @@
 package com.x3platform.configuration;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.stereotype.Component;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * 核心的配置信息
@@ -34,6 +29,46 @@ public class KernelConfiguration {
     return CultureName;
   }
 
+  @Value("${x3platform.host:@host}")
+  private String Host;
+
+  /***
+   * 应用服务器名称
+   */
+  public String getHost() {
+    return Host;
+  }
+
+  @Value("${x3platform.file-host:@host}")
+  private String FileHost;
+
+  /***
+   * 文件服务器
+   */
+  public String getFileHost() {
+    return FileHost;
+  }
+
+  @Value("${x3platform.static-file-host:@host}")
+  private String StaticFileHost;
+
+  /***
+   * 静态文件服务器
+   */
+  public String getStaticFileHost() {
+    return StaticFileHost;
+  }
+
+  @Value("${x3platform.domain:x3platform.com}")
+  private String Domain;
+
+  /***
+   * 默认域名
+   */
+  public String getDomain() {
+    return Domain;
+  }
+
   @Value("${x3platform.messages.message-object-formatter:com.x3platform.messages.MessageObjectFormatter}")
   private String MessageObjectFormatter;
 
@@ -48,4 +83,13 @@ public class KernelConfiguration {
     return ApplicationPathRoot;
   }
 
+  @Value("${x3platform.authentication-management-type:com.x3platform.security.authentication.LocalAuthenticationManagement}")
+  private String AuthenticationManagementType;
+
+  /***
+   * 验证管理类型
+   */
+  public String getAuthenticationManagementType() {
+    return AuthenticationManagementType;
+  }
 }

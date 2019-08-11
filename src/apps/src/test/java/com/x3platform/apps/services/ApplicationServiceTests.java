@@ -1,10 +1,10 @@
 package com.x3platform.apps.services;
 
 import com.x3platform.apps.AppsContext;
-import com.x3platform.apps.models.ApplicationInfo;
-import com.x3platform.apps.services.IApplicationService;
-import com.x3platform.apps.services.impl.ApplicationService;
-import javafx.application.Application;
+import com.x3platform.apps.models.Application;
+import com.x3platform.apps.services.ApplicationService;
+import com.x3platform.apps.services.ApplicationService;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -18,7 +18,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import static org.junit.Assert.*;
 
 /**
- *
+ *  公共组件 配置数据库
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -27,9 +27,9 @@ public class ApplicationServiceTests {
   @Test
   public void testFindOne() {
     // 测试应用配置 标识:52cf89ba-7db5-4e64-9c64-3c868b6e7a99
-    IApplicationService service = AppsContext.getInstance().getApplicationService();
+    ApplicationService service = AppsContext.getInstance().getApplicationService();
 
-    ApplicationInfo param = service.findOne("00000000-0000-0000-0000-000000000001");
+    Application param = service.findOne("00000000-0000-0000-0000-000000000001");
 
     assertNotNull("entity is not null.", param);
   }
@@ -37,9 +37,9 @@ public class ApplicationServiceTests {
   @Test
   public void testFindOneByApplicationName() {
 
-    IApplicationService service = AppsContext.getInstance().getApplicationService();
+    ApplicationService service = AppsContext.getInstance().getApplicationService();
 
-    ApplicationInfo entity = service.findOneByApplicationName("Test");
+    Application entity = service.findOneByApplicationName("Test");
 
     assertNotNull("entity is not null.", entity);
   }
@@ -50,7 +50,7 @@ public class ApplicationServiceTests {
 
     // DataQuery query = new DataQuery();
 
-    // IList<ApplicationInfo> list = AppsContext.Instance.ApplicationService.GetPaging(0, 10, query, out rowCount);
+    // IList<Application> list = AppsContext.Instance.ApplicationService.GetPaging(0, 10, query, out rowCount);
   }
 
   @Test

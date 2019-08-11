@@ -27,7 +27,6 @@ public class AppsConfigurationView {
     if (instance == null) {
       synchronized (lockObject) {
         if (instance == null) {
-          // instance = new DigitalNumberConfigurationView();
           instance = SpringContext.getBean(AppsConfigurationView.class);
         }
       }

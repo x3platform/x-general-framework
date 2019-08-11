@@ -2,14 +2,13 @@ package com.x3platform.apps.services;
 
 import com.github.pagehelper.PageHelper;
 import com.x3platform.apps.AppsContext;
-import com.x3platform.apps.models.ApplicationInfo;
-import com.x3platform.apps.models.ApplicationMenuInfo;
-import com.x3platform.apps.services.IApplicationService;
-import com.x3platform.apps.services.impl.ApplicationService;
+import com.x3platform.apps.models.Application;
+import com.x3platform.apps.models.ApplicationMenu;
+import com.x3platform.apps.services.ApplicationService;
 import com.x3platform.data.DataPagingUtil;
 import com.x3platform.data.DataQuery;
-import com.x3platform.digitalNumber.DigitalNumberContext;
-import javafx.application.Application;
+import com.x3platform.digitalnumber.DigitalNumberContext;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -34,9 +33,9 @@ public class ApplicationMenuServiceTests {
   @Test
   public void testFindOne() {
     // 测试应用配置 标识:52cf89ba-7db5-4e64-9c64-Service3c868b6e7a99
-    IApplicationMenuService service = AppsContext.getInstance().getApplicationMenuService();
+    ApplicationMenuService service = AppsContext.getInstance().getApplicationMenuService();
 
-    ApplicationMenuInfo entity = service.findOne("2feced95-48de-4f01-adb5-15ed92678bc9");
+    ApplicationMenu entity = service.findOne("2feced95-48de-4f01-adb5-15ed92678bc9");
 
     assertNotNull("entity is not null.", entity);
 
@@ -46,11 +45,11 @@ public class ApplicationMenuServiceTests {
   @Test
   public void testFindAll() {
 
-    IApplicationMenuService service = AppsContext.getInstance().getApplicationMenuService();
+    ApplicationMenuService service = AppsContext.getInstance().getApplicationMenuService();
 
     DataQuery query = new DataQuery();
     // 默认情况
-    List<ApplicationMenuInfo> list = service.findAll(query);
+    List<ApplicationMenu> list = service.findAll(query);
 
     assertNotNull("list is not null.", list);
 
@@ -71,7 +70,7 @@ public class ApplicationMenuServiceTests {
 
   @Test
   public void testGetPaging() {
-    IApplicationMenuService service = AppsContext.getInstance().getApplicationMenuService();
+    ApplicationMenuService service = AppsContext.getInstance().getApplicationMenuService();
 
     int total = -1;
 
@@ -79,7 +78,7 @@ public class ApplicationMenuServiceTests {
 
     PageHelper.startPage(2, 4);
 
-    List<ApplicationMenuInfo> list = service.findAll(query);
+    List<ApplicationMenu> list = service.findAll(query);
 
     assertEquals(4, list.size());
 
@@ -88,7 +87,7 @@ public class ApplicationMenuServiceTests {
 
   @Test
   public void testIsExist() {
-    IApplicationMenuService service = AppsContext.getInstance().getApplicationMenuService();
+    ApplicationMenuService service = AppsContext.getInstance().getApplicationMenuService();
 
     // 存在的情况
     String id = "2feced95-48de-4f01-adb5-15ed92678bc9";
@@ -103,5 +102,14 @@ public class ApplicationMenuServiceTests {
     isExist = service.isExist(id);
 
     assertFalse("entity(id:" + id + ") is not exist.", isExist);
+  }
+
+  @Test
+  public void testGetMenus() {
+    ApplicationMenuService service = AppsContext.getInstance().getApplicationMenuService();
+
+   // List<ApplicationMenu> list = service.getMenusByParentId("00000000-0000-0000-0000-000000000001","00000000-0000-0000-0000-000000000000","ApplicationMenu");
+
+   // assertEquals(4, list.size());
   }
 }

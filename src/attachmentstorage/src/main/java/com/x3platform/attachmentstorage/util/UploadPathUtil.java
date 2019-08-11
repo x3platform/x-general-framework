@@ -1,17 +1,29 @@
 package com.x3platform.attachmentstorage.util;
 
-import com.x3platform.attachmentstorage.IAttachmentFileInfo;
+import com.x3platform.attachmentstorage.AttachmentFile;
 import com.x3platform.attachmentstorage.configuration.*;
 import com.x3platform.util.*;
+
+import java.io.File;
 
 /**
  * 上传路径管理
  */
 public final class UploadPathUtil {
+  /**
+   * 获取上传文件夹物理路径
+   *
+   * @return 物理路径
+   */
   public static String getPhysicalUploadFolder() {
-    return AttachmentStorageConfigurationView.getInstance().getPhysicalUploadFolder();
+    return DirectoryUtil.formatLocalPath(new File(AttachmentStorageConfigurationView.getInstance().getPhysicalUploadFolder()).getAbsolutePath() + PathUtil.getFileSeparator());
   }
 
+  /**
+   * 获取上传文件虚拟路径
+   *
+   * @return 虚拟路径
+   */
   public static String getVirtualUploadFolder() {
     return AttachmentStorageConfigurationView.getInstance().getVirtualUploadFolder();
   }
@@ -33,7 +45,7 @@ public final class UploadPathUtil {
     return getVirtualUploadFolder() + parseRule(attachmentFolder, java.time.LocalDateTime.now()).replace(java.io.File.separatorChar, '/') + fileName;
   }
 
-  public static String getVirtualPathFormat(String attachmentFolder, IAttachmentFileInfo attachment) {
+  public static String getVirtualPathFormat(String attachmentFolder, AttachmentFile attachment) {
     return "{uploads}"
       + parseRule(attachmentFolder, attachment.getCreatedDate()).replace(java.io.File.separatorChar, '/') + attachment.getId() + attachment.getFileType();
   }
@@ -62,10 +74,10 @@ public final class UploadPathUtil {
     }
   }
 
-  private static String parseRule(String folder, java.time.LocalDateTime datetime) {
+  public static String parseRule(String folder, java.time.LocalDateTime datetime) {
     // 路径规则示例
     // folder\year\quarter\month\
-    // folder\year\quarter\folder
+    // year\quarter\month\folder\
 
     String text = AttachmentStorageConfigurationView.getInstance().getPhysicalUploadFolderRule();
 

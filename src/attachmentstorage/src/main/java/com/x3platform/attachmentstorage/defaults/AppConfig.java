@@ -1,7 +1,7 @@
 package com.x3platform.attachmentstorage.defaults;
 
-import com.x3platform.attachmentstorage.AttachmentFileInfo;
-import com.x3platform.attachmentstorage.IAttachmentFileInfo;
+import com.x3platform.attachmentstorage.GeneralAttachmentFile;
+import com.x3platform.attachmentstorage.AttachmentFile;
 import com.x3platform.attachmentstorage.services.*;
 import com.x3platform.attachmentstorage.services.impl.*;
 import org.springframework.context.annotation.Bean;
@@ -11,12 +11,17 @@ import org.springframework.context.annotation.Configuration;
 public class AppConfig {
 
   @Bean("com.x3platform.attachmentstorage.AttachmentFile")
-  public IAttachmentFileInfo iAttachmentFileInfo() {
-    return new AttachmentFileInfo();
+  public AttachmentFile iGeneralAttachmentFile() {
+    return new GeneralAttachmentFile();
   }
 
-  @Bean("com.x3platform.attachmentstorage.services.IAttachmentFileService")
-  public IAttachmentFileService iAttachmentFileService() {
+  @Bean("com.x3platform.attachmentstorage.services.AttachmentFileService")
+  public AttachmentFileService iAttachmentFileService() {
     return new AttachmentFileServiceImpl();
+  }
+
+  @Bean("com.x3platform.attachmentstorage.services.FastDFSFileTransferService")
+  public FastDFSFileTransferService fastDFSFileTransferService() {
+    return new FastDFSFileTransferServiceImpl();
   }
 }

@@ -8,14 +8,13 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * 人员及权限的配置信息视图
+ * 任务管理的配置信息视图
+ *
+ * @author ruanyu
  */
-
 @Configuration
 public class TasksConfigurationView {
-  private final Logger logger = LoggerFactory.getLogger(this.getClass());
-
-  private static volatile TasksConfigurationView instance = null;
+  private static volatile TasksConfigurationView sInstance = null;
 
   private static Object lockObject = new Object();
 
@@ -23,44 +22,78 @@ public class TasksConfigurationView {
    * 实例
    */
   public static TasksConfigurationView getInstance() {
-    if (instance == null) {
+    if (sInstance == null) {
       synchronized (lockObject) {
-        if (instance == null) {
-          // instance = new DigitalNumberConfigurationView();
-          instance = SpringContext.getBean(TasksConfigurationView.class);
+        if (sInstance == null) {
+          sInstance = SpringContext.getBean(TasksConfigurationView.class);
         }
       }
     }
 
-    return instance;
+    return sInstance;
   }
 
   public void reload() {
-    instance = null;
+    sInstance = null;
   }
 
   @Autowired
   @Qualifier("com.x3platform.tasks.configuration.TasksConfiguration")
   TasksConfiguration configuration;
 
-  public String getPasswordEncryption() {
-    return configuration.getPasswordEncryption();
+  /**
+   * 通知选项
+   */
+  public String getNotificationOptions() {
+    return configuration.getNotificationOptions();
   }
 
-
-  public String getPasswordPolicyRules() {
-    return configuration.getPasswordPolicyRules();
+  /**
+   * 任务信息的地址前缀
+   */
+  public String getPrefixTargetUrl() {
+    return configuration.getPrefixTargetUrl();
   }
 
-  public int getPasswordPolicyCharacterRepeatedTimes() {
-    return Integer.parseInt(configuration.getPasswordPolicyCharacterRepeatedTimes());
+  /**
+   * 定时待办项发送时间间隔(单位:秒)
+   */
+  public int getWaitingItemSendingInterval() {
+    return Integer.parseInt(configuration.getWaitingItemSendingInterval());
   }
 
-  public int getPasswordPolicyMinimumLength() {
-    return Integer.parseInt(configuration.getPasswordPolicyMinimumLength());
+  /**
+   * 客户端刷新间隔(单位:秒)
+   */
+  public int getClientRefreshInterval() {
+    return Integer.parseInt(configuration.getClientRefreshInterval());
   }
 
-  public String getAvatarVirtualFolder() {
-    return configuration.getAvatarVirtualFolder();
+  /**
+   * 消息队列模式
+   */
+  public String getMessageQueueMode() {
+    return configuration.getMessageQueueMode();
+  }
+
+  /**
+   * 消息队列服务器地址
+   */
+  public String getmessageQueueHost() {
+    return configuration.getmessageQueueHost();
+  }
+
+  /**
+   * 消息队列名称
+   */
+  public String getMessageQueueName() {
+    return configuration.getMessageQueueName();
+  }
+
+  /**
+   * 消息队列接收时间间隔(单位:秒)
+   */
+  public String getMessageQueueReceivingInterval() {
+    return configuration.getMessageQueueReceivingInterval();
   }
 }

@@ -30,19 +30,19 @@ public class DynamicDataSourceAspect {
 
     @Before("@annotation(ds)")
     public void changeDataSource(JoinPoint point, DataSourceName ds) throws Throwable {
-        String dsId = ds.value();
-        if (!DynamicDataSourceContextHolder.containsDataSource(dsId)) {
-            logger.error("数据源[{}]不存在，使用默认数据源 > {}", ds.value(), point.getSignature());
+        String key = ds.value();
+        if (!DynamicDataSourceContextHolder.containsDataSourceKey(key)) {
+            logger.error("数据源[{}]不存在，使用默认数据源 -> {}", key, point.getSignature());
         } else {
-            logger.debug("Use DataSource : {} > {}", ds.value(), point.getSignature());
-            DynamicDataSourceContextHolder.setDataSourceType(ds.value());
+            logger.debug("使用数据源 : {} -> {}", ds.value(), point.getSignature());
+            DynamicDataSourceContextHolder.setDataSourceKey(key);
         }
     }
 
     @After("@annotation(ds)")
     public void restoreDataSource(JoinPoint point, DataSourceName ds) {
-        logger.debug("Revert DataSource : {} > {}", ds.value(), point.getSignature());
-        DynamicDataSourceContextHolder.clearDataSourceType();
+        logger.debug("还原数据源 : {} -> {}", ds.value(), point.getSignature());
+        DynamicDataSourceContextHolder.clearDataSourceKey();
     }
 }
 

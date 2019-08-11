@@ -3,33 +3,21 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.x3platform</groupId>
   <artifactId>x3platform-support</artifactId>
-  <version>${project.release.version}</version>
+  <version>0.1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>x3platform-support</name>
   <url>http://maven.apache.org</url>
 
   <properties>
-    <project.release.version>0.0.1-SNAPSHOT</project.release.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>1.8</java.version>
     <lib.path>${basedir}/lib</lib.path>
   </properties>
 
-  <profiles>
-    <!-- mvn deploy -P release -->
-    <profile>
-      <id>release</id>
-      <properties>
-        <project.release.version>0.0.1</project.release.version>
-      </properties>
-    </profile>
-  </profiles>
-
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
     <version>2.0.2.RELEASE</version>
-    <relativePath/> <!-- lookup parent from repository -->
   </parent>
 
   <dependencies>
@@ -85,41 +73,47 @@
       <version>2.0.2.RELEASE</version>
       <scope>test</scope>
     </dependency>
-
+    <!-- Alibaba Fastjson -->
     <dependency>
       <groupId>com.alibaba</groupId>
       <artifactId>fastjson</artifactId>
       <version>1.2.31</version>
     </dependency>
-    <!-- alibaba druid -->
+    <!-- Alibaba Druid -->
     <dependency>
       <groupId>com.alibaba</groupId>
-      <artifactId>druid</artifactId>
-      <version>1.1.9</version>
+      <artifactId>druid-spring-boot-starter</artifactId>
+      <version>1.1.10</version>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
+    <!-- HttpClient -->
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
-      <version>4.5.2</version>
+      <version>4.5.3</version>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpmime -->
+    <!-- HttpMime -->
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpmime</artifactId>
-      <version>4.5.2</version>
+      <version>4.5.3</version>
     </dependency>
-    <!-- apache commons-lang3 -->
+    <!-- Commons Lang3 -->
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
       <version>3.7</version>
     </dependency>
-    <!-- apache commons-codec -->
+    <!-- Commons Codec -->
     <dependency>
       <groupId>commons-codec</groupId>
       <artifactId>commons-codec</artifactId>
       <version>1.10</version>
+    </dependency>
+    <!-- Pinyin4j -->
+    <dependency>
+      <groupId>com.belerweb</groupId>
+      <artifactId>pinyin4j</artifactId>
+      <version>2.5.1</version>
     </dependency>
   </dependencies>
   <build>
@@ -145,13 +139,13 @@
       <uniqueVersion>false</uniqueVersion>
       <id>releases</id>
       <name>Nexus Release Repository</name>
-      <url>http://dev.amiintellect.com:27070/repository/maven-releases/</url>
+      <url>http://nexus.amiintellect.com/repository/maven-releases/</url>
     </repository>
     <snapshotRepository>
       <uniqueVersion>true</uniqueVersion>
       <id>snapshots</id>
       <name>Nexus Snapshot Repository</name>
-      <url>http://dev.amiintellect.com:27070/repository/maven-snapshots/</url>
+      <url>http://nexus.amiintellect.com/repository/maven-snapshots/</url>
     </snapshotRepository>
   </distributionManagement>
 </project>

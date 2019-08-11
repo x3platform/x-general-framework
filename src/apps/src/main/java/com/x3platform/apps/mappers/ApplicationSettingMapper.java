@@ -1,7 +1,7 @@
 package com.x3platform.apps.mappers;
 
-import com.x3platform.apps.models.ApplicationSettingInfo;
-import com.x3platform.apps.models.ApplicationSettingQueryInfo;
+import com.x3platform.apps.models.ApplicationSetting;
+import com.x3platform.apps.models.ApplicationSettingLite;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.*;
@@ -17,16 +17,16 @@ public interface ApplicationSettingMapper {
   /**
    * 添加记录
    *
-   * @param param 实例<see cref="ApplicationSettingInfo"/>详细信息
+   * @param param 实例<see cref="ApplicationSetting"/>详细信息
    */
-  int insert(ApplicationSettingInfo param);
+  int insert(ApplicationSetting param);
 
   /**
    * 修改记录
    *
-   * @param param 实例<see cref="ApplicationSettingInfo"/>详细信息
+   * @param param 实例<see cref="ApplicationSetting"/>详细信息
    */
-  int updateByPrimaryKey(ApplicationSettingInfo param);
+  int updateByPrimaryKey(ApplicationSetting param);
 
   /**
    * 删除记录
@@ -43,45 +43,45 @@ public interface ApplicationSettingMapper {
    * 查询某条记录
    *
    * @param id 标识
-   * @return 返回实例 ApplicationSettingInfo 的详细信息
+   * @return 返回实例 ApplicationSetting 的详细信息
    */
-  ApplicationSettingInfo selectByPrimaryKey(String id);
+  ApplicationSetting selectByPrimaryKey(String id);
 
   /**
    * 查询所有相关记录
    *
    * @param params 查询条件
-   * @return 返回所有实例 ApplicationSettingInfo 的详细信息
+   * @return 返回所有实例 ApplicationSetting 的详细信息
    */
-  // List<ApplicationSettingInfo> findAll(String whereClause, int length);
-  List<ApplicationSettingInfo> findAll(Map params);
+  // List<ApplicationSetting> findAll(String whereClause, int length);
+  List<ApplicationSetting> findAll(Map params);
 
   /**
    * 查询所有相关记录
    *
    * @param whereClause SQL 查询条件
    * @param length      条数
-   * @return 返回所有实例 ApplicationMenuQueryInfo 的详细信息
+   * @return 返回所有实例 ApplicationMenuLite 的详细信息
    */
-  // List<ApplicationSettingQueryInfo> findAllQueryObject(String whereClause, int length);
+  // List<ApplicationSettingLite> findAllQueryObject(String whereClause, int length);
 
   /**
    * 根据参数分组信息查询所有相关记录
    *
    * @param applicationSettingGroupId 参数分组标识
    * @param keyword                   文本信息关键字匹配
-   * @return 返回所有实例 ApplicationSettingInfo 的详细信息
+   * @return 返回所有实例 ApplicationSetting 的详细信息
    */
-  List<ApplicationSettingInfo> findAllByApplicationSettingGroupId(@Param("applicationSettingGroupId") String applicationSettingGroupId, @Param("keyword") String keyword);
+  List<ApplicationSetting> findAllByApplicationSettingGroupId(@Param("applicationSettingGroupId") String applicationSettingGroupId, @Param("keyword") String keyword);
 
   /**
    * 根据参数分组信息查询所有相关记录
    *
    * @param applicationSettingGroupName 参数分组名称
    * @param keyword                     文本信息关键字匹配
-   * @return 返回所有实例 ApplicationSettingInfo 的详细信息
+   * @return 返回所有实例 ApplicationSetting 的详细信息
    */
-  List<ApplicationSettingInfo> findAllByApplicationSettingGroupName(@Param("applicationSettingGroupName") String applicationSettingGroupName, @Param("keyword") String keyword);
+  List<ApplicationSetting> findAllByApplicationSettingGroupName(@Param("applicationSettingGroupName") String applicationSettingGroupName, @Param("keyword") String keyword);
 
   // -------------------------------------------------------
   // 自定义功能
