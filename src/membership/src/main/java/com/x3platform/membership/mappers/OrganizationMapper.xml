@@ -1,235 +1,104 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.x3platform.membership.mappers.OrganizationMapper">
-  <resultMap id="findOne_Result" type="com.x3platform.membership.models.OrganizationInfo">
-    <result property="id" column="id"/>
-    <result property="accountId" column="account_id"/>
-    <result property="name" column="name"/>
-    <result property="domain" column="domain"/>
-    <result property="pattern" column="pattern"/>
-    <result property="modifiedDate" column="modified_date"/>
-    <result property="createdDate" column="created_date"/>
+  <resultMap id="BaseResultMap" type="com.x3platform.membership.models.OrganizationInfo">
+    <result property="id" jdbcType="VARCHAR" column="id" />
+    <result property="code" jdbcType="VARCHAR" column="code" />
+    <result property="name" jdbcType="VARCHAR" column="name" />
+    <result property="domain" jdbcType="VARCHAR" column="domain" />
+    <result property="license" jdbcType="VARCHAR" column="license" />
+    <result property="modifiedDate" jdbcType="TIMESTAMP" column="modified_date" />
+    <result property="createdDate" jdbcType="TIMESTAMP" column="created_date" />
   </resultMap>
-
+  <sql id="Select_Where_Clause">
+    <where>
+      <if test="param_id != null and param_id != ''">
+        AND t.id = #{param_id}
+      </if>
+      <if test="param_account_id != null and param_account_id != ''">
+        AND t.account_id = #{param_account_id}
+      </if>
+      <if test="param_code != null and param_code != ''">
+        AND t.code = #{param_code}
+      </if>
+      <if test="param_name != null and param_name != ''">
+        AND t.name = #{param_name}
+      </if>
+      <if test="param_domain != null and param_domain != ''">
+        AND t.domain = #{param_domain}
+      </if>
+      <if test="param_license != null and param_license != ''">
+        AND t.license = #{param_license}
+      </if>
+      <if test="param_modified_date != null">
+        AND t.modified_date = #{param_modified_date}
+      </if>
+      <if test="param_created_date != null">
+        AND t.created_date = #{param_created_date}
+      </if>
+    </where>
+  </sql>
   <insert id="insert" parameterType="com.x3platform.membership.models.OrganizationInfo">
     INSERT INTO sys_organization
     (
+      id,
+      code,
       name,
-      expression,
-      seed,
-      modifiedDate,
-      createdDate
+      domain,
+      license,
+      modified_date,
+      created_date
     )
     VALUES
     (
-      #{name},
-      #{expression},
-      #{seed},
+      #{id,jdbcType=VARCHAR},
+      #{code,jdbcType=VARCHAR},
+      #{name,jdbcType=VARCHAR},
+      #{domain,jdbcType=VARCHAR},
+      #{license,jdbcType=VARCHAR},
       CURRENT_TIMESTAMP,
       CURRENT_TIMESTAMP
     )
   </insert>
-  <update id="update" parameterType="com.x3platform.membership.models.OrganizationInfo">
+  <update id="updateByPrimaryKey" parameterType="com.x3platform.membership.models.OrganizationInfo">
     UPDATE sys_organization SET
-    expression = #{expression},
-    seed = #{seed},
-    modifiedDate = CURRENT_TIMESTAMP
-    WHERE Name = #{name}
-  </update>
-  <insert id="save" parameterType="com.x3platform.membership.models.OrganizationInfo">
-    INSERT INTO sys_organization_unit
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-    <if test="mId != null">
-      id,
-    </if>
-    <if test="mParentId != null">
-      parent_id,
-    </if>
-    <if test="mCode != null">
-      code,
-    </if>
-    <if test="mName != null">
-      name,
-    </if>
-    <if test="mGlobalName != null">
-      global_name,
-    </if>
-    <if test="mFullName != null">
-      full_name,
-    </if>
-    <if test="mPinYin != null">
-      pinyin,
-    </if>
-    <if test="mType != null">
-      type,
-    </if>
-    <if test="mLevel!= null">
-      level,
-    </if>
-    <if test="mStandardOrganizationUnitId!= null">
-      standard_organization_id,
-    </if>
-    <if test="mEnableEmail!= null">
-      enable_email,
-    </if>
-    <if test="mEffectScope!= null">
-      effect_scope,
-    </if>
-<!--    <if test=" mTreeViewScope!= null">
-      tree_view_scope,
-    </if>-->
-    <if test=" mLocking!= null">
-      locking,
-    </if>
-    <if test=" mOrderId!= null">
-      order_id,
-    </if>
-    <if test=" mStatus!= null">
-      status,
-    </if>
-    <if test=" mRemark!= null">
-      remark,
-    </if>
-    <if test=" mFullPath!= null">
-      full_path,
-    </if>
-    <if test=" mDistinguishedName!= null">
-      distinguished_name,
-    </if>
-    <if test=" mModifiedDate!= null">
-      modified_date,
-    </if>
-    <if test=" mCreatedDate!= null">
-      created_date,
-    </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-    <if test="mId != null">
-      #{mId},
-    </if>
-    <if test="mParentId != null">
-      #{mParentId},
-    </if>
-    <if test="mCode != null">
-      #{mCode},
-    </if>
-    <if test="mName != null">
-      #{mName},
-    </if>
-    <if test="mGlobalName != null">
-      #{mGlobalName},
-    </if>
-    <if test="mFullName != null">
-      #{mFullName},
-    </if>
-    <if test="mPinYin != null">
-      #{mPinYin},
-    </if>
-    <if test="mType != null">
-      #{mType},
-    </if>
-    <if test=" mLevel!= null">
-      #{mLevel},
-    </if>
-    <if test=" mStandardOrganizationUnitId!= null">
-      #{mStandardOrganizationUnitId},
-    </if>
-    <if test=" mEnableEmail!= null">
-      #{mEnableEmail},
-    </if>
-    <if test=" mEffectScope!= null">
-      #{mEffectScope},
-    </if>
-<!--    <if test=" mTreeViewScope!= null">
-      #{mTreeViewScope},
-    </if>-->
-    <if test=" mLocking!= null">
-      #{mLocking},
-    </if>
-    <if test=" mOrderId!= null">
-      #{mOrderId},
-    </if>
-    <if test=" mStatus!= null">
-      #{mStatus},
-    </if>
-    <if test=" mRemark!= null">
-      #{mRemark},
-    </if>
-    <if test=" mFullPath!= null">
-      #{mFullPath},
-    </if>
-    <if test=" mDistinguishedName!= null">
-      #{mDistinguishedName},
-    </if>
-    <if test=" mModifiedDate!= null">
-      CURRENT_TIMESTAMP,
-    </if>
-    <if test=" mCreatedDate!= null">
-      CURRENT_TIMESTAMP,
-    </if>
-    </trim>
-  </insert>
-  <delete id="delete">
-    update  sys_organization set status = 0  WHERE id = #{id}
-  </delete>
 
-  <select id="findOne" resultMap="findOne_Result">
+      code = #{code,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
+      domain = #{domain,jdbcType=VARCHAR},
+      license = #{license,jdbcType=VARCHAR},
+      modified_date = CURRENT_TIMESTAMP
+
+    WHERE id = #{id}
+  </update>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    DELETE FROM sys_organization WHERE id = #{id}
+  </delete>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap" >
     SELECT * FROM sys_organization WHERE id = #{id}
   </select>
-  <select id="isExist">
-    SELECT COUNT(0) AS "Count" FROM sys_organization WHERE $WhereClause$
+  <select id="findAll" parameterType="java.util.Map" resultMap="BaseResultMap" >
+    SELECT * FROM sys_organization t
+    <if test="_parameter != null">
+      <include refid="Select_Where_Clause" />
+    </if>
+    <if test="orders != null and orders.size() > 0">
+      ORDER BY
+      <foreach collection="orders" item="order" index="index" separator="," >
+        ${order}
+      </foreach>
+    </if>
+    <if test="length > 0">
+      LIMIT 0, ${length}
+    </if>
   </select>
-  <select id="isExistName" resultType="boolean">
-    SELECT COUNT(0) AS "Count" FROM sys_organization WHERE Name = #{name}
+  <select id="getRowCount" >
+    SELECT COUNT(0) AS "RowCount" FROM sys_organization t
+    <if test="_parameter != null">
+      <include refid="Select_Where_Clause" />
+    </if>
   </select>
-
-  <insert id="addRelation">
-    insert into
-      sys_account_organization_unit
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="accountId != null">
-        account_id,
-      </if>
-      <if test="organizationId != null">
-        organization_unit_id,
-      </if>
-      <if test="isDefault != null">
-        is_default,
-      </if>
-      <if test="beginDate != null">
-        begin_date,
-      </if>
-      <if test="endDate != null">
-        end_date,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="accountId != null">
-        #{accountId},
-      </if>
-      <if test="organizationId != null">
-        #{organizationId},
-      </if>
-      <if test="isDefault != null">
-        #{isDefault},
-      </if>
-      <if test="beginDate != null">
-        #{beginDate},
-      </if>
-      <if test="endDate != null">
-        #{endDate},
-      </if>
-    </trim>
-  </insert>
-  <delete id="removeAllRelation">
-    delete from sys_account_organization_unit  where  account_id=#{accountId}
-  </delete>
-  <select id="hasDefaultRelation" resultType="java.lang.Boolean">
-    select COUNT(0) AS "Count" from sys_account_organization_unit  where  account_id=#{accountId}
+  <select id="isExist" resultType="java.lang.Boolean" >
+    SELECT COUNT(0) AS "Count" FROM sys_organization WHERE id = #{id}
   </select>
-  <delete id="clearupRelation">
-    delete from sys_account_organization_unit  where  organization_unit_id=#{organizationId}
-  </delete>
-
-
 </mapper>

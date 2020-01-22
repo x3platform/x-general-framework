@@ -31,21 +31,15 @@ public interface OrganizationUnit extends AuthorizationObject, Cacheable, Serial
 
   void setName(String value);
 
-  ///#region 属性:GlobalName
-
   /**
    * 全局名称
    */
   String getGlobalName();
-  ///#endregion
-
-  ///#region 属性:FullName
-
+  void setGlobalName(String value);
   /**
    * 全称
    */
   String getFullName();
-  ///#endregion
 
   /**
    * 拼音
@@ -55,37 +49,49 @@ public interface OrganizationUnit extends AuthorizationObject, Cacheable, Serial
   void setPinYin(String value);
 
   /**
-   * 所属父级组织标识
+   * 所属父级组织单元标识
    */
   String getParentId();
 
   void setParentId(String value);
 
-  ///#region 属性:ParentGlobalName
+  /**
+   * 所属父级节点名称
+   */
+  String getParentName();
 
   /**
-   * 父节点全局名称
+   * 所属父节节点全局名称
    */
   String getParentGlobalName();
-  ///#endregion
 
   /**
    * 父级组织信息
    */
   OrganizationUnit getParent();
 
-  ///#region 属性:ChindNodes
-
   /**
    * 子节点
    */
   List<AuthorizationObject> getChindNodes();
-  ///#endregion
 
   /**
    * 角色集合
    */
   List getRoles();
+
+  /**
+   * 获取主要负责人角色标识
+   *
+   * @return 主要负责人角色标识
+   */
+  String getChiefRoleId();
+
+  void setChiefRoleId(String value);
+
+  List<OrganizationUnit> getChildren();
+
+  void setChildren(List<OrganizationUnit> children);
 
   /**
    * 所属标准组织标识
@@ -94,31 +100,21 @@ public interface OrganizationUnit extends AuthorizationObject, Cacheable, Serial
 
   void setStandardOrganizationUnitId(String value);
 
-  ///#region 属性:Type
-
   /**
    * 类型
+   *
+   * 0-公司 1-部门 2-虚拟团队 3-项目 4-项目分期 9-区域 99-公司客户
    */
-//C# TO JAVA CONVERTER WARNING: There is no Java equivalent to C#'s shadowing via the 'new' keyword:
-//ORIGINAL LINE: new int getType();
   int getType();
 
-  //C# TO JAVA CONVERTER WARNING: There is no Java equivalent to C#'s shadowing via the 'new' keyword:
-//ORIGINAL LINE: new void setType(int value);
   void setType(int value);
-  ///#endregion
-
-  ///#region 属性:EnableEmail
 
   /**
-   * 启用企业邮箱
+   * 启用邮箱
    */
   int getEnableEmail();
 
   void setEnableEmail(int value);
-  ///#endregion
-
-  ///#region 属性:OrderId
 
   /**
    * 排序标识
@@ -126,9 +122,6 @@ public interface OrganizationUnit extends AuthorizationObject, Cacheable, Serial
   String getOrderId();
 
   void setOrderId(String value);
-  ///#endregion
-
-  ///#region 属性:FullPath
 
   /**
    * 所属组织架构全路径
@@ -136,9 +129,6 @@ public interface OrganizationUnit extends AuthorizationObject, Cacheable, Serial
   String getFullPath();
 
   void setFullPath(String value);
-  ///#endregion
-
-  ///#region 属性:DistinguishedName
 
   /**
    * 唯一名称
@@ -146,15 +136,11 @@ public interface OrganizationUnit extends AuthorizationObject, Cacheable, Serial
   String getDistinguishedName();
 
   void setDistinguishedName(String value);
-  ///#endregion
-
-  ///#region 属性:ExtensionInformation
 
   /**
    * 组织单位扩展信息
    */
   ExtensionInformation getExtensionInformation();
-  ///#endregion
 
   /**
    * 创建时间
@@ -162,4 +148,11 @@ public interface OrganizationUnit extends AuthorizationObject, Cacheable, Serial
   Date getCreatedDate();
 
   void setCreatedDate(Date value);
+
+  /**
+   * 新增补齐
+   * @return
+   */
+  public int getLevel();
+  void setLevel(int level);
 }

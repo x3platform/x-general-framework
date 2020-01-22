@@ -1,13 +1,19 @@
 package com.x3platform.apps.models;
+
+import com.alibaba.fastjson.annotation.JSONField;
+import com.x3platform.AuthorizationScope;
+import com.x3platform.AuthorizationScopeManagement;
 import com.x3platform.EntityClass;
+import com.x3platform.apps.AppsContext;
 import com.x3platform.cachebuffer.Cacheable;
 import com.x3platform.membership.Account;
+import com.x3platform.membership.MembershipManagement;
 import com.x3platform.util.DateUtil;
 import com.x3platform.util.StringUtil;
-import org.dom4j.Element;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import org.dom4j.Element;
 
 /**
  * 应用信息
@@ -15,25 +21,42 @@ import java.util.List;
  * @author ruanyu
  */
 public class Application extends EntityClass implements Cacheable {
+
   /**
    * 默认构造函数
    */
   public Application() {
 
   }
+
   private String id;
+
   /**
    * 标识
    */
   public String getId() {
     return id;
   }
+
   public void setId(String value) {
     id = value;
   }
+
+  @JSONField(serialize = false)
   private Account account;
-  private String parentName;
+
+  /**
+   * 帐号
+   */
+  public Account getAccount() {
+    if (account == null && !StringUtil.isNullOrEmpty(getAccountId())) {
+      account = MembershipManagement.getInstance().getAccountService().findOne(getAccountId());
+    }
+    return account;
+  }
+
   private String accountId = "";
+
   /**
    * 帐号标识
    */
@@ -49,40 +72,30 @@ public class Application extends EntityClass implements Cacheable {
    * 账号姓名
    */
   public String getAccountName() {
-    return this.getAccount() == null ? "" : this.getAccount().getName();
+    return getAccount() == null ? "" : getAccount().getName();
   }
 
+  @JSONField(serialize = false)
   private Application parent;
+
+  /**
+   * 应用
+   */
+  public Application getParent() {
+    if (parent == null && !StringUtil.isNullOrEmpty(getParentId())) {
+      parent = AppsContext.getInstance().getApplicationService().findOne(getParentId());
+    }
+    return parent;
+  }
+
   /**
    */
   private String parentDisplayName;
 
   private String parentId = "";
 
-  /**
-   * 帐号
-   */
-  public Account getAccount() {
-/*    if (account == null && !StringUtil.isNullOrEmpty(this.getAccountId())) {
-      account = MembershipManagement.getInstance().getAccountService().findOne(this.getAccountId());
-    }*/
-    return account;
-  }
-
   public void setParentId(String value) {
     parentId = value;
-  }
-
-  /**
-   * 应用
-   */
-  public Application getParent() {
-/*
-    if (parent == null && !StringUtil.isNullOrEmpty(this.getParentId())) {
-      parent = AppsContext.getInstance().getApplicationService().findOne(this.getParentId());
-    }
-*/
-    return parent;
   }
 
   /**
@@ -99,13 +112,11 @@ public class Application extends EntityClass implements Cacheable {
    *
    */
   public String getParentName() {
-    // return this.getParent() == null ? this.getApplicationDisplayName() : this.getParent().getApplicationName();
-    return parentName;
+    return getParent() == null ? getApplicationDisplayName() : getParent().getApplicationName();
   }
 
   public String getParentDisplayName() {
-    //return this.getParent() == null ? "" : this.getParent().getApplicationDisplayName();
-    return parentDisplayName;
+    return getParent() == null ? "" : getParent().getApplicationDisplayName();
   }
 
   private String code = "";
@@ -139,7 +150,7 @@ public class Application extends EntityClass implements Cacheable {
    */
   public String getApplicationDisplayName() {
     if (StringUtil.isNullOrEmpty(applicationDisplayName)) {
-      this.applicationDisplayName = this.applicationName;
+      applicationDisplayName = applicationName;
     }
     return applicationDisplayName;
   }
@@ -311,11 +322,11 @@ public class Application extends EntityClass implements Cacheable {
    * 是否锁定 0:允许 1:锁定
    */
   public int getLocking() {
-    return this.locking;
+    return locking;
   }
 
   public void setLocking(int value) {
-    this.locking = value;
+    locking = value;
   }
 
   private String orderId = "";
@@ -369,6 +380,7 @@ public class Application extends EntityClass implements Cacheable {
   private java.time.LocalDateTime createdDate = java.time.LocalDateTime.now();
 
   /**
+   * 创建时间
    */
   public java.time.LocalDateTime getCreatedDate() {
     return createdDate;
@@ -382,238 +394,127 @@ public class Application extends EntityClass implements Cacheable {
   // 管理员信息
   // -------------------------------------------------------
 
-  ///#region 属性:Administrators
-  // private List<MembershipAuthorizationScopeObject> mAdministrators = null;
+  private List<AuthorizationScope> administrators = null;
+
+  /**
+   * 此方法适用缓存反序列化, 正式赋值建议使用相关服务的 bindAuthorizationScopeByEntityId 方法
+   */
+  public void setAdministrators(List<AuthorizationScope> value) {
+    administrators = value;
+  }
 
   /**
    */
-/*   public List<MembershipAuthorizationScopeObject> getAdministrators() {
-     if (mAdministrators == null) {
-       mAdministrators = AppsContext.getInstance().getApplicationService().GetAuthorizationScopeObjects(this.getId(), "应用_默认_管理员");
-     }
-     return mAdministrators;
-   }*/
+  public List<AuthorizationScope> getAdministrators() {
+    if (administrators == null) {
+      administrators = AppsContext.getInstance().getApplicationService()
+        .getAuthorizationScopes(getId(), "应用_默认_管理员");
+    }
+    return administrators;
+  }
 
-  private String mAdministratorScopeView = "";
+  private String administratorScopeView = null;
 
   /**
    */
   public String getAdministratorScopeView() {
-/*    if (StringUtil.isNullOrEmpty(mAdministratorScopeView)) {
-      if (!StringUtil.isNullOrEmpty(id)) {
-        List<Account> accountInfos = AppsContext.getInstance().getApplicationService().findAllAccountByApplicationId(id, "isAdministrator");
-        if (accountInfos != null && accountInfos.size() > 0) {
-          StringBuilder stringBuilder = new StringBuilder() ;
-          for (Account Account : accountInfos) {
-            if(StringUtil.isNullOrEmpty(mAdministratorScopeView)){
-              stringBuilder.append("\"[人员]");
-                // mAdministratorScopeView = Account.getName();
-              stringBuilder.append(Account.getName());
-              stringBuilder.append("\"");
-            }else{
-              stringBuilder.append(",");
-              stringBuilder.append("\"[人员]");
-              stringBuilder.append(Account.getName());
-              // mAdministratorScopeView = mAdministratorScopeView +","+ Account.getName();
-              stringBuilder.append("\"");
-            }
-          }
-          mAdministratorScopeView = stringBuilder.toString();
-      }
-      }
-    }*/
-    return mAdministratorScopeView;
+    if (administratorScopeView == null) {
+      administratorScopeView = AuthorizationScopeManagement.getAuthorizationScopeView(getAdministrators());
+    }
+    return administratorScopeView;
   }
-  ///#endregion
-  ///#region 属性:AdministratorScopeText
-  private String mAdministratorScopeText = "";
+
+  private String administratorScopeText = null;
 
   /**
    */
   public String getAdministratorScopeText() {
-/*    if (StringUtil.isNullOrEmpty(mAdministratorScopeText)) {
-      if (!StringUtil.isNullOrEmpty(id)) {
-        List<Account> accountInfos = AppsContext.getInstance().getApplicationService().findAllAccountByApplicationId(id, "isAdministrator");
-        if (accountInfos != null && accountInfos.size() > 0) {
-          StringBuilder stringBuilder = new StringBuilder() ;
-          stringBuilder.append("[");
-          for (Account Account : accountInfos) {
-            if(StringUtil.isNullOrEmpty(mAdministratorScopeText)){
-              stringBuilder.append("{");
-              stringBuilder.append("\"authorizationObjectId\":\""+Account.getId()+"\",");
-              stringBuilder.append("\"authorizationObjectType\":\"Account\"");
-              stringBuilder.append("}");
-            }else{
-              stringBuilder.append(",{");
-              stringBuilder.append("\"authorizationObjectId\":\""+Account.getId()+"\",");
-              stringBuilder.append("\"authorizationObjectType\":\"Account\"");
-              stringBuilder.append("}");
-             // mAdministratorScopeText = mAdministratorScopeText+","+ Account.getId();
-            }
-          }
-          stringBuilder.append("]");
-          mAdministratorScopeText= stringBuilder.toString();
-        }
-      }
-    }*/
-    return mAdministratorScopeText;
+    if (administratorScopeText == null) {
+      administratorScopeText = AuthorizationScopeManagement.getAuthorizationScopeText(getAdministrators());
+    }
+    return administratorScopeText;
   }
-  ///#endregion
+
   // -------------------------------------------------------
   // 审查员信息
   // -------------------------------------------------------
-/*
-  private List<MembershipAuthorizationScopeObject> reviewers = null;
-   public List<MembershipAuthorizationScopeObject> getReviewers() {
-   if (reviewers == null) {
-   reviewers = AppsContext.Instance.ApplicationService.GetAuthorizationScopeObjects(this.getId(), "应用_默认_审查员");
-   }
-   return reviewers;
-   }*/
 
-  private String reviewerScopeView = "";
+  private List<AuthorizationScope> reviewers = null;
+
+  /**
+   * 此方法适用缓存反序列化, 正式赋值建议使用相关服务的 bindAuthorizationScopeByEntityId 方法
+   */
+  public void setReviewers(List<AuthorizationScope> value) {
+    reviewers = value;
+  }
+
+  public List<AuthorizationScope> getReviewers() {
+    if (reviewers == null) {
+      reviewers = AppsContext.getInstance().getApplicationService().getAuthorizationScopes(getId(), "应用_默认_审查员");
+    }
+    return reviewers;
+  }
+
+  private String reviewerScopeView = null;
 
   public String getReviewerScopeView() {
-/*    if (StringUtil.isNullOrEmpty(reviewerScopeView)) {
-      if(!StringUtil.isNullOrEmpty(id)){
-      List<Account> accountInfos = AppsContext.getInstance().getApplicationService().findAllAccountByApplicationId(id, "isReviewer");
-      if (accountInfos != null && accountInfos.size() > 0) {
-        StringBuilder stringBuilder = new StringBuilder();
-        for (Account Account : accountInfos) {
-          if(StringUtil.isNullOrEmpty(reviewerScopeView)){
-            stringBuilder.append("\"[人员]");
-            stringBuilder.append(Account.getName());
-            stringBuilder.append("\"");
-           // reviewerScopeView = Account.getName() ;
-          }else{
-            stringBuilder.append(",\"[人员]");
-            stringBuilder.append(Account.getName());
-            stringBuilder.append("\"");
-            //reviewerScopeView = reviewerScopeView +","+ Account.getName();
-          }
-        }
-        reviewerScopeView = stringBuilder.toString();
-      }}
-    }*/
-   return reviewerScopeView;
+    if (reviewerScopeView == null) {
+      reviewerScopeView = AuthorizationScopeManagement.getAuthorizationScopeView(getReviewers());
+    }
+    return reviewerScopeView;
   }
 
-   private String reviewerScopeText = "";
+  private String reviewerScopeText = null;
 
   public String getReviewerScopeText() {
-/*   if (StringUtil.isNullOrEmpty(reviewerScopeText)) {
-     if (StringUtil.isNullOrEmpty(reviewerScopeText)) {
-       if (!StringUtil.isNullOrEmpty(id)) {
-         List<Account> accountInfos = AppsContext.getInstance().getApplicationService().findAllAccountByApplicationId(id, "isReviewer");
-         if (accountInfos != null && accountInfos.size() > 0) {
-           StringBuilder stringBuilder = new StringBuilder();
-           stringBuilder.append("[");
-           for (Account Account : accountInfos) {
-             if(StringUtil.isNullOrEmpty(reviewerScopeText)){
-            //   reviewerScopeText = Account.getId();
-               stringBuilder.append("{");
-               stringBuilder.append("\"authorizationObjectId\":\""+Account.getId()+"\",");
-               stringBuilder.append("\"authorizationObjectType\":\"Account\"");
-               stringBuilder.append("}");
-             }else {
-               stringBuilder.append(",{");
-               stringBuilder.append("\"authorizationObjectId\":\""+Account.getId()+"\",");
-               stringBuilder.append("\"authorizationObjectType\":\"Account\"");
-               stringBuilder.append("}");
-              // reviewerScopeText = reviewerScopeText +","+ Account.getId();
-             }
-           }
-           stringBuilder.append("]");
-           reviewerScopeText = stringBuilder.toString();
-         }
-       }
-     }
-   }*/
-   return reviewerScopeText;
+    if (reviewerScopeText == null) {
+      reviewerScopeText = AuthorizationScopeManagement.getAuthorizationScopeText(getReviewers());
+    }
+    return reviewerScopeText;
   }
-
 
   // -------------------------------------------------------
   // 可访问成员信息
   // -------------------------------------------------------
 
+  private List<AuthorizationScope> members = null;
 
-  //private List<MembershipAuthorizationScopeObject> members = null;
+  /**
+   * 此方法适用缓存反序列化, 正式赋值建议使用相关服务的 bindAuthorizationScopeByEntityId 方法
+   */
+  public void setMembers(List<AuthorizationScope> value) {
+    members = value;
+  }
 
+  public List<AuthorizationScope> getMembers() {
+    if (members == null) {
+      members = AppsContext.getInstance().getApplicationService().getAuthorizationScopes(getId(), "应用_默认_可访问成员");
 
-  // public List<MembershipAuthorizationScopeObject> getMembers() {
-  //if (members == null) {
-  //members = AppsContext.Instance.ApplicationService.GetAuthorizationScopeObjects(this.getId(), "应用_默认_可访问成员");
+      if (members.isEmpty()) {
+        members.add(new AuthorizationScope("Role", "00000000-0000-0000-0000-000000000000", "所有人"));
+      }
+    }
 
-  //if (members.isEmpty()) {
-  //members.add(new MembershipAuthorizationScopeObject("Role", "00000000-0000-0000-0000-000000000000", "所有人"));
-  //}
-  //}
+    return members;
+  }
 
-  // return members;
-  // }
-
-
-
-   private String memberScopeView = "";
+  private String memberScopeView = null;
 
   public String getMemberScopeView() {
-/*    if (StringUtil.isNullOrEmpty(memberScopeView)) {
-
-      if(!StringUtil.isNullOrEmpty(id)){
-      List<Account> accountInfos = AppsContext.getInstance().getApplicationService().findAllAccountByApplicationId(id, "isMember");
-      if (accountInfos != null && accountInfos.size() > 0) {
-        StringBuilder stringBuilder = new StringBuilder() ;
-        for (Account Account : accountInfos) {
-          if(StringUtil.isNullOrEmpty(memberScopeView)){
-            stringBuilder.append("\"[人员]");
-            stringBuilder.append(Account.getName());
-            stringBuilder.append("\"");
-            //memberScopeView = Account.getName();
-          }else{
-            stringBuilder.append(",\"[人员]");
-            stringBuilder.append(Account.getName());
-            stringBuilder.append("\"");
-           // memberScopeView = memberScopeView +","+ Account.getName();
-          }
-         }
-        memberScopeView = stringBuilder.toString();
-       }}
-     }*/
-   return memberScopeView;
+    if (memberScopeView == null) {
+      memberScopeView = AuthorizationScopeManagement.getAuthorizationScopeView(getMembers());
+    }
+    return memberScopeView;
   }
-   private String memberScopeText = "";
+
+  private String memberScopeText = null;
 
   public String getMemberScopeText() {
-/*    if (StringUtil.isNullOrEmpty(memberScopeText)) {
-      if (StringUtil.isNullOrEmpty(memberScopeText)) {
-        if (!StringUtil.isNullOrEmpty(id)) {
-          List<Account> accountInfos = AppsContext.getInstance().getApplicationService().findAllAccountByApplicationId(id, "isMember");
-          if (accountInfos != null && accountInfos.size() > 0) {
-            StringBuilder stringBuilder = new StringBuilder();
-            for (Account Account : accountInfos) {
-              if(StringUtil.isNullOrEmpty(memberScopeText)){
-                stringBuilder.append("{");
-                stringBuilder.append("\"authorizationObjectId\":\""+Account.getId()+"\",");
-                stringBuilder.append("\"authorizationObjectType\":\"Account\"");
-                stringBuilder.append("}");
-                //memberScopeText =  Account.getId();
-              }else {
-                stringBuilder.append(",{");
-                stringBuilder.append("\"authorizationObjectId\":\""+Account.getId()+"\",");
-                stringBuilder.append("\"authorizationObjectType\":\"Account\"");
-                stringBuilder.append("}");
-                //memberScopeText = memberScopeText +","+ Account.getId();
-              }
-            }
-            memberScopeText = stringBuilder.toString();
-          }
-        }
-      }
-   }*/
-   return memberScopeText;
+    if (memberScopeText == null) {
+      memberScopeText = AuthorizationScopeManagement.getAuthorizationScopeText(getMembers());
+    }
+    return memberScopeText;
   }
-
 
   // -------------------------------------------------------
   // 设置 EntityClass 标识
@@ -622,11 +523,10 @@ public class Application extends EntityClass implements Cacheable {
   /**
    * 实体对象标识
    */
-  // @Override
+  @Override
   public String getEntityId() {
-    return this.getId();
+    return getId();
   }
-  ///#endregion
 
   // -------------------------------------------------------
   // 显式实现 Cacheable
@@ -637,10 +537,13 @@ public class Application extends EntityClass implements Cacheable {
   /**
    * 过期时间
    */
+
+  @Override
   public Date getExpires() {
     return expires;
   }
 
+  @Override
   public void setExpires(Date value) {
     expires = value;
   }
@@ -652,7 +555,7 @@ public class Application extends EntityClass implements Cacheable {
   /**
    * 序列化对象
    */
-  // @Override
+  @Override
   public String serializable() {
     return serializable(false, false);
   }
@@ -660,11 +563,10 @@ public class Application extends EntityClass implements Cacheable {
   /**
    * 序列化对象
    *
-   * @param displayComment      显示注释
+   * @param displayComment 显示注释
    * @param displayFriendlyName 显示友好名称
-   * @return
    */
-  // @Override
+  @Override
   public String serializable(boolean displayComment, boolean displayFriendlyName) {
     StringBuilder outString = new StringBuilder();
     if (displayComment) {
@@ -674,38 +576,38 @@ public class Application extends EntityClass implements Cacheable {
     if (displayComment) {
       outString.append("<!-- 应用标识 (字符串) (nvarchar(36)) -->");
     }
-    outString.append(String.format("<id><![CDATA[%1$s]]></id>", this.getId()));
+    outString.append(String.format("<id><![CDATA[%1$s]]></id>", getId()));
     if (displayComment) {
       outString.append("<!-- 父级应用标识 (字符串) (nvarchar(36)) -->");
     }
-    outString.append(String.format("<applicationId><![CDATA[%1$s]]></applicationId>", this.getParentId()));
+    outString.append(String.format("<applicationId><![CDATA[%1$s]]></applicationId>", getParentId()));
     if (displayComment) {
       outString.append("<!-- 应用编码 (字符串) (nvarchar(30)) -->");
     }
-    outString.append(String.format("<code><![CDATA[%1$s]]></code>", this.getCode()));
+    outString.append(String.format("<code><![CDATA[%1$s]]></code>", getCode()));
     if (displayComment) {
       outString.append("<!-- 应用名称 (字符串) (nvarchar(50)) -->");
     }
-    outString.append(String.format("<name><![CDATA[%1$s]]></name>", this.getApplicationName()));
+    outString.append(String.format("<name><![CDATA[%1$s]]></name>", getApplicationName()));
     if (displayComment) {
       outString.append("<!-- 应用显示名称 (字符串) (nvarchar(50)) -->");
     }
-    outString.append(String.format("<type><![CDATA[%1$s]]></type>", this.getApplicationDisplayName()));
+    outString.append(String.format("<type><![CDATA[%1$s]]></type>", getApplicationDisplayName()));
     if (displayComment) {
       outString.append("<!-- 所属父级功能标识 (字符串) (nvarchar(36)) -->");
     }
-    outString.append(String.format("<parentId><![CDATA[%1$s]]></parentId>", this.getParentId()));
+    outString.append(String.format("<parentId><![CDATA[%1$s]]></parentId>", getParentId()));
     if (displayComment) {
       outString.append("<!-- 状态 (整型) (int) -->");
     }
-    outString.append(String.format("<status><![CDATA[%1$s]]></status>", this.getStatus()));
+    outString.append(String.format("<status><![CDATA[%1$s]]></status>", getStatus()));
     if (displayComment) {
       outString.append("<!-- 授权对象列表 -->");
     }
     outString.append("<authorizationObjects>");
     //if (this.mAuthorizationReadScopeObjects != null)
     //{
-    //    foreach (MembershipAuthorizationScopeObject authorizationScopeObject in this.mAuthorizationReadScopeObjects)
+    //    foreach (AuthorizationScope authorizationScopeObject in this.mAuthorizationReadScopeObjects)
     //    {
     //        outString.AppendFormat("<authorizationObject id=\"{0}\" type=\"{1}\" />",
     //            authorizationScopeObject.AuthorizationObjectId,
@@ -716,7 +618,8 @@ public class Application extends EntityClass implements Cacheable {
     if (displayComment) {
       outString.append("<!-- 最后更新时间 (时间) (datetime) -->");
     }
-    outString.append(String.format("<modifiedDate><![CDATA[%1$s]]></modifiedDate>", StringUtil.toDateFormat(this.getModifiedDate(), "yyyy-MM-dd HH:mm:ss")));
+    outString.append(String.format("<modifiedDate><![CDATA[%1$s]]></modifiedDate>",
+      StringUtil.toDateFormat(getModifiedDate(), "yyyy-MM-dd HH:mm:ss")));
     outString.append("</feature>");
 
     return outString.toString();
@@ -728,6 +631,7 @@ public class Application extends EntityClass implements Cacheable {
    * @param element Xml元素
    */
   // @Override
+  @Override
   public void deserialize(Element element) {
     /*
     this.setId(element.GetElementsByTagName("id")[0].InnerText);
@@ -738,45 +642,7 @@ public class Application extends EntityClass implements Cacheable {
     */
   }
 
-  public String getmAdministratorScopeView() {
-    return mAdministratorScopeView;
-  }
-
-  public void setmAdministratorScopeView(String mAdministratorScopeView) {
-    this.mAdministratorScopeView = mAdministratorScopeView;
-  }
-
-  public String getmAdministratorScopeText() {
-    return mAdministratorScopeText;
-  }
-
-  public void setmAdministratorScopeText(String mAdministratorScopeText) {
-    this.mAdministratorScopeText = mAdministratorScopeText;
-  }
-
-
-  public void setReviewerScopeView(String reviewerScopeView) {
-    this.reviewerScopeView = reviewerScopeView;
-  }
-
-
-  public void setReviewerScopeText(String reviewerScopeText) {
-    this.reviewerScopeText = reviewerScopeText;
-  }
-
-
-  public void setMemberScopeView(String memberScopeView) {
-    this.memberScopeView = memberScopeView;
-  }
-
-
-  public void setMemberScopeText(String memberScopeText) {
-    this.memberScopeText = memberScopeText;
-  }
-
-
   public List<Object> childNodes = new ArrayList<>();
-
 
   public List<Object> getChildNodes() {
     return childNodes;
@@ -785,24 +651,24 @@ public class Application extends EntityClass implements Cacheable {
   public void setChildNodes(List<Object> childNodes) {
     this.childNodes = childNodes;
   }
+//
+//  public void setAccount(Account account) {
+//    this.account = account;
+//  }
+//
+//  public void setParentName(String parentName) {
+//    this.parentName = parentName;
+//  }
+//
+//  public void setParent(Application parent) {
+//    this.parent = parent;
+//  }
+//
+//  public void setParentDisplayName(String parentDisplayName) {
+//    this.parentDisplayName = parentDisplayName;
+//  }
 
-  public void setAccount(Account account) {
-    this.account = account;
-  }
-
-  public void setParentName(String parentName) {
-    this.parentName = parentName;
-  }
-
-  public void setParent(Application parent) {
-    this.parent = parent;
-  }
-
-  public void setParentDisplayName(String parentDisplayName) {
-    this.parentDisplayName = parentDisplayName;
-  }
-
-  private String url ;
+  private String url;
 
   public String getUrl() {
     return url;

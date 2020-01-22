@@ -17,14 +17,14 @@ public interface ApplicationOptionMapper {
   /**
    * 添加记录
    *
-   * @param param 实例<see cref="ApplicationSetting"/>详细信息
+   * @param param 实例{@link ApplicationOption}详细信息
    */
   int insert(ApplicationOption param);
 
   /**
    * 修改记录
    *
-   * @param param 实例<see cref="ApplicationSetting"/>详细信息
+   * @param param 实例{@link ApplicationOption}详细信息
    */
   int updateByPrimaryKey(ApplicationOption param);
 

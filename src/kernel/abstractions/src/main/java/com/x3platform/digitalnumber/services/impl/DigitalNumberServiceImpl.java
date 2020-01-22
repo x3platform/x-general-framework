@@ -2,17 +2,18 @@ package com.x3platform.digitalnumber.services.impl;
 
 import com.x3platform.RefObject;
 import com.x3platform.data.DataQuery;
+import com.x3platform.data.GenericSqlCommand;
 import com.x3platform.digitalnumber.DigitalNumberScript;
 import com.x3platform.digitalnumber.configuration.DigitalNumberConfigurationView;
 import com.x3platform.digitalnumber.mappers.DigitalNumberMapper;
 import com.x3platform.digitalnumber.models.DigitalNumber;
 import com.x3platform.digitalnumber.services.DigitalNumberService;
 import com.x3platform.util.StringUtil;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-@Service
 public class DigitalNumberServiceImpl implements DigitalNumberService {
 
   @Autowired
@@ -60,7 +61,7 @@ public class DigitalNumberServiceImpl implements DigitalNumberService {
    * 查询某条记录
    *
    * @param name DigitalNumber Id号
-   * @return 返回一个<see       cref   =   "   DigitalNumber   "   /> 实例的详细信息
+   * @return 返回一个{@link DigitalNumber} 实例的详细信息
    */
   @Override
   public DigitalNumber findOne(String name) {
@@ -70,7 +71,7 @@ public class DigitalNumberServiceImpl implements DigitalNumberService {
   /**
    * 查询所有相关记录
    *
-   * @return 返回所有<see       cref   =   "   DigitalNumber   "   /> 实例的详细信息
+   * @return 返回所有{@link DigitalNumber} 实例的详细信息
    */
   @Override
   public List<DigitalNumber> findAll() {
@@ -83,11 +84,11 @@ public class DigitalNumberServiceImpl implements DigitalNumberService {
    * 查询所有相关记录
    *
    * @param query 数据查询参数
-   * @return 返回所有<see       cref   =   "   DigitalNumber   "   /> 实例的详细信息
+   * @return 返回所有{@link DigitalNumber} 实例的详细信息
    */
   @Override
   public List<DigitalNumber> findAll(DataQuery query) {
-    return provider.findAll(query.getWhereSql(), query.getOrderBySql(), query.getLength());
+    return provider.findAll(query.getMap());
   }
 
   // -------------------------------------------------------
@@ -158,19 +159,35 @@ public class DigitalNumberServiceImpl implements DigitalNumberService {
    * 根据前缀生成数字编码
    *
    * @param entityTableName 实体数据表
-   * @param prefixCode      前缀编号
-   * @param expression      规则表达式
+   * @param prefixCode 前缀编号
+   * @param expression 规则表达式
    * @return 数字编码
    */
   @Override
   public String generateCodeByPrefixCode(String entityTableName, String prefixCode, String expression) {
+    // 获取前缀
+    String prefix = DigitalNumberScript.runPrefixScript(expression, prefixCode.toUpperCase(), LocalDateTime.now());
+
     String code = "";
 
     int count = 0;
 
     // 有可能生成编号失败，所以 while。
     while (StringUtil.isNullOrEmpty(code)) {
-      code = provider.generateCodeByPrefixCode(entityTableName, prefixCode, expression);
+      // code = provider.generateCodeByPrefixCode(entityTableName, prefixCode, expression);
+
+      // 根据前缀信息查询当前最大的编号
+      // Dictionary<string, object> args = new Dictionary<string, object>();
+
+      // args.Add("EntityTableName", entityTableName);
+      // args.Add("Prefix", prefix);
+
+      // int seed = Convert.ToInt32(this.ibatisMapper.QueryForObject(StringHelper.ToProcedurePrefix(string.Format("{0}_GetMaxSeedByPrefix", tableName)), args));
+      int seedValue = provider.getMaxSeedByPrefix(entityTableName, prefix);
+
+      RefObject<Integer> seed = new RefObject<>(seedValue);
+
+      code = DigitalNumberScript.runScript(expression, prefixCode, LocalDateTime.now(), seed);
 
       if (count++ > 10) {
         break;
@@ -183,47 +200,22 @@ public class DigitalNumberServiceImpl implements DigitalNumberService {
   /**
    * 根据前缀生成数字编码
    *
-   * @param command         通用 SQL 命令对象
+   * @param command 通用 SQL 命令对象
    * @param entityTableName 实体数据表
-   * @param prefixCode      前缀编号
-   * @param expression      规则表达式
-   * @return 数字编码
-   */
-  /*public String GenerateCodeByPrefixCode(GenericSqlCommand command, String entityTableName, String prefixCode, String expression) {
-    String code = "";
-
-    int count = 0;
-
-    // 有可能生成编号失败，所以 while。
-    while (tangible.DotNetToJavaStringHelper.isNullOrEmpty(code)) {
-      code = this.provider.GenerateCodeByPrefixCode(command, entityTableName, prefixCode, expression);
-
-      if (count++ > 10) {
-        break;
-      }
-    }
-
-    return code;
-  }*/
-
-  /**
-   * 根据类别标识成数字编码
-   *
-   * @param entityTableName         实体数据表
-   * @param entityCategoryTableName 实体类别数据表
-   * @param entityCategoryId        实体类别标识
-   * @param expression              规则表达式
+   * @param prefixCode 前缀编号
+   * @param expression 规则表达式
    * @return 数字编码
    */
   @Override
-  public String generateCodeByCategoryId(String entityTableName, String entityCategoryTableName, String entityCategoryId, String expression) {
+  public String generateCodeByPrefixCode(GenericSqlCommand command, String entityTableName, String prefixCode,
+    String expression) {
     String code = "";
 
     int count = 0;
 
     // 有可能生成编号失败，所以 while。
     while (StringUtil.isNullOrEmpty(code)) {
-      code = provider.generateCodeByCategoryId(entityTableName, entityCategoryTableName, entityCategoryId, expression);
+      // code = this.provider.generateCodeByPrefixCode(command, entityTableName, prefixCode, expression);
 
       if (count++ > 10) {
         break;
@@ -236,22 +228,22 @@ public class DigitalNumberServiceImpl implements DigitalNumberService {
   /**
    * 根据类别标识成数字编码
    *
-   * @param command                 通用SQL命令对象
-   * @param entityTableName         实体数据表
+   * @param entityTableName 实体数据表
    * @param entityCategoryTableName 实体类别数据表
-   * @param entityCategoryId        实体类别标识
-   * @param expression              规则表达式
+   * @param entityCategoryId 实体类别标识
+   * @param expression 规则表达式
    * @return 数字编码
    */
-  /*
-  public String generateCodeByCategoryId(GenericSqlCommand command, String entityTableName, String entityCategoryTableName, String entityCategoryId, String expression) {
+  @Override
+  public String generateCodeByCategoryId(String entityTableName, String entityCategoryTableName,
+    String entityCategoryId, String expression) {
     String code = "";
 
     int count = 0;
 
     // 有可能生成编号失败，所以 while。
-    while (tangible.DotNetToJavaStringHelper.isNullOrEmpty(code)) {
-      code = this.provider.GenerateCodeByCategoryId(command, entityTableName, entityCategoryTableName, entityCategoryId, expression);
+    while (StringUtil.isNullOrEmpty(code)) {
+      // code = provider.generateCodeByCategoryId(entityTableName, entityCategoryTableName, entityCategoryId, expression);
 
       if (count++ > 10) {
         break;
@@ -259,5 +251,35 @@ public class DigitalNumberServiceImpl implements DigitalNumberService {
     }
 
     return code;
-  }*/
+  }
+
+  /**
+   * 根据类别标识成数字编码
+   *
+   * @param command 通用SQL命令对象
+   * @param entityTableName 实体数据表
+   * @param entityCategoryTableName 实体类别数据表
+   * @param entityCategoryId 实体类别标识
+   * @param expression 规则表达式
+   * @return 数字编码
+   */
+  @Override
+  public String generateCodeByCategoryId(GenericSqlCommand command, String entityTableName,
+    String entityCategoryTableName, String entityCategoryId, String expression) {
+    String code = "";
+
+    int count = 0;
+
+    // 有可能生成编号失败，所以 while。
+    while (StringUtil.isNullOrEmpty(code)) {
+      // code = this.provider
+      //  .generateCodeByCategoryId(command, entityTableName, entityCategoryTableName, entityCategoryId, expression);
+
+      if (count++ > 10) {
+        break;
+      }
+    }
+
+    return code;
+  }
 }

@@ -4,21 +4,18 @@ import com.x3platform.configuration.KernelConfigurationView;
 import com.x3platform.membership.Account;
 import com.x3platform.security.authentication.AuthenticationManagement;
 import com.x3platform.util.StringUtil;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.lang.reflect.InvocationTargetException;
-import java.util.Timer;
+import org.slf4j.Logger;
 
 /**
  * 核心环境
  */
 public final class KernelContext implements Context {
+
   /**
    * 日志记录器
    */
-  private Logger logger = LoggerFactory.getLogger(this.getClass());
+  private Logger logger = InternalLogger.getLogger();
 
   /**
    * 日志记录
@@ -27,9 +24,7 @@ public final class KernelContext implements Context {
     return getCurrent().logger;
   }
 
-  private Timer timer = new Timer();
-
-  private static volatile KernelContext instance = null;
+  private static volatile KernelContext sInstance = null;
 
   private static Object lockObject = new Object();
 
@@ -37,15 +32,15 @@ public final class KernelContext implements Context {
    * 当前信息
    */
   public static KernelContext getCurrent() {
-    if (instance == null) {
+    if (sInstance == null) {
       synchronized (lockObject) {
-        if (instance == null) {
-          instance = new KernelContext();
+        if (sInstance == null) {
+          sInstance = new KernelContext();
         }
       }
     }
 
-    return instance;
+    return sInstance;
   }
 
   /**
@@ -60,18 +55,8 @@ public final class KernelContext implements Context {
    * 用户信息
    */
   public Account getUser() {
-    return this.getAuthenticationManagement().getAuthUser();
+    return getAuthenticationManagement().getAuthUser();
   }
-
-  // private KernelConfiguration configuration = null;
-
-  /**
-   * 配置信息
-   */
-  // public KernelConfiguration getConfiguration() {
-  //  return configuration;
-  // }
-  ///#endregion
 
   private AuthenticationManagement authenticationManagement = null;
 
@@ -83,7 +68,7 @@ public final class KernelContext implements Context {
   }
 
   private KernelContext() {
-    this.reload();
+    reload();
   }
 
   /**
@@ -91,50 +76,11 @@ public final class KernelContext implements Context {
    */
   @Override
   public void reload() {
-    // this.configuration = KernelConfigurationView.Instance.Configuration;
-
     String authenticationManagementType = KernelConfigurationView.getInstance().getAuthenticationManagementType();
 
-    this.authenticationManagement = (AuthenticationManagement) createObject(authenticationManagementType);
+    authenticationManagement = (AuthenticationManagement) createObject(authenticationManagementType);
 
-    logger.info("AuthenticationManagementType:" + authenticationManagementType);
-
-    // -------------------------------------------------------
-    // 设置定时器
-    // -------------------------------------------------------
-
-    // 定时清理临时目录下的临时文件 设置为 3 天
-    /*
-    if (!(new java.io.File(KernelConfigurationView.Instance.ApplicationTempPathRoot)).isDirectory()) {
-      DirectoryHelper.Create(KernelConfigurationView.Instance.ApplicationTempPathRoot);
-    }
-
-    timer.Enabled = true;
-
-    // 每天检测一次目录
-    timer.Interval = 24 * 60 * 60 * 1000;
-
-    timer.Elapsed += (Object sender, ElapsedEventArgs e) ->
-    {
-      try {
-        String[] files = Directory.GetFiles(KernelConfigurationView.Instance.ApplicationTempPathRoot, "*.*", SearchOption.AllDirectories);
-
-        for (String file : files) {
-          java.time.LocalDateTime createdTime = File.GetCreationTime(file);
-
-          if (createdTime.plusDays(KernelConfigurationView.Instance.ApplicationTempFileRemoveTimerInterval).compareTo(java.time.LocalDateTime.now()) < 0) {
-            (new java.io.File(file)).delete();
-
-            logger.Info("Delete expired temporary file:" + file);
-          }
-        }
-      } catch (RuntimeException ex) {
-        logger.Error(ex);
-      }
-    };
-
-    timer.Start();
-    */
+    logger.info("AuthenticationManagementType:{}", authenticationManagementType);
   }
 
   // -------------------------------------------------------
@@ -143,9 +89,6 @@ public final class KernelContext implements Context {
 
   /**
    * 创建对象
-   *
-   * @param type
-   * @return
    */
   public static Object createObject(String type) {
     return createObject(type, new Object[]{});
@@ -153,10 +96,6 @@ public final class KernelContext implements Context {
 
   /**
    * 创建对象
-   *
-   * @param type
-   * @param args
-   * @return
    */
   public static Object createObject(String type, Object... args) {
     if (StringUtil.isNullOrEmpty(type)) {
@@ -169,13 +108,12 @@ public final class KernelContext implements Context {
       objectType = Class.forName(type);
     } catch (ClassNotFoundException e) {
       e.printStackTrace();
+      InternalLogger.getLogger().error(e.toString());
     }
 
     if (objectType == null) {
       return null;
     }
-
-    // return System.Activator.CreateInstance(objectType, args);
 
     // 参数类型数组
     Class[] parameterTypes = new Class[args.length];
@@ -210,19 +148,12 @@ public final class KernelContext implements Context {
   /**
    * 解析对象类型
    *
-   * @param type
-   * @return 格式:com.x3platform.KernelContext,com.x3platform
+   * @return 格式: com.x3platform.KernelContext
    */
-  public static String parseObjectType(java.lang.Class type) {
+  public static String parseObjectType(Class type) {
     if (type == null) {
       return null;
     }
-
-    // String assemblyQualifiedName = type.AssemblyQualifiedName;
-
-    // int length = assemblyQualifiedName.indexOf(',', assemblyQualifiedName.indexOf(',') + 1);
-
-    // return assemblyQualifiedName.substring(0, length);
 
     String assemblyQualifiedName = type.getName();
 

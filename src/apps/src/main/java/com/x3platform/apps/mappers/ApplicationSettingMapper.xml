@@ -77,8 +77,8 @@
       #{orderId,jdbcType=VARCHAR},
       #{status,jdbcType=INTEGER},
       #{remark,jdbcType=VARCHAR},
-      #{modifiedDate,jdbcType=TIMESTAMP},
-      #{createdDate,jdbcType=TIMESTAMP}
+      CURRENT_TIMESTAMP,
+      CURRENT_TIMESTAMP
     )
   </insert>
   <update id="updateByPrimaryKey" parameterType="com.x3platform.apps.models.ApplicationSetting">
@@ -92,8 +92,7 @@
     order_id = #{orderId,jdbcType=VARCHAR},
     status = #{status,jdbcType=INTEGER},
     remark = #{remark,jdbcType=VARCHAR},
-    modified_date = #{modifiedDate,jdbcType=TIMESTAMP},
-    created_date = #{createdDate,jdbcType=TIMESTAMP}
+    modified_date = CURRENT_TIMESTAMP
 
     WHERE id = #{id}
   </update>
@@ -111,7 +110,7 @@
     <if test="orders != null and orders.size() > 0">
       ORDER BY
       <foreach collection="orders" item="order" index="index" separator="," >
-        #{order}
+        ${order}
       </foreach>
     </if>
     <if test="length > 0">
@@ -167,5 +166,4 @@
     AND text = #{text}
     LIMIT 0, 1
   </select>
-
 </mapper>

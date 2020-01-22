@@ -1,6 +1,6 @@
 package com.x3platform.plugins;
 
-import java.util.*;
+import java.util.Map;
 
 /**
  * 自定义插件
@@ -126,7 +126,7 @@ public abstract class CustomPlugin implements com.x3platform.plugins.abstraction
   /**
    * 安装插件
    *
-   * @return 返回信息. =0代表安装成功, >0代表安装失败.
+   * @return 消息代码 0 代表安装成功, 大于 0 代表安装失败.
    */
   @Override
   public int install() {

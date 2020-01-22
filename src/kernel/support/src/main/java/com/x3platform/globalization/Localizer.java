@@ -9,6 +9,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
+import org.dom4j.tree.DefaultElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,10 +46,8 @@ public class Localizer {
       String parentPath = fileInfo.getParent();
       File parent = new File(parentPath);
 
-      // String fileName = Path.GetFileNameWithoutExtension(file);
       String fileName = PathUtil.getFileNameWithoutExtension(file);
 
-      // String[] files = Directory.GetFiles(directiory, fileName + "*");
       File[] files = parent.listFiles();
 
       /*
@@ -106,10 +105,21 @@ public class Localizer {
    * @param name
    * @return
    */
-  public final String getText(String name) {
+  public String getText(String name) {
     Node node = doc.selectSingleNode("resources/" + nodeName + "[@name='" + name + "']");
 
     return node == null ? null : node.getText();
+  }
+
+  /**
+   * 获取节点名称
+   *
+   * @param text
+   * @return 节点名称
+   */
+  public String getName(String text) {
+    Node node = doc.selectSingleNode("resources/" + nodeName + "[text()='" + text + "']");
+    return node == null ? null : ((DefaultElement) node).attribute("name").getValue();
   }
 
   /**
@@ -119,7 +129,7 @@ public class Localizer {
    * @param name
    * @return
    */
-  public final String getText(String applicationName, String name) {
+  public String getText(String applicationName, String name) {
     Node node = doc.selectSingleNode("resources/application[@name='" + applicationName + "']/" + nodeName + "[@name='" + name + "']");
 
     return node == null ? null : node.getText();

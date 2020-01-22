@@ -149,22 +149,22 @@ public class DigitalNumberScript {
       case "guid":
         // Guid类型
         if (subexpression.length == 1) {
-          return UUIDUtil.toString(UUID.randomUUID());
+          return UUIDUtil.stringify(UUID.randomUUID());
         } else if (subexpression.length == 3) {
           if ("U".equals(subexpression[2].toUpperCase())) {
             // U = Upper
-            return UUIDUtil.toString(UUID.randomUUID(), subexpression[1]).toUpperCase();
+            return UUIDUtil.stringify(UUID.randomUUID(), subexpression[1]).toUpperCase();
           } else if ("L".equals(subexpression[2].toUpperCase())) {
             // L = Lower
-            return UUIDUtil.toString(UUID.randomUUID(), subexpression[1]).toLowerCase();
+            return UUIDUtil.stringify(UUID.randomUUID(), subexpression[1]).toLowerCase();
           } else {
-            return UUIDUtil.toString(UUID.randomUUID(), subexpression[1]);
+            return UUIDUtil.stringify(UUID.randomUUID(), subexpression[1]);
           }
         } else {
           if ("32digits".equals(subexpression[1].toUpperCase())) {
-            return UUIDUtil.toString(UUID.randomUUID(), "N");
+            return UUIDUtil.stringify(UUID.randomUUID(), "N");
           } else {
-            return UUIDUtil.toString(UUID.randomUUID(), subexpression[1]);
+            return UUIDUtil.stringify(UUID.randomUUID(), subexpression[1]);
           }
         }
 

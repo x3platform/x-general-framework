@@ -1,15 +1,26 @@
 package com.x3platform.apps.models;
 
+import static com.x3platform.apps.Constants.APPLICATION_MENU_ROOT_ID;
+import static com.x3platform.apps.configuration.AppsConfiguration.APPLICATION_NAME;
+
 import com.alibaba.fastjson.annotation.JSONField;
+import com.x3platform.AuthorizationObjectType;
+import com.x3platform.AuthorizationScope;
+import com.x3platform.AuthorizationScopeManagement;
 import com.x3platform.EntityClass;
 import com.x3platform.apps.AppsContext;
+import com.x3platform.security.authority.Authority;
+import com.x3platform.security.authority.AuthorityContext;
 import com.x3platform.util.StringUtil;
 import com.x3platform.util.UUIDUtil;
-import org.dom4j.Element;
 import java.util.ArrayList;
 import java.util.List;
+import org.dom4j.Element;
+
 /**
  * 应用菜单
+ *
+ * @author ruanyu
  */
 public class ApplicationMenu extends EntityClass {
 
@@ -24,11 +35,11 @@ public class ApplicationMenu extends EntityClass {
   /**
    *
    */
-  public final String getId() {
+  public String getId() {
     return id;
   }
 
-  public final void setId(String value) {
+  public void setId(String value) {
     id = value;
   }
 
@@ -38,10 +49,10 @@ public class ApplicationMenu extends EntityClass {
    * 应用
    */
   @JSONField(serialize = false)
-  public final Application getApplication() {
-/*    if (application == null && !StringUtil.isNullOrEmpty(this.getApplicationId())) {
-      application = AppsContext.getInstance().getApplicationService().findOne(this.getApplicationId());
-    }*/
+  public Application getApplication() {
+    if (application == null && !StringUtil.isNullOrEmpty(getApplicationId())) {
+      application = AppsContext.getInstance().getApplicationService().findOne(getApplicationId());
+    }
     return application;
   }
 
@@ -49,44 +60,45 @@ public class ApplicationMenu extends EntityClass {
 
   /**
    */
-  public final String getApplicationId() {
+  public String getApplicationId() {
     return applicationId;
   }
 
-  public final void setApplicationId(String value) {
+  public void setApplicationId(String value) {
     applicationId = value;
   }
 
   /**
+   * 所属应用名称
    */
-  public final String getApplicationName() {
-    return this.getApplication() == null ? "" : this.getApplication().getApplicationName();
+  public String getApplicationName() {
+    return getApplication() == null ? "" : getApplication().getApplicationName();
   }
 
   /**
+   * 所属应用显示名称
    */
-  public final String getApplicationDisplayName() {
-    return this.getApplication() == null ? "" : this.getApplication().getApplicationDisplayName();
+  public String getApplicationDisplayName() {
+    return getApplication() == null ? "" : getApplication().getApplicationDisplayName();
   }
 
-  // 父级菜单对象
+  /**
+   * 父级菜单对象
+   */
   @JSONField(serialize = false)
-  private ApplicationMenu parent;
+  private ApplicationMenu parent = null;
 
   /**
-   * 应用
+   * 父级对象
    */
-  public final ApplicationMenu getParent() {
-/*
-    if (UUIDUtil.emptyString().equals(this.getParentId())) {
+  public ApplicationMenu getParent() {
+    if (APPLICATION_MENU_ROOT_ID.equals(getParentId())) {
       return null;
     }
-*/
 
-/*    if (parent == null && !StringUtil.isNullOrEmpty(this.getParentId())) {
-      // FIXME
-       parent = AppsContext.getInstance().getApplicationMenuService().findOne(this.getParentId());
-    }*/
+    if (parent == null && !StringUtil.isNullOrEmpty(getParentId())) {
+      parent = AppsContext.getInstance().getApplicationMenuService().findOne(getParentId());
+    }
 
     return parent;
   }
@@ -95,34 +107,30 @@ public class ApplicationMenu extends EntityClass {
 
   /**
    */
-  public final String getParentId() {
+  public String getParentId() {
     return parentId;
   }
 
-  public final void setParentId(String value) {
+  public void setParentId(String value) {
     parentId = value;
   }
-
-
-  private String parentName ;
 
   /**
    * 父级名称
    */
-  public final String getParentName() {
-    //return this.getParent() == null ? this.getApplicationDisplayName() : this.getParent().getName();
-    return parentName;
+  public String getParentName() {
+    return getParent() == null ? getApplicationDisplayName() : getParent().getName();
   }
 
   private String code = "";
 
   /**
    */
-  public final String getCode() {
+  public String getCode() {
     return code;
   }
 
-  public final void setCode(String value) {
+  public void setCode(String value) {
     code = value;
   }
 
@@ -130,11 +138,11 @@ public class ApplicationMenu extends EntityClass {
 
   /**
    */
-  public final String getName() {
+  public String getName() {
     return name;
   }
 
-  public final void setName(String value) {
+  public void setName(String value) {
     name = value;
   }
 
@@ -142,11 +150,11 @@ public class ApplicationMenu extends EntityClass {
 
   /**
    */
-  public final String getDescription() {
+  public String getDescription() {
     return description;
   }
 
-  public final void setDescription(String value) {
+  public void setDescription(String value) {
     description = value;
   }
 
@@ -154,11 +162,11 @@ public class ApplicationMenu extends EntityClass {
 
   /**
    */
-  public final String getUrl() {
+  public String getUrl() {
     return url;
   }
 
-  public final void setUrl(String value) {
+  public void setUrl(String value) {
     url = value;
   }
 
@@ -167,11 +175,11 @@ public class ApplicationMenu extends EntityClass {
 
   /**
    */
-  public final String getTarget() {
+  public String getTarget() {
     return target;
   }
 
-  public final void setTarget(String value) {
+  public void setTarget(String value) {
     target = value;
   }
 
@@ -179,11 +187,12 @@ public class ApplicationMenu extends EntityClass {
 
   /**
    */
-  public final String getTargetView() {
-/*    if (StringUtil.isNullOrEmpty(targetView) && !StringUtil.isNullOrEmpty(this.getTarget())) {
-      // FIXME 待处理
-       //this.targetView = AppsContext.getInstance().getApplicationSettingService().getText(AppsContext.getInstance().getApplicationService().findOneByApplicationName("ApplicationManagement").getId(), "应用管理_应用链接打开方式", this.getTarget());
-    }*/
+  public String getTargetView() {
+    if (StringUtil.isNullOrEmpty(targetView) && !StringUtil.isNullOrEmpty(getTarget())) {
+      targetView = AppsContext.getInstance().getApplicationSettingService().getText(
+        AppsContext.getInstance().getApplicationService().findOneByApplicationName(APPLICATION_NAME).getId(),
+        "应用管理_应用链接打开方式", getTarget());
+    }
     return targetView;
   }
 
@@ -191,11 +200,11 @@ public class ApplicationMenu extends EntityClass {
 
   /**
    */
-  public final String getMenuType() {
+  public String getMenuType() {
     return menuType;
   }
 
-  public final void setMenuType(String value) {
+  public void setMenuType(String value) {
     menuType = value;
   }
 
@@ -203,12 +212,13 @@ public class ApplicationMenu extends EntityClass {
 
   /**
    */
-  public final String getMenuTypeView() {
-  /*  if (StringUtil.isNullOrEmpty(menuTypeView) && !StringUtil.isNullOrEmpty(this.getMenuType())) {
-      // FIXME 待处理
-     // this.menuTypeView = AppsContext.getInstance().getApplicationSettingService().getText(AppsContext.getInstance().getApplicationService().findOneByApplicationName("ApplicationManagement").getId(), "应用管理_应用菜单类别", menuType);
+  public String getMenuTypeView() {
+    if (StringUtil.isNullOrEmpty(menuTypeView) && !StringUtil.isNullOrEmpty(getMenuType())) {
+      menuTypeView = AppsContext.getInstance().getApplicationSettingService().getText(
+        AppsContext.getInstance().getApplicationService().findOneByApplicationName(APPLICATION_NAME).getId(),
+        "应用管理_应用菜单类别", menuType);
     }
-*/
+
     return menuTypeView;
   }
 
@@ -216,40 +226,36 @@ public class ApplicationMenu extends EntityClass {
 
   /**
    */
-  public final String getIconPath() {
+  public String getIconPath() {
     return iconPath;
   }
 
-  public final void setIconPath(String value) {
+  public void setIconPath(String value) {
     iconPath = value;
   }
-  ///#endregion
 
-  ///#region 属性:BigIconPath
   private String bigIconPath = "";
 
   /**
    */
-  public final String getBigIconPath() {
+  public String getBigIconPath() {
     return bigIconPath;
   }
 
-  public final void setBigIconPath(String value) {
+  public void setBigIconPath(String value) {
     bigIconPath = value;
   }
-  ///#endregion
 
-  ///#region 属性:DisplayType
   private String displayType = "";
 
   /**
    * 显示方式
    */
-  public final String getDisplayType() {
+  public String getDisplayType() {
     return displayType;
   }
 
-  public final void setDisplayType(String value) {
+  public void setDisplayType(String value) {
     displayType = value;
   }
 
@@ -257,11 +263,12 @@ public class ApplicationMenu extends EntityClass {
 
   /**
    */
-  public final String getDisplayTypeView() {
-/*    if (StringUtil.isNullOrEmpty(displayTypeView) && !StringUtil.isNullOrEmpty(this.getDisplayType())) {
-      // FIXME
-       // this.displayTypeView = AppsContext.getInstance().getApplicationSettingService().getText(AppsContext.getInstance().getApplicationService().findOneByApplicationName("ApplicationManagement").getId(), "应用管理_应用菜单展现方式", this.getDisplayType());
-    }*/
+  public String getDisplayTypeView() {
+    if (StringUtil.isNullOrEmpty(displayTypeView) && !StringUtil.isNullOrEmpty(getDisplayType())) {
+      displayTypeView = AppsContext.getInstance().getApplicationSettingService().getText(
+        AppsContext.getInstance().getApplicationService().findOneByApplicationName(APPLICATION_NAME).getId(),
+        "应用管理_应用菜单展现方式", getDisplayType());
+    }
     return displayTypeView;
   }
 
@@ -269,11 +276,11 @@ public class ApplicationMenu extends EntityClass {
 
   /**
    */
-  public final int getHasChild() {
+  public int getHasChild() {
     return hasChild;
   }
 
-  public final void setHasChild(int value) {
+  public void setHasChild(int value) {
     hasChild = value;
   }
 
@@ -282,11 +289,11 @@ public class ApplicationMenu extends EntityClass {
   /**
    * 上下文对象
    */
-  public final String getContextObject() {
+  public String getContextObject() {
     return contextObject;
   }
 
-  public final void setContextObject(String value) {
+  public void setContextObject(String value) {
     contextObject = value;
   }
 
@@ -294,11 +301,11 @@ public class ApplicationMenu extends EntityClass {
 
   /**
    */
-  public final String getOrderId() {
+  public String getOrderId() {
     return orderId;
   }
 
-  public final void setOrderId(String value) {
+  public void setOrderId(String value) {
     orderId = value;
   }
 
@@ -306,11 +313,11 @@ public class ApplicationMenu extends EntityClass {
 
   /**
    */
-  public final int getStatus() {
+  public int getStatus() {
     return status;
   }
 
-  public final void setStatus(int value) {
+  public void setStatus(int value) {
     status = value;
   }
 
@@ -318,11 +325,11 @@ public class ApplicationMenu extends EntityClass {
 
   /**
    */
-  public final String getRemark() {
+  public String getRemark() {
     return remark;
   }
 
-  public final void setRemark(String value) {
+  public void setRemark(String value) {
     remark = value;
   }
 
@@ -330,11 +337,11 @@ public class ApplicationMenu extends EntityClass {
 
   /**
    */
-  public final String getFullPath() {
+  public String getFullPath() {
     return fullPath;
   }
 
-  public final void setFullPath(String value) {
+  public void setFullPath(String value) {
     fullPath = value;
   }
 
@@ -342,11 +349,11 @@ public class ApplicationMenu extends EntityClass {
 
   /**
    */
-  public final java.time.LocalDateTime getModifiedDate() {
+  public java.time.LocalDateTime getModifiedDate() {
     return modifiedDate;
   }
 
-  public final void setModifiedDate(java.time.LocalDateTime value) {
+  public void setModifiedDate(java.time.LocalDateTime value) {
     modifiedDate = value;
   }
 
@@ -354,11 +361,11 @@ public class ApplicationMenu extends EntityClass {
 
   /**
    */
-  public final java.time.LocalDateTime getCreatedDate() {
+  public java.time.LocalDateTime getCreatedDate() {
     return createdDate;
   }
 
-  public final void setCreatedDate(java.time.LocalDateTime value) {
+  public void setCreatedDate(java.time.LocalDateTime value) {
     createdDate = value;
   }
 
@@ -366,98 +373,75 @@ public class ApplicationMenu extends EntityClass {
   // 可访问成员信息
   // -------------------------------------------------------
 
-
-
-
-
   /**
    * 权限：应用_通用_查看权限
    */
-   // private Authority authorizationRead = AuthorityContext.Instance.AuthorityService["应用_通用_查看权限"];
+  private Authority authorizationRead = AuthorityContext.getInstance()
+    .getAuthorityService().findOneByName("应用_通用_查看权限");
 
   /**
    * 绑定查看权限
-   *
-   * @param scopeText
    */
-  public final void BindAuthorizationReadScope(String scopeText) {
+  public void bindAuthorizationReadScope(String scopeText) {
 
     // 清空缓存数据
-    //this.authorizationReadScopeObjectText = null;
-    //this.authorizationReadScopeObjectView = null;
+    authorizationReadScopeText = null;
+    authorizationReadScopeView = null;
 
-    // TODO 待处理
-    // if (this.mAuthorizationReadScopeObjects == null) {
-    //   this.mAuthorizationReadScopeObjects = new ArrayList<MembershipAuthorizationScopeObject>();
-    // }
+    if (authorizationReadScopes == null) {
+      authorizationReadScopes = new ArrayList<AuthorizationScope>();
+    }
 
-    // MembershipAuthorizationScopeManagement.BindAuthorizationScopeObjects(this.mAuthorizationReadScopeObjects, scopeText);
+    AuthorizationScopeManagement.bindAuthorizationScopes(authorizationReadScopes, scopeText);
   }
 
-  // private List<MembershipAuthorizationScopeObject> authorizationReadScopeObjects = null;
+  private List<AuthorizationScope> authorizationReadScopes = null;
 
   /**
    * 权限：应用_通用_查看权限范围
    */
-  // public final List<MembershipAuthorizationScopeObject> getAuthorizationReadScopeObjects() {
-  //   if (mAuthorizationReadScopeObjects == null) {
-  //     authorizationReadScopeObjects = AppsContext.Instance.ApplicationMenuService.GetAuthorizationScopeObjects(this.getEntityId(), this.authorizationRead.Name);
-  //
-  //     // 设置默认权限是所有人
-  //    if (mAuthorizationReadScopeObjects.isEmpty()) {
-  //       AuthorizationObject authorizationObject = MembershipManagement.Instance.RoleService.GetEveryoneObject();
+  @JSONField(serialize = false)
+  public List<AuthorizationScope> getAuthorizationReadScopes() {
+    if (authorizationReadScopes == null) {
+      authorizationReadScopes = AppsContext.getInstance().getApplicationMenuService()
+        .getAuthorizationScopes(getEntityId(), authorizationRead.getName());
 
-  //       authorizationReadScopeObjects.add(new MembershipAuthorizationScopeObject(authorizationObject.getAuthorizationObjectType(), authorizationObject.getAuthorizationObjectId(), authorizationObject.getAuthorizationObjectName()));
-  //    }
-  //  }
+      // 设置默认权限是所有人
+      if (authorizationReadScopes.isEmpty()) {
+        authorizationReadScopes.add(new AuthorizationScope(AuthorizationObjectType.ROLE.getValue(),
+          "00000000-0000-0000-0000-000000000000", "所有人"));
+      }
+    }
 
-  //   return authorizationReadScopeObjects;
-  // }
+    return authorizationReadScopes;
+  }
 
-  private String authorizationReadScopeObjectText = null;
+  private String authorizationReadScopeText = null;
 
   /**
    * 权限：应用_通用_查看权限范围文本
    */
-  public final String getAuthorizationReadScopeObjectText() {
-/*    if (StringUtil.isNullOrEmpty(authorizationReadScopeObjectText)) {
-      // FIXME 待处理
-      //  authorizationReadScopeObjectText = MembershipAuthorizationScopeManagement.GetAuthorizationScopeObjectText(this.getAuthorizationReadScopeObjects());
-    }*/
-    return authorizationReadScopeObjectText;
-  }
-
-  public final void set(String value) {
-    if (!StringUtil.isNullOrEmpty(value)) {
-      BindAuthorizationReadScope(value);
+  public String getAuthorizationReadScopeText() {
+    if (authorizationReadScopeText == null) {
+      authorizationReadScopeText = AuthorizationScopeManagement
+        .getAuthorizationScopeText(getAuthorizationReadScopes());
     }
+    return authorizationReadScopeText;
   }
 
-  private String authorizationReadScopeObjectView = null;
+  private String authorizationReadScopeView = null;
 
   /**
    * 权限：应用_通用_查看权限范围视图
    */
-  public final String getAuthorizationReadScopeObjectView() {
+  public String getAuthorizationReadScopeView() {
 
-/*    if (StringUtil.isNullOrEmpty(authorizationReadScopeObjectText)) {
-      List<ApplicationMenuScopeInfo> applicationMenuScopes = AppsContext.getInstance().getApplicationMenuService().getApplicationMenuScope(authorizationReadScopeObjectText);
-      if(applicationMenuScopes!=null){
-
-      }
-    }*/
-    return authorizationReadScopeObjectView;
+    if (authorizationReadScopeView == null) {
+      authorizationReadScopeView = AuthorizationScopeManagement
+        .getAuthorizationScopeView(getAuthorizationReadScopes());
+    }
+    return authorizationReadScopeView;
   }
-
-  public void setAuthorizationReadScopeObjectText(String authorizationReadScopeObjectText) {
-    this.authorizationReadScopeObjectText = authorizationReadScopeObjectText;
-  }
-
-  public void setAuthorizationReadScopeObjectView(String authorizationReadScopeObjectView) {
-    this.authorizationReadScopeObjectView = authorizationReadScopeObjectView;
-  }
-
-  ///#endregion
 
   // -------------------------------------------------------
   // 设置 EntityClass 标识
@@ -468,7 +452,7 @@ public class ApplicationMenu extends EntityClass {
    */
   @Override
   public String getEntityId() {
-    return this.getId();
+    return getId();
   }
 
   // -------------------------------------------------------
@@ -486,9 +470,8 @@ public class ApplicationMenu extends EntityClass {
   /**
    * 序列化对象
    *
-   * @param displayComment      显示注释
+   * @param displayComment 显示注释
    * @param displayFriendlyName 显示友好名称
-   * @return
    */
   @Override
   public String serializable(boolean displayComment, boolean displayFriendlyName) {
@@ -500,76 +483,77 @@ public class ApplicationMenu extends EntityClass {
     if (displayComment) {
       outString.append("<!-- 应用菜单标识 (字符串) (nvarchar(36)) -->");
     }
-    outString.append(String.format("<id><![CDATA[%1$s]]></id>", this.getId()));
+    outString.append(String.format("<id><![CDATA[%1$s]]></id>", getId()));
     if (displayComment) {
       outString.append("<!-- 所属应用标识 (字符串) (nvarchar(36)) -->");
     }
-    outString.append(String.format("<applicationId><![CDATA[%1$s]]></applicationId>", this.getApplicationId()));
+    outString.append(String.format("<applicationId><![CDATA[%1$s]]></applicationId>", getApplicationId()));
     if (displayComment) {
       outString.append("<!-- 所属父级菜单标识 (字符串) (nvarchar(36)) -->");
     }
-    outString.append(String.format("<parentId><![CDATA[%1$s]]></parentId>", this.getParentId()));
+    outString.append(String.format("<parentId><![CDATA[%1$s]]></parentId>", getParentId()));
     if (displayComment) {
       outString.append("<!-- 应用菜单编码 (字符串) (nvarchar(36)) -->");
     }
-    outString.append(String.format("<code><![CDATA[%1$s]]></code>", this.getCode()));
+    outString.append(String.format("<code><![CDATA[%1$s]]></code>", getCode()));
     if (displayComment) {
       outString.append("<!-- 应用菜单名称 (字符串) (nvarchar(100)) -->");
     }
-    outString.append(String.format("<name><![CDATA[%1$s]]></name>", this.getName()));
+    outString.append(String.format("<name><![CDATA[%1$s]]></name>", getName()));
     if (displayComment) {
       outString.append("<!-- 应用菜单描述 (字符串) (nvarchar(200)) -->");
     }
-    outString.append(String.format("<description><![CDATA[%1$s]]></description>", this.getDescription()));
+    outString.append(String.format("<description><![CDATA[%1$s]]></description>", getDescription()));
     if (displayComment) {
       outString.append("<!-- 应用菜单地址 (字符串) (nvarchar(800)) -->");
     }
-    outString.append(String.format("<url><![CDATA[%1$s]]></url>", this.getUrl()));
+    outString.append(String.format("<url><![CDATA[%1$s]]></url>", getUrl()));
     if (displayComment) {
       outString.append("<!-- 应用菜单名称 (字符串) (nvarchar(50)) -->");
     }
-    outString.append(String.format("<target><![CDATA[%1$s]]></target>", this.getTarget()));
+    outString.append(String.format("<target><![CDATA[%1$s]]></target>", getTarget()));
     if (displayComment) {
       outString.append("<!-- 应用菜单类型 (字符串) (nvarchar(50)) -->");
     }
-    outString.append(String.format("<menuType><![CDATA[%1$s]]></menuType>", this.getMenuType()));
+    outString.append(String.format("<menuType><![CDATA[%1$s]]></menuType>", getMenuType()));
     if (displayComment) {
       outString.append("<!-- 图标路径 (字符串) (nvarchar(400)) -->");
     }
-    outString.append(String.format("<iconPath><![CDATA[%1$s]]></iconPath>", this.getIconPath()));
+    outString.append(String.format("<iconPath><![CDATA[%1$s]]></iconPath>", getIconPath()));
     if (displayComment) {
       outString.append("<!-- 大图标路径 (字符串) (nvarchar(400)) -->");
     }
-    outString.append(String.format("<bigIconPath><![CDATA[%1$s]]></bigIconPath>", this.getBigIconPath()));
+    outString.append(String.format("<bigIconPath><![CDATA[%1$s]]></bigIconPath>", getBigIconPath()));
     if (displayComment) {
       outString.append("<!-- 显示的类型 (字符串) (nvarchar(20)) -->");
     }
-    outString.append(String.format("<displayType><![CDATA[%1$s]]></displayType>", this.getDisplayType()));
+    outString.append(String.format("<displayType><![CDATA[%1$s]]></displayType>", getDisplayType()));
     if (displayComment) {
       outString.append("<!-- 排序 (字符串) (nvarchar(20)) -->");
     }
-    outString.append(String.format("<orderId><![CDATA[%1$s]]></orderId>", this.getOrderId()));
+    outString.append(String.format("<orderId><![CDATA[%1$s]]></orderId>", getOrderId()));
     if (displayComment) {
       outString.append("<!-- 状态 (整型) (int) -->");
     }
-    outString.append(String.format("<status><![CDATA[%1$s]]></status>", this.getStatus()));
+    outString.append(String.format("<status><![CDATA[%1$s]]></status>", getStatus()));
     if (displayComment) {
       outString.append("<!-- 备注 (字符串) (nvarchar(200)) -->");
     }
-    outString.append(String.format("<remark><![CDATA[%1$s]]></remark>", this.getRemark()));
+    outString.append(String.format("<remark><![CDATA[%1$s]]></remark>", getRemark()));
     if (displayComment) {
       outString.append("<!-- 授权对象列表 -->");
     }
     // FIXME 待处理
     outString.append("<authorizationObjects>");
-    // for (MembershipAuthorizationScopeObject authorizationScopeObject : this.getAuthorizationReadScopeObjects()) {
+    // for (MembershipAuthorizationScopeObject authorizationScopeObject : this.getAuthorizationReadScopes()) {
     //  outString.append(String.format("<authorizationObject id=\"%1$s\" type=\"%2$s\" authority=\"应用_通用_查看权限\" />", authorizationScopeObject.AuthorizationObjectId, authorizationScopeObject.AuthorizationObjectType));
     // }
     outString.append("</authorizationObjects>");
     if (displayComment) {
       outString.append("<!-- 最后更新时间 (时间) (datetime) -->");
     }
-    outString.append(String.format("<updateDate><![CDATA[%1$s]]></updateDate>", StringUtil.toDateFormat(this.getModifiedDate(), "yyyy-MM-dd HH:mm:ss")));
+    outString.append(String.format("<updateDate><![CDATA[%1$s]]></updateDate>",
+      StringUtil.toDateFormat(getModifiedDate(), "yyyy-MM-dd HH:mm:ss")));
     outString.append("</menu>");
 
     return outString.toString();
@@ -582,45 +566,45 @@ public class ApplicationMenu extends EntityClass {
    */
   @Override
   public void deserialize(Element element) {
-    this.setId(element.selectSingleNode("id").getText());
-    this.setApplicationId(element.selectSingleNode("applicationId").getText());
-    this.setParentId(element.selectSingleNode("parentId").getText());
-    this.setCode(element.selectSingleNode("code").getText());
-    this.setName(element.selectSingleNode("name").getText());
-    this.setDescription(element.selectSingleNode("description").getText());
-    this.setUrl(element.selectSingleNode("url").getText());
-    this.setTarget(element.selectSingleNode("target").getText());
-    this.setMenuType(element.selectSingleNode("menuType").getText());
-    this.setIconPath(element.selectSingleNode("iconPath").getText());
-    this.setBigIconPath(element.selectSingleNode("bigIconPath").getText());
-    this.setDisplayType(element.selectSingleNode("displayType").getText());
-    this.setOrderId(element.selectSingleNode("orderId").getText());
-    this.setStatus(Integer.parseInt(element.selectSingleNode("status").getText()));
-    this.setRemark(element.selectSingleNode("remark").getText());
+    setId(element.selectSingleNode("id").getText());
+    setApplicationId(element.selectSingleNode("applicationId").getText());
+    setParentId(element.selectSingleNode("parentId").getText());
+    setCode(element.selectSingleNode("code").getText());
+    setName(element.selectSingleNode("name").getText());
+    setDescription(element.selectSingleNode("description").getText());
+    setUrl(element.selectSingleNode("url").getText());
+    setTarget(element.selectSingleNode("target").getText());
+    setMenuType(element.selectSingleNode("menuType").getText());
+    setIconPath(element.selectSingleNode("iconPath").getText());
+    setBigIconPath(element.selectSingleNode("bigIconPath").getText());
+    setDisplayType(element.selectSingleNode("displayType").getText());
+    setOrderId(element.selectSingleNode("orderId").getText());
+    setStatus(Integer.parseInt(element.selectSingleNode("status").getText()));
+    setRemark(element.selectSingleNode("remark").getText());
 
     // 设置可访问成员信息
     // FIXME 待处理
     // XmlNodeList list = element.SelectNodes("authorizationObjects/authorizationObject[@authority='应用_通用_查看权限']");
 
-    // this.mAuthorizationReadScopeObjects = new ArrayList<MembershipAuthorizationScopeObject>();
+    // this.mAuthorizationReadScopes = new ArrayList<MembershipAuthorizationScopeObject>();
 
     // for (XmlNode node : list) {
-    //  this.getAuthorizationReadScopeObjects().add(new MembershipAuthorizationScopeObject(node.Attributes["type"].Value, node.Attributes["id"].Value));
+    //  this.getAuthorizationReadScopes().add(new MembershipAuthorizationScopeObject(node.Attributes["type"].Value, node.Attributes["id"].Value));
     // }
 
-    this.setModifiedDate(java.time.LocalDateTime.parse(element.selectSingleNode("updateDate").getText()));
+    setModifiedDate(java.time.LocalDateTime.parse(element.selectSingleNode("updateDate").getText()));
   }
 
   /**
    * 树形的节点数据
    */
-  public List<Object> childNodes = new ArrayList<>();
-
-  public List<Object> getChildNodes() {
-    return childNodes;
-  }
-
-  public void setChildNodes(List<Object> childNodes) {
-    this.childNodes = childNodes;
-  }
+//  public List<Object> childNodes = new ArrayList<>();
+//
+//  public List<Object> getChildNodes() {
+//    return childNodes;
+//  }
+//
+//  public void setChildNodes(List<Object> childNodes) {
+//    this.childNodes = childNodes;
+//  }
 }

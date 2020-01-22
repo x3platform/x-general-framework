@@ -5,9 +5,8 @@ import com.x3platform.apps.AppsContext;
 import com.x3platform.cachebuffer.Cacheable;
 import com.x3platform.util.DateUtil;
 import com.x3platform.util.StringUtil;
-import org.dom4j.Element;
-
 import java.util.Date;
+import org.dom4j.Element;
 
 /**
  */
@@ -19,211 +18,202 @@ public class ApplicationSettingGroup extends EntityClass implements Cacheable {
   public ApplicationSettingGroup() {
   }
 
-  private String mId;
+  private String id;
 
   /**
    */
   public final String getId() {
-    return mId;
+    return id;
   }
 
   public final void setId(String value) {
-    mId = value;
+    id = value;
   }
 
-  private Application mApplication;
+  private Application application;
 
   /**
    * 应用
    */
   public final Application getApplication() {
-    if (mApplication == null && !StringUtil.isNullOrEmpty(this.getApplicationId())) {
-      mApplication = AppsContext.getInstance().getApplicationService().findOne(this.getApplicationId());
+    if (application == null && !StringUtil.isNullOrEmpty(getApplicationId())) {
+      application = AppsContext.getInstance().getApplicationService().findOne(getApplicationId());
     }
 
-    return mApplication;
+    return application;
   }
 
-  private String mApplicationId;
+  private String applicationId;
 
   /**
    */
   public final String getApplicationId() {
-    return mApplicationId;
+    return applicationId;
   }
 
   public final void setApplicationId(String value) {
-    mApplicationId = value;
+    applicationId = value;
   }
-  ///#endregion
-
-  ///#region 属性:ApplicationName
 
   /**
    */
   public final String getApplicationName() {
-    return this.getApplication() == null ? "" : this.getApplication().getApplicationName();
+    return getApplication() == null ? "" : getApplication().getApplicationName();
   }
-  ///#endregion
-
-  ///#region 属性:ApplicationDisplayName
 
   /**
    */
   public final String getApplicationDisplayName() {
-    return this.getApplication() == null ? "" : this.getApplication().getApplicationDisplayName();
+    return getApplication() == null ? "" : getApplication().getApplicationDisplayName();
   }
 
-  private ApplicationSettingGroup mParent;
+  private ApplicationSettingGroup parent;
 
   /**
    * 应用
    */
   public final ApplicationSettingGroup getParent() {
-    if (mParent == null && !StringUtil.isNullOrEmpty(this.getParentId())) {
-      // FIXME
-      // mParent = AppsContext.getInstance().getApplicationSettingGroupService().findOne(this.getParentId());
+    if (parent == null && !StringUtil.isNullOrEmpty(getParentId())) {
+      parent = AppsContext.getInstance().getApplicationSettingGroupService().findOne(getParentId());
     }
 
-    return mParent;
+    return parent;
   }
-  ///#endregion
 
-  ///#region 属性:ParentId
-  private String mParentId;
+  private String parentId;
 
   /**
    */
   public final String getParentId() {
-    return mParentId;
+    return parentId;
   }
 
   public final void setParentId(String value) {
-    mParentId = value;
+    parentId = value;
   }
 
   /**
    */
   public final String getParentName() {
-    return this.getParent() == null ? this.getApplicationDisplayName() : this.getParent().getName();
+    return getParent() == null ? getApplicationDisplayName() : getParent().getName();
   }
 
   /**
    */
   public final String getParentDisplayName() {
-    return this.getParent() == null ? "" : this.getParent().getDisplayName();
+    return getParent() == null ? "" : getParent().getDisplayName();
   }
 
-  private String mCode;
+  private String code;
 
   /**
    */
   public final String getCode() {
-    return mCode;
+    return code;
   }
 
   public final void setCode(String value) {
-    mCode = value;
+    code = value;
   }
 
-  private String mName;
+  private String name;
 
   /**
    */
   public final String getName() {
-    return mName;
+    return name;
   }
 
   public final void setName(String value) {
-    mName = value;
+    name = value;
   }
 
-  private String mDisplayName;
+  private String displayName;
 
   /**
    */
   public final String getDisplayName() {
-    if (StringUtil.isNullOrEmpty(this.mDisplayName)) {
-      this.mDisplayName = this.getName();
+    if (StringUtil.isNullOrEmpty(displayName)) {
+      displayName = getName();
     }
 
-    return mDisplayName;
+    return displayName;
   }
 
   public final void setDisplayName(String value) {
-    mDisplayName = value;
+    displayName = value;
   }
 
-  private int mContentType;
+  private int contentType;
 
   /**
    */
   public final int getContentType() {
-    return mContentType;
+    return contentType;
   }
 
   public final void setContentType(int value) {
-    mContentType = value;
+    contentType = value;
   }
 
-  private String mOrderId;
+  private String orderId;
 
   /**
    */
   public final String getOrderId() {
-    return mOrderId;
+    return orderId;
   }
 
   public final void setOrderId(String value) {
-    mOrderId = value;
+    orderId = value;
   }
 
-  private int mStatus;
+  private int status;
 
   /**
    */
   public final int getStatus() {
-    return mStatus;
+    return status;
   }
 
   public final void setStatus(int value) {
-    mStatus = value;
+    status = value;
   }
 
-  private String mRemark;
+  private String remark;
 
   /**
    */
   public final String getRemark() {
-    return mRemark;
+    return remark;
   }
 
   public final void setRemark(String value) {
-    mRemark = value;
+    remark = value;
   }
 
-  private java.time.LocalDateTime mModifiedDate = java.time.LocalDateTime.MIN;
+  private java.time.LocalDateTime modifiedDate = DateUtil.getDefaultLocalDateTime();
 
   /**
    */
   public final java.time.LocalDateTime getModifiedDate() {
-    return mModifiedDate;
+    return modifiedDate;
   }
 
   public final void setModifiedDate(java.time.LocalDateTime value) {
-    mModifiedDate = value;
+    modifiedDate = value;
   }
 
-  private java.time.LocalDateTime mCreatedDate = java.time.LocalDateTime.MIN;
+  private java.time.LocalDateTime createdDate = DateUtil.getDefaultLocalDateTime();
 
   /**
    */
   public final java.time.LocalDateTime getCreatedDate() {
-    return mCreatedDate;
+    return createdDate;
   }
 
   public final void setCreatedDate(java.time.LocalDateTime value) {
-    mCreatedDate = value;
+    createdDate = value;
   }
 
   // -------------------------------------------------------
@@ -235,7 +225,7 @@ public class ApplicationSettingGroup extends EntityClass implements Cacheable {
    */
   @Override
   public String getEntityId() {
-    return this.getId();
+    return getId();
   }
 
   // -------------------------------------------------------
@@ -263,8 +253,6 @@ public class ApplicationSettingGroup extends EntityClass implements Cacheable {
 
   /**
    * 序列化对象
-   *
-   * @return
    */
   @Override
   public String serializable() {
@@ -274,9 +262,8 @@ public class ApplicationSettingGroup extends EntityClass implements Cacheable {
   /**
    * 序列化对象
    *
-   * @param displayComment      显示注释
+   * @param displayComment 显示注释
    * @param displayFriendlyName 显示友好名称
-   * @return
    */
   @Override
   public String serializable(boolean displayComment, boolean displayFriendlyName) {
@@ -289,47 +276,47 @@ public class ApplicationSettingGroup extends EntityClass implements Cacheable {
     if (displayComment) {
       outString.append("<!-- 应用参数标识 (字符串) (nvarchar(36)) -->");
     }
-    outString.append(String.format("<id><![CDATA[%1$s]]></id>", this.getId()));
+    outString.append(String.format("<id><![CDATA[%1$s]]></id>", getId()));
     if (displayComment) {
       outString.append("<!-- 所属应用标识 (字符串) (nvarchar(36)) -->");
     }
-    outString.append(String.format("<applicationId><![CDATA[%1$s]]></applicationId>", this.getApplicationId()));
+    outString.append(String.format("<applicationId><![CDATA[%1$s]]></applicationId>", getApplicationId()));
     if (displayComment) {
       outString.append("<!-- 所属应用参数分组标识 (字符串) (nvarchar(36)) -->");
     }
-    outString.append(String.format("<parentId><![CDATA[%1$s]]></parentId>", this.getParentId()));
+    outString.append(String.format("<parentId><![CDATA[%1$s]]></parentId>", getParentId()));
     if (displayComment) {
       outString.append("<!-- 编码 (字符串) (nvarchar(30)) -->");
     }
-    outString.append(String.format("<code><![CDATA[%1$s]]></code>", this.getCode()));
+    outString.append(String.format("<code><![CDATA[%1$s]]></code>", getCode()));
     if (displayComment) {
       outString.append("<!-- 名称 (字符串) (nvarchar(100)) -->");
     }
-    outString.append(String.format("<text><![CDATA[%1$s]]></text>", this.getName()));
+    outString.append(String.format("<text><![CDATA[%1$s]]></text>", getName()));
     if (displayComment) {
       outString.append("<!-- 显示名称 (字符串) (nvarchar(50)) -->");
     }
-    outString.append(String.format("<displayName><![CDATA[%1$s]]></displayName>", this.getDisplayName()));
+    outString.append(String.format("<displayName><![CDATA[%1$s]]></displayName>", getDisplayName()));
     if (displayComment) {
       outString.append("<!-- 内容类型 (整型) (int) -->");
     }
-    outString.append(String.format("<contentType><![CDATA[%1$s]]></contentType>", this.getContentType()));
+    outString.append(String.format("<contentType><![CDATA[%1$s]]></contentType>", getContentType()));
     if (displayComment) {
       outString.append("<!-- 排序编号 (字符串) (nvarchar(20)) -->");
     }
-    outString.append(String.format("<orderId><![CDATA[%1$s]]></orderId>", this.getOrderId()));
+    outString.append(String.format("<orderId><![CDATA[%1$s]]></orderId>", getOrderId()));
     if (displayComment) {
       outString.append("<!-- 状态 (整型) (int) -->");
     }
-    outString.append(String.format("<status><![CDATA[%1$s]]></status>", this.getStatus()));
+    outString.append(String.format("<status><![CDATA[%1$s]]></status>", getStatus()));
     if (displayComment) {
       outString.append("<!-- 备注信息 (字符串) (nvarchar(200)) -->");
     }
-    outString.append(String.format("<remark><![CDATA[%1$s]]></remark>", this.getRemark()));
+    outString.append(String.format("<remark><![CDATA[%1$s]]></remark>", getRemark()));
     if (displayComment) {
       outString.append("<!-- 最后更新时间 (时间) (datetime) -->");
     }
-    outString.append(String.format("<updateDate><![CDATA[%1$s]]></updateDate>", this.getModifiedDate()));
+    outString.append(String.format("<updateDate><![CDATA[%1$s]]></updateDate>", getModifiedDate()));
     outString.append("</settingGroup>");
 
     return outString.toString();
@@ -342,16 +329,16 @@ public class ApplicationSettingGroup extends EntityClass implements Cacheable {
    */
   @Override
   public void deserialize(Element element) {
-    this.setId(element.selectSingleNode("id").getText());
-    this.setApplicationId(element.selectSingleNode("applicationId").getText());
-    this.setParentId(element.selectSingleNode("parentId").getText());
-    this.setCode(element.selectSingleNode("code").getText());
-    this.setName(element.selectSingleNode("text").getText());
-    this.setDisplayName(element.selectSingleNode("displayName").getText());
-    this.setContentType(Integer.parseInt(element.selectSingleNode("contentType").getText()));
-    this.setOrderId(element.selectSingleNode("orderId").getText());
-    this.setStatus(Integer.parseInt(element.selectSingleNode("status").getText()));
-    this.setRemark(element.selectSingleNode("remark").getText());
-    this.setModifiedDate(java.time.LocalDateTime.parse(element.selectSingleNode("updateDate").getText()));
+    setId(element.selectSingleNode("id").getText());
+    setApplicationId(element.selectSingleNode("applicationId").getText());
+    setParentId(element.selectSingleNode("parentId").getText());
+    setCode(element.selectSingleNode("code").getText());
+    setName(element.selectSingleNode("text").getText());
+    setDisplayName(element.selectSingleNode("displayName").getText());
+    setContentType(Integer.parseInt(element.selectSingleNode("contentType").getText()));
+    setOrderId(element.selectSingleNode("orderId").getText());
+    setStatus(Integer.parseInt(element.selectSingleNode("status").getText()));
+    setRemark(element.selectSingleNode("remark").getText());
+    setModifiedDate(java.time.LocalDateTime.parse(element.selectSingleNode("updateDate").getText()));
   }
 }

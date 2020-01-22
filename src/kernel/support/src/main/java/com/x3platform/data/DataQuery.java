@@ -1,15 +1,22 @@
 package com.x3platform.data;
 
-import java.math.BigDecimal;
-import java.util.*;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import org.dom4j.*;
-
-import com.x3platform.*;
-import com.x3platform.util.*;
+import com.x3platform.SerializedJSON;
+import com.x3platform.SerializedObject;
+import com.x3platform.util.StringUtil;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+import org.dom4j.Node;
 
 /**
  * 数据查询参数对象
@@ -17,76 +24,74 @@ import com.x3platform.util.*;
 public class DataQuery implements SerializedObject, SerializedJSON {
 
   public DataQuery() {
-    this.mVariables.put("elevatedPrivileges", "0");
-    this.mVariables.put("scence", "default");
+    variables.put("elevatedPrivileges", "0");
+    variables.put("scene", "default");
   }
 
-  private HashMap<String, String> mVariables = new HashMap<String, String>();
+  private HashMap<String, String> variables = new HashMap<String, String>();
 
   /**
    * 查询上下文环境变量集合
    */
   public final HashMap<String, String> getVariables() {
-    return this.mVariables;
+    return variables;
   }
 
-  private String mTable = "";
+  private String table = "";
 
   /**
    * 数据表名称
    */
   public final String getTable() {
-    return this.mTable;
+    return table;
   }
 
   public final void setTable(String value) {
-    this.mTable = value;
+    table = value;
   }
 
-  private List<String> mFields = new ArrayList<String>();
+  private List<String> fields = new ArrayList<String>();
 
   /**
    * 字段列表
    */
   public final List<String> getFields() {
-    return this.mFields;
+    return fields;
   }
 
-  private HashMap<String, Object> mWhere = new HashMap<String, Object>();
+  private HashMap<String, Object> where = new HashMap<String, Object>();
 
   /**
    * 过滤规则
    */
   public final HashMap<String, Object> getWhere() {
-    return this.mWhere;
+    return where;
   }
 
-  private List<String> mOrders = new ArrayList<String>();
+  private List<String> orders = new ArrayList<String>();
 
   /**
    * 排序规则
    */
   public final List<String> getOrders() {
-    return this.mOrders;
+    return orders;
   }
 
-  private int mLength = 0;
+  private int length = 0;
 
   /**
    * 查询记录最大函数限制 (默认值:0)
    */
   public final int getLength() {
-    return this.mLength;
+    return length;
   }
 
   public final void setLength(int value) {
-    this.mLength = value;
+    length = value;
   }
 
   /**
    * 获取适用于 MyBaits 的参数集合
-   *
-   * @return
    */
   public final HashMap<String, Object> getMap() {
     HashMap<String, Object> results = new HashMap<String, Object>();
@@ -122,23 +127,20 @@ public class DataQuery implements SerializedObject, SerializedJSON {
 
   /**
    * 获取过滤规则 SQL 表达式
-   *
-   * @return
    */
   public final String getWhereSql() {
-    return this.getWhereSql(new HashMap<String, String>());
+    return getWhereSql(new HashMap<String, String>());
   }
 
   /**
    * 获取过滤规则 SQL 表达式
    *
    * @param operators 关键字操作符
-   * @return
    */
   public final String getWhereSql(HashMap<String, String> operators) {
     StringBuilder outString = new StringBuilder();
 
-    for (Map.Entry<String, Object> item : this.getWhere().entrySet()) {
+    for (Map.Entry<String, Object> item : getWhere().entrySet()) {
       if (item.getValue() == null) {
         continue;
       }
@@ -173,7 +175,8 @@ public class DataQuery implements SerializedObject, SerializedJSON {
           break;
         case "System.DateTime":
           // outString.append(String.format("%1$s %2$s '%3$s'", item.getKey(), op, (java.time.LocalDateTime) item.getValue().toString("yyyy-MM-dd HH:mm:ss")));
-          outString.append(String.format("%1$s %2$s '%3$s'", item.getKey(), op, (java.time.LocalDateTime) item.getValue()));
+          outString
+            .append(String.format("%1$s %2$s '%3$s'", item.getKey(), op, (java.time.LocalDateTime) item.getValue()));
           break;
         case "System.String":
 
@@ -191,7 +194,8 @@ public class DataQuery implements SerializedObject, SerializedJSON {
           } else if (op.equals("IN")) {
             // 字符串 LIKE 查询内容必须不为空
             if (!StringUtil.isNullOrEmpty(value)) {
-              outString.append(String.format("%1$s IN (%2$s)", item.getKey(), "'" + StringUtil.toSafeSQL(value).replace(",", "','") + "'"))
+              outString.append(String
+                .format("%1$s IN (%2$s)", item.getKey(), "'" + StringUtil.toSafeSQL(value).replace(",", "','") + "'"))
               ;
             }
           } else {
@@ -211,7 +215,8 @@ public class DataQuery implements SerializedObject, SerializedJSON {
     }
 
     // 移除最后的 AND 标记
-    if (outString.length() >= 5 && StringUtil.substring(outString.toString(), outString.length() - 5, 5).equals(" AND ")) {
+    if (outString.length() >= 5 && StringUtil.substring(outString.toString(), outString.length() - 5, 5)
+      .equals(" AND ")) {
       outString = outString.delete(outString.length() - 5, outString.length() - 5 + 5);
     }
 
@@ -220,27 +225,24 @@ public class DataQuery implements SerializedObject, SerializedJSON {
 
   /**
    * 获取排序规则 SQL 表达式
-   *
-   * @return
    */
   public final String getOrderBySql() {
-    return this.getOrderBySql("");
+    return getOrderBySql("");
   }
 
   /**
    * 获取排序规则 SQL 表达式
    *
    * @param defaults 默认规则
-   * @return
    */
   public final String getOrderBySql(String defaults) {
-    if (this.getOrders().isEmpty()) {
+    if (getOrders().isEmpty()) {
       return defaults;
     }
 
     String orderBy = "";
 
-    for (String item : this.getOrders()) {
+    for (String item : getOrders()) {
       orderBy += StringUtil.toSafeSQL(item, true) + ",";
     }
 
@@ -255,8 +257,6 @@ public class DataQuery implements SerializedObject, SerializedJSON {
 
   /**
    * 根据对象导出Xml元素
-   *
-   * @return
    */
   @Override
   public final String serializable() {
@@ -266,9 +266,8 @@ public class DataQuery implements SerializedObject, SerializedJSON {
   /**
    * 根据对象导出Xml元素
    *
-   * @param displayComment      显示注释
+   * @param displayComment 显示注释
    * @param displayFriendlyName 显示友好名称
-   * @return
    */
   @Override
   public String serializable(boolean displayComment, boolean displayFriendlyName) {
@@ -279,12 +278,12 @@ public class DataQuery implements SerializedObject, SerializedJSON {
     outString.append("<query>");
 
     // Table
-    outString.append(String.format("<table><![CDATA[%1$s]]></table>", this.getTable()));
+    outString.append(String.format("<table><![CDATA[%1$s]]></table>", getTable()));
 
     // Fields
     innerText = "";
 
-    for (String item : this.getFields()) {
+    for (String item : getFields()) {
       innerText += item + ",";
     }
 
@@ -295,8 +294,10 @@ public class DataQuery implements SerializedObject, SerializedJSON {
     // Where
     innerText = "";
 
-    for (Map.Entry<String, Object> item : this.getWhere().entrySet()) {
-      innerText += "<key name=\"" + item.getKey() + "\" type=\"" + item.getValue().getClass() + "\" ><![CDATA[" + item.getValue() + "]]></key>";
+    for (Map.Entry<String, Object> item : getWhere().entrySet()) {
+      innerText +=
+        "<key name=\"" + item.getKey() + "\" type=\"" + item.getValue().getClass() + "\" ><![CDATA[" + item.getValue()
+          + "]]></key>";
     }
 
     outString.append(String.format("<where><![CDATA[%1$s]]></where>", innerText));
@@ -304,7 +305,7 @@ public class DataQuery implements SerializedObject, SerializedJSON {
     // Orders
     innerText = "";
 
-    for (String item : this.getOrders()) {
+    for (String item : getOrders()) {
       innerText += item + ",";
     }
 
@@ -313,8 +314,8 @@ public class DataQuery implements SerializedObject, SerializedJSON {
     outString.append(String.format("<orders><![CDATA[%1$s]]></orders>", innerText));
 
     // length
-    if (this.getLength() > 0) {
-      outString.append(String.format("<length><![CDATA[%1$s]]></length>", this.getLength()));
+    if (getLength() > 0) {
+      outString.append(String.format("<length><![CDATA[%1$s]]></length>", getLength()));
     }
 
     outString.append("</query>");
@@ -327,37 +328,38 @@ public class DataQuery implements SerializedObject, SerializedJSON {
    *
    * @param element Xml元素
    */
+  @Override
   public final void deserialize(Element element) {
     Node node = null;
 
-    this.getVariables().clear();
+    getVariables().clear();
 
     // Scence
-    node = element.selectSingleNode("scence");
+    node = element.selectSingleNode("scene");
 
-    this.getVariables().put("scence", (node == null) ? "default" : node.getText());
+    getVariables().put("scene", (node == null) ? "default" : node.getText());
 
     // Table
     node = element.selectSingleNode("table");
 
-    this.setTable((node == null) ? "" : node.getText());
+    setTable((node == null) ? "" : node.getText());
 
     // Fields
     node = element.selectSingleNode("fileds");
 
-    this.getFields().clear();
+    getFields().clear();
 
     if (node != null) {
       String[] fields = node.getText().split(",");
 
       for (String field : fields) {
-        this.getFields().add(field);
+        getFields().add(field);
       }
     }
 
     node = element.selectSingleNode("where");
 
-    this.getWhere().clear();
+    getWhere().clear();
 
     if (node != null) {
       // Where
@@ -387,20 +389,20 @@ public class DataQuery implements SerializedObject, SerializedJSON {
           continue;
         }
 
-        this.getWhere().put(name, convertParamType(type, value));
+        getWhere().put(name, convertParamType(type, value));
       }
     }
 
     // Orders
     node = element.selectSingleNode("orders");
 
-    this.getOrders().clear();
+    getOrders().clear();
 
     if (node != null) {
       String[] orders = node.getText().split(",");
 
       for (String order : orders) {
-        this.getOrders().add(order);
+        getOrders().add(order);
       }
     }
 
@@ -408,7 +410,7 @@ public class DataQuery implements SerializedObject, SerializedJSON {
     node = element.selectSingleNode("length");
 
     if (node != null) {
-      this.setLength(Integer.parseInt(node.getText()));
+      setLength(Integer.parseInt(node.getText()));
     }
   }
 
@@ -425,33 +427,33 @@ public class DataQuery implements SerializedObject, SerializedJSON {
   public void fromJSON(String json) {
     JSONObject data = JSON.parseObject(json);
 
-    this.getVariables().clear();
+    getVariables().clear();
 
     // Scence
-    if (data.containsKey("scence")) {
-      this.getVariables().put("scence", data.getString("scence"));
+    if (data.containsKey("scene")) {
+      getVariables().put("scene", data.getString("scene"));
     } else {
-      this.getVariables().put("scence", "default");
+      getVariables().put("scene", "default");
 
     }
 
     // Table
     if (data.containsKey("table")) {
-      this.setTable(data.getString("table"));
+      setTable(data.getString("table"));
     }
 
     // Fields
-    this.getFields().clear();
+    getFields().clear();
 
     if (data.containsKey("fields")) {
       String[] fields = data.getString("fields").split(",");
 
       for (String field : fields) {
-        this.getFields().add(field);
+        getFields().add(field);
       }
     }
 
-    this.getWhere().clear();
+    getWhere().clear();
 
     if (data.containsKey("where")) {
       // Where
@@ -470,24 +472,24 @@ public class DataQuery implements SerializedObject, SerializedJSON {
           continue;
         }
 
-        this.getWhere().put(name, convertParamType(type, value));
+        getWhere().put(name, convertParamType(type, value));
       }
     }
 
     // Orders
-    this.getOrders().clear();
+    getOrders().clear();
 
     if (data.containsKey("orders")) {
       String[] orders = data.getString("orders").split(",");
 
       for (String order : orders) {
-        this.getOrders().add(order);
+        getOrders().add(StringUtil.toSafeSQL(order));
       }
     }
 
     // Length
     if (data.containsKey("length")) {
-      this.setLength(data.getInteger("length"));
+      setLength(data.getInteger("length"));
     }
   }
 

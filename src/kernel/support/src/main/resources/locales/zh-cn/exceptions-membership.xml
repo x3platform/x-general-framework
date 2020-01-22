@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <!-- common -->
-  <exception name="code_apps_parameter_is_null">1000</exception>
-  <exception name="text_apps_parameter_is_null">参数 {0} 为空</exception>
+  <exception name="code_membership_parameter_is_null">1000</exception>
+  <exception name="text_membership_parameter_is_null">参数 {0} 为空</exception>
+  <!-- common -->
+  <exception name="code_membership_parameter_is_null1">10001</exception>
+  <exception name="text_membership_parameter_is_null2">参数 {0} 为空</exception>
 </resources>

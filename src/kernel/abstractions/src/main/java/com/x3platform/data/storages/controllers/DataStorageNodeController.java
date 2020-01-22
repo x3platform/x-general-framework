@@ -26,7 +26,7 @@ import java.util.*;
  *
  * @author ruanyu
  */
-@Lazy(true)
+@Lazy
 @RestController
 @RequestMapping("/api/data/storages/dataStorageNode")
 public class DataStorageNodeController
@@ -177,7 +177,7 @@ public class DataStorageNodeController
    * @return 响应的数据内容
    */
   @RequestMapping("/create")
-  public String createNewObject(@RequestBody String data){
+  public String create(@RequestBody String data){
     DataStorageNode entity = JSON.parseObject(data, DataStorageNode.class);
 
     entity.setId(DigitalNumberContext.generate("Key_Guid"));
@@ -188,6 +188,6 @@ public class DataStorageNodeController
     // entity.setCreatedDate(new Date());
 
     return "{\"data\":" + JSON.toJSONString(entity) + ","
-      + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";
+      + MessageObject.stringify("0", I18n.getStrings().text("msg_create_success"), true) + "}";
   }
 }

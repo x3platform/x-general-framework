@@ -1,10 +1,9 @@
 package com.x3platform;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import org.dom4j.Element;
-
 import java.io.Serializable;
-import java.util.*;
+import java.util.Hashtable;
+import org.dom4j.Element;
 
 /**
  * 抽象实体类
@@ -20,7 +19,7 @@ public abstract class EntityClass implements SerializedObject, Serializable {
    * 实体类名称
    */
   public final String getEntityClassName() {
-    return KernelContext.parseObjectType(this.getClass());
+    return KernelContext.parseObjectType(getClass());
   }
 
   /**
@@ -32,7 +31,8 @@ public abstract class EntityClass implements SerializedObject, Serializable {
   /**
    * 属性
    */
-  public final Hashtable getProperties() {
+  @JSONField(serialize = false)
+  public Hashtable getProperties() {
     return propertieCache;
   }
 

@@ -48,7 +48,7 @@ public interface AccountGroupRelation {
 
   void setEndDate(Date value);
 
-  Account GetAccount();
+  Account getAccount();
 
-  Group GetGroup();
+  Group getGroup();
 }

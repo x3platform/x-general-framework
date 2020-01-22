@@ -4,7 +4,6 @@ import com.x3platform.SpringContext;
 
 import com.x3platform.configuration.KernelConfiguration;
 import com.x3platform.data.DataQuery;
-import com.x3platform.util.ApplicationContextUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 

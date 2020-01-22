@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.x3platform.membership.mappers.AccountBindingMapper">
+  <resultMap id="BaseResultMap" type="com.x3platform.membership.models.AccountBindingInfo">
+    <result property="accountId" jdbcType="VARCHAR" column="account_id" />
+    <result property="bindingType" jdbcType="VARCHAR" column="binding_type" />
+    <result property="bindingObjectId" jdbcType="VARCHAR" column="binding_object_id" />
+    <result property="bindingOptions" jdbcType="VARCHAR" column="binding_options" />
+    <result property="modifiedDate" jdbcType="TIMESTAMP" column="modified_date" />
+    <result property="createdDate" jdbcType="TIMESTAMP" column="created_date" />
+  </resultMap>
+  <select id="findOne" parameterType="java.lang.String" resultMap="BaseResultMap" >
+    SELECT * FROM sys_account_binding WHERE account_id = #{account_id} AND binding_type = #{binding_type}
+  </select>
+  <select id="findAllByAccountId" parameterType="java.util.Map" resultMap="BaseResultMap" >
+    SELECT * FROM sys_account_binding WHERE account_id = #{account_id}
+  </select>
+  <select id="findAllBindingObjectIds" parameterType="java.util.Map" resultMap="BaseResultMap" >
+    SELECT * FROM sys_account_binding WHERE binding_type = #{binding_type}
+    <if test="account_ids != null">
+      AND account_id IN
+      <foreach collection="account_ids" item="account_id" index="index" open="(" separator="," close=")">
+        #{account_id}
+      </foreach>
+    </if>
+  </select>
+  <select id="isExist" resultType="java.lang.Boolean" >
+    SELECT COUNT(0) AS "Count" FROM `sys_account_binding` WHERE account_id = #{account_id} AND binding_type = #{binding_type}
+  </select>
+  <insert id="bind" parameterType="java.util.Map" >
+    INSERT INTO sys_account_binding
+    (
+      account_id,
+      binding_type,
+      binding_object_id,
+      binding_options,
+      modified_date,
+      created_date
+    )
+    SELECT
+      #{account_id},
+      #{binding_type},
+      #{binding_object_id},
+      #{binding_options},
+      CURRENT_TIMESTAMP,
+      CURRENT_TIMESTAMP
+    FROM DUAL
+    WHERE NOT EXISTS ( SELECT * FROM sys_account_binding WHERE account_id = #{account_id} AND binding_type = #{binding_type})
+  </insert>
+  <delete id="unbind" parameterType="java.util.Map" >
+    DELETE FROM sys_account_binding WHERE account_id = #{account_id} AND binding_type = #{binding_type} AND  binding_object_id = #{binding_object_id}
+  </delete>
+</mapper>

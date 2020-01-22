@@ -1,27 +1,22 @@
 package com.x3platform.apps.services;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import com.github.pagehelper.PageHelper;
 import com.x3platform.apps.AppsContext;
-import com.x3platform.apps.models.Application;
 import com.x3platform.apps.models.ApplicationMenu;
-import com.x3platform.apps.services.ApplicationService;
 import com.x3platform.data.DataPagingUtil;
 import com.x3platform.data.DataQuery;
 import com.x3platform.digitalnumber.DigitalNumberContext;
-
+import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.SpringApplication;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-
-import java.util.List;
-
-import static org.junit.Assert.*;
 
 /**
  *
@@ -30,11 +25,11 @@ import static org.junit.Assert.*;
 @SpringBootTest
 public class ApplicationMenuServiceTests {
 
+  @Autowired
+  private ApplicationMenuService service;
+
   @Test
   public void testFindOne() {
-    // 测试应用配置 标识:52cf89ba-7db5-4e64-9c64-Service3c868b6e7a99
-    ApplicationMenuService service = AppsContext.getInstance().getApplicationMenuService();
-
     ApplicationMenu entity = service.findOne("2feced95-48de-4f01-adb5-15ed92678bc9");
 
     assertNotNull("entity is not null.", entity);
@@ -44,9 +39,6 @@ public class ApplicationMenuServiceTests {
 
   @Test
   public void testFindAll() {
-
-    ApplicationMenuService service = AppsContext.getInstance().getApplicationMenuService();
-
     DataQuery query = new DataQuery();
     // 默认情况
     List<ApplicationMenu> list = service.findAll(query);
@@ -54,14 +46,15 @@ public class ApplicationMenuServiceTests {
     assertNotNull("list is not null.", list);
 
     // 测试条件
-    query = DataQuery.create("{scence:'findAll',where:[{name:'MenuType',value:'ApplicationMenu'},{name:'applicationId',value:'00000000-0000-0000-0000-000000000001'},{name:'status',value:1}], orders:'OrderId,Code'}");
+    query = DataQuery.create(
+      "{scene:'findAll',where:[{name:'menu_type',value:'ApplicationMenu'},{name:'application_id',value:'00000000-0000-0000-0000-000000000001'},{name:'status',value:1}], orders:'order_id, code'}");
 
     list = service.findAll(query);
 
     assertNotNull("list is not null.", list);
 
     // 测试长度
-    query = DataQuery.create("{scence:'default', orders:'OrderId, Code', length:10}");
+    query = DataQuery.create("{scene:'default', orders:'order_id, code', length:10}");
 
     list = service.findAll(query);
 
@@ -70,9 +63,7 @@ public class ApplicationMenuServiceTests {
 
   @Test
   public void testGetPaging() {
-    ApplicationMenuService service = AppsContext.getInstance().getApplicationMenuService();
-
-    int total = -1;
+    int total;
 
     DataQuery query = new DataQuery();
 
@@ -87,8 +78,6 @@ public class ApplicationMenuServiceTests {
 
   @Test
   public void testIsExist() {
-    ApplicationMenuService service = AppsContext.getInstance().getApplicationMenuService();
-
     // 存在的情况
     String id = "2feced95-48de-4f01-adb5-15ed92678bc9";
 
@@ -106,10 +95,11 @@ public class ApplicationMenuServiceTests {
 
   @Test
   public void testGetMenus() {
-    ApplicationMenuService service = AppsContext.getInstance().getApplicationMenuService();
+    List<ApplicationMenu> list = service.getMenusByParentId(
+      "00000000-0000-0000-0000-000000000001",
+      "00000000-0000-0000-0000-000000000000",
+      "ApplicationMenu");
 
-   // List<ApplicationMenu> list = service.getMenusByParentId("00000000-0000-0000-0000-000000000001","00000000-0000-0000-0000-000000000000","ApplicationMenu");
-
-   // assertEquals(4, list.size());
+    // assertEquals(4, list.size());
   }
 }

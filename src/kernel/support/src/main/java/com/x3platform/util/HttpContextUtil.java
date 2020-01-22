@@ -1,49 +1,26 @@
 package com.x3platform.util;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.conn.ssl.DefaultHostnameVerifier;
-import org.apache.http.conn.util.PublicSuffixMatcher;
-import org.apache.http.conn.util.PublicSuffixMatcherLoader;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.entity.mime.content.FileBody;
-import org.apache.http.entity.mime.content.StringBody;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.CharsetUtils;
-import org.apache.http.util.EntityUtils;
-
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.TypeReference;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
-
+import com.x3platform.messages.MessageObject;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.Map;
+import javax.servlet.ServletRequest;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 /**
  * HTTP 请求辅助函数
  */
 public class HttpContextUtil {
+
   public static HttpServletRequest getRequest() {
     RequestAttributes ra = RequestContextHolder.getRequestAttributes();
     return ((ServletRequestAttributes) ra).getRequest();
@@ -52,6 +29,57 @@ public class HttpContextUtil {
   public static HttpServletResponse getResponse() {
     RequestAttributes ra = RequestContextHolder.getRequestAttributes();
     return ((ServletRequestAttributes) ra).getResponse();
+  }
+
+  /**
+   * 获取请求 Body 内容 注: ServletRequest.getInputStream() 流只允许读取一次, 如果需要多次读取需要其他方法配合
+   */
+  public static String getBodyString(ServletRequest request) {
+    StringBuilder sb = new StringBuilder();
+    InputStream inputStream = null;
+    BufferedReader reader = null;
+    try {
+      inputStream = request.getInputStream();
+      reader = new BufferedReader(new InputStreamReader(inputStream, Charset.forName("UTF-8")));
+      String line = "";
+      while ((line = reader.readLine()) != null) {
+        sb.append(line);
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
+    } finally {
+      if (inputStream != null) {
+        try {
+          inputStream.close();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
+      if (reader != null) {
+        try {
+          reader.close();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
+    }
+    return sb.toString();
+  }
+
+  /**
+   * 输出异常信息
+   *
+   * @param response HTTP 响应对象
+   * @param code 消息代码
+   * @param message 消息描述
+   */
+  public static void writeException(HttpServletResponse response, String code, String message) throws IOException {
+    response.setHeader("Access-Control-Allow-Origin", "*");
+    response.setCharacterEncoding("utf-8");
+    response.setContentType("application/json; charset=utf-8");
+    response.setStatus(HttpServletResponse.SC_OK);
+    response.getWriter().write(MessageObject.stringify(code, message));
+    response.getWriter().close();
   }
 
   public static Map<String, Cookie> getCookieMap() {
@@ -129,4 +157,5 @@ public class HttpContextUtil {
   public static void setCookie(HttpServletResponse response, Cookie cookie) {
     response.addCookie(cookie);
   }
+
 }

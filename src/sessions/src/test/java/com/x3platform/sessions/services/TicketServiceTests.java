@@ -19,11 +19,13 @@ public class TicketServiceTests {
   public void testInsert() {
     TicketService service = SessionsContext.getInstance().getTicketService();
 
+    String ticketId = TEST_ID_PREFIX + StringUtil.toDateFormat(LocalDateTime.now(), "yyyyMMddHHmmss");
+
     Ticket param = new Ticket();
 
-    param.setTicketId("test_" + StringUtil.toDateFormat(LocalDateTime.now(), "yyyyMMddHHmmss"));
+    param.setTicketId(ticketId);
 
-    param.setTicketValue("test");
+    param.setTicketValue(GENERAL_ACCOUNT_LOGIN_NAME);
 
     param.setAccountObject(
       "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\r\n<accountObject><id>fbe67a6e-4c6c-439e-b54b-f62af23d30ba</id><loginName>jiqiliang</loginName><name>吉其亮</name><ip>127.0.0.1</ip></accountObject>");
@@ -38,19 +40,10 @@ public class TicketServiceTests {
 
     service.insert(param);
 
-    Ticket result = service.findByAccountIdentity(param.getTicketId());
+    Ticket result = service.findByTicketId(param.getTicketId());
 
     assertTrue(param.getTicketId().equals(result.getTicketId()));
-  }
 
-  @Test
-  public void testFindAllByReceiverId() {
-    TicketService service = SessionsContext.getInstance().getTicketService();
-
-    // List<TaskWorkItemInfo> results = service.findAllByReceiverId("00000000-0000-0000-0000-000000000001", new HashMap<String, Object>());
-
-    //String text = JSON.toJSONString(results);
-
-    // assertNotNull("result is not null.", text);
+    service.delete(ticketId);
   }
 }

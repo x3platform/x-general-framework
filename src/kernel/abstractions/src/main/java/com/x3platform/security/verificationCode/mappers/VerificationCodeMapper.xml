@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.x3platform.security.verificationcode.mappers.VerificationCodeMapper">
+  <resultMap id="BaseResultMap" type="com.x3platform.security.verificationcode.VerificationCode">
+    <result property="id" jdbcType="VARCHAR" column="id" />
+    <result property="ip" jdbcType="VARCHAR" column="ip" />
+    <result property="objectType" jdbcType="VARCHAR" column="object_type" />
+    <result property="objectValue" jdbcType="VARCHAR" column="object_value" />
+    <result property="code" jdbcType="VARCHAR" column="code" />
+    <result property="type" jdbcType="VARCHAR" column="type" />
+    <result property="createdDate" jdbcType="TIMESTAMP" column="created_date" />
+  </resultMap>
+  <sql id="Select_Where_Clause">
+    <where>
+      <if test="param_id != null and param_id != ''">
+        AND t.id = #{param_id}
+      </if>
+      <if test="param_ip != null and param_ip != ''">
+        AND t.ip = #{param_ip}
+      </if>
+      <if test="param_object_type != null and param_object_type != ''">
+        AND t.object_type = #{param_object_type}
+      </if>
+      <if test="param_object_value != null and param_object_value != ''">
+        AND t.object_value = #{param_object_value}
+      </if>
+      <if test="param_code != null and param_code != ''">
+        AND t.code = #{param_code}
+      </if>
+      <if test="param_type != null and param_type != ''">
+        AND t.type = #{param_type}
+      </if>
+      <if test="param_created_date != null">
+        AND t.created_date = #{param_created_date}
+      </if>
+    </where>
+  </sql>
+  <insert id="insert" parameterType="com.x3platform.security.verificationcode.VerificationCode">
+    INSERT INTO sys_verification_code
+    (
+      id,
+      ip,
+      object_type,
+      object_value,
+      code,
+      type,
+      created_date
+    )
+    VALUES
+    (
+      #{id,jdbcType=VARCHAR},
+      #{ip,jdbcType=VARCHAR},
+      #{objectType,jdbcType=VARCHAR},
+      #{objectValue,jdbcType=VARCHAR},
+      #{code,jdbcType=VARCHAR},
+      #{type,jdbcType=VARCHAR},
+      #{createdDate,jdbcType=TIMESTAMP}
+    )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.x3platform.security.verificationcode.VerificationCode">
+    UPDATE sys_verification_code SET
+
+      id = #{id,jdbcType=VARCHAR},
+      ip = #{ip,jdbcType=VARCHAR},
+      object_type = #{objectType,jdbcType=VARCHAR},
+      object_value = #{objectValue,jdbcType=VARCHAR},
+      code = #{code,jdbcType=VARCHAR},
+      type = #{type,jdbcType=VARCHAR},
+      created_date = #{createdDate,jdbcType=TIMESTAMP}
+
+    WHERE id = #{id}
+  </update>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    DELETE FROM sys_verification_code WHERE id = #{id}
+  </delete>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap" >
+    SELECT * FROM sys_verification_code WHERE id = #{id}
+  </select>
+  <select id="findAll" parameterType="java.util.Map" resultMap="BaseResultMap" >
+    SELECT * FROM sys_verification_code t
+    <if test="_parameter != null">
+      <include refid="Select_Where_Clause" />
+    </if>
+    <if test="orders != null and orders.size() > 0">
+      ORDER BY
+      <foreach collection="orders" item="order" index="index" separator="," >
+        ${order}
+      </foreach>
+    </if>
+    <if test="length > 0">
+      LIMIT 0, ${length}
+    </if>
+  </select>
+  <select id="isExist" resultType="java.lang.Boolean" >
+    SELECT COUNT(0) AS "Count" FROM sys_verification_code WHERE id = #{id}
+  </select>
+</mapper>

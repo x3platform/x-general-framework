@@ -4,6 +4,7 @@ import com.x3platform.data.storages.models.DataStorageSchema;
 import java.util.List;
 import java.util.Map;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  *
@@ -58,7 +59,15 @@ public interface DataStorageSchemaMapper {
    * @param applicationId 所属应用标识
    * @return 返回实例 DataStorageSchema 的详细信息
    */
-  DataStorageSchema findOneByApplicationId(String applicationId);
+  DataStorageSchema findOneByApplicationId(@Param("application_id") String applicationId);
+
+  /**
+   * 查询某条记录
+   *
+   * @param applicationName 所属应用标识
+   * @return 返回实例 DataStorageSchema 的详细信息
+   */
+  DataStorageSchema findOneByApplicationName(@Param("application_name") String applicationName);
 
   /**
    * 查询所有相关记录

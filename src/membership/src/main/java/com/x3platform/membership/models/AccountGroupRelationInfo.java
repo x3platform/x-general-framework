@@ -1,5 +1,6 @@
 package com.x3platform.membership.models;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.x3platform.membership.AccountGroupRelation;
 import com.x3platform.membership.Account;
 import com.x3platform.membership.Group;
@@ -25,98 +26,99 @@ public class AccountGroupRelationInfo implements AccountGroupRelation {
     this.setGroupId(groupId);
   }
 
-  private String mAccountId = "";
+  private String accountId = "";
 
   /**
    * 帐号标识
    */
   public String getAccountId() {
-    return mAccountId;
+    return accountId;
   }
 
   public void setAccountId(String value) {
-    mAccountId = value;
+    accountId = value;
   }
 
-  private String mAccountGlobalName = "";
+  private String accountGlobalName = "";
 
   /**
    * 帐号全局名称
    */
   public String getAccountGlobalName() {
-    return mAccountGlobalName;
+    return accountGlobalName;
   }
 
   public void setAccountGlobalName(String value) {
-    mAccountGlobalName = value;
+    accountGlobalName = value;
   }
 
-  private String mGroupId = "";
+  private String groupId = "";
 
   /**
    * 群组标识
    */
   public String getGroupId() {
-    return mGroupId;
+    return groupId;
   }
 
   public void setGroupId(String value) {
-    mGroupId = value;
+    groupId = value;
   }
 
-  private String mGroupGlobalName = "";
+  private String groupGlobalName = "";
 
   /**
    * 群组全局名称
    */
   public String getGroupGlobalName() {
-    return mGroupGlobalName;
+    return groupGlobalName;
   }
 
   public void setGroupGlobalName(String value) {
-    mGroupGlobalName = value;
+    groupGlobalName = value;
   }
 
-  private Date mBeginDate = DateUtil.getDefaultDate();
+  private Date beginDate = DateUtil.getDefaultDate();
 
   /**
    * 生效时间
    */
   public Date getBeginDate() {
-    return mBeginDate;
+    return beginDate;
   }
 
   public void setBeginDate(Date value) {
-    mBeginDate = value;
+    beginDate = value;
   }
 
-  private Date mEndDate = DateUtil.getDefaultDate();
+  private Date endDate = DateUtil.getDefaultDate();
 
   /**
    * 失效时间
    */
   public Date getEndDate() {
-    return mEndDate;
+    return endDate;
   }
 
   public void setEndDate(Date value) {
-    mEndDate = value;
+    endDate = value;
   }
 
   /**
    * 获取相关帐号信息
    */
   @Override
-  public Account GetAccount() {
+  @JSONField(serialize = false)
+  public Account getAccount() {
     return MembershipManagement.getInstance().getAccountService().findOne(this.getAccountId());
   }
 
   /**
    * 获取相关组织信息
    */
-  public Group GetGroup() {
-    // TODO 待处理
-    // return MembershipManagement.getInstance().getGroupService().findOne(this.getGroupId());
-    return null;
+  @Override
+  @JSONField(serialize = false)
+  public Group getGroup() {
+    return MembershipManagement.getInstance().getGroupService().findOne(this.getGroupId());
   }
 }

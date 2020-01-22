@@ -1,9 +1,9 @@
 package com.x3platform.membership.mappers;
 
 import com.x3platform.membership.AccountLog;
+import java.util.List;
+import java.util.Map;
 import org.apache.ibatis.annotations.Param;
-
-import java.util.*;
 
 /**
  *
@@ -18,7 +18,7 @@ public interface AccountLogMapper {
   /**
    * 添加记录
    *
-   * @param record {@link {@link AccountLog} 实例的详细信息
+   * @param record {@link AccountLog} 实例的详细信息
    * @return 消息代码 0=表示成功
    */
   int insert(AccountLog record);

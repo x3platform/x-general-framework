@@ -72,6 +72,9 @@ public class KernelConfiguration {
   @Value("${x3platform.messages.message-object-formatter:com.x3platform.messages.MessageObjectFormatter}")
   private String MessageObjectFormatter;
 
+  /**
+   * 消息对象格式器
+   */
   public String getMessageObjectFormatter() {
     return MessageObjectFormatter;
   }
@@ -79,14 +82,37 @@ public class KernelConfiguration {
   @Value("${x3platform.application-path-root:.}")
   private String ApplicationPathRoot;
 
+  /**
+   * 应用目录
+   */
   public String getApplicationPathRoot() {
     return ApplicationPathRoot;
+  }
+
+  @Value("${x3platform.application-temp-path-root:./temp}")
+  private String ApplicationTempPathRoot;
+
+  /**
+   * 应用临时目录
+   */
+  public String getApplicationTempPathRoot() {
+    return ApplicationTempPathRoot;
+  }
+
+  @Value("${x3platform.application-temp-path-root:-1}")
+  private String ApplicationTempFileRemoveTimerInterval;
+
+  /**
+   * 应用临时文件清理时间间隔(单位:天数)
+   */
+  public String getApplicationTempFileRemoveTimerInterval() {
+    return ApplicationTempFileRemoveTimerInterval;
   }
 
   @Value("${x3platform.authentication-management-type:com.x3platform.security.authentication.LocalAuthenticationManagement}")
   private String AuthenticationManagementType;
 
-  /***
+  /**
    * 验证管理类型
    */
   public String getAuthenticationManagementType() {

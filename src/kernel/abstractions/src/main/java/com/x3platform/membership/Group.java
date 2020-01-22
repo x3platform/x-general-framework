@@ -1,13 +1,26 @@
 package com.x3platform.membership;
 
 import com.x3platform.AuthorizationObject;
-
-import java.util.*;
+import java.util.List;
 
 /**
  * 群组信息
  */
 public interface Group extends AuthorizationObject {
+
+  /**
+   * 获取标识
+   *
+   * @return 标识
+   */
+  String getId();
+
+  /**
+   * 设置标识
+   *
+   * @param value 值
+   */
+  void setId(String value);
 
   /**
    * 编号
@@ -38,9 +51,9 @@ public interface Group extends AuthorizationObject {
   /**
    * 启用企业邮箱
    */
-  int getEnableExchangeEmail();
+  int getEnableEmail();
 
-  void setEnableExchangeEmail(int value);
+  void setEnableEmail(int value);
 
   /**
    * 所属组织架构全路径

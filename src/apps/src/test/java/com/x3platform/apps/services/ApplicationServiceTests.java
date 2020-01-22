@@ -5,6 +5,9 @@ import com.x3platform.apps.models.Application;
 import com.x3platform.apps.services.ApplicationService;
 import com.x3platform.apps.services.ApplicationService;
 
+import com.x3platform.data.DataQuery;
+import com.x3platform.tests.TestConstants;
+import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -15,10 +18,12 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import static com.x3platform.tests.TestConstants.APPLICATION_ID;
+import static com.x3platform.tests.TestConstants.APPLICATION_NAME;
 import static org.junit.Assert.*;
 
 /**
- *  公共组件 配置数据库
+ * 公共组件 配置数据库
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -26,10 +31,9 @@ public class ApplicationServiceTests {
 
   @Test
   public void testFindOne() {
-    // 测试应用配置 标识:52cf89ba-7db5-4e64-9c64-3c868b6e7a99
     ApplicationService service = AppsContext.getInstance().getApplicationService();
 
-    Application param = service.findOne("00000000-0000-0000-0000-000000000001");
+    Application param = service.findOne(APPLICATION_ID);
 
     assertNotNull("entity is not null.", param);
   }
@@ -39,22 +43,23 @@ public class ApplicationServiceTests {
 
     ApplicationService service = AppsContext.getInstance().getApplicationService();
 
-    Application entity = service.findOneByApplicationName("Test");
+    Application entity = service.findOneByApplicationName(APPLICATION_NAME);
 
-    assertNotNull("entity is not null.", entity);
+    assertNotNull(entity);
   }
 
   @Test
-  public void testGetPaging() {
+  public void testFindAll() {
     int rowCount = -1;
 
-    // DataQuery query = new DataQuery();
+    DataQuery query = new DataQuery();
 
-    // IList<Application> list = AppsContext.Instance.ApplicationService.GetPaging(0, 10, query, out rowCount);
+     List<Application> list = AppsContext.getInstance().getApplicationService().findAll(query);
   }
 
   @Test
-  public void testGetAuthorizationScopeObjects() {
-    // AppsContext.Instance.ApplicationService.GetAuthorizationScopeObjects("52cf89ba-7db5-4e64-9c64-3c868b6e7a99", "应用_默认_管理员");
+  public void testGetAuthorizationScopes() {
+     AppsContext.getInstance().getApplicationService()
+       .getAuthorizationScopes(APPLICATION_ID, "应用_默认_管理员");
   }
 }

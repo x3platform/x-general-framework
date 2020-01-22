@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.x3platform.membership.mappers.RoleMapper">
-  <resultMap id="findOne_Result" type="com.x3platform.membership.models.RoleInfo">
+  <resultMap id="BaseResultMap" type="com.x3platform.membership.models.RoleInfo">
     <result property="id" column="id"/>
     <result property="code" column="code"/>
     <result property="name" column="name"/>
@@ -23,379 +23,130 @@
     <result property="modifiedDate" column="modifiedDate"/>
     <result property="createdDate" column="createdDate"/>
   </resultMap>
-  <resultMap id="findAll_Result" type="com.x3platform.membership.models.RoleInfo">
-    <result property="id" column="id"/>
-    <result property="code" column="code"/>
-    <result property="name" column="name"/>
-    <result property="globalName" column="global_name"/>
-    <result property="pinYin" column="pinyin"/>
-    <result property="type" column="type"/>
-    <result property="parentId" column="parent_id"/>
-    <result property="parentName" column="parent_name"/>
-    <result property="standardRoleId" column="standard_role_id"/>
-    <result property="organizationUnitId" column="organization_unit_id"/>
-    <result property="organizationUnitName" column="organization_name"/>
-    <result property="generalRoleId" column="general_role_id"/>
-    <result property="enableEmail" column="enable_email"/>
-    <result property="effectScope" column="effect_scope"/>
-    <result property="locking" column="locking"/>
-    <result property="orderId" column="order_id"/>
-    <result property="status" column="status"/>
-    <result property="remark" column="remark"/>
-    <result property="fullPath" column="full_path"/>
-    <result property="distinguishedName" column="distinguished_name"/>
-    <result property="modifiedDate" column="modified_date"/>
-    <result property="createdDate" column="created_date"/>
+  <resultMap id="AccountRoleRelationResultMap" type="com.x3platform.membership.models.AccountRoleRelationInfo">
+    <result property="accountId" column="account_id"/>
+    <result property="accountGlobalName" column="account_global_name" />
+    <result property="roleId" column="role_id"/>
+    <result property="roleGlobalName" column="role_global_name" />
+    <result property="isDefault" column="is_default"/>
+    <result property="beginDate" column="begin_date"/>
+    <result property="endDate" column="end_date"/>
   </resultMap>
   <insert id="insert" parameterType="com.x3platform.membership.models.RoleInfo">
-    INSERT INTO sys_role
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-    <if test="id != null">
+    INSERT INTO sys_role (
       id,
-    </if>
-    <if test="code != null">
       code,
-    </if>
-    <if test="globalName != null">
+      name,
       global_name,
-    </if>
-    <if test="pinYin != null">
       pinyin,
-    </if>
-    <if test="type != null">
       type,
-    </if>
-    <if test="parentId != null">
       parent_id,
-    </if>
-    <if test="standardRoleId != null">
       standard_role_id,
-    </if>
-    <if test="organizationUnitId != null">
-      organization_id,
-    </if>
-    <if test="generalRoleId != null">
-      general_role_id,
-    </if>
-    <if test="enableEmail != null">
+      organization_unit_id,
       enable_email,
-    </if>
-    <if test="effectScope != null">
       effect_scope,
-    </if>
-    <if test="locking != null">
       locking,
-    </if>
-    <if test="orderId != null">
       order_id,
-    </if>
-    <if test="status != null">
       status,
-    </if>
-    <if test="remark != null">
       remark,
-    </if>
-    <if test="fullPath != null">
       full_path,
-    </if>
-    <if test="distinguishedName != null">
       distinguished_name,
-    </if>
-    <if test="modifiedDate != null">
       modified_date,
-    </if>
-    <if test="createdDate != null">
-      created_date,
-    </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        #{id},
-      </if>
-      <if test="code != null">
-        #{code},
-      </if>
-      <if test="globalName != null">
-        #{globalName},
-      </if>
-      <if test="pinYin != null">
-        #{pinYin},
-      </if>
-      <if test="type != null">
-        #{type},
-      </if>
-      <if test="parentId != null">
-        #{parentId},
-      </if>
-      <if test="standardRoleId != null">
-        #{standardRoleId},
-      </if>
-      <if test="organizationUnitId != null">
-        #{organizationUnitId},
-      </if>
-      <if test="generalRoleId != null">
-        #{generalRoleId},
-      </if>
-      <if test="enableEmail != null">
-        #{enableEmail},
-      </if>
-      <if test="effectScope != null">
-        #{effectScope},
-      </if>
-      <if test="locking != null">
-        #{locking},
-      </if>
-      <if test="orderId != null">
-        #{orderId},
-      </if>
-      <if test="status != null">
-        #{status},
-      </if>
-      <if test="remark != null">
-        #{remark},
-      </if>
-      <if test="fullPath != null">
-        #{fullPath},
-      </if>
-      <if test="distinguishedName != null">
-        #{distinguishedName},
-      </if>
-      <if test="modifiedDate != null">
-        CURRENT_TIMESTAMP,
-      </if>
-      <if test="createdDate != null">
-        CURRENT_TIMESTAMP,
-      </if>
-    </trim>
+      created_date
+    )
+    values
+    (
+      #{id},
+      #{code},
+      #{name},
+      #{globalName},
+      #{pinYin},
+      #{type},
+      #{parentId},
+      #{standardRoleId},
+      #{organizationUnitId},
+      #{enableEmail},
+      #{effectScope},
+      #{locking},
+      #{orderId},
+      #{status},
+      #{remark},
+      #{fullPath},
+      #{distinguishedName},
+      CURRENT_TIMESTAMP,
+      CURRENT_TIMESTAMP
+    )
   </insert>
   <update id="update" parameterType="com.x3platform.membership.models.RoleInfo">
-    UPDATE sys_role
-      <set>
-        <if test="code != null">
-          code = #{code},
-        </if>
-        <if test="name != null">
-          name = #{name},
-        </if>
-        <if test="globalName != null">
-          global_name = #{globalName},
-        </if>
-        <if test="pinYin != null">
-          pinyin = #{pinYin},
-        </if>
-        <if test="type != null">
-          type = #{type},
-        </if>
-        <if test="parentId != null">
-          parent_id = #{parentId},
-        </if>
-        <if test="standardRoleId != null">
-          standard_role_id = #{standardRoleId},
-        </if>
-        <if test="organizationUnitId != null">
-          organization_id = #{organizationUnitId},
-        </if>
-        <if test="generalRoleId != null">
-          general_role_id = #{generalRoleId},
-        </if>
-        <if test="locking != null">
-          locking = #{locking},
-        </if>
-        <if test="orderId != null">
-          order_id = #{orderId},
-        </if>
-        <if test="status != null">
-          status = #{status},
-        </if>
-        <if test="remark != null">
-          remark = #{remark},
-        </if>
-        <if test="distinguishedName != null">
-          distinguished_name = #{distinguishedName},
-        </if>
-        <if test="modifiedDate != null">
-          modified_date = CURRENT_TIMESTAMP ,
-        </if>
-    </set>
+    UPDATE sys_role SET
+      code = #{code},
+      name = #{name},
+      global_name = #{globalName},
+      pinyin = #{pinYin},
+      type = #{type},
+      parent_id = #{parentId},
+      standard_role_id = #{standardRoleId},
+      organization_unit_id = #{organizationUnitId},
+      general_role_id = #{generalRoleId},
+      locking = #{locking},
+      order_id = #{orderId},
+      status = #{status},
+      remark = #{remark},
+      distinguished_name = #{distinguishedName},
+      modified_date = CURRENT_TIMESTAMP
     WHERE id = #{id}
   </update>
-  <insert id="save" parameterType="com.x3platform.membership.models.RoleInfo">
-    INSERT INTO sys_role
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        id,
-      </if>
-      <if test="code != null">
-        code,
-      </if>
-      <if test="name != null">
-        name,
-      </if>
-      <if test="globalName != null">
-        global_name,
-      </if>
-      <if test="pinYin != null">
-        pinyin,
-      </if>
-      <if test="type != null">
-        type,
-      </if>
-      <if test="parentId != null">
-        parent_id,
-      </if>
-      <if test="standardRoleId != null">
-        standard_role_id,
-      </if>
-      <if test="organizationUnitId != null">
-        organization_id,
-      </if>
-      <if test="generalRoleId != null">
-        general_role_id,
-      </if>
-      <if test="locking != null">
-        locking,
-      </if>
-      <if test="orderId != null">
-        order_id,
-      </if>
-      <if test="status != null">
-        status,
-      </if>
-      <if test="remark != null">
-        remark,
-      </if>
-      <if test="distinguishedName != null">
-        distinguished_name,
-      </if>
-      <if test="modifiedDate != null">
-        modified_date,
-      </if>
-      <if test="createdDate != null">
-        created_date,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        #{id},
-      </if>
-      <if test="code != null">
-        #{code},
-      </if>
-      <if test="name != null">
-        #{name},
-      </if>
-      <if test="globalName != null">
-        #{globalName},
-      </if>
-      <if test="pinYin != null">
-        #{pinYin},
-      </if>
-      <if test="type != null">
-        #{type},
-      </if>
-      <if test="parentId != null">
-        #{parentId},
-      </if>
-      <if test="standardRoleId != null">
-        #{standardRoleId},
-      </if>
-      <if test="organizationUnitId != null">
-        #{organizationUnitId},
-      </if>
-      <if test="generalRoleId != null">
-        #{generalRoleId},
-      </if>
-      <if test="locking != null">
-        #{locking},
-      </if>
-      <if test="orderId != null">
-        #{orderId},
-      </if>
-      <if test="status != null">
-        #{status},
-      </if>
-      <if test="remark != null">
-        #{remark},
-      </if>
-      <if test="distinguishedName != null">
-        #{distinguishedName},
-      </if>
-      <if test="modifiedDate != null">
-        CURRENT_TIMESTAMP,
-      </if>
-      <if test="createdDate != null">
-        CURRENT_TIMESTAMP,
-      </if>
-    </trim>
-  </insert>
-
-  <insert id="addRelation" parameterType="com.x3platform.membership.models.RoleInfo">
-    INSERT INTO sys_account_role
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="accountId != null">
-        account_id,
-      </if>
-      <if test="roleId != null">
-        role_id,
-      </if>
-      <if test="isDefault != null">
-        is_default,
-      </if>
-      <if test="beginDate != null">
-        begin_date,
-      </if>
-      <if test="endDate != null">
-        end_date,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="accountId != null">
-        #{accountId},
-      </if>
-      <if test="roleId != null">
-        #{roleId},
-      </if>
-      <if test="isDefault != null">
-        #{isDefault},
-      </if>
-      <if test="beginDate != null">
-        #{beginDate},
-      </if>
-      <if test="endDate != null">
-        #{endDate},
-      </if>
-    </trim>
-  </insert>
   <update id="delete">
     update sys_role set status = 0 where id = #{id}
   </update>
-  <select id="findOne" resultMap="findOne_Result">
+  <select id="findOne" resultMap="BaseResultMap">
     SELECT * FROM sys_role WHERE id = #{id}
   </select>
-  <select id="findMaxCodeByParentId" resultMap="findOne_Result">
+  <select id="findOneByCorporationIdAndStandardRoleId" resultMap="BaseResultMap">
+    select * from sys_role t where t.organization_unit_id=#{corporationId} and standard_role_id=#{standardRoleId}
+  </select>
+  <select id="findMaxCodeByParentId" resultMap="BaseResultMap">
     select * from sys_role t where t.parent_id = #{parentId} and code in (
       select max(code) from sys_role  where parent_id = #{parentId}
     )
   </select>
-  <select id="findMaxCodeByOrganizationUnitId" resultMap="findOne_Result">
+  <select id="findMaxCodeByOrganizationUnitId" resultMap="BaseResultMap">
     select * from sys_role t where t.organization_id = #{organizationUnitId} and code in (
       select max(code) from sys_role t where organization_id = #{organizationUnitId}
     )
   </select>
-  <select id="findAll" resultMap="findAll_Result">
-    SELECT
-    T.* , r.name AS parent_name ,ou.name as organization_name
-    FROM
-    sys_role T
+  <select id="findAll" resultMap="BaseResultMap">
+    SELECT t.* FROM sys_role t
     LEFT JOIN sys_role r ON (t.parent_id = r.id)
     LEFT JOIN sys_organization_unit ou ON (t.organization_unit_id = ou.id)
     <where>
-      <!-- 列表查询 -->
-      <if test="var_scence == 'Query'">
-        T.status = 1
+      <!-- 通用列表查询 -->
+      <if test="var_scene == 'Query'">
+        t.status = 1
         <if test="param_search_text != null and param_search_text != ''">
-          and t.global_name LIKE concat('%',#{param_search_text},'%') OR name LIKE concat('%',#{param_search_text},'%')
+          AND t.global_name LIKE concat('%',#{param_search_text},'%') OR name LIKE concat('%',#{param_search_text},'%')
         </if>
+        <if test='param_parent_id != null and param_parent_id != "" and param_parent_id != "0" '>
+          AND t.parent_id = #{param_parent_id}
+        </if>
+        <if test="param_organization_unit_id != null and param_organization_unit_id != ''">
+          AND t.organization_unit_id = #{param_organization_unit_id}
+        </if>
+      </if>
+
+      <!-- 通讯录查询 -->
+      <if test="var_scene == 'Contacts'">
+        <if test="param_name != null and param_name != ''">
+          AND (t.global_name LIKE #{param_name} OR t.name LIKE #{param_name})
+        </if>
+        <if test="param_status != null and param_status != ''">
+          AND t.status = #{param_status}
+        </if>
+      </if>
+
+      <!-- 默认查询 -->
+      <if test="var_scene == 'default'">
+        t.status = 1
         <if test='param_parent_id != null and param_parent_id != "" and param_parent_id!="0" '>
           and t.id IN (
           SELECT
@@ -430,48 +181,12 @@
           )
         </if>
       </if>
-      <if test="var_scence == 'default'">
-        T.status = 1
+      <if test="var_scene == 'QueryChild'">
         <if test='param_parent_id != null and param_parent_id != "" and param_parent_id!="0" '>
-          and T.id IN (
-          SELECT
-          id
-          FROM
-          (
-          SELECT
-          t1.id,
-          IF
-          ( find_in_set( parent_id, @pids ) > 0, @pids := concat( @pids, ',', id ), '0' ) AS ischild
-          FROM
-          ( SELECT id, parent_id FROM sys_role t ORDER BY parent_id, id ) t1,
-          ( SELECT @pids := #{param_parent_id}) t2
-          ) t3
-          WHERE
-          ischild != '0'
-          )
+          t.parent_id = #{param_parent_id} and t.status = 1
         </if>
         <if test="param_organizationUnitId !=null and param_organizationUnitId !=''">
-          and T.organization_unit_id in (
-          SELECT
-          id
-          FROM
-          sys_organization_unit
-          WHERE
-          FIND_IN_SET(
-          id,
-          func_GetChildrenIdByOrganizationUnitId (
-          #{param_organizationUnitId}
-          )
-          )
-          )
-        </if>
-      </if>
-      <if test="var_scence == 'QueryChild'">
-        <if test='param_parent_id != null and param_parent_id != "" and param_parent_id!="0" '>
-          T.parent_id = #{param_parent_id} and T.status = 1
-        </if>
-        <if test="param_organizationUnitId !=null and param_organizationUnitId !=''">
-          and T.organization_unit_id in (
+          and t.organization_unit_id in (
           SELECT
           id
           FROM
@@ -490,14 +205,17 @@
     <if test="orders != null and orders.size() > 0">
       ORDER BY
       <foreach collection="orders" item="order" index="index" separator=",">
-        #{order}
+        ${order}
       </foreach>
+    </if>
+    <if test="orders == null">
+      order by modified_date  desc
     </if>
     <if test="length > 0">
       LIMIT 0, ${length}
     </if>
   </select>
-  <select id="findAllByParentId" resultMap="findAll_Result">
+  <select id="findAllByParentId" resultMap="BaseResultMap">
     SELECT * FROM sys_role WHERE id IN (
       SELECT
         id
@@ -517,33 +235,106 @@
     AND status = 1
     ORDER BY order_id desc
   </select>
-
-  <select id="findAllByAccountId" resultMap="findAll_Result">
-    select DISTINCT r.* from sys_account_role ar , sys_role r where ar.role_id = r.id and ar.account_id = #{accountId}
+  <select id="findAllByAccountId" resultMap="BaseResultMap">
+    SELECT * FROM sys_role WHERE id IN (SELECT role_id FROM sys_account_role WHERE account_id = #{account_id})
   </select>
-
-  <select id="findAllByOrganizationUnitId" resultMap="findAll_Result">
-    select * from sys_role where organization_unit_id=#{organizationUnitId}  and status = 1 order by id
+  <select id="findAllByOrganizationUnitId" resultMap="BaseResultMap">
+    select * from sys_role where organization_unit_id = #{organization_unit_id}  AND status = 1 ORDER BY id
   </select>
   <select id="isExist" resultType="boolean">
     SELECT COUNT(0) AS "Count" FROM sys_role WHERE id = #{id}
   </select>
   <select id="isExistName" resultType="boolean">
-    SELECT COUNT(0) AS "Count" FROM sys_role WHERE Name = #{name}
+    SELECT COUNT(0) AS "Count" FROM sys_role WHERE name = #{name}
   </select>
-  <delete id="removeAllRelation">
-    delete from sys_account_role where account_id=#{accountId}
+  <select id="isExistNameByStandard" resultType="boolean">
+    SELECT COUNT(0) AS "Count" FROM sys_role WHERE name = #{name} and organization_unit_id = #{organizationUnitId}
+  </select>
+  <select id="isExistGlobalName" resultType="boolean">
+    SELECT COUNT(0) AS "Count"
+    FROM sys_role
+    WHERE global_name = #{global_name}
+  </select>
+  <select id="findAllRelationByAccountId" resultMap="AccountRoleRelationResultMap">
+    SELECT
+      account_id,
+      sys_account.global_name AS account_global_name,
+      role_id,
+      sys_role.global_name AS role_global_name,
+      is_default,
+      begin_date,
+      end_date
+    FROM
+      sys_account_role
+      INNER JOIN sys_account ON sys_account_role.account_id = sys_account.id
+      INNER JOIN sys_role ON sys_account_role.role_id = sys_role.id
+    WHERE account_id = #{account_id}
+  </select>
+  <select id="findAllRelationByRoleId" resultMap="AccountRoleRelationResultMap">
+    SELECT
+      account_id,
+      sys_account.global_name AS account_global_name,
+      role_id,
+      sys_role.global_name AS role_global_name,
+      is_default,
+      begin_date,
+      end_date
+    FROM
+      sys_account_role
+      INNER JOIN sys_account ON sys_account_role.account_id = sys_account.id
+      INNER JOIN sys_role ON sys_account_role.role_id = sys_role.id
+    WHERE role_id = #{role_id}
+  </select>
+  <insert id="addRelation" >
+    INSERT INTO sys_account_role (
+      account_id,
+      role_id,
+      is_default,
+      begin_date,
+      end_date
+    )
+    values
+    (
+      #{account_id},
+      #{role_id},
+      #{is_default},
+      #{begin_date},
+      #{end_date}
+    )
+    ON DUPLICATE KEY UPDATE
+      is_default = #{is_default},
+      begin_date = #{begin_date},
+      end_date = #{end_date}
+  </insert>
+  <update id="extendRelation" >
+    UPDATE sys_account_role SET end_date = #{end_date} WHERE account_id = #{account_id} AND role_id = ${role_id}
+  </update>
+  <delete id="removeRelation">
+    DELETE FROM sys_account_role WHERE account_id = #{account_id} AND role_id = ${role_id}
   </delete>
-
-
-  <select id="hasDefaultRelation" resultType="java.lang.Boolean">
-    SELECT COUNT(0) AS "Count" FROM sys_account_role WHERE account_id = #{accountId}
-  </select>
+  <delete id="removeDefaultRelation">
+    delete from sys_account_role where account_id = #{account_id} AND is_default = 1
+  </delete>
+  <delete id="removeNondefaultRelation">
+    delete from sys_account_role where account_id = #{account_id} AND is_default = 0
+  </delete>
+  <delete id="removeExpiredRelation">
+    delete from sys_account_role where account_id = #{account_id} AND end_date &lt; CURRENT_TIMESTAMP
+  </delete>
+  <delete id="removeAllRelation">
+    delete from sys_account_role where account_id = #{account_id}
+  </delete>
   <select id="hasRelation" resultType="java.lang.Boolean">
-    SELECT COUNT(0) AS "Count" FROM sys_account_role WHERE account_id = #{accountId} and role_id=#{roleId}
+    SELECT COUNT(0) AS "Count" FROM sys_account_role WHERE account_id = #{account_id} AND role_id = #{role_id}
   </select>
+  <select id="hasDefaultRelation" resultType="java.lang.Boolean">
+    SELECT COUNT(0) AS "Count" FROM sys_account_role WHERE account_id = #{account_id}
+  </select>
+  <update id="setDefaultRelation" >
+    UPDATE sys_user SET role_id = #{role_id}, modified_date = CURRENT_TIMESTAMP WHERE account_id = #{account_id}
+  </update>
   <delete id="clearupRelation">
-    delete from  application_menu_scope where authorization_object_id = #{roleId}and authorization_object_type='Role'
+    delete from sys_account_role WHERE role_id = #{role_id}
   </delete>
 
 </mapper>

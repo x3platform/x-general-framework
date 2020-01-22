@@ -7,11 +7,14 @@ import java.util.*;
 
 /**
  * 应用安全管理
+ *
+ * @author ruanyu
  */
 public final class AppsSecurity {
+
   private static Map<String, Application> applicationCache = null;
 
-  private static Object lockObject = new Object();
+  private static final Object lockObject = new Object();
 
   /**
    * 查找应用的信息
@@ -48,12 +51,13 @@ public final class AppsSecurity {
       }
     }
   }
+
   /**
    * 判断用户是否是应用的默认管理员
    */
   public static boolean isAdministrator(Account account, String applicationName) {
     Application application = findApplication(applicationName);
-    return application == null ? false : AppsContext.getInstance().getApplicationService().isAdministrator(account, application.getId());
+    return application != null && AppsContext.getInstance().getApplicationService().isAdministrator(account, application.getId());
   }
 
   /**
@@ -61,8 +65,7 @@ public final class AppsSecurity {
    */
   public static boolean isReviewer(Account account, String applicationName) {
     Application application = findApplication(applicationName);
-
-    return application == null ? false : AppsContext.getInstance().getApplicationService().isReviewer(account, application.getId());
+    return application != null && AppsContext.getInstance().getApplicationService().isReviewer(account, application.getId());
   }
 
   /**

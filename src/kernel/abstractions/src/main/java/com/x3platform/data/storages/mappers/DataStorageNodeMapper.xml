@@ -152,7 +152,7 @@
     <if test="orders != null and orders.size() > 0">
       ORDER BY
       <foreach collection="orders" item="order" index="index" separator="," >
-        #{order}
+        ${order}
       </foreach>
     </if>
     <if test="length > 0">

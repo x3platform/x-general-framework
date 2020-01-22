@@ -1,11 +1,16 @@
 package com.x3platform.membership.models;
 
+import static com.x3platform.Constants.TEXT_EMPTY;
+
+import com.alibaba.fastjson.annotation.JSONField;
 import com.x3platform.membership.Account;
 import com.x3platform.membership.ExtensionInformation;
+import com.x3platform.membership.MembershipManagement;
 import com.x3platform.membership.OrganizationUnit;
 import com.x3platform.membership.Role;
 import com.x3platform.util.DateUtil;
 import com.x3platform.util.StringUtil;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import org.apache.http.client.utils.DateUtils;
@@ -17,6 +22,7 @@ import org.dom4j.Element;
  * @author ruanyu
  */
 public class RoleInfo implements Role {
+
   /**
    */
   public RoleInfo() {
@@ -40,7 +46,7 @@ public class RoleInfo implements Role {
    * 属性
    */
   @Override
-  public final ExtensionInformation getExtensionInformation() {
+  public ExtensionInformation getExtensionInformation() {
     return mExtensionInformation;
   }
 
@@ -53,12 +59,12 @@ public class RoleInfo implements Role {
   /**
    */
   @Override
-  public final String getId() {
+  public String getId() {
     return id;
   }
 
   @Override
-  public final void setId(String value) {
+  public void setId(String value) {
     id = value;
   }
 
@@ -68,77 +74,69 @@ public class RoleInfo implements Role {
    * 编码
    */
   @Override
-  public final String getCode() {
+  public String getCode() {
     return code;
   }
 
   @Override
-  public final void setCode(String value) {
+  public void setCode(String value) {
     code = value;
   }
-  ///#endregion
 
-  ///#region 属性:Name
   private String name;
 
   /**
    * 名称
    */
   @Override
-  public final String getName() {
+  public String getName() {
     return name;
   }
 
   @Override
-  public final void setName(String value) {
+  public void setName(String value) {
     name = value;
   }
-  ///#endregion
 
-  ///#region 属性:GlobalName
   private String globalName;
 
   /**
    * 全局名称
    */
   @Override
-  public final String getGlobalName() {
+  public String getGlobalName() {
     return globalName;
   }
 
-  public final void setGlobalName(String value) {
+  public void setGlobalName(String value) {
     globalName = value;
   }
-  ///#endregion
 
-  ///#region 属性:PinYin
   private String pinYin;
 
   /**
    * 拼音
    */
   @Override
-  public final String getPinYin() {
+  public String getPinYin() {
     return pinYin;
   }
 
   @Override
-  public final void setPinYin(String value) {
+  public void setPinYin(String value) {
     pinYin = value;
   }
-  ///#endregion
 
-  ///#region 属性:Type
   private int type;
 
   /**
    * 类型
    */
-  public final int getType() {
+  public int getType() {
     return type;
   }
 
-  public final void setType(int value) {
+  public void setType(int value) {
     type = value;
   }
 
@@ -147,12 +145,13 @@ public class RoleInfo implements Role {
   /**
    * 父节点标识
    */
-  public final String getParentId() {
+  public String getParentId() {
     return parentId;
   }
-  public final void setParentId(String value) {
+
+  public void setParentId(String value) {
     // 未设置父及角色，则设置成 00000000-0000-0000-0000-000000000000
-    if(StringUtil.isNullOrEmpty(value)){
+    if (StringUtil.isNullOrEmpty(value)) {
       value = "0";
     }
     parentId = value;
@@ -163,30 +162,20 @@ public class RoleInfo implements Role {
    */
   private String parentName;
 
-  public final String getParentName() {
-    return parentName;
+  public String getParentName() {
+    return getParent() == null ? TEXT_EMPTY : getParent().getName();
   }
 
-  public final void setParentName(String value) {
-    parentName = value;
-  }
-
-
-  ///#endregion
-  ///#region 属性:Parent
   private Role parent = null;
-
 
   /**
    * 父级对象
    */
   @Override
-  public final Role getParent() {
-    return parent;
-  }
-
-  public final Role setParent(Role value) {
-    parent = value;
+  public Role getParent() {
+    if (parent == null && !StringUtil.isNullOrEmpty(parentId)) {
+      parent = MembershipManagement.getInstance().getRoleService().findOne(parentId);
+    }
     return parent;
   }
 
@@ -195,11 +184,12 @@ public class RoleInfo implements Role {
    */
 
   private String corporationId;
-  public final String getCorporationId() {
+
+  public String getCorporationId() {
     return corporationId;
   }
 
-  public final String setCorporationId(String value) {
+  public String setCorporationId(String value) {
     corporationId = value;
     return corporationId;
   }
@@ -208,44 +198,43 @@ public class RoleInfo implements Role {
    * 公司名称
    */
   private String corporationName;
-  public final String getCorporationName() {
+
+  public String getCorporationName() {
     return corporationName;
   }
 
-  public final String setCorporationName(String value) {
+  public String setCorporationName(String value) {
     corporationName = value;
     return corporationName;
   }
 
-  private OrganizationUnit mCorporation = null;
+  private OrganizationUnit corporation = null;
 
   /**
    * 公司
    */
-  public final OrganizationUnit getCorporation() {
-    return mCorporation;
+  public OrganizationUnit getCorporation() {
+    return corporation;
   }
 
-  public final OrganizationUnit setCorporation(OrganizationUnit value) {
-    mCorporation = value;
-    return mCorporation;
+  public OrganizationUnit setCorporation(OrganizationUnit value) {
+    corporation = value;
+    return corporation;
   }
 
-  ///#endregion
-
-  ///#region 属性:GeneralRoleId
   /**
    * 所属通用角色标识
    */
   private String generalRoleId;
-   public final String getGeneralRoleId() {
+
+  public String getGeneralRoleId() {
     return generalRoleId;
-   }
-  public final void setGeneralRoleId(String value) {
+  }
+
+  public void setGeneralRoleId(String value) {
     generalRoleId = value;
   }
-  ///#endregion
-  ///#region 属性:GeneralRoleName
+
   /**
    * 所属通用角色名称
    */
@@ -259,12 +248,12 @@ public class RoleInfo implements Role {
    * 标准角色标识
    */
   @Override
-  public final String getStandardRoleId() {
+  public String getStandardRoleId() {
     return standardRoleId;
   }
 
   @Override
-  public final void setStandardRoleId(String value) {
+  public void setStandardRoleId(String value) {
     standardRoleId = value;
   }
 
@@ -280,40 +269,40 @@ public class RoleInfo implements Role {
    * 所属组织标识
    */
   @Override
-  public final String getOrganizationUnitId() {
+  public String getOrganizationUnitId() {
     return organizationUnitId;
   }
 
   @Override
-  public final void setOrganizationUnitId(String value) {
+  public void setOrganizationUnitId(String value) {
     organizationUnitId = value;
   }
 
-  private String organizationUnitName ;
-
   public String getOrganizationUnitName() {
-    return organizationUnitName;
+    return this.getOrganizationUnit() == null ? TEXT_EMPTY : this.getOrganizationUnit().getName();
   }
 
-  public void setOrganizationUnitName(String organizationUnitName) {
-    this.organizationUnitName = organizationUnitName;
-  }
+  private OrganizationUnit organizationUnit = null;
 
-  private OrganizationUnit mOrganizationUnit = null;
   /**
-   *  所属组织对象
+   * 所属组织对象
    */
   @Override
-  public final OrganizationUnit getOrganizationUnit() {
-    return mOrganizationUnit;
+  public OrganizationUnit getOrganizationUnit() {
+    if (organizationUnit == null && !StringUtil.isNullOrEmpty(organizationUnitId)) {
+      organizationUnit = MembershipManagement.getInstance().getOrganizationUnitService().findOne(organizationUnitId);
+    }
+
+    return organizationUnit;
   }
+
   /**
    * 所属组织全局名称
    */
-  private String organizationUnitGlobalName;
-  public final String getOrganizationUnitGlobalName() {
-    return organizationUnitGlobalName;
+  public String getOrganizationUnitGlobalName() {
+    return this.getOrganizationUnit() == null ? TEXT_EMPTY : this.getOrganizationUnit().getGlobalName();
   }
+
   /**
    * 所属岗位名称
    */
@@ -323,53 +312,49 @@ public class RoleInfo implements Role {
    * 是否启用邮件
    */
   @Override
-  public final int getEnableEmail() {
+  public int getEnableEmail() {
     return enableEmail;
   }
 
   @Override
-  public final void setEnableEmail(int value) {
+  public void setEnableEmail(int value) {
     enableEmail = value;
   }
-  ///#endregion
 
-  ///#region 属性:EffectScope
-  private int effectScope=0;
+  private int effectScope = 0;
 
   /**
    * 作用范围 0:local | 1:deep
    */
-  public final int getEffectScope() {
+  public int getEffectScope() {
     return effectScope;
   }
 
-  public final void setEffectScope(int value) {
+  public void setEffectScope(int value) {
     effectScope = value;
   }
-  ///#endregion
 
-  ///#region 属性:EffectScopeView
   private String effectScopeView;
 
   /**
    * 作用范围视图, 查看作用范围视图
    */
-  public final String getEffectScopeView() {
+  public String getEffectScopeView() {
     return effectScopeView;
   }
 
   private int locking = 1;
 
   /**
-   *  防止意外删除 0 不锁定 | 1 锁定(默认)
+   * 防止意外删除 0 不锁定 | 1 锁定(默认)
    */
   @Override
-  public final int getLocking() {
+  public int getLocking() {
     return locking;
   }
 
   @Override
-  public final void setLocking(int value) {
+  public void setLocking(int value) {
     locking = value;
   }
 
@@ -378,11 +363,11 @@ public class RoleInfo implements Role {
   /**
    * 排序
    */
-  public final String getOrderId() {
+  public String getOrderId() {
     return orderId;
   }
 
-  public final void setOrderId(String value) {
+  public void setOrderId(String value) {
     orderId = value;
   }
 
@@ -392,12 +377,12 @@ public class RoleInfo implements Role {
    * 状态
    */
   @Override
-  public final int getStatus() {
+  public int getStatus() {
     return status;
   }
 
   @Override
-  public final void setStatus(int value) {
+  public void setStatus(int value) {
     status = value;
   }
 
@@ -407,12 +392,12 @@ public class RoleInfo implements Role {
    * 备注
    */
   @Override
-  public final String getRemark() {
+  public String getRemark() {
     return remark;
   }
 
   @Override
-  public final void setRemark(String value) {
+  public void setRemark(String value) {
     remark = value;
   }
 
@@ -422,12 +407,12 @@ public class RoleInfo implements Role {
    * 所属组织架构全路径
    */
   @Override
-  public final String getFullPath() {
+  public String getFullPath() {
     return fullPath;
   }
 
   @Override
-  public final void setFullPath(String value) {
+  public void setFullPath(String value) {
     fullPath = value;
   }
 
@@ -437,12 +422,12 @@ public class RoleInfo implements Role {
    * 唯一名称
    */
   @Override
-  public final String getDistinguishedName() {
+  public String getDistinguishedName() {
     return distinguishedName;
   }
 
   @Override
-  public final void setDistinguishedName(String value) {
+  public void setDistinguishedName(String value) {
     distinguishedName = value;
   }
 
@@ -452,12 +437,12 @@ public class RoleInfo implements Role {
    * 修改时间
    */
   @Override
-  public final Date getModifiedDate() {
+  public Date getModifiedDate() {
     return modifiedDate;
   }
 
   @Override
-  public final void setModifiedDate(Date value) {
+  public void setModifiedDate(Date value) {
     modifiedDate = value;
   }
 
@@ -466,11 +451,11 @@ public class RoleInfo implements Role {
   /**
    * 创建时间
    */
-  public final Date getCreatedDate() {
+  public Date getCreatedDate() {
     return createdDate;
   }
 
-  public final void setCreatedDate(Date value) {
+  public void setCreatedDate(Date value) {
     createdDate = value;
   }
 
@@ -480,43 +465,61 @@ public class RoleInfo implements Role {
 
   /**
    * 重置成员关系
-   *
-   * @param relationText
    */
   @Override
-  public final void resetMemberRelations(String relationText) {
+  public void resetMemberRelations(String relationText) {
   }
 
   // -------------------------------------------------------
   // 角色所拥有的成员
   // -------------------------------------------------------
 
-  private List<Account> mMembers = null;
+  @JSONField(serialize = false)
+  private List<Account> members = null;
 
   /**
-   * 权限
+   * 成员信息
    */
   @Override
-  public final List<Account> getMembers() {
-    return mMembers;
+  public List<Account> getMembers() {
+    if (members == null) {
+      this.members = MembershipManagement.getInstance().getAccountService().findAllByRoleId(this.getId());
+    }
+    return members;
   }
 
-  private String mMemberView;
+  private String memberText = "";
 
   /**
-   * 权限视图
+   * 成员文本信息
    */
-  public final String getMemberView() {
-    return mMemberView;
+  public String getMemberText() {
+    if (StringUtil.isNullOrEmpty(this.memberText) && !this.getMembers().isEmpty()) {
+      for (Account account : this.getMembers()) {
+        this.memberText += String.format("role#%1$s#%2$s,", account.getId(), account.getGlobalName());
+      }
+
+      this.memberText = StringUtil.trimEnd(this.memberText, ",");
+    }
+
+    return this.memberText;
   }
 
-  private String mMemberText;
+  private String memberView = "";
 
   /**
    * 成员视图
    */
-  public final String getMemberText() {
-    return mMemberText;
+  public String getMemberView() {
+    if (StringUtil.isNullOrEmpty(this.memberView) && !this.getMembers().isEmpty()) {
+      for (Account account : this.getMembers()) {
+        this.memberView += account.getGlobalName() + ",";
+      }
+
+      this.memberView = StringUtil.trimEnd(this.memberView, ",");
+    }
+
+    return this.memberView;
   }
 
   // -------------------------------------------------------
@@ -565,16 +568,15 @@ public class RoleInfo implements Role {
    * 根据对象导出Xml元素
    */
   @Override
-  public final String serializable() {
+  public String serializable() {
     return serializable(false, false);
   }
 
   /**
    * 根据对象导出Xml元素
    *
-   * @param displayComment      显示注释
+   * @param displayComment 显示注释
    * @param displayFriendlyName 显示友好名称
-   * @return
    */
   @Override
   public String serializable(boolean displayComment, boolean displayFriendlyName) {
@@ -639,7 +641,7 @@ public class RoleInfo implements Role {
    * @param element Xml元素
    */
   @Override
-  public final void deserialize(Element element) {
+  public void deserialize(Element element) {
     setId(element.selectSingleNode("id").getText());
     setCode(element.selectSingleNode("code").getText());
     setName(element.selectSingleNode("name").getText());

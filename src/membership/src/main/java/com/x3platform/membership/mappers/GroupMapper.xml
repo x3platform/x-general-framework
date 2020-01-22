@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.x3platform.membership.mappers.GroupMapper">
+  <resultMap id="BaseResultMap" type="com.x3platform.membership.models.GroupInfo">
+    <result property="id" jdbcType="VARCHAR" column="id" />
+    <result property="code" jdbcType="VARCHAR" column="code" />
+    <result property="name" jdbcType="VARCHAR" column="name" />
+    <result property="globalName" jdbcType="VARCHAR" column="global_name" />
+    <result property="pinyin" jdbcType="VARCHAR" column="pinyin" />
+    <result property="type" jdbcType="VARCHAR" column="type" />
+    <result property="catalogItemId" jdbcType="VARCHAR" column="catalog_item_id" />
+    <result property="enableEmail" jdbcType="INTEGER" column="enable_email" />
+    <result property="effectScope" jdbcType="INTEGER" column="effect_scope" />
+    <result property="locking" jdbcType="INTEGER" column="locking" />
+    <result property="orderId" jdbcType="VARCHAR" column="order_id" />
+    <result property="status" jdbcType="INTEGER" column="status" />
+    <result property="remark" jdbcType="VARCHAR" column="remark" />
+    <result property="fullPath" jdbcType="VARCHAR" column="full_path" />
+    <result property="distinguishedName" jdbcType="VARCHAR" column="distinguished_name" />
+    <result property="modifiedDate" jdbcType="TIMESTAMP" column="modified_date" />
+    <result property="createdDate" jdbcType="TIMESTAMP" column="created_date" />
+  </resultMap>
+  <resultMap id="AccountGroupRelationResultMap" type="com.x3platform.membership.models.AccountGroupRelationInfo" >
+    <result property="accountId" column="account_id" />
+    <result property="accountGlobalName" column="account_global_name" />
+    <result property="groupId" column="group_id" />
+    <result property="groupGlobalName" column="group_global_name" />
+    <result property="beginDate" column="begin_date" />
+    <result property="endDate" column="end_date" />
+  </resultMap>
+  <sql id="Select_Where_Clause">
+    <where>
+      <if test="param_id != null and param_id != ''">
+        AND t.id = #{param_id}
+      </if>
+      <if test="param_parent_id != null and param_parent_id != ''">
+        AND t.parent_id = #{param_parent_id}
+      </if>
+      <if test="param_code != null and param_code != ''">
+        AND t.code = #{param_code}
+      </if>
+      <if test="param_name != null and param_name != ''">
+        AND t.name = #{param_name}
+      </if>
+      <if test="param_global_name != null and param_global_name != ''">
+        AND t.global_name = #{param_global_name}
+      </if>
+      <if test="param_pinyin != null and param_pinyin != ''">
+        AND t.pinyin = #{param_pinyin}
+      </if>
+      <if test="param_type != null and param_type != ''">
+        AND t.type = #{param_type}
+      </if>
+      <if test="param_catalog_item_id != null and param_catalog_item_id != ''">
+        AND t.catalog_item_id = #{param_catalog_item_id}
+      </if>
+      <if test="param_enable_email != null">
+        AND t.enable_email = #{param_enable_email}
+      </if>
+      <if test="param_effect_scope != null">
+        AND t.effect_scope = #{param_effect_scope}
+      </if>
+      <if test="param_locking != null">
+        AND t.locking = #{param_locking}
+      </if>
+      <if test="param_order_id != null and param_order_id != ''">
+        AND t.order_id = #{param_order_id}
+      </if>
+      <if test="param_status != null">
+        AND t.status = #{param_status}
+      </if>
+      <if test="param_remark != null and param_remark != ''">
+        AND t.remark = #{param_remark}
+      </if>
+      <if test="param_full_path != null and param_full_path != ''">
+        AND t.full_path = #{param_full_path}
+      </if>
+      <if test="param_distinguished_name != null and param_distinguished_name != ''">
+        AND t.distinguished_name = #{param_distinguished_name}
+      </if>
+      <if test="param_modified_date != null">
+        AND t.modified_date = #{param_modified_date}
+      </if>
+      <if test="param_created_date != null">
+        AND t.created_date = #{param_created_date}
+      </if>
+    </where>
+  </sql>
+  <insert id="insert" parameterType="com.x3platform.membership.models.GroupInfo">
+    INSERT INTO sys_group
+    (
+      id,
+      code,
+      name,
+      global_name,
+      pinyin,
+      type,
+      catalog_item_id,
+      enable_email,
+      effect_scope,
+      locking,
+      order_id,
+      status,
+      remark,
+      full_path,
+      distinguished_name,
+      modified_date,
+      created_date
+    )
+    VALUES
+    (
+      #{id,jdbcType=VARCHAR},
+      #{code,jdbcType=VARCHAR},
+      #{name,jdbcType=VARCHAR},
+      #{globalName,jdbcType=VARCHAR},
+      #{pinyin,jdbcType=VARCHAR},
+      #{type,jdbcType=VARCHAR},
+      #{catalogItemId,jdbcType=VARCHAR},
+      #{enableEmail,jdbcType=INTEGER},
+      #{effectScope,jdbcType=INTEGER},
+      #{locking,jdbcType=INTEGER},
+      #{orderId,jdbcType=VARCHAR},
+      #{status,jdbcType=INTEGER},
+      #{remark,jdbcType=VARCHAR},
+      #{fullPath,jdbcType=VARCHAR},
+      #{distinguishedName,jdbcType=VARCHAR},
+      CURRENT_TIMESTAMP,
+      CURRENT_TIMESTAMP
+    )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.x3platform.membership.models.GroupInfo">
+    UPDATE sys_group SET
+
+      code = #{code,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
+      global_name = #{globalName,jdbcType=VARCHAR},
+      pinyin = #{pinyin,jdbcType=VARCHAR},
+      type = #{type,jdbcType=VARCHAR},
+      catalog_item_id = #{catalogItemId,jdbcType=VARCHAR},
+      enable_email = #{enableEmail,jdbcType=INTEGER},
+      effect_scope = #{effectScope,jdbcType=INTEGER},
+      locking = #{locking,jdbcType=INTEGER},
+      order_id = #{orderId,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      remark = #{remark,jdbcType=VARCHAR},
+      full_path = #{fullPath,jdbcType=VARCHAR},
+      distinguished_name = #{distinguishedName,jdbcType=VARCHAR},
+      modified_date = CURRENT_TIMESTAMP
+
+    WHERE id = #{id}
+  </update>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    DELETE FROM sys_group WHERE id = #{id}
+  </delete>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap" >
+    SELECT * FROM sys_group WHERE id = #{id}
+  </select>
+  <select id="findAll" parameterType="java.util.Map" resultMap="BaseResultMap" >
+    SELECT * FROM sys_group t
+    <if test="_parameter != null">
+      <include refid="Select_Where_Clause" />
+    </if>
+    <if test="orders != null and orders.size() > 0">
+      ORDER BY
+      <foreach collection="orders" item="order" index="index" separator="," >
+        ${order}
+      </foreach>
+    </if>
+    <if test="length > 0">
+      LIMIT 0, ${length}
+    </if>
+  </select>
+  <select id="getRowCount" >
+    SELECT COUNT(0) AS "RowCount" FROM sys_group t
+    <if test="_parameter != null">
+      <include refid="Select_Where_Clause" />
+    </if>
+  </select>
+  <select id="isExist" resultType="java.lang.Boolean" >
+    SELECT COUNT(0) AS "Count" FROM sys_group WHERE id = #{id}
+  </select>
+  <select id="findAllRelationByAccountId" resultMap="AccountGroupRelationResultMap">
+    SELECT
+      account_id,
+      sys_account.global_name AS account_global_name,
+      group_id,
+      sys_group.global_name AS group_global_name,
+      begin_date,
+      end_date
+    FROM
+      sys_account_group
+    INNER JOIN sys_account ON sys_account_group.account_id = sys_account.id
+    INNER JOIN sys_group ON sys_account_group.group_id = sys_group.id
+    WHERE account_id = #{account_id}
+  </select>
+  <select id="findAllRelationByGroupId" resultMap="AccountGroupRelationResultMap">
+    SELECT
+      account_id,
+      sys_account.global_name AS account_global_name,
+      group_id,
+      sys_group.global_name AS group_global_name,
+      begin_date,
+      end_date
+    FROM
+      sys_account_group
+    INNER JOIN sys_account ON sys_account_group.account_id = sys_account.id
+    INNER JOIN sys_group ON sys_account_group.group_id = sys_group.id
+    WHERE group_id = #{group_id}
+  </select>
+  <insert id="addRelation" >
+    INSERT INTO sys_account_group (
+      account_id,
+      group_id,
+      begin_date,
+      end_date
+    )
+    values
+    (
+      #{account_id},
+      #{group_id},
+      #{begin_date},
+      #{end_date}
+    )
+    ON DUPLICATE KEY UPDATE
+      begin_date = #{begin_date},
+      end_date = #{end_date}
+  </insert>
+  <update id="extendRelation" >
+    UPDATE sys_account_group SET end_date = #{end_date} WHERE account_id = #{account_id} AND group_id = ${group_id}
+  </update>
+  <select id="hasRelation" resultType="java.lang.Boolean">
+    SELECT COUNT(0) AS "Count" FROM sys_account_group WHERE account_id = #{account_id} AND group_id = ${group_id}
+  </select>
+  <delete id="removeRelation">
+    DELETE FROM sys_account_group WHERE account_id = #{account_id} AND group_id = ${group_id}
+  </delete>
+  <delete id="removeExpiredRelation">
+    DELETE FROM sys_account_group WHERE account_id = #{account_id} AND end_date &lt; CURRENT_TIMESTAMP
+  </delete>
+  <delete id="removeAllRelation">
+    DELETE FROM sys_account_group WHERE account_id = #{account_id}
+  </delete>
+  <delete id="clearupRelation">
+    DELETE FROM sys_account_group WHERE group_id = #{group_id}
+  </delete>
+</mapper>

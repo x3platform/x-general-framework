@@ -21,17 +21,17 @@ public class DataPaging {
    * @param pageSize 每页显示的数目
    */
   public DataPaging(int pageSize) {
-    this.mPageSize = pageSize;
+    this.pageSize = pageSize;
 
-    this.mCurrentPage = 1;
+    currentPage = 1;
 
-    this.mFirstPage = 1;
+    firstPage = 1;
 
-    this.mPreviousPage = 1;
+    mPreviousPage = 1;
 
-    this.mNextPage = 2;
+    mNextPage = 2;
 
-    this.getQuery().setLength(0);
+    getQuery().setLength(0);
   }
 
   /**
@@ -40,107 +40,107 @@ public class DataPaging {
   private void parse() {
     // Get [rowIndex] [pageCount]
 
-    if (mPageSize > 0) {
-      mOffset = (mCurrentPage < 1) ? 0 : (mCurrentPage - 1) * mPageSize;
+    if (pageSize > 0) {
+      offset = (currentPage < 1) ? 0 : (currentPage - 1) * pageSize;
 
-      mCurrentPage = (mOffset < 0) ? 1 : (mOffset / mPageSize + 1);
+      currentPage = (offset < 0) ? 1 : (offset / pageSize + 1);
 
-      mPageCount = (mTotal < 0) ? 1 : ((mTotal - 1) / mPageSize + 1);
+      pageCount = (total < 0) ? 1 : ((total - 1) / pageSize + 1);
 
-      mLastPage = mPageCount;
+      mLastPage = pageCount;
     } else {
-      mPageCount = 1;
+      pageCount = 1;
     }
 
     // Get [previousPage] [nextPage]
 
-    mPreviousPage = (mCurrentPage <= 1) ? 1 : mCurrentPage - 1;
+    mPreviousPage = (currentPage <= 1) ? 1 : currentPage - 1;
 
-    mNextPage = (mCurrentPage >= mPageCount) ? mPageCount : mCurrentPage + 1;
+    mNextPage = (currentPage >= pageCount) ? pageCount : currentPage + 1;
   }
 
-  private int mPageSize;
+  private int pageSize;
 
   /**
    * 每页显示行数
    */
   public int getPageSize() {
-    return mPageSize;
+    return pageSize;
   }
 
   public void setPageSize(int value) {
     if (value > 0) {
-      mPageSize = value;
+      pageSize = value;
 
-      this.parse();
+      parse();
     }
   }
 
-  private int mOffset;
+  private int offset;
 
   /**
    * 行索引号
    */
   public int getOffset() {
-    return mOffset;
+    return offset;
   }
 
   public void setRowIndex(int value) {
     if (value > 0) {
-      mOffset = value;
+      offset = value;
 
-      this.parse();
+      parse();
     }
   }
 
-  private int mTotal;
+  private int total;
 
   /**
    * 行数统计.
    */
   public int getTotal() {
-    return mTotal;
+    return total;
   }
 
   public void setTotal(int value) {
-    mTotal = value;
+    total = value;
 
-    this.parse();
+    parse();
   }
 
-  private int mPageCount;
+  private int pageCount;
 
   /**
    * 页数统计
    */
   public int getPageCount() {
-    return mPageCount;
+    return pageCount;
   }
 
-  private int mCurrentPage;
+  private int currentPage;
 
   /**
    * 当前页码
    */
   public int getCurrentPage() {
-    return mCurrentPage;
+    return currentPage;
   }
 
   public void setCurrentPage(int value) {
     if (value > 0) {
-      mCurrentPage = value;
+      currentPage = value;
 
-      this.parse();
+      parse();
     }
   }
 
-  private int mFirstPage;
+  private int firstPage;
 
   /**
    * 首页
    */
   public int getFirstPage() {
-    return mFirstPage;
+    return firstPage;
   }
 
   /**
@@ -181,14 +181,14 @@ public class DataPaging {
    */
   @JSONField(serialize = false)
   public DataQuery getQuery() {
-    return this.mQuery;
+    return mQuery;
   }
 
   /**
    * SQL 排序规则
    */
   public String getOrderBy() {
-    return this.getQuery().getOrderBySql();
+    return getQuery().getOrderBySql();
   }
 
   /**
@@ -196,13 +196,13 @@ public class DataPaging {
    */
   @Override
   public String toString() {
-    return "{\"pageSize\":\"" + this.getPageSize() + "\","
-      + "\"offset\":\"" + this.getOffset() + "\","
-      + "\"total\":\"" + this.getTotal() + "\","
-      + "\"pageCount\":\"" + this.getPageCount() + "\","
-      + "\"firstPage\":\"" + this.getFirstPage() + "\","
-      + "\"previousPage\":\"" + this.getPreviousPage() + "\","
-      + "\"nextPage\":\"" + this.getNextPage() + "\","
-      + "\"lastPage\":\"" + this.getLastPage() + "\"}";
+    return "{\"pageSize\":\"" + getPageSize() + "\","
+      + "\"offset\":\"" + getOffset() + "\","
+      + "\"total\":\"" + getTotal() + "\","
+      + "\"pageCount\":\"" + getPageCount() + "\","
+      + "\"firstPage\":\"" + getFirstPage() + "\","
+      + "\"previousPage\":\"" + getPreviousPage() + "\","
+      + "\"nextPage\":\"" + getNextPage() + "\","
+      + "\"lastPage\":\"" + getLastPage() + "\"}";
   }
 }

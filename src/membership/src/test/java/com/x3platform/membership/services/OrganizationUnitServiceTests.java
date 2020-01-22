@@ -4,10 +4,14 @@ import com.alibaba.fastjson.JSON;
 import com.x3platform.membership.OrganizationUnit;
 import com.x3platform.membership.MembershipManagement;
 import com.x3platform.membership.models.OrganizationUnitInfo;
+import com.x3platform.tests.TestConstants;
+import com.x3platform.tree.TreeView;
 import com.x3platform.util.DateUtil;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -19,62 +23,61 @@ import static org.junit.Assert.*;
 @SpringBootTest()
 public class OrganizationUnitServiceTests {
 
-  // @Autowired
-  // private OrganizationUnitService service;
+  @Autowired
+  private OrganizationUnitService service;
 
   @Test
   public void testFindOne() {
-    /*
-    OrganizationUnitService service = MembershipManagement.getInstance().getOrganizationUnitService();
+    OrganizationUnit entity = service.findOne(TestConstants.ORGANIZATION_ROOT_ID);
 
-    OrganizationUnit entity = service.findOne("00000000-0000-0000-0000-000000000001");
+    assertNotNull( entity);
+    assertEquals("组织架构", entity.getName());
 
-    assertNotNull("result is not null.", entity);
-    assertEquals("result.name is \"组织架构\".", "组织结构", entity.getName());
+    entity = service.findOne(TestConstants.ORGANIZATION_ID);
 
-    // String json = JSON.toJSONString(entity);
-    */
+    assertNotNull( entity);
+    //assertEquals("X Group", entity.getName());
   }
 
   @Test
   public void testFindAll() {
-    /*OrganizationUnitService service = MembershipManagement.getInstance().getOrganizationUnitService();
-
     List<OrganizationUnit> list = service.findAll();
 
     assertNotNull("result is not null.", list);
 
     assertTrue("result is not null.", list.size() > 0);
-    */
   }
 
-
-  /**
-   * 测试 保存
-   */
-
   @Test
-  @Ignore
   public void testSave() {
-    /*OrganizationUnitService service = MembershipManagement.getInstance()
-      .getOrganizationUnitService();
+    String id = TestConstants.TEST_ID_PREFIX + DateUtil.getTimestamp();
 
-    String id = "test_" + DateUtil.getTimestamp();
-
-    OrganizationUnit param = new OrganizationUnitInfo();
+    OrganizationUnitInfo param = new OrganizationUnitInfo();
 
     param.setId(id);
+    param.setParentId(TestConstants.ORGANIZATION_ID);
+    param.setStatus(1);
 
-    //service.save(param);
+    service.save(param);
 
     // 更新数据
-
     param.setName(id);
 
-    //service.save(param);
+    service.save(param);
 
     // 删除数据
     service.delete(id);
-    */
+  }
+
+  @Test
+  public void testGetTreeView() {
+    TreeView treeView = service.getTreeView("组织架构", TestConstants.ORGANIZATION_ROOT_ID, "");
+
+    assertNotNull(treeView);
+
+    // 第二次读取 测试缓存
+    treeView = service.getTreeView("组织架构", TestConstants.ORGANIZATION_ROOT_ID, "");
+
+    assertNotNull(treeView);
   }
 }

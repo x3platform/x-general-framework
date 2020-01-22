@@ -1,32 +1,92 @@
 package com.x3platform;
 
-import com.x3platform.security.authority.*;
+import com.x3platform.util.StringUtil;
 
 /**
- * 权限范围接口
+ * 授权范围
  *
  * @author ruanyu
  */
-public interface AuthorizationScope {
+public class AuthorizationScope {
+
+  public AuthorizationScope() {
+  }
 
   /**
-   * 权限对象信息
    */
-  AuthorizationObject getAuthorizationObject();
+  public AuthorizationScope(String scopeText) {
+    String[] args = scopeText.split("#");
 
-  void setAuthorizationObject(AuthorizationObject value);
+    setAuthorizationObjectType(AuthorizationObjectType.getValue(args[0] == null ? "" : args[0]));
+    setAuthorizationObjectId(args[1] == null ? "" : args[1]);
+
+    if (args.length == 3) {
+      setAuthorizationObjectName(args[2] == null ? "" : args[2]);
+    }
+  }
+
+  public AuthorizationScope(String authorizationObjectType,
+    String authorizationObjectId, String authorizationObjectName) {
+
+    setAuthorizationObjectType(authorizationObjectType);
+    setAuthorizationObjectId(authorizationObjectId);
+    setAuthorizationObjectName(authorizationObjectName);
+  }
+
+  public AuthorizationScope(AuthorizationObjectType authorizationObjectType,
+    String authorizationObjectId, String authorizationObjectName) {
+    setAuthorizationObjectType(authorizationObjectType.getValue());
+    setAuthorizationObjectId(authorizationObjectId);
+    setAuthorizationObjectName(authorizationObjectName);
+  }
+
+  private String authorizationObjectType;
 
   /**
-   * 权限信息
+   * 类型
    */
-  Authority getAuthority();
+  public String getAuthorizationObjectType() {
+    return authorizationObjectType;
+  }
 
-  void setAuthority(Authority value);
+  public void setAuthorizationObjectType(String value) {
+    authorizationObjectType = value;
+  }
+
+  private String authorizationObjectId;
 
   /**
-   * 实体信息
+   * 对象唯一标识
    */
-  EntityClass getEntityClass();
+  public String getAuthorizationObjectId() {
+    return authorizationObjectId;
+  }
 
-  void setEntityClass(EntityClass value);
+  public void setAuthorizationObjectId(String value) {
+    authorizationObjectId = value;
+  }
+
+  private String authorizationObjectName;
+
+  /**
+   * 名称
+   */
+  public String getAuthorizationObjectName() {
+    return authorizationObjectName;
+  }
+
+  public void setAuthorizationObjectName(String value) {
+    authorizationObjectName = value;
+  }
+
+  /**
+   * @return
+   */
+  @Override
+  public String toString() {
+    return StringUtil.toFirstLower(getAuthorizationObjectType())
+      + "#" + getAuthorizationObjectId()
+      + "#" + (StringUtil.isNullOrEmpty(getAuthorizationObjectName()) ? getAuthorizationObjectId()
+      : getAuthorizationObjectName());
+  }
 }

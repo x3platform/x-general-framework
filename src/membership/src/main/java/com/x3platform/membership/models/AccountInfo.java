@@ -37,6 +37,7 @@ public class AccountInfo implements Account {
    *
    * 可添加的属性 例如: OriginalPassword, OriginalNickName
    */
+  @JSONField(serialize = false)
   private HashMap<String, Object> properties = new HashMap<String, Object>();
 
   /**
@@ -58,54 +59,29 @@ public class AccountInfo implements Account {
   private String pinyin = "";
   private String loginName = "";
   @JSONField(serialize = false)
-  private String password;
+  private String password = "";
   private Date passwordChangedDate = DateUtil.getDefaultDate();
   private String identityCard = "";
   private int type = 0;
   private String typeView;
-  private String certifiedMobile;
-  private String certifiedEmail;
+  private String certifiedMobile = "";
+  private String certifiedEmail = "";
 
   private String certifiedAvatar = "";
   private int enableEmail;
   private AuthorizationObject parent;
 
-  private List<AccountOrganizationUnitRelation> organizationUnitRelations = null;
-  private String organizationUnitIds = "";
-
-  /**
-   * 所属组织信息
-   */
-  private String[] organizationUnitText;
-  private String organizationUnitView;
-
-  private List<AccountRoleRelation> roleRelations = null;
-
-  /**
-   * 所属角色信息
-   */
-  private String[] roleText;
-  /**
-   * 所属角色名称
-   */
-  private String roleView = "";
-
-  private List<AccountGroupRelation> groupRelations = null;
-  private String groupText;
-
-  private String groupView;
   private List<AuthorizationScope> scopes = new ArrayList<AuthorizationScope>();
-  private boolean isDraft;
   private int locking = 1;
-  private String orderId;
+  private String orderId = "";
   private int status;
-  private String remark;
-  private String ip;
-  private String createdBy;
+  private String remark = "";
+  private String ip = "";
   private Date loginDate = DateUtil.getDefaultDate();
-  private String distinguishedName = null;
+  private String distinguishedName = "";
   private Date modifiedDate = DateUtil.getDefaultDate();
   private Date createdDate = DateUtil.getDefaultDate();
+
   private Date expires = new Date((new Date()).getTime() + 6 * 60 * 60 * 1000L);
 
   /**
@@ -145,16 +121,6 @@ public class AccountInfo implements Account {
   @Override
   public void setName(String value) {
     name = value;
-  }
-
-  @Override
-  public String getCreatedBy() {
-    return createdBy;
-  }
-
-  @Override
-  public void setCreatedBy(String createdBy) {
-    this.createdBy = createdBy;
   }
 
   /**
@@ -226,6 +192,21 @@ public class AccountInfo implements Account {
     password = value;
   }
 
+  private String passwordSalt = "";
+
+  /**
+   * 密码盐值
+   */
+  @Override
+  public String getPasswordSalt() {
+    return passwordSalt;
+  }
+
+  @Override
+  public void setPasswordSalt(String value) {
+    passwordSalt = value;
+  }
+
   /**
    * 密码更新时间
    */
@@ -268,17 +249,14 @@ public class AccountInfo implements Account {
   /**
    * 帐号类别视图 0:普通帐号 1:邮箱帐号 2:CRM帐号 3:RTX帐号 1000:供应商帐号 2000:客户帐号
    */
-  @JSONField(serialize = false)
   public String getTypeView() {
     if (StringUtil.isNullOrEmpty(typeView)) {
       typeView = MembershipManagement.getInstance().getSettingService()
-        .getText("应用管理_协同平台_人员及权限管理_帐号管理_帐号类别", String.valueOf(
-          getType()));
+        .getText("应用管理_基础支撑平台_人员及权限管理_帐号管理_帐号类别", String.valueOf(getType()));
     }
 
     return typeView;
   }
-  ///#endregion
 
   /**
    * 已验证的电话
@@ -343,86 +321,10 @@ public class AccountInfo implements Account {
   }
 
   /**
-   * 父级权限对象接口集合
-   */
-  public AuthorizationObject getParent() {
-    return parent;
-  }
-
-  public void setParent(AuthorizationObject value) {
-    parent = value;
-  }
-
-  /**
-   * 帐号和角色接口集合
-   */
-  @Override
-  public List<AccountOrganizationUnitRelation> getOrganizationUnitRelations() {
-    return organizationUnitRelations;
-  }
-
-  public String getOrganizationUnitView() {
-    return organizationUnitView;
-  }
-
-  public void setOrganizationUnitView(String organizationUnitView) {
-    this.organizationUnitView = organizationUnitView;
-  }
-
-  /**
-   * 帐号和角色接口集合
-   */
-  @Override
-  public List<AccountRoleRelation> getRoleRelations() {
-    return roleRelations;
-  }
-
-
-  /**
-   * 所属角色视图
-   */
-  public String getRoleView() {
-    return roleView;
-  }
-
-  /**
-   * 帐号和角色接口集合
-   */
-  @Override
-  public List<AccountGroupRelation> getGroupRelations() {
-    return groupRelations;
-  }
-
-  /**
-   * 所属群组文本信息
-   */
-  public String getGroupText() {
-    return groupText;
-  }
-
-  /**
-   * 所属群组视图
-   */
-  public String getGroupView() {
-    return groupView;
-  }
-
-  /**
    * 范围接口集合
    */
   public List<AuthorizationScope> getScopes() {
     return scopes;
-  }
-
-  /**
-   * 是否是草稿
-   */
-  public boolean getIsDraft() {
-    return isDraft;
-  }
-
-  public void setIsDraft(boolean value) {
-    isDraft = value;
   }
 
   /**
@@ -529,7 +431,6 @@ public class AccountInfo implements Account {
     modifiedDate = value;
   }
 
-
   /**
    * 创建时间
    */
@@ -538,27 +439,236 @@ public class AccountInfo implements Account {
     return createdDate;
   }
 
-  // -------------------------------------------------------
-  // 重置关系
-  // -------------------------------------------------------
-
   @Override
   public void setCreatedDate(Date value) {
     createdDate = value;
   }
 
   // -------------------------------------------------------
-  // 实现 IIdentity 接口
+  // 关系管理
   // -------------------------------------------------------
 
-  ///#region 属性:AuthenticationType
+  /**
+   * 父级权限对象接口集合
+   */
+  public AuthorizationObject getParent() {
+    return parent;
+  }
+
+  public void setParent(AuthorizationObject value) {
+    parent = value;
+  }
+
+  private List<AccountOrganizationUnitRelation> organizationUnitRelations = new ArrayList<AccountOrganizationUnitRelation>();
+
+  private String organizationUnitIds = "";
 
   /**
-   * @param relationType
-   * @param relationText
+   * 帐号和组织关系集合
    */
-  public void resetRelations(String relationType, String relationText) {
+  @Override
+  public List<AccountOrganizationUnitRelation> getOrganizationUnitRelations() {
+    if (organizationUnitRelations.isEmpty() && !StringUtil.isNullOrEmpty(getId())) {
+      organizationUnitRelations = MembershipManagement.getInstance().getOrganizationUnitService()
+        .findAllRelationByAccountId(getId());
+    }
+
+    return organizationUnitRelations;
   }
+
+  /**
+   * 所属组织信息
+   */
+  private String organizationUnitText = "";
+
+  public String getOrganizationUnitText() {
+    if (StringUtil.isNullOrEmpty(organizationUnitText) && getOrganizationUnitRelations().size() > 0) {
+      for (AccountOrganizationUnitRelation relation : getOrganizationUnitRelations()) {
+        organizationUnitText += StringUtil.format("organizationUnit#{}#{}#{}#{},",
+          relation.getOrganizationUnitId(),
+          relation.getOrganizationUnitGlobalName(),
+          StringUtil.toDateFormat(relation.getEndDate(), "yyyy-MM-dd HH:mm:ss"),
+          relation.getIsDefault());
+      }
+      organizationUnitText = organizationUnitText.length() > 0 ? organizationUnitText = organizationUnitText
+        .substring(0, organizationUnitText.length() - 1) : organizationUnitText;
+    }
+
+    return organizationUnitText;
+  }
+
+  private String organizationUnitView = "";
+
+  public String getOrganizationUnitView() {
+    if (StringUtil.isNullOrEmpty(organizationUnitView) && getOrganizationUnitRelations().size() > 0) {
+      for (AccountOrganizationUnitRelation relation : getOrganizationUnitRelations()) {
+        organizationUnitView += relation.getOrganizationUnitGlobalName() + ",";
+      }
+      organizationUnitView = organizationUnitView.length() > 0 ? organizationUnitView = organizationUnitView
+        .substring(0, organizationUnitView.length() - 1) : organizationUnitView;
+    }
+
+    return organizationUnitView;
+  }
+
+  public void setOrganizationUnitView(String organizationUnitView) {
+    this.organizationUnitView = organizationUnitView;
+  }
+
+  private List<AccountRoleRelation> roleRelations = new ArrayList<AccountRoleRelation>();
+
+  /**
+   * 帐号和角色关系集合
+   */
+  @Override
+  public List<AccountRoleRelation> getRoleRelations() {
+    if (roleRelations.isEmpty() && !StringUtil.isNullOrEmpty(getId())) {
+      roleRelations = MembershipManagement.getInstance().getRoleService()
+        .findAllRelationByAccountId(getId());
+    }
+
+    return roleRelations;
+  }
+
+  /**
+   * 所属角色信息
+   */
+  private String roleText = "";
+
+  public String getRoleText() {
+    if (StringUtil.isNullOrEmpty(roleText) && getRoleRelations().size() > 0) {
+      for (AccountRoleRelation relation : getRoleRelations()) {
+        roleText += StringUtil.format("role#{}#{}#{}#{},", relation.getRoleId(),
+          relation.getRoleGlobalName(),
+          StringUtil.toDateFormat(relation.getEndDate(), "yyyy-MM-dd HH:mm:ss"),
+          relation.getIsDefault());
+      }
+      roleText = roleText.length() > 0 ? roleText = roleText.substring(0, roleText.length() - 1) : roleText;
+    }
+
+    return roleText;
+  }
+
+  /**
+   * 所属角色名称
+   */
+  private String roleView = "";
+
+  /**
+   * 所属角色视图
+   */
+  public String getRoleView() {
+    if (StringUtil.isNullOrEmpty(roleView) && getRoleRelations().size() > 0) {
+      for (AccountRoleRelation relation : getRoleRelations()) {
+        roleView += relation.getRoleGlobalName() + ",";
+      }
+      roleView = roleView.length() > 0 ? roleView = roleView.substring(0, roleView.length() - 1) : roleView;
+    }
+    return roleView;
+  }
+
+  private List<AccountGroupRelation> groupRelations = new ArrayList<AccountGroupRelation>();
+
+  /**
+   * 帐号和群组关系集合
+   */
+  @Override
+  public List<AccountGroupRelation> getGroupRelations() {
+    if (groupRelations.isEmpty() && !StringUtil.isNullOrEmpty(getId())) {
+      groupRelations = MembershipManagement.getInstance().getGroupService()
+        .findAllRelationByAccountId(getId());
+    }
+
+    return groupRelations;
+  }
+
+  private String groupText = "";
+
+  /**
+   * 所属群组文本信息
+   */
+  public String getGroupText() {
+    if (StringUtil.isNullOrEmpty(groupText) && getGroupRelations().size() > 0) {
+      for (AccountGroupRelation relation : getGroupRelations()) {
+        groupText += StringUtil.format("group#{}#{}#{},", relation.getGroupId(),
+          relation.getGroupGlobalName(),
+          StringUtil.toDateFormat(relation.getEndDate(), "yyyy-MM-dd HH:mm:ss"));
+      }
+      groupText = groupText.length() > 0 ? groupText = groupText.substring(0, groupText.length() - 1) : groupText;
+    }
+    return groupText;
+  }
+
+  private String groupView = "";
+
+  /**
+   * 所属群组视图
+   */
+  public String getGroupView() {
+    if (StringUtil.isNullOrEmpty(groupView) && getGroupRelations().size() > 0) {
+      for (AccountGroupRelation relation : getGroupRelations()) {
+        groupView += relation.getGroupGlobalName() + ",";
+      }
+      groupView = groupView.length() > 0 ? groupView = groupView.substring(0, groupView.length() - 1) : groupView;
+    }
+
+    return groupView;
+  }
+
+  /**
+   * 重置关系
+   *
+   * @param relationType 关系类型
+   * @param relationText 文本格式的关系数据
+   */
+  @Override
+  public void resetRelations(String relationType, String relationText) {
+    String[] list = StringUtil.isNullOrEmpty(relationText) ? new String[0] : relationText.split(",|;");
+
+    if (relationType.equals("organizationUnit")) {
+      getOrganizationUnitRelations().clear();
+    }
+
+    if (relationType.equals("role")) {
+      getRoleRelations().clear();
+    }
+
+    if (relationType.equals("group")) {
+      getGroupRelations().clear();
+    }
+
+    // 设置组织关系
+
+    for (String item : list) {
+      String[] keys = item.split("#");
+
+      if (keys.length > 2) {
+        switch (keys[0]) {
+          case "organizationUnit":
+            if (relationType.equals("organizationUnit")) {
+              getOrganizationUnitRelations().add(new AccountOrganizationUnitRelationInfo(getId(), keys[1]));
+            }
+            break;
+          case "role":
+            if (relationType.equals("role")) {
+              getRoleRelations().add(new AccountRoleRelationInfo(getId(), keys[1]));
+            }
+            break;
+          case "group":
+            if (relationType.equals("group")) {
+              getGroupRelations().add(new AccountGroupRelationInfo(getId(), keys[1]));
+            }
+            break;
+          default:
+            break;
+        }
+      }
+    }
+  }
+
+  // -------------------------------------------------------
+  // 实现 IIdentity 接口
+  // -------------------------------------------------------
 
   /**
    *
@@ -566,7 +676,6 @@ public class AccountInfo implements Account {
   public String getAuthenticationType() {
     return "MembershipAuthentication";
   }
-  ///#endregion
 
   // -------------------------------------------------------
   // 显式实现 ICacheable 接口
@@ -638,35 +747,12 @@ public class AccountInfo implements Account {
     }
   }
 
-
-  public void setRoleView(String roleView) {
-    this.roleView = roleView;
-  }
-
-  public String[] getOrganizationUnitText() {
-    return organizationUnitText;
-  }
-
-  public void setOrganizationUnitText(String[] organizationUnitText) {
-    this.organizationUnitText = organizationUnitText;
-  }
-
-  public String[] getRoleText() {
-    return roleText;
-  }
-
-  public void setRoleText(String[] roleText) {
-    this.roleText = roleText;
-  }
-
   // -------------------------------------------------------
   // 实现 SerializedObject 序列化
   // -------------------------------------------------------
 
   /**
    * 根据对象导出Xml元素
-   *
-   * @return
    */
   @Override
   public String serializable() {
@@ -676,9 +762,8 @@ public class AccountInfo implements Account {
   /**
    * 根据对象导出Xml元素
    *
-   * @param displayComment      显示注释
+   * @param displayComment 显示注释
    * @param displayFriendlyName 显示友好名称
-   * @return
    */
   @Override
   public String serializable(boolean displayComment, boolean displayFriendlyName) {

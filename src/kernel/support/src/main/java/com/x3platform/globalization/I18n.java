@@ -1,12 +1,15 @@
 package com.x3platform.globalization;
 
+import com.x3platform.util.StringUtil;
 import java.util.*;
 
 /**
  * 本地化设置对象
  */
 public class I18n {
+
   private static HashMap<String, Object> lockObjects = new HashMap<String, Object>();
+
   static {
     lockObjects.put("translates", new Object());
     lockObjects.put("strings", new Object());
@@ -18,7 +21,8 @@ public class I18n {
 
   /**
    * 本地化的翻译信息
-   * @return 返回 {@link Localization} 翻译信息
+   *
+   * @return {@link Localization} 翻译信息
    */
   public static Localization getTranslates() {
     if (values == null) {
@@ -37,7 +41,7 @@ public class I18n {
   /**
    * 本地化的文本信息 系统提示信息 警告信息 错误信息
    *
-   * @return 返回 {@link Localization} 字符串信息
+   * @return {@link Localization} 字符串信息
    */
   public static Localization getStrings() {
     if (strings == null) {
@@ -55,7 +59,8 @@ public class I18n {
 
   /**
    * 获取本地化的菜单信息
-   * @return 返回 {@link Localization} 菜单信息
+   *
+   * @return {@link Localization} 菜单信息
    */
   public static Localization getMenu() {
     if (menu == null) {
@@ -69,24 +74,49 @@ public class I18n {
     return menu;
   }
 
-  private static volatile Localization m_Exceptions = null;
+  private static volatile Localization exceptions = null;
 
   /**
    * 获取本地化的异常信息
    *
-   * @return 返回 {@link Localization} 异常信息
+   * @return {@link Localization} 异常信息
    */
   public static Localization getExceptions() {
-    if (m_Exceptions == null) {
+    if (exceptions == null) {
       synchronized (lockObjects.get("exceptions")) {
-        if (m_Exceptions == null) {
-          m_Exceptions = new Localization("exceptions.xml", "exception");
+        if (exceptions == null) {
+          exceptions = new Localization("exceptions.xml", "exception");
         }
       }
     }
 
-    return m_Exceptions;
+    return exceptions;
   }
+
+  private static String GENERL_APPLICATION_ERROR_CODE = "1";
+
+  /**
+   * 获取本地化的异常信息
+   *
+   * @return {@link Localization} 异常信息
+   */
+  public static String getExceptionDescription(String code, String... args) {
+    // 当 code == 1 表示通用应用错误，快速处理，不做遍历。
+    if (code == GENERL_APPLICATION_ERROR_CODE) {
+      return "Application Error";
+    }
+
+    String description = "";
+    Localization localization = getExceptions();
+    String name = localization.name(code);
+    if (StringUtil.isNullOrEmpty(name)) {
+      return "";
+    } else {
+      description = localization.text("text_" + name.substring(5));
+      return args.length == 0 ? description : StringUtil.format(description, args);
+    }
+  }
+
 
   /**
    * 构造函数

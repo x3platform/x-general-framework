@@ -5,7 +5,6 @@ package com.x3platform.digitalnumber.configuration;
 // import com.x3platform.Util.*;
 
 import com.x3platform.SpringContext;
-import com.x3platform.util.ApplicationContextUtil;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +34,6 @@ public class DigitalNumberConfigurationView {
     if (instance == null) {
       synchronized (lockObject) {
         if (instance == null) {
-          // instance = new DigitalNumberConfigurationView();
           instance = SpringContext.getBean(DigitalNumberConfigurationView.class);
         }
       }

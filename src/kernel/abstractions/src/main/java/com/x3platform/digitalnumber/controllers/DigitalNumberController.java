@@ -1,36 +1,31 @@
 package com.x3platform.digitalnumber.controllers;
 
-import java.util.*;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.PageHelper;
+import com.x3platform.data.DataPaging;
+import com.x3platform.data.DataPagingUtil;
+import com.x3platform.data.DataQuery;
+import com.x3platform.digitalnumber.DigitalNumberContext;
+import com.x3platform.digitalnumber.models.DigitalNumber;
+import com.x3platform.digitalnumber.services.DigitalNumberService;
 import com.x3platform.globalization.I18n;
+import com.x3platform.messages.MessageObject;
+import java.time.LocalDateTime;
+import java.util.List;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-// import X3Platform.Ajax.*;
-// import X3Platform.Util.*;
-
-// import X3Platform.Globalization.*;
-// import X3Platform.Messages.*;
-
-import com.x3platform.messages.MessageObject;
-import com.x3platform.digitalnumber.DigitalNumberContext;
-import com.x3platform.digitalnumber.models.*;
-import com.x3platform.digitalnumber.services.*;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 /**
  * @author ruanyu
  */
+@Lazy
 @RestController
-@Lazy(true)
 @RequestMapping("/api/sys/digitalNumber")
 public class DigitalNumberController {
+
   /**
    * 数据提供器
    */
@@ -47,10 +42,10 @@ public class DigitalNumberController {
    * @return 响应的数据内容
    */
   @RequestMapping("/save")
-  public final String save(@RequestBody String data) {
+  public String save(@RequestBody String data) {
     DigitalNumber entity = JSON.parseObject(data, DigitalNumber.class);
 
-    this.service.save(entity);
+    service.save(entity);
 
     return MessageObject.stringify("0", I18n.getStrings().text("msg_save_success"));
   }
@@ -61,12 +56,13 @@ public class DigitalNumberController {
    * @param data 请求的数据内容
    * @return 响应的内容
    */
-  public final String delete(@RequestBody String data) {
+  @RequestMapping("/delete")
+  public String delete(@RequestBody String data) {
     JSONObject req = JSON.parseObject(data);
 
     String name = req.getString("name");
 
-    this.service.delete(name);
+    service.delete(name);
 
     return MessageObject.stringify("0", I18n.getStrings().text("msg_delete_success"));
   }
@@ -76,25 +72,21 @@ public class DigitalNumberController {
   // -------------------------------------------------------
 
   /**
-   * 获取分页内容 / get paging.
+   * 根据名称获取相关流水号信息
    *
-   * @param doc Xml 文档对象
-   * @return 返回一个相关的实例列表.
+   * @param data 请求的数据内容
+   * @return 一个 {@link DigitalNumber} 实例
    */
-  public final String findOne(HttpServletRequest req, HttpServletResponse res) {
-    StringBuilder outString = new StringBuilder();
+  @RequestMapping("/findOne")
+  public String findOne(@RequestBody String data) {
+    JSONObject req = JSON.parseObject(data);
 
-    // String name = XmlHelper.Fetch("name", doc);
-    String name = req.getParameter("name");
+    String name = req.getString("name");
 
-    DigitalNumber param = this.service.findOne(name);
+    DigitalNumber param = service.findOne(name);
 
-    // outString.append("{\"data\":" + AjaxUtil.<DigitalNumber>Parse(param) + ",");
-
-    // outString.append(MessageObject.Stringify("0", I18n.Strings["msg_query_success"], true) + "}");
-    outString.append(MessageObject.stringify("0", "msg_query_success", true) + "}");
-
-    return outString.toString();
+    return "{\"data\":" + JSON.toJSONString(param) + ","
+      + MessageObject.stringify("0", "msg_query_success", true) + "}";
   }
 
   // -------------------------------------------------------
@@ -104,53 +96,44 @@ public class DigitalNumberController {
   /**
    * 获取分页内容
    *
-   * @param doc Xml 文档对象
-   * @return HTTP 响应内容
+   * @param data 请求的数据内容
+   * @return 一个相关的实例列表信息
    */
-  /*public final String GetPaging(HttpServletRequest req, HttpServletResponse res) {
-    StringBuilder outString = new StringBuilder();
+  @RequestMapping("/query")
+  public String query(@RequestBody String data) {
+    JSONObject req = JSON.parseObject(data);
 
-    PagingHelper paging = PagingHelper.Create(XmlHelper.Fetch("paging", doc, "xml"), XmlHelper.Fetch("query", doc, "xml"));
+    DataPaging paging = DataPagingUtil.create(req.getString("paging"));
 
-    int rowCount = 0;
+    DataQuery query = DataQuery.create(req.getString("query"));
 
-    tangible.RefObject<Integer> tempRef_rowCount = new tangible.RefObject<Integer>(rowCount);
-    List<DigitalNumber> list = this.service.GetPaging(paging.RowIndex, paging.PageSize, paging.Query, tempRef_rowCount);
-    rowCount = tempRef_rowCount.argValue;
+    PageHelper.startPage(paging.getCurrentPage(), paging.getPageSize());
 
-    paging.RowCount = rowCount;
+    List<DigitalNumber> list = service.findAll(query);
 
-    outString.append("{\"data\":" + AjaxUtil.<DigitalNumber>Parse(list) + ",");
+    paging.setTotal(DataPagingUtil.getTotal(list));
 
-    outString.append("\"paging\":" + paging + ",");
-
-    outString.append(MessageObject.Stringify("0", I18n.Strings["msg_query_success"], true) + "}");
-
-    return outString.toString();
-  }*/
+    return "{\"data\":" + JSON.toJSONString(list) + ",\"paging\":" + JSON.toJSONString(paging) + ","
+      + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";
+  }
 
   /**
    * 创建新的对象
    *
-   * @param doc Xml 文档对象
-   * @return HTTP 响应内容
+   * @param data 请求的数据内容
+   * @return 响应的数据内容
    */
-  /*
-  public final String CreateNewObject(HttpServletRequest req, HttpServletResponse res) {
-    StringBuilder outString = new StringBuilder();
+  @RequestMapping("/create")
+  public String create(@RequestBody String data) {
+    DigitalNumber entity = new DigitalNumber();
 
-    DigitalNumber param = new DigitalNumber();
+    entity.setName("");
+    entity.setCreatedDate(LocalDateTime.now());
+    entity.setModifiedDate(LocalDateTime.now());
 
-    param.setName("");
-
-    param.setCreatedDate = param.ModifiedDate = java.time.LocalDateTime.now();
-
-    outString.append("{\"data\":" + AjaxUtil.<DigitalNumber>Parse(param) + ",");
-
-    outString.append(MessageObject.Stringify("0", I18n.Strings["msg_create_success"], true) + "}");
-
-    return outString.toString();
-  }*/
+    return "{\"data\":" + JSON.toJSONString(entity) + ","
+      + MessageObject.stringify("0", "msg_create_success", true) + "}";
+  }
 
   /**
    * 生成流水号
@@ -164,9 +147,9 @@ public class DigitalNumberController {
 
     String name = req.getString("name");
 
-    String result = this.service.generate(name);
+    String result = service.generate(name);
 
-    return "{\"data\":" + result + ","
+    return "{\"data\":\"" + result + "\","
       + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";
   }
 }

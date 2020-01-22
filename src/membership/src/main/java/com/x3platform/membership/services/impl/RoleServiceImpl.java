@@ -1,19 +1,24 @@
 package com.x3platform.membership.services.impl;
 
+import static com.x3platform.membership.Constants.VIRTUAL_TEAM_NAME;
+
 import com.x3platform.data.DataQuery;
+import com.x3platform.digitalnumber.DigitalNumberContext;
+import com.x3platform.ldap.configuration.LdapConfigurationView;
 import com.x3platform.membership.Account;
 import com.x3platform.membership.AccountRoleRelation;
 import com.x3platform.membership.MembershipManagement;
 import com.x3platform.membership.OrganizationUnit;
 import com.x3platform.membership.Role;
 import com.x3platform.membership.mappers.RoleMapper;
-import com.x3platform.membership.models.OrganizationUnitInfo;
 import com.x3platform.membership.models.RoleInfo;
-import com.x3platform.membership.services.OrganizationUnitService;
 import com.x3platform.membership.services.RoleService;
 import com.x3platform.security.authority.Authority;
+import com.x3platform.util.DateUtil;
 import com.x3platform.util.StringUtil;
 import com.x3platform.util.UUIDUtil;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -25,28 +30,15 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class RoleServiceImpl implements RoleService {
 
+  private static String CACHE_KEY_ID_PREFIX = "x3platform:membership:role:id:";
+
+  private static String DIGITAL_NUMBER_KEY_CODE = "Table_Role_Key_Code";
+
   /**
    * 数据提供器
    */
   @Autowired(required = false)
   private RoleMapper provider = null;
-
-  private OrganizationUnitService organizationUnitService = null; //  MembershipManagement.getInstance().getOrganizationUnitService();
-
-  /**
-   */
-  // public RoleService()
-  //{
-  //  this.configuration = MembershipConfigurationView.Instance.Configuration;
-
-  // 创建对象构建器(Spring.NET)
-  //  String springObjectFile = this.configuration.keySet()["SpringObjectFile"].Value;
-
-  //  SpringObjectBuilder objectBuilder = SpringObjectBuilder.Create(MembershipConfiguration.ApplicationName, springObjectFile);
-
-  // 创建数据提供器
-  //  this.provider = objectBuilder.<IRoleProvider>GetObject(IRoleProvider.class);
-  // }
 
   // -------------------------------------------------------
   // 保存 删除
@@ -55,45 +47,52 @@ public class RoleServiceImpl implements RoleService {
   /**
    * 保存记录
    *
-   * @param param Role 实例详细信息
-   * @return Role 实例详细信息
+   * @param entity {@link Role} 实例详细信息
+   * @return {@link Role} 实例详细信息
    */
   @Override
-  public final Role save(Role param) {
-    /*
-    if (LDAPConfigurationView.Instance.IntegratedMode.equals("ON")) {
-      Role originalObject = findOne(param.getId());
+  public Role save(Role entity) {
+    int affectedRows;
+    String id = entity.getId();
+
+    if (LdapConfigurationView.getInstance().getIntegratedMode()) {
+      Role originalObject = findOne(entity.getId());
       if (originalObject == null) {
-        originalObject = param;
+        originalObject = entity;
       }
-      this.SyncToLDAP(param, originalObject.getGlobalName(), originalObject.getOrganizationUnitId());
+      // this.SyncToLDAP(entity, originalObject.getGlobalName(), originalObject.getOrganizationUnitId());
     }
-    */
 
     // 设置组织全路径
-    param.setFullPath(combineFullPath(param.getName(), param.getOrganizationUnitId()));
+    entity.setFullPath(combineFullPath(entity.getName(), entity.getOrganizationUnitId()));
 
     // 设置唯一识别名称
-    param.setDistinguishedName(combineDistinguishedName(param.getName(), param.getOrganizationUnitId()));
-    String roleId = param.getId();
-    if (provider.isExist(roleId)) {
-      provider.update(param);
+    entity.setDistinguishedName(combineDistinguishedName(entity.getName(), entity.getOrganizationUnitId()));
+
+    boolean isExist = provider.isExist(entity.getId());
+
+    if (!isExist) {
+      if (StringUtil.isNullOrEmpty(entity.getCode())) {
+        entity.setCode(DigitalNumberContext.generate(DIGITAL_NUMBER_KEY_CODE));
+      }
+      provider.insert(entity);
     } else {
-      provider.save(param);
-/*     if (param != null) {
-       // 绑定新的关系
-       if (!StringUtil.isNullOrEmpty(roleId)) {
-         // 1.移除非默认成员关系
-         MembershipManagement.getInstance().getRoleService().clearupRelation(roleId);
-         // 2.设置新的关系
-         for (Account item : param.getMembers()) {
-           MembershipManagement.getInstance().getRoleService().addRelation(item.getId(), roleId);
-         }
-       }
-     }*/
+      provider.update(entity);
     }
 
-    return param;
+    if (entity != null) {
+      // 绑定新的关系
+      if (!StringUtil.isNullOrEmpty(id)) {
+        // 1.移除非默认成员关系
+        MembershipManagement.getInstance().getRoleService().clearupRelation(id);
+        // 2.设置新的关系
+        for (Account item : entity.getMembers()) {
+          MembershipManagement.getInstance().getRoleService().addRelation(item.getId(), id);
+        }
+      }
+    }
+
+    return entity;
   }
 
   /**
@@ -102,7 +101,7 @@ public class RoleServiceImpl implements RoleService {
    * @param id 标识
    */
   @Override
-  public final void delete(String id) {
+  public void delete(String id) {
     provider.delete(id);
   }
 
@@ -113,11 +112,11 @@ public class RoleServiceImpl implements RoleService {
   /**
    * 查询某条记录
    *
-   * @param id AccountInfo Id号
-   * @return 返回一个 AccountInfo 实例的详细信息
+   * @param id 标识
+   * @return 一个 {@link Role} 实例的详细信息
    */
   @Override
-  public final Role findOne(String id) {
+  public Role findOne(String id) {
     return provider.findOne(id);
   }
 
@@ -125,10 +124,10 @@ public class RoleServiceImpl implements RoleService {
    * 查询某条记录
    *
    * @param globalName 角色的全局名称
-   * @return 返回一个<see       cref   =   "   Role   "   />实例的详细信息
+   * @return 一个 {@link Role} 实例的详细信息
    */
   @Override
-  public final Role findOneByGlobalName(String globalName) {
+  public Role findOneByGlobalName(String globalName) {
     return provider.findOneByGlobalName(globalName);
   }
 
@@ -137,43 +136,33 @@ public class RoleServiceImpl implements RoleService {
    *
    * @param corporationId 组织标识
    * @param standardRoleId 标准角色标识
-   * @return 返回一个<see               cref       =       "       Role       "       />实例的详细信息
+   * @return 一个 {@link Role} 实例的详细信息
    */
   @Override
-  public final Role findOneByCorporationIdAndStandardRoleId(String corporationId, String standardRoleId) {
+  public Role findOneByCorporationIdAndStandardRoleId(String corporationId, String standardRoleId) {
     return provider.findOneByCorporationIdAndStandardRoleId(corporationId, standardRoleId);
   }
 
   /**
    * @param parentId 根据父级角色 查询最大编码的角色
    */
-  @Override
-  public Role findMaxCodeByParentId(String parentId) {
-    return provider.findMaxCodeByParentId(parentId);
-  }
+//  @Override
+//  public Role findMaxCodeByParentId(String parentId) {
+//    return provider.findMaxCodeByParentId(parentId);
+//  }
 
   /**
    * @param organizationUnitId 所属组织结构查询最大编码的角色
    */
-  @Override
-  public Role findMaxCodeByOrganizationUnitId(String organizationUnitId) {
-    return provider.findMaxCodeByOrganizationUnitId(organizationUnitId);
-  }
-
-  /**
-   * 查询所有相关记录
-   *
-   * @return 返回所有 Role 实例的详细信息
-   */
-  @Override
-  public final List<Role> findAll() {
-    return provider.findAll("", 0);
-  }
+//  @Override
+//  public Role findMaxCodeByOrganizationUnitId(String organizationUnitId) {
+//    return provider.findMaxCodeByOrganizationUnitId(organizationUnitId);
+//  }
 
   /**
    * 查询 分页 记录
    *
-   * @return 返回所有 Role 实例的详细信息
+   * @return 所有 Role 实例的详细信息
    */
   @Override
   public List<Role> findAll(DataQuery query) {
@@ -181,64 +170,13 @@ public class RoleServiceImpl implements RoleService {
   }
 
   /**
-   * @param parentId 父节标识
-   */
-  @Override
-  public List<Role> findAllRoleByParentId(String parentId) {
-    return provider.findAllByParentId(parentId);
-  }
-
-
-  /**
-   * @param organizationUnitId 组织机构id 查询当前组织机构下 及子组织机构所有的角色
-   */
-  @Override
-  public List<Role> findAllRolesByOrganization(String organizationUnitId) {
-    List<Role> result = new ArrayList<>();
-    if (organizationUnitService == null) {
-      organizationUnitService = MembershipManagement.getInstance().getOrganizationUnitService();
-    }
-    List<OrganizationUnitInfo> organizationInfoList = organizationUnitService
-      .getChildOrganizationByOrganizationUnitId(organizationUnitId);
-    if (organizationInfoList != null && organizationInfoList.size() > 0) {
-      for (int oInt = 0; oInt < organizationInfoList.size(); oInt++) {
-        OrganizationUnitInfo organizationUnitInfo = organizationInfoList.get(oInt);
-        List<Role> roleInfos = provider.findAllByOrganizationUnitId(organizationUnitInfo.getId());
-        result.addAll(roleInfos);
-      }
-    }
-    return result;
-  }
-
-  /**
-   * 查询所有相关记录
-   *
-   * @param whereClause SQL 查询条件
-   * @return 返回所有 AccountInfo 实例的详细信息
-   */
-  public final List<Role> findAll(String whereClause) {
-    return provider.findAll(whereClause, 0);
-  }
-
-  /**
-   * 查询所有相关记录
-   *
-   * @param whereClause SQL 查询条件
-   * @param length 条数
-   * @return 返回所有 AccountInfo 实例的详细信息
-   */
-  public final List<Role> findAll(String whereClause, int length) {
-    return provider.findAll(whereClause, length);
-  }
-
-  /**
    * 查询某个父节点下的所有组织单位
    *
    * @param parentId 父节标识
-   * @return 返回一个 OrganizationUnit 实例的详细信息
+   * @return 一个 OrganizationUnit 实例的详细信息
    */
   @Override
-  public final List<Role> findAllByParentId(String parentId) {
+  public List<Role> findAllByParentId(String parentId) {
     return findAllByParentId(parentId, 0);
   }
 
@@ -246,11 +184,11 @@ public class RoleServiceImpl implements RoleService {
    * 查询某个组织节点下的所有角色信息
    *
    * @param parentId 父节标识
-   * @param depth 深入获取的层次，0表示只获取本层次，-1表示全部获取
-   * @return 返回所有实例<see               cref       =       "       OrganizationUnit       "       />的详细信息
+   * @param depth 深入获取的层次，0 表示只获取本层次，-1 表示全部获取
+   * @return 所有实例{@link OrganizationUnit}的详细信息
    */
   @Override
-  public final List<Role> findAllByParentId(String parentId, int depth) {
+  public List<Role> findAllByParentId(String parentId, int depth) {
     // 结果列表
     ArrayList<Role> list = new ArrayList<Role>();
 
@@ -279,86 +217,93 @@ public class RoleServiceImpl implements RoleService {
    * 查询某条记录
    *
    * @param accountId AccountInfo Id号
-   * @return 返回一个 AccountInfo 实例的详细信息
+   * @return 一个 AccountInfo 实例的详细信息
    */
   @Override
-  public final List<Role> findAllByAccountId(String accountId) {
+  public List<Role> findAllByAccountId(String accountId) {
     return provider.findAllByAccountId(accountId);
   }
+
+  /**
+   * @param organizationUnitId 组织机构id 查询当前组织机构下 及子组织机构所有的角色
+   */
+//  @Override
+//  public List<Role> findAllRolesByOrganization(String organizationUnitId) {
+//    List<Role> result = new ArrayList<>();
+//
+//    List<Role> roles = provider.findAllByOrganizationUnitId(organizationUnitId);
+//    if (roles != null && roles.size() > 0) {
+//      result.addAll(roles);
+//    }
+//
+//    List<OrganizationUnit> organizationInfoList =  MembershipManagement.getInstance().getOrganizationUnitService()
+//      .getChildOrganizationByOrganizationUnitId(organizationUnitId);
+//
+//    if (organizationInfoList != null && organizationInfoList.size() > 0) {
+//      for (int oInt = 0; oInt < organizationInfoList.size(); oInt++) {
+//        OrganizationUnit organizationUnit = organizationInfoList.get(oInt);
+//        List<Role> roleInfos = provider.findAllByOrganizationUnitId(organizationUnit.getId());
+//        result.addAll(roleInfos);
+//      }
+//    }
+//    return result;
+//  }
 
   /**
    * 查询某个组织下的所有角色
    *
    * @param organizationId 组织标识
-   * @return 返回一个 Role 实例的详细信息
+   * @return 一个 Role 实例的详细信息
    */
   @Override
-  public final List<Role> findAllByOrganizationUnitId(String organizationId) {
+  public List<Role> findAllByOrganizationUnitId(String organizationId) {
     return findAllByOrganizationUnitId(organizationId, 0);
   }
 
   /**
    * 查询某个组织节点下的所有角色信息
    *
-   * @param organizationId 组织标识
-   * @param depth 深入获取的层次，0表示只获取本层次，-1表示全部获取
-   * @return 返回所有实例<see               cref       =       "       OrganizationUnit       "       />的详细信息
+   * @param organizationUnitId 组织标识
+   * @param depth 深入获取的层次，0 表示只获取本层次，-1 表示全部获取
+   * @return 所有实例 {@link Role} 的详细信息
    */
   @Override
-  public final List<Role> findAllByOrganizationUnitId(String organizationId, int depth) {
+  public List<Role> findAllByOrganizationUnitId(String organizationUnitId, int depth) {
     // 结果列表
     ArrayList<Role> list = new ArrayList<Role>();
 
     // -------------------------------------------------------
     // 查找组织子部门的角色信息
     // -------------------------------------------------------
-
-    // TODO 待处理
-    // List<OrganizationUnit> organizations = MembershipManagement.getInstance().getOrganizationUnitService().findAllByParentId(organizationId);
-    List<OrganizationUnit> organizations = null;
+    List<OrganizationUnit> organizationUnits = MembershipManagement.getInstance().getOrganizationUnitService()
+      .findAllByParentId(organizationUnitId);
 
     // -------------------------------------------------------
     // 查找角色信息
     // -------------------------------------------------------
 
-    list.addAll(provider.findAllByOrganizationUnitId(organizationId));
+    list.addAll(provider.findAllByOrganizationUnitId(organizationUnitId));
 
     if (depth == -1) {
-      depth = Integer.MAX_VALUE;
+      depth = 9;
     }
 
-    if (organizations != null && organizations.size() > 0 && depth > 0) {
-      for (OrganizationUnit organization : organizations) {
-        list.addAll(findAllByOrganizationUnitId(organization.getId(), (depth - 1)));
+    if (!organizationUnits.isEmpty() && depth > 0) {
+      for (OrganizationUnit organizationUnit : organizationUnits) {
+        list.addAll(findAllByOrganizationUnitId(organizationUnit.getId(), (depth - 1)));
       }
     }
 
     return list;
   }
-  ///#endregion
-
-  ///#region 函数:FindAllByGeneralRoleId(string generalRoleId)
-
-  /**
-   * 递归查询某个公司下面所有的角色
-   *
-   * @param generalRoleId 组织标识
-   * @return 返回所有<see       cref   =   "   Role   "   />实例的详细信息
-   */
-  public final List<Role> findAllByGeneralRoleId(String generalRoleId) {
-    return provider.findAllByGeneralRoleId(generalRoleId);
-  }
-  ///#endregion
-
-  ///#region 函数:FindAllByStandardOrganizationUnitId(string standardOrganizationUnitId)
 
   /**
    * 递归查询某个标准组织下面所有的角色
    *
    * @param standardOrganizationUnitId 组织标识
-   * @return 返回所有<see       cref   =   "   Role   "   />实例的详细信息
+   * @return 所有{@link Role}实例的详细信息
    */
-  public final List<Role> findAllByStandardOrganizationUnitId(String standardOrganizationUnitId) {
+  public List<Role> findAllByStandardOrganizationUnitId(String standardOrganizationUnitId) {
     // 结果列表
     ArrayList<Role> list = new ArrayList<Role>();
 
@@ -395,24 +340,21 @@ public class RoleServiceImpl implements RoleService {
    * 递归查询某个标准角色下面所有的角色
    *
    * @param standardRoleId 标准角色标识
-   * @return 返回所有<see       cref   =   "   Role   "   />实例的详细信息
+   * @return 所有{@link Role}实例的详细信息
    */
-  public final List<Role> findAllByStandardRoleId(String standardRoleId) {
+  public List<Role> findAllByStandardRoleId(String standardRoleId) {
     return provider.findAllByStandardRoleId(standardRoleId);
   }
-  ///#endregion
-
-  ///#region 函数:FindAllByOrganizationUnitIdAndJobId(string organizationId, string jobId)
 
   /**
    * 递归查询某个组织下面相关的职位对应的角色信息
    *
    * @param organizationId 组织标识
    * @param jobId 职位标识
-   * @return 返回一个<see               cref       =       "       Role       "       />实例的详细信息
+   * @return 一个 实例的详细信息
    */
   @Override
-  public final List<Role> findAllByOrganizationUnitIdAndJobId(String organizationId, String jobId) {
+  public List<Role> findAllByOrganizationUnitIdAndJobId(String organizationId, String jobId) {
     return provider.findAllByOrganizationUnitIdAndJobId(organizationId, jobId);
   }
   ///#endregion
@@ -423,10 +365,10 @@ public class RoleServiceImpl implements RoleService {
    * 递归查询某个组织下面相关的岗位对应的角色信息
    *
    * @param assignedJobId 岗位标识
-   * @return 返回一个<see       cref   =   "   Role   "   />实例的详细信息
+   * @return 一个{@link Role}实例的详细信息
    */
   @Override
-  public final List<Role> findAllByAssignedJobId(String assignedJobId) {
+  public List<Role> findAllByAssignedJobId(String assignedJobId) {
     return provider.findAllByAssignedJobId(assignedJobId);
   }
   ///#endregion
@@ -438,10 +380,10 @@ public class RoleServiceImpl implements RoleService {
    *
    * @param corporationIds 公司标识，多个以逗号隔开
    * @param projectIds 项目标识，多个以逗号隔开
-   * @return 返回一个<see               cref       =       "       Role       "       />实例的详细信息
+   * @return 一个 {@link Role} 实例的详细信息
    */
   @Override
-  public final List<Role> findAllByCorporationIdAndProjectId(String corporationIds, String projectIds) {
+  public List<Role> findAllByCorporationIdAndProjectId(String corporationIds, String projectIds) {
     ArrayList<Role> list = new ArrayList<Role>();
 
     // 查询相关公司的所有角色
@@ -457,15 +399,15 @@ public class RoleServiceImpl implements RoleService {
    * 递归查询某个公司下面所有的角色
    *
    * @param corporationIds 公司标识，多个以逗号隔开
-   * @return 返回所有<see       cref   =   "   Role   "   />实例的详细信息
+   * @return 所有{@link Role}实例的详细信息
    */
   @Override
-  public final List<Role> findAllByCorporationIds(String corporationIds) {
+  public List<Role> findAllByCorporationIds(String corporationIds) {
     ArrayList<Role> list = new ArrayList<Role>();
 
     // 查询公司的所有角色
     if (!StringUtil.isNullOrEmpty(corporationIds)) {
-      // String[] keys = corporationIds.split(new char[]{',', ';'}, StringSplitOptions.RemoveEmptyEntries);
+      /// String[] keys = corporationIds.split(new char[]{',', ';'}, StringSplitOptions.RemoveEmptyEntries);
       String[] keys = corporationIds.split(",|;");
 
       for (String key : keys) {
@@ -480,18 +422,18 @@ public class RoleServiceImpl implements RoleService {
    * 递归查询某个公司下面所有的角色
    *
    * @param corporationId 组织标识
-   * @return 返回所有<see       cref   =   "   Role   "   />实例的详细信息
+   * @return 所有{@link Role}实例的详细信息
    */
   @Override
-  public final List<Role> findAllByCorporationId(String corporationId) {
+  public List<Role> findAllByCorporationId(String corporationId) {
     // 结果列表
     ArrayList<Role> list = new ArrayList<Role>();
 
     //
     // 查找部门(公司下一级组织架构)
     //
-    // List<OrganizationUnit> organizations = MembershipManagement.getInstance().getOrganizationUnitService().FindAllByParentId(corporationId);
-    List<OrganizationUnit> organizations = null;
+    List<OrganizationUnit> organizationUnits = MembershipManagement.getInstance().getOrganizationUnitService()
+      .findAllByParentId(corporationId);
 
     //
     // 查找角色信息
@@ -499,10 +441,10 @@ public class RoleServiceImpl implements RoleService {
 
     list.addAll(findAllByOrganizationUnitId(corporationId));
 
-    for (OrganizationUnit organization : organizations) {
+    for (OrganizationUnit organizationUnit : organizationUnits) {
       // 获取项目团队以外的只能部门
-      if (organization.getName().indexOf("项目团队") == -1) {
-        list.addAll(findAllByOrganizationUnitId(organization.getId(), -1));
+      if (organizationUnit.getName().indexOf(VIRTUAL_TEAM_NAME) == -1) {
+        list.addAll(findAllByOrganizationUnitId(organizationUnit.getId(), -1));
       }
     }
 
@@ -516,10 +458,10 @@ public class RoleServiceImpl implements RoleService {
    * 递归查询某个项目下面所有的角色
    *
    * @param projectIds 项目标识，多个以逗号隔开
-   * @return 返回所有<see       cref   =   "   Role   "   />实例的详细信息
+   * @return 所有{@link Role}实例的详细信息
    */
   @Override
-  public final List<Role> findAllByProjectIds(String projectIds) {
+  public List<Role> findAllByProjectIds(String projectIds) {
     ArrayList<Role> list = new ArrayList<Role>();
 
     // 查询公司的所有角色
@@ -539,10 +481,10 @@ public class RoleServiceImpl implements RoleService {
    * 递归查询某个项目下面所有的角色
    *
    * @param projectId 组织标识
-   * @return 返回一个 Role 实例的详细信息
+   * @return 一个 Role 实例的详细信息
    */
   @Override
-  public final List<Role> findAllByProjectId(String projectId) {
+  public List<Role> findAllByProjectId(String projectId) {
     // 项目团队的标识 和 项目标识 保存一致
     String organizationId = projectId;
 
@@ -554,10 +496,13 @@ public class RoleServiceImpl implements RoleService {
    *
    * @param corporationId 组织标识
    * @param standardRoleIds 标准角色标识
-   * @return 返回所有<see               cref       =       "       Role       "       />实例的详细信息
+   * @return 所有<see                                                                                                                               cref                               =                                                                                                                               "
+               *
+               *       Role
+               *       "                                                                                                                               />实例的详细信息
    */
   @Override
-  public final List<Role> findAllByCorporationIdAndStandardRoleIds(String corporationId, String standardRoleIds) {
+  public List<Role> findAllByCorporationIdAndStandardRoleIds(String corporationId, String standardRoleIds) {
     return provider.findAllByCorporationIdAndStandardRoleIds(corporationId, standardRoleIds);
   }
 
@@ -567,79 +512,91 @@ public class RoleServiceImpl implements RoleService {
    * @param organizationId 组织标识
    * @param minPriority 最小权重值
    * @param maxPriority 最大权重值
-   * @return 返回所有<see               cref       =       "       Role       "       />实例的详细信息
+   * @return 所有<see                                                                                                                               cref                               =                                                                                                                               "
+               *
+               *       Role
+               *       "                                                                                                                               />实例的详细信息
    */
   @Override
-  public final List<Role> findAllBetweenPriority(String organizationId, int minPriority, int maxPriority) {
+  public List<Role> findAllBetweenPriority(String organizationId, int minPriority, int maxPriority) {
     return provider.findAllBetweenPriority(organizationId, minPriority, maxPriority);
   }
 
   /**
-   * 返回所有没有成员的角色信息
+   * 所有没有成员的角色信息
    *
    * @param length 条数, 0表示全部
-   * @return 返回所有<see       cref   =   "   Role   "   />实例的详细信息
+   * @return 所有{@link Role}实例的详细信息
    */
   @Override
-  public final List<Role> findAllWithoutMember(int length) {
+  public List<Role> findAllWithoutMember(int length) {
     return provider.findAllWithoutMember(length, false);
   }
 
   /**
-   * 返回所有没有成员的角色信息
+   * 所有没有成员的角色信息
    *
    * @param length 条数, 0表示全部
    * @param includeAllRole 包含全部角色
-   * @return 返回所有<see               cref       =       "       Role       "       />实例的详细信息
+   * @return 所有<see                                                                                                                               cref                               =                                                                                                                               "
+               *
+               *       Role
+               *       "                                                                                                                               />实例的详细信息
    */
   @Override
-  public final List<Role> findAllWithoutMember(int length, boolean includeAllRole) {
+  public List<Role> findAllWithoutMember(int length, boolean includeAllRole) {
     return provider.findAllWithoutMember(length, includeAllRole);
   }
 
   /**
-   * 返回所有正向领导的角色信息
+   * 所有正向领导的角色信息
    *
    * @param organizationId 组织标识
-   * @return 返回所有<see       cref   =   "   Role   "   />实例的详细信息
+   * @return 所有{@link Role}实例的详细信息
    */
   @Override
-  public final List<Role> findForwardLeadersByOrganizationUnitId(String organizationId) {
+  public List<Role> findForwardLeadersByOrganizationUnitId(String organizationId) {
     return provider.findForwardLeadersByOrganizationUnitId(organizationId, 1);
   }
 
   /**
-   * 返回所有正向领导的角色信息
+   * 所有正向领导的角色信息
    *
    * @param organizationId 组织标识
    * @param level 层次
-   * @return 返回所有<see               cref       =       "       Role       "       />实例的详细信息
+   * @return 所有<see                                                                                                                               cref                               =                                                                                                                               "
+               *
+               *       Role
+               *       "                                                                                                                               />实例的详细信息
    */
   @Override
-  public final List<Role> findForwardLeadersByOrganizationUnitId(String organizationId, int level) {
+  public List<Role> findForwardLeadersByOrganizationUnitId(String organizationId, int level) {
     return provider.findForwardLeadersByOrganizationUnitId(organizationId, level);
   }
 
   /**
-   * 返回所有反向领导的角色信息
+   * 所有反向领导的角色信息
    *
    * @param organizationId 组织标识
-   * @return 返回所有<see       cref   =   "   Role   "   />实例的详细信息
+   * @return 所有{@link Role}实例的详细信息
    */
   @Override
-  public final List<Role> findBackwardLeadersByOrganizationUnitId(String organizationId) {
+  public List<Role> findBackwardLeadersByOrganizationUnitId(String organizationId) {
     return provider.findBackwardLeadersByOrganizationUnitId(organizationId, 1);
   }
 
   /**
-   * 返回所有反向领导的角色信息
+   * 所有反向领导的角色信息
    *
    * @param organizationId 组织标识
    * @param level 层次
-   * @return 返回所有<see               cref       =       "       Role       "       />实例的详细信息
+   * @return 所有<see                                                                                                                               cref                               =                                                                                                                               "
+               *
+               *       Role
+               *       "                                                                                                                               />实例的详细信息
    */
   @Override
-  public final List<Role> findBackwardLeadersByOrganizationUnitId(String organizationId, int level) {
+  public List<Role> findBackwardLeadersByOrganizationUnitId(String organizationId, int level) {
     return provider.findBackwardLeadersByOrganizationUnitId(organizationId, level);
   }
   ///#endregion
@@ -647,14 +604,17 @@ public class RoleServiceImpl implements RoleService {
   ///#region 函数:FindStandardGeneralRolesByOrganizationUnitId(string organizationId, int standardGeneralRoleId)
 
   /**
-   * 返回所有父级对象为标准通用角色标识【standardGeneralRoleId】的相关角色信息
+   * 所有父级对象为标准通用角色标识【standardGeneralRoleId】的相关角色信息
    *
    * @param organizationId 组织标识
    * @param standardGeneralRoleId 标准通用角色标识
-   * @return 返回所有<see               cref       =       "       Role       "       />实例的详细信息
+   * @return 所有<see                                                                                                                               cref                               =                                                                                                                               "
+               *
+               *       Role
+               *       "                                                                                                                               />实例的详细信息
    */
   @Override
-  public final List<Role> findStandardGeneralRolesByOrganizationUnitId(String organizationId,
+  public List<Role> findStandardGeneralRolesByOrganizationUnitId(String organizationId,
     String standardGeneralRoleId) {
     return provider.findStandardGeneralRolesByOrganizationUnitId(organizationId, standardGeneralRoleId);
   }
@@ -673,54 +633,63 @@ public class RoleServiceImpl implements RoleService {
    * @param pageSize   页面大小
    * @param query      数据查询参数
    * @param rowCount   行数
-   * @return 返回一个列表实例<see       cref   =   "   Role   "   />
+   * @return 一个列表实例{@link Role}
    */
-  // public final List<Role> GetPaging(int startIndex, int pageSize, DataQuery query, tangible.RefObject<Integer> rowCount) {
+  // public  List<Role> GetPaging(int startIndex, int pageSize, DataQuery query, tangible.RefObject<Integer> rowCount) {
   //  return provider.GetPaging(startIndex, pageSize, query, rowCount);
   // }
 
   /**
-   * 检测是否存在相关的记录
+   * 查询是否存在相关的记录
    *
    * @param id 标识
    * @return 布尔值
    */
   @Override
-  public final boolean isExist(String id) {
+  public boolean isExist(String id) {
     return provider.isExist(id);
   }
 
   /**
-   * 检测是否存在相关的记录
+   * 查询是否存在相关的记录
    *
    * @param name 组织单位名称
    * @return 布尔值
    */
   @Override
-  public final boolean isExistName(String name) {
+  public boolean isExistName(String name) {
     return provider.isExistName(name);
   }
 
   /**
-   * 检测是否存在相关的记录
+   * @param name 角色名称
+   * @param organizationUnitId 标准角色
+   */
+  @Override
+  public boolean isExistName(String name, String organizationUnitId) {
+    return provider.isExistNameByStandard(name,organizationUnitId);
+  }
+
+  /**
+   * 查询是否存在相关的记录
    *
    * @param globalName 角色全局名称
    * @return 布尔值
    */
   @Override
-  public final boolean isExistGlobalName(String globalName) {
+  public boolean isExistGlobalName(String globalName) {
     return provider.isExistGlobalName(globalName);
   }
 
   /**
-   * 检测是否存在相关的记录
+   * 查询是否存在相关的记录
    *
    * @param id 角色标识
    * @param name 角色名称
    * @return 0:代表成功 1:代表已存在相同名称
    */
   @Override
-  public final int rename(String id, String name) {
+  public int rename(String id, String name) {
     // 检测名称是否已被使用
     if (isExistName(name)) {
       // 已存在相同名称对象。
@@ -740,10 +709,10 @@ public class RoleServiceImpl implements RoleService {
    * 获取所有人角色
    */
   @Override
-  public Role getEveryoneObject() {
+  public Role getEveryone() {
     Role everyone = new RoleInfo();
 
-    everyone.setId(UUIDUtil.emptyString());
+    everyone.setId(UUIDUtil.emptyString("D"));
     everyone.setName("所有人");
 
     return everyone;
@@ -753,14 +722,12 @@ public class RoleServiceImpl implements RoleService {
    * 角色全路径
    *
    * @param name 角色名称
-   * @param organizationId 所属组织标识
+   * @param organizationUnitId 所属组织标识
    */
   @Override
-  public final String combineFullPath(String name, String organizationId) {
-    // TODO 待处理
-    // String path = MembershipManagement.getInstance().getOrganizationUnitService().getOrganizationPathByOrganizationUnitId(organizationId);
-    String path = "";
-
+  public String combineFullPath(String name, String organizationUnitId) {
+    String path = MembershipManagement.getInstance().getOrganizationUnitService()
+      .getOrganizationPathByOrganizationUnitId(organizationUnitId);
     return String.format("%1$s%2$s", path, name);
   }
 
@@ -768,17 +735,14 @@ public class RoleServiceImpl implements RoleService {
    * 角色唯一名称
    *
    * @param name 角色名称
-   * @param organizationId 所属组织标识
+   * @param organizationUnitId 所属组织标识
    */
   @Override
-  public final String combineDistinguishedName(String name, String organizationId) {
-    // TODO 待处理
-    // String path = MembershipManagement.getInstance().getOrganizationUnitService().GetLDAPOUPathByOrganizationUnitId(organizationId);
-    //   return String.format("CN=%1$s,%2$s%3$s", name, path, LDAPConfigurationView.Instance.SuffixDistinguishedName);
-
-    String path = "";
-
-    return String.format("CN=%1$s,%2$s%3$s", name, path, "");
+  public String combineDistinguishedName(String name, String organizationUnitId) {
+    String path = MembershipManagement.getInstance().getOrganizationUnitService()
+      .getLdapOuPathByOrganizationUnitId(organizationUnitId);
+    return String.format("cn=%1$s,%2$s%3$s", name, path,
+      LdapConfigurationView.getInstance().getSuffixDistinguishedName());
   }
 
   /**
@@ -786,10 +750,10 @@ public class RoleServiceImpl implements RoleService {
    *
    * @param id 帐户标识
    * @param globalName 全局名称
-   * @return 修改成功, 返回 0, 修改失败, 返回 1.
+   * @return 修改成功,  0, 修改失败,  1.
    */
   @Override
-  public final int setGlobalName(String id, String globalName) {
+  public int setGlobalName(String id, String globalName) {
     if (StringUtil.isNullOrEmpty(globalName)) {
       // 对象【${Id}】全局名称不能为空。
       return 1;
@@ -830,7 +794,7 @@ public class RoleServiceImpl implements RoleService {
    * @return 0:代表成功
    */
   @Override
-  public final int setParentId(String id, String parentId) {
+  public int setParentId(String id, String parentId) {
     return provider.setParentId(id, parentId);
   }
 
@@ -842,8 +806,8 @@ public class RoleServiceImpl implements RoleService {
    * @return 0 设置成功, 1 设置失败.
    */
   @Override
-  public final int setExchangeStatus(String id, int status) {
-    return provider.setExchangeStatus(id, status);
+  public int setEnableEmail(String id, int status) {
+    return provider.setEnableEmail(id, status);
   }
 
   /**
@@ -852,7 +816,7 @@ public class RoleServiceImpl implements RoleService {
    * @param roleId 角色标识
    */
   @Override
-  public final List<Authority> getAuthorities(String roleId) {
+  public List<Authority> getAuthorities(String roleId) {
     return provider.getAuthorities(roleId);
   }
   ///#endregion
@@ -866,7 +830,7 @@ public class RoleServiceImpl implements RoleService {
    * @param standardRoleType 标准角色类型
    */
   /*
-  public final DataTable GenerateStandardRoleMappingReport(String organizationId, String standardRoleType) {
+  public  DataTable GenerateStandardRoleMappingReport(String organizationId, String standardRoleType) {
     List<IStandardRole> list = MembershipManagement.Instance.StandardRoleService.FindAllByType(Integer.parseInt(standardRoleType));
 
     String standardRoleIds = null;
@@ -889,7 +853,7 @@ public class RoleServiceImpl implements RoleService {
    * @param standardRoleIds  标准角色标识，多个以逗号隔开
    */
   /*
-  public final DataTable GenerateStandardRoleMappingReport(String organizationId, String standardRoleType, String standardRoleIds) {
+  public  DataTable GenerateStandardRoleMappingReport(String organizationId, String standardRoleType, String standardRoleIds) {
     DataTable table = new DataTable();
 
     table.Columns.Add("standardRoleId");
@@ -1082,7 +1046,7 @@ public class RoleServiceImpl implements RoleService {
    * @param toProjectId   目标项目标识
    */
   /*
-  public final DataTable SetProjectRoleMapping(String fromProjectId, String toProjectId) {
+  public  DataTable SetProjectRoleMapping(String fromProjectId, String toProjectId) {
     DataTable table = new DataTable();
 
     table.Columns.Add("fromProjectOrganizationUnitId");
@@ -1144,7 +1108,7 @@ public class RoleServiceImpl implements RoleService {
    *
    * @param roleId 角色标识
    */
-  public final String SetProjectRoleMappingAccountValue(String roleId) {
+  public String SetProjectRoleMappingAccountValue(String roleId) {
     StringBuilder outString = new StringBuilder();
 
     List<Account> list = MembershipManagement.getInstance().getAccountService().findAllByRoleId(roleId);
@@ -1171,7 +1135,7 @@ public class RoleServiceImpl implements RoleService {
    * @param beginDate 开始时间
    * @param endDate 结束时间
    */
-  public final String CreatePackage(Date beginDate, Date endDate) {
+  public String CreatePackage(Date beginDate, Date endDate) {
     StringBuilder outString = new StringBuilder();
 
     // String whereClause = String.format(" ModifiedDate BETWEEN ##%1$s## AND ##%2$s## ", beginDate, endDate);
@@ -1201,7 +1165,7 @@ public class RoleServiceImpl implements RoleService {
    * @param param 角色信息
    */
   @Override
-  public final int syncToLDAP(Role param) {
+  public int syncToLDAP(Role param) {
     return syncToLDAP(param, param.getName(), param.getOrganizationUnitId());
   }
 
@@ -1212,7 +1176,7 @@ public class RoleServiceImpl implements RoleService {
    * @param originalGlobalName 原始的全局名称
    * @param originalOrganizationUnitId 原始的所属组织标识
    */
-  public final int syncToLDAP(Role param, String originalGlobalName, String originalOrganizationUnitId) {
+  public int syncToLDAP(Role param, String originalGlobalName, String originalOrganizationUnitId) {
     /*
     if (LDAPConfigurationView.Instance.IntegratedMode.equals("ON")) {
       if (StringUtil.isNullOrEmpty(param.Name)) {
@@ -1255,7 +1219,7 @@ public class RoleServiceImpl implements RoleService {
    *
    * @param param 角色信息
    */
-  // public final int SyncFromPackPage(Role param) {
+  // public  int SyncFromPackPage(Role param) {
   //  return provider.SyncFromPackPage(param);
   // }
 
@@ -1270,7 +1234,7 @@ public class RoleServiceImpl implements RoleService {
    * @return Table Columns：AccountId, RoleId, isDefault, BeginDate, EndDate
    */
   @Override
-  public final List<AccountRoleRelation> findAllRelationByAccountId(String accountId) {
+  public List<AccountRoleRelation> findAllRelationByAccountId(String accountId) {
     return provider.findAllRelationByAccountId(accountId);
   }
 
@@ -1281,7 +1245,7 @@ public class RoleServiceImpl implements RoleService {
    * @return Table Columns：AccountId, RoleId, isDefault, BeginDate, EndDate
    */
   @Override
-  public final List<AccountRoleRelation> findAllRelationByRoleId(String roleId) {
+  public List<AccountRoleRelation> findAllRelationByRoleId(String roleId) {
     return provider.findAllRelationByRoleId(roleId);
   }
 
@@ -1292,8 +1256,10 @@ public class RoleServiceImpl implements RoleService {
    * @param roleId 角色标识
    */
   @Override
-  public final int addRelation(String accountId, String roleId) {
-    return addRelation(accountId, roleId, false, new Date(), null);
+  public int addRelation(String accountId, String roleId) {
+    ZonedDateTime zoneDateTime = ZonedDateTime.of(DateUtil.getMaxLocalDateTime(), ZoneId.systemDefault());
+    Date maxLocalDateDate = Date.from(zoneDateTime.toInstant()); // 填补最大时间
+    return addRelation(accountId, roleId, false, new Date(), maxLocalDateDate);
   }
 
   /**
@@ -1306,7 +1272,7 @@ public class RoleServiceImpl implements RoleService {
    * @param endDate 停用时间
    */
   @Override
-  public final int addRelation(String accountId, String roleId, boolean isDefault, Date beginDate, Date endDate) {
+  public int addRelation(String accountId, String roleId, boolean isDefault, Date beginDate, Date endDate) {
     if (StringUtil.isNullOrEmpty(accountId)) {
       // 帐号标识不能为空
       return 1;
@@ -1340,7 +1306,7 @@ public class RoleServiceImpl implements RoleService {
    * @param roleId 角色标识
    */
   @Override
-  public final int addRelationRange(String accountIds, String roleId) {
+  public int addRelationRange(String accountIds, String roleId) {
     String[] list = accountIds.split("[,]", -1);
 
     for (String accountId : list) {
@@ -1358,7 +1324,7 @@ public class RoleServiceImpl implements RoleService {
    * @param endDate 新的截止时间
    */
   @Override
-  public final int extendRelation(String accountId, String roleId, Date endDate) {
+  public int extendRelation(String accountId, String roleId, Date endDate) {
     return provider.extendRelation(accountId, roleId, endDate);
   }
   ///#endregion
@@ -1372,7 +1338,7 @@ public class RoleServiceImpl implements RoleService {
    * @param roleId 角色标识
    */
   @Override
-  public final int removeRelation(String accountId, String roleId) {
+  public int removeRelation(String accountId, String roleId) {
     /*
     if (LDAPConfigurationView.Instance.IntegratedMode.equals("ON")) {
       Account account = MembershipManagement.Instance.AccountService[accountId];
@@ -1395,7 +1361,7 @@ public class RoleServiceImpl implements RoleService {
    * @param accountId 帐号标识
    */
   @Override
-  public final int removeDefaultRelation(String accountId) {
+  public int removeDefaultRelation(String accountId) {
     return provider.removeDefaultRelation(accountId);
   }
 
@@ -1405,7 +1371,7 @@ public class RoleServiceImpl implements RoleService {
    * @param accountId 帐号标识
    */
   @Override
-  public final int removeNondefaultRelation(String accountId) {
+  public int removeNondefaultRelation(String accountId) {
     return provider.removeNondefaultRelation(accountId);
   }
 
@@ -1415,7 +1381,7 @@ public class RoleServiceImpl implements RoleService {
    * @param accountId 帐号标识
    */
   @Override
-  public final int removeExpiredRelation(String accountId) {
+  public int removeExpiredRelation(String accountId) {
     return provider.removeExpiredRelation(accountId);
   }
 
@@ -1425,7 +1391,7 @@ public class RoleServiceImpl implements RoleService {
    * @param accountId 帐号标识
    */
   @Override
-  public final int removeAllRelation(String accountId) {
+  public int removeAllRelation(String accountId) {
     /*
     if (LDAPConfigurationView.Instance.IntegratedMode.equals("ON")) {
       List<AccountRoleRelation> list = findAllRelationByAccountId(accountId);
@@ -1448,7 +1414,7 @@ public class RoleServiceImpl implements RoleService {
    * @param accountId 帐号标识
    */
   @Override
-  public final boolean hasDefaultRelation(String accountId) {
+  public boolean hasDefaultRelation(String accountId) {
     return provider.hasDefaultRelation(accountId);
   }
 
@@ -1464,18 +1430,18 @@ public class RoleServiceImpl implements RoleService {
    * @param roleId 角色标识
    */
   @Override
-  public final int setDefaultRelation(String accountId, String roleId) {
-    /*
-    if (LDAPConfigurationView.Instance.IntegratedMode.equals("ON")) {
+  public int setDefaultRelation(String accountId, String roleId) {
+
+    if (LdapConfigurationView.getInstance().getIntegratedMode()) {
       Account account = MembershipManagement.getInstance().getAccountService().findOne(accountId);
 
       Role role = MembershipManagement.getInstance().getRoleService().findOne(roleId);
 
-      if (account != null && role != null) {
-        LDAPManagement.Instance.Group.AddRelation(account.getGlobalName(), LDAPSchemaClassType.User, role.getName());
-      }
+      // if (account != null && role != null) {
+      //  LdapManagement.getInstance().getGroup().addRelation(account.getGlobalName(), LdapDAPSchemaClassType.User, role.getName());
+      // }
     }
-    */
+
     return provider.setDefaultRelation(accountId, roleId);
   }
 
@@ -1485,7 +1451,7 @@ public class RoleServiceImpl implements RoleService {
    * @param roleId 角色标识
    */
   @Override
-  public final int clearupRelation(String roleId) {
+  public int clearupRelation(String roleId) {
     /*
     if (LDAPConfigurationView.Instance.IntegratedMode.equals("ON")) {
       List<AccountRoleRelation> list = findAllRelationByRoleId(roleId);

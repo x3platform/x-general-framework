@@ -17,17 +17,18 @@ import java.util.Map;
 public class ApplicationOptionServiceImpl implements ApplicationOptionService {
 
   @Autowired(required = false)
-  ApplicationOptionMapper optionMapper ;
+  ApplicationOptionMapper optionMapper;
+
   @Override
   public List<ApplicationOption> getApplicationOption(String applicationId) {
-    Map<String,Object> params = new HashMap<>();
-    params.put("applicationId",applicationId);
+    Map<String, Object> params = new HashMap<>();
+    params.put("applicationId", applicationId);
     return optionMapper.findAll(params);
   }
 
   @Override
   public ApplicationOption getApplicationOption(String applicationId, String name) {
-    return optionMapper.findApplicationOption(applicationId,name);
+    return optionMapper.findApplicationOption(applicationId, name);
   }
 
   @Override

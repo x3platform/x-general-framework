@@ -1,10 +1,12 @@
 package com.x3platform.membership.services;
 
-import java.util.*;
-
-import com.x3platform.membership.models.*;
+import com.x3platform.membership.models.SettingInfo;
+import java.util.List;
 
 /**
+ * 配置服务接口
+ *
+ * @author ruanyu
  */
 public interface SettingService {
 
@@ -15,8 +17,8 @@ public interface SettingService {
   /**
    * 保存记录
    *
-   * @param param 实例 SettingInfo 详细信息
-   * @return 实例 SettingInfo 详细信息
+   * @param param 实例 {@link SettingInfo} 详细信息
+   * @return 实例 {@link SettingInfo} 详细信息
    */
   SettingInfo save(SettingInfo param);
 
@@ -35,7 +37,7 @@ public interface SettingService {
    * 查询某条记录
    *
    * @param id 标识
-   * @return 返回实例 SettingInfo 的详细信息
+   * @return 返回实例 {@link SettingInfo} 的详细信息
    */
   SettingInfo findOne(String id);
 
@@ -43,7 +45,7 @@ public interface SettingService {
    * 根据参数分组信息查询所有相关记录
    *
    * @param settingGroupId 参数分组标识
-   * @return 返回所有实例 SettingInfo 的详细信息
+   * @return 返回所有实例 {@link SettingInfo} 的详细信息
    */
   List<SettingInfo> findAllBySettingGroupId(String settingGroupId);
 
@@ -52,7 +54,7 @@ public interface SettingService {
    *
    * @param settingGroupId 参数分组标识
    * @param keyword        文本信息关键字匹配
-   * @return 返回所有实例 SettingInfo 的详细信息
+   * @return 返回所有实例 {@link SettingInfo} 的详细信息
    */
   List<SettingInfo> findAllBySettingGroupId(String settingGroupId, String keyword);
 
@@ -60,7 +62,7 @@ public interface SettingService {
    * 根据参数分组信息查询所有相关记录
    *
    * @param settingGroupName 参数分组名称
-   * @return 返回所有实例 SettingInfo 的详细信息
+   * @return 返回所有实例 {@link SettingInfo} 的详细信息
    */
   List<SettingInfo> findAllBySettingGroupName(String settingGroupName);
 
@@ -69,7 +71,7 @@ public interface SettingService {
    *
    * @param settingGroupName 参数分组名称
    * @param keyword          文本信息关键字匹配
-   * @return 返回所有实例 SettingInfo 的详细信息
+   * @return 返回所有实例 {@link SettingInfo} 的详细信息
    */
   List<SettingInfo> findAllBySettingGroupName(String settingGroupName, String keyword);
 

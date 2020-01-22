@@ -2,11 +2,21 @@
 <resources>
   <!-- text -->
   <string name="text_all">全部</string>
+  <string name="text_search">搜索</string>
+  <string name="text_filter">过滤</string>
+  <string name="text_query">查询</string>
+  <string name="text_create">新建</string>
+  <string name="text_add">添加</string>
+  <string name="text_edit">编辑</string>
+  <string name="text_remove">移除</string>
+  <string name="text_delete">删除</string>
   <string name="text_please_select">请选择</string>
-  <string name="text_paging_tip_format">共有{0}条信息 当前{1}-{2}信息</string>
+  <string name="text_paging_tip_format">共有{}条信息 当前{}-{}信息</string>
   <!-- msg -->
   <string name="msg_query_success">查询成功。</string>
   <string name="msg_query_faild">查询失败。</string>
+  <string name="msg_operat_success">操作成功。</string>
+  <string name="msg_operat_faild">操作失败。</string>
   <string name="msg_save_success">保存成功。</string>
   <string name="msg_delete_success">删除成功。</string>
   <string name="msg_delete_faild">删除失败。</string>
@@ -14,12 +24,14 @@
   <string name="msg_modify_success">修改成功。</string>
   <string name="msg_commit_success">提交成功。</string>
   <string name="msg_setup_success">设置成功。</string>
+  <string name="msg_upload_success">上传成功!</string>
+  <string name="msg_upload_failed">上传失败!</string>
   <!-- msg long text -->
   <string name="msg_are_you_sure_you_want_to_delete">确定删除？</string>
-  <string name="msg_the_same_field_already_exists">实例标识不能为空。</string>
+  <string name="msg_the_same_field_already_exists">已存在相同的字段。</string>
   <string name="msg_the_same_name_already_exists">已存在相同的名称。</string>
-  <string name="msg_field_is_required">实例标识不能为空。</string>
-  <string name="msg_id_is_required">实例标识不能为空。</string>
+  <string name="msg_id_can_not_be_empty">实例标识不能为空。</string>
+  <string name="msg_id_is_required">必须填写实例标识。</string>
   <!-- msg file text -->
   <string name="msg_file_server_exception">文件服务器异常</string>
   <string name="msg_file_size_max">文件太大</string>
@@ -74,4 +86,19 @@
   <string name="application_is_successfully_loaded">应用 {} 已成功加载。</string>
   <!-- -->
   <string name="interface_not_params">缺少参数</string>
+  <!-- membership -->
+  <string name="membership_account_password_reset_success">密码重置成功</string>
+  <string name="membership_account_password_reset_failed">密码重置失败</string>
+  <string name="membership_account_password_update_success">密码修改成功</string>
+  <string name="membership_account_password_update_failed">密码修改失败</string>
+
+  <string name="membership_organization_unit_is_exist_children_organization_failed">该组织已存在子组织</string>
+  <string name="membership_organization_unit_is_exist_children_role_failed">该组织已绑定角色</string>
+
+  <string name="membership_role_children_role_failed">该角色已存在子角色</string>
+  <string name="membership_role_children_account_failed">该角色已绑定人员</string>
+
+  <!-- connect -->
+  <string name="connect_session_passed">会话过期，请重新登录</string>
+  
 </resources>

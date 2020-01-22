@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author ruanyu
  */
-@Lazy(true)
+@Lazy
 @RestController
 @RequestMapping("/api/membership/accountLog")
 public class AccountLogController {
@@ -58,7 +58,7 @@ public class AccountLogController {
    * 获取列表信息
    *
    * @param data 请求的数据内容
-   * @return 返回一个相关的实例列表信息.
+   * @return 一个相关的实例列表信息
    */
   @RequestMapping("/findAll")
   public String findAll(@RequestBody String data) {

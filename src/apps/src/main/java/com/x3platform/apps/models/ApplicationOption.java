@@ -8,7 +8,7 @@ import java.util.Date;
  */
 public class ApplicationOption implements Serializable {
 
-  private  String applicationId ; //应用ID
+  private  String applicationId ;
   private  String name;
   private  String label;
   private  String description;

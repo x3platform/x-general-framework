@@ -7,22 +7,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import com.x3platform.SpringContext;
-
-import java.net.URL;
-import java.net.URLDecoder;
 /**
  * 核心的配置信息
  */
 
 @Configuration
 public class KernelConfigurationView {
-  private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+  private final Logger logger = LoggerFactory.getLogger(getClass());
 
   private static volatile KernelConfigurationView instance = null;
 
@@ -35,7 +29,6 @@ public class KernelConfigurationView {
     if (instance == null) {
       synchronized (lockObject) {
         if (instance == null) {
-          // instance = new KernelConfigurationView();
           instance = SpringContext.getBean(KernelConfigurationView.class);
         }
       }
@@ -108,6 +101,20 @@ public class KernelConfigurationView {
     }
 
     return path;
+  }
+
+  public String getApplicationTempPathRoot() {
+    String path = configuration.getApplicationTempPathRoot();
+
+    if (path.equals("./temp")) {
+      path = getApplicationPathRoot() + "/temp";
+    }
+
+    return path;
+  }
+
+  public String getApplicationTempFileRemoveTimerInterval() {
+    return configuration.getApplicationTempFileRemoveTimerInterval();
   }
 
   public String getAuthenticationManagementType() {

@@ -1,6 +1,5 @@
 package com.x3platform.digitalnumber.defaults;
 
-import com.x3platform.digitalnumber.mappers.DigitalNumberMapper;
 import com.x3platform.digitalnumber.services.*;
 import com.x3platform.digitalnumber.services.impl.*;
 import org.springframework.context.annotation.Bean;
@@ -12,12 +11,7 @@ import java.util.Properties;
 public class AppConfig {
 
   @Bean("com.x3platform.digitalnumber.services.DigitalNumberService")
-  public DigitalNumberService digitalNumberService() {
+  public DigitalNumberService dataStorageSchemaService() {
     return new DigitalNumberServiceImpl();
   }
-
-  // @Bean("com.x3platform.digitalnumber.services.DigitalNumberMapper")
-  // public DigitalNumberMapper digitalNumberMapper() {
-  //  return new DigitalNumberMapper();
-  // }
 }

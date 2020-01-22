@@ -1,152 +1,331 @@
 package com.x3platform.apps.services.impl;
 
+import static com.x3platform.apps.Constants.APPLICATION_FEATURE_ROOT_ID;
+
+import com.x3platform.KernelContext;
+import com.x3platform.apps.AppsContext;
+import com.x3platform.apps.AppsSecurity;
+import com.x3platform.apps.configuration.AppsConfiguration;
 import com.x3platform.apps.mappers.ApplicationFeatureMapper;
+import com.x3platform.apps.models.Application;
 import com.x3platform.apps.models.ApplicationFeature;
-import com.x3platform.apps.models.ApplicationScopeInfo;
+import com.x3platform.apps.models.ApplicationMenu;
 import com.x3platform.apps.services.ApplicationFeatureService;
+import com.x3platform.cachebuffer.CachingManager;
 import com.x3platform.data.DataQuery;
 import com.x3platform.membership.Account;
+import com.x3platform.membership.MembershipManagement;
+import com.x3platform.tree.DynamicTreeNode;
+import com.x3platform.tree.DynamicTreeView;
+import com.x3platform.tree.TreeNode;
+import com.x3platform.tree.TreeView;
 import com.x3platform.util.StringUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
-
+import com.x3platform.util.UUIDUtil;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * 应用功能服务
+ *
+ * @author ruanyu
  */
 public class ApplicationFeatureServiceImpl implements ApplicationFeatureService {
 
+  private static final String CACHE_KEY_NAME_PREFIX = "x3platform:apps:application-feature:name:";
+
+  private static final String CACHE_KEY_TREEVIEW_PREFIX = "x3platform:apps:application-feature:treeview:";
+
+  private static final String TREEVIEW_ROOT_ID = "function#applicationId#00000000-0000-0000-0000-000000000001#featureId#00000000-0000-0000-0000-000000000000";
+
+  private static final String TREENODE_ID_FORMAT = "{}#applicationId#{}#featureId#{}";
+
+  private static final String CACHE_KEY_ID_PREFIX = "x3platform:apps:application-feature:id:";
+
+  private static final String DATA_SCOPE_TABLE_NAME = "application_feature_scope";
+
   @Autowired(required = false)
-  ApplicationFeatureMapper featureMapper;
+  ApplicationFeatureMapper provider;
 
   /**
-   * 保存数据问题
+   * 保存记录
    *
-   * @param params
+   * @param entity {@link ApplicationFeature} 实例的详细信息
+   * @return {@link ApplicationFeature} 实例的详细信息
    */
   @Override
-  public void save(ApplicationFeature params) {
-    String id = params.getId();
-    if (this.featureMapper.selectByPrimaryKey(id) == null) {
-      featureMapper.insert(params);
+  public int save(ApplicationFeature entity) {
+    int affectedRows = -1;
+
+    String id = entity.getId();
+    if (!isExist(id)) {
+      affectedRows = provider.insert(entity);
     } else {
-      featureMapper.updateByPrimaryKey(params);
+      affectedRows = provider.updateByPrimaryKey(entity);
     }
+
+    return 0;
   }
 
   /**
-   * @param query
+   * 查询所有记录信息
+   *
+   * @param query 查询参数集合
    * @return
    */
   @Override
   public List<ApplicationFeature> findAll(DataQuery query) {
-    return featureMapper.findAll(query.getMap());
-  }
-
-  /**
-   *
-   * @param menuId 根据菜单Id
-   * @param roleId 角色Id
-   * @return
-   */
-  @Override
-  public Map<String,List<ApplicationFeature>> findAllByMenu(String menuId, String roleId, String applicationId) {
-    Map<String,List<ApplicationFeature>> result = new HashMap<>();
-    // 1、查询当前菜单所对应的所有应该功能 及对应模块
-    // 查询所有的  和 查询单个的
-    // function 、button 、cad 、 tab
-    List<ApplicationFeature> featureInfos = featureMapper.findAllByMenu(menuId,roleId,applicationId);
-    List<ApplicationFeature> featureScopeInfos = featureMapper.findAllAuthorizationScopeByMenu(menuId,roleId,applicationId);
-    result.put("featureInfos",featureInfos);
-    result.put("featureScopeInfos",featureScopeInfos);
-    return result;
+    return provider.findAll(query.getMap());
   }
 
   @Override
   public int delete(String id) {
-    return featureMapper.deleteByPrimaryKey(id);
+    return provider.deleteByPrimaryKey(id);
   }
 
   @Override
   public ApplicationFeature findOne(String id) {
-    return featureMapper.findOneByApplicationKey(id);
-  }
-
-  @Override
-  public ApplicationFeature findOneByApplicationFeatureName(String applicationFeatureName) {
-    return featureMapper.findOneByApplicationName(applicationFeatureName);
-  }
-
-  @Override
-  public ApplicationFeature findOneByApplicationKey(String applicationFeatureKey) {
-    return null;
+    return provider.selectByPrimaryKey(id);
   }
 
   @Override
   public List<ApplicationFeature> findAllByAccountId(String accountId) {
-    return featureMapper.findAllByAccountId(accountId);
+    return provider.findAllByAccountId(accountId);
   }
 
 
   @Override
   public boolean isExist(String id) {
-    return featureMapper.isExist(id);
+    return provider.isExist(id);
   }
 
   @Override
   public boolean isExistName(String name) {
-    return featureMapper.isExistName(name);
-  }
-
-  @Override
-  public boolean hasAuthority(Account account, String applicationId, String authorityName) {
-    return false;
-  }
-
-  @Override
-  public boolean hasAuthority(String accountId, String applicationId, String authorityName) {
-    return false;
-  }
-
-  @Override
-  public void bindAuthorizationScopeObjects(String applicationId, String authorityName, String scopeText) {
-  }
-
-  @Override
-  public void bindAuthorizationScopeObjects(String applicationId, List<ApplicationScopeInfo> list) {
+    return provider.isExistName(name);
   }
 
   /**
-   * @param roleId 解绑当前按钮及角色对应的信息
-   * @param bindList 绑定对应关系
-   * @param unBindList 解绑对应关系
+   * 获取允许的功能列表
+   *
+   * @return 允许的功能列表
    */
   @Override
-  public void bindFeatureRelation(String roleId, List bindList, List unBindList) {
-    String entityClassName="com.x3platform.membership.models.RoleInfo";
-    String authorityId="2-0001";
-    if( unBindList!=null && unBindList.size() > 0){
-      String authorizationObjectType = "Role";
-      String authorizationObjectId = roleId ;
-      String entityId="";
+  public List<String> getAllowedFeatures() {
+    return provider.getAllowedFeatures(null, bindAuthorizationScopeSql());
+  }
 
-      for(int i=0 ; i<unBindList.size() ; i++){
-        entityId =  unBindList.get(i).toString();
-        featureMapper.unBindFeature(entityId,entityClassName,authorityId,authorizationObjectType,authorizationObjectId);
+  @Override
+  public boolean hasAuthority(String entityId, String authorityName, Account account) {
+    return MembershipManagement.getInstance().getAuthorizationObjectService().hasAuthority(
+      DATA_SCOPE_TABLE_NAME,
+      entityId,
+      KernelContext.parseObjectType(ApplicationFeature.class),
+      authorityName,
+      account);
+  }
+
+  /**
+   * 配置应用功能的权限信息
+   *
+   * @param entityId 实体标识
+   * @param authorityName 权限名称
+   * @param scopeText 权限范围的文本
+   */
+  @Override
+  public void bindAuthorizationScopeByEntityId(String entityId, String authorityName, String scopeText) {
+    MembershipManagement.getInstance().getAuthorizationObjectService().bindAuthorizationScopeByEntityId(
+      DATA_SCOPE_TABLE_NAME,
+      entityId,
+      KernelContext.parseObjectType(ApplicationFeature.class),
+      authorityName,
+      scopeText);
+  }
+
+  /**
+   * 配置应用功能的权限信息
+   *
+   * @param authorizationObjectType 授权对象类型
+   * @param authorizationObjectId 授权对象标识
+   * @param authorityName 权限名称
+   * @param entityIds 实体标识 多个对象以逗号隔开
+   */
+  @Override
+  public void bindAuthorizationScopeByAuthorizationObjectIds(String authorizationObjectType,
+    String authorizationObjectId, String authorityName, String entityIds) {
+    MembershipManagement.getInstance().getAuthorizationObjectService().bindAuthorizationScopeByAuthorizationObjectIds(
+      DATA_SCOPE_TABLE_NAME,
+      authorizationObjectType,
+      authorizationObjectId,
+      authorityName,
+      entityIds,
+      KernelContext.parseObjectType(ApplicationMenu.class));
+  }
+
+  /**
+   * 绑定 SQL 查询条件
+   */
+  private String bindAuthorizationScopeSql() {
+    Account account = KernelContext.getCurrent().getUser();
+    if (AppsSecurity.isAdministrator(account, AppsConfiguration.APPLICATION_NAME)) {
+      return "";
+    } else {
+      String accountId = account == null ? UUIDUtil.emptyString() : account.getId();
+
+      return String.format(" ("
+        + "(T.id IN ( "
+        + "   SELECT entity_id "
+        + "     FROM view_authobject_account View1, application_feature_scope Scope"
+        + "    WHERE View1.account_id = '%s'"
+        + "      AND View1.authorization_object_id = Scope.authorization_object_id"
+        + "      AND View1.authorization_object_type = Scope.authorization_object_type "
+        + " GROUP BY entity_id)) "
+        + ") ", accountId);
+    }
+  }
+
+  @Override
+  public TreeView getTreeView(String treeViewName, String treeViewRootTreeNodeId, String commandFormat) {
+    String key = CACHE_KEY_TREEVIEW_PREFIX + treeViewRootTreeNodeId;
+
+    // 读取缓存信息
+    if (CachingManager.contains(key)) {
+      return (TreeView) CachingManager.get(key);
+    }
+
+    TreeView treeView = new TreeView(treeViewName, treeViewRootTreeNodeId, commandFormat);
+
+    List<TreeNode> childNodes = getTreeNodes(treeViewRootTreeNodeId, commandFormat);
+
+    if (!childNodes.isEmpty()) {
+      treeView.add(childNodes);
+      // 设置缓存信息
+      CachingManager.set(key, treeView);
+    }
+
+    return treeView;
+  }
+
+  private List<TreeNode> getTreeNodes(String parentId, String commandFormat) {
+    // ParentId 内容格式如下
+    // "function#applicationId#00000000-0000-0000-0000-000000000001#featureId#00000000-0000-0000-0000-000000000000"
+    // keys[0] -
+    // keys[1] - 所属应用标识标签
+    // keys[2] - 所属应用标识
+    // keys[3] - 所属应用标识标签
+    // keys[4] - 所属应用功能标识
+    String[] keys = parentId.split("#");
+
+    List<TreeNode> treeNodes = new ArrayList<TreeNode>();
+
+    if (UUIDUtil.emptyString("D").equals(keys[4])) {
+      List<Application> list = AppsContext.getInstance().getApplicationService().findTreeNodesByParentId(keys[2]);
+
+      for (Application item : list) {
+        TreeNode treeNode = new TreeNode(
+          StringUtil.format(TREENODE_ID_FORMAT, "application", item.getId(), UUIDUtil.emptyString("D")),
+          StringUtil.format(TREENODE_ID_FORMAT, "application", keys[2], UUIDUtil.emptyString("D")),
+          item.getApplicationDisplayName(), item.getApplicationDisplayName(), commandFormat);
+
+        List<TreeNode> childNodes = getTreeNodes(StringUtil.format(TREENODE_ID_FORMAT,
+          "application", item.getId(), UUIDUtil.emptyString("D")), commandFormat);
+
+        if (!childNodes.isEmpty()) {
+          treeNode.add(childNodes);
+        }
+
+        treeNodes.add(treeNode);
       }
     }
-    // 绑定大小问题
-    if(bindList!=null && bindList.size() > 0){
-      String authorizationObjectType = "Role";
-      String authorizationObjectId = roleId ;
-      String entityId="";
-      for(int i=0 ; i<bindList.size() ; i++){
-        entityId = bindList.get(i).toString();
-        featureMapper.bindFeature(entityId,entityClassName,authorityId,authorizationObjectType,authorizationObjectId);
+
+    // 获取应用功能节点
+    List<ApplicationFeature> list = null;
+
+    // 功能项
+    if (UUIDUtil.emptyString("D").equals(keys[4])) {
+      list = provider.findTreeNodesByApplicationId(keys[2]);
+    } else {
+      list = provider.findTreeNodesByParentId(keys[4]);
+    }
+
+    for (ApplicationFeature item : list) {
+      TreeNode treeNode = new TreeNode(
+        StringUtil.format(TREENODE_ID_FORMAT, item.getType(), item.getApplicationId(), item.getId()),
+        StringUtil.format(TREENODE_ID_FORMAT, item.getType(), item.getApplicationId(), item.getParentId()),
+        item.getDisplayName(), item.getDisplayName(), commandFormat);
+
+      List<TreeNode> childNodes = getTreeNodes(StringUtil.format(TREENODE_ID_FORMAT,
+        "function", item.getApplicationId(), item.getId()), commandFormat);
+
+      if (!childNodes.isEmpty()) {
+        treeNode.add(childNodes);
+      }
+
+      treeNodes.add(treeNode);
+    }
+
+    return treeNodes;
+  }
+
+  @Override
+  public DynamicTreeView getDynamicTreeView(String treeViewName, String treeViewRootTreeNodeId, String parentId,
+    String commandFormat) {
+    // ParentId 内容格式如下
+    // "function#applicationId#00000000-0000-0000-0000-000000000001#featureId#00000000-0000-0000-0000-000000000000"
+    // keys[0] - 对象类型
+    // keys[1] - 所属应用标识标签
+    // keys[2] - 所属应用标识
+    // keys[3] - 所属应用标识标签
+    // keys[4] - 所属应用功能标识
+    parentId = (StringUtil.isNullOrEmpty(parentId) || "0".equals(parentId)) ? treeViewRootTreeNodeId : parentId;
+
+    String[] keys = parentId.split("#");
+
+    DynamicTreeView treeView = new DynamicTreeView(treeViewName, treeViewRootTreeNodeId, parentId, commandFormat);
+
+    if (APPLICATION_FEATURE_ROOT_ID.equals(keys[4])) {
+      List<Application> list = AppsContext.getInstance().getApplicationService().findTreeNodesByParentId(keys[2]);
+
+      for (Application item : list) {
+        DynamicTreeNode treeNode = new DynamicTreeNode(
+          StringUtil.format(TREENODE_ID_FORMAT, "application", item.getId(), UUIDUtil.emptyString("D")),
+          StringUtil.format(TREENODE_ID_FORMAT, "application", keys[2], UUIDUtil.emptyString("D")),
+          item.getApplicationDisplayName(), item.getApplicationDisplayName(), commandFormat, true);
+
+        treeView.add(treeNode);
       }
     }
+
+    // 获取应用功能节点
+    List<ApplicationFeature> list = null;
+
+    // 功能项
+    if (APPLICATION_FEATURE_ROOT_ID.equals(keys[4])) {
+      list = provider.findTreeNodesByApplicationId(keys[2]);
+    } else {
+      list = provider.findTreeNodesByParentId(keys[4]);
+    }
+
+    for (ApplicationFeature item : list) {
+      DynamicTreeNode treeNode = new DynamicTreeNode(
+        StringUtil.format(TREENODE_ID_FORMAT, item.getType(), item.getApplicationId(), item.getId()),
+        StringUtil.format(TREENODE_ID_FORMAT, item.getType(), item.getApplicationId(), item.getParentId()),
+        item.getDisplayName(), item.getDisplayName(), commandFormat, "function".equals(item.getType()) ? true : false);
+
+      treeView.add(treeNode);
+    }
+
+    return treeView;
+  }
+
+  @Override
+  public List<ApplicationFeature> findTreeNodesByApplicationId(String applicationId) {
+    return provider.findTreeNodesByApplicationId(applicationId);
+  }
+
+  @Override
+  public List<ApplicationFeature> findTreeNodesByParentId(String parentId) {
+    return provider.findTreeNodesByParentId(parentId);
   }
 }

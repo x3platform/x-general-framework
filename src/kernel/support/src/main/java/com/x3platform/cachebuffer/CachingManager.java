@@ -1,31 +1,35 @@
 package com.x3platform.cachebuffer;
 
-import java.util.*;
-
-import com.x3platform.cachebuffer.configuration.*;
+import com.x3platform.cachebuffer.configuration.CacheBufferConfigurationView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 缓存管理器
+ *
+ * @author ruanyu
  */
 public final class CachingManager {
 
-  private static volatile CachingManager instance = null;
+  private final Logger logger = LoggerFactory.getLogger(getClass());
 
-  private static Object lockObject = new Object();
+  private static volatile CachingManager sInstance = null;
+
+  private static final Object lockObject = new Object();
 
   /**
    * 实例
    */
   private static CachingManager getInstance() {
-    if (instance == null) {
+    if (sInstance == null) {
       synchronized (lockObject) {
-        if (instance == null) {
-          instance = new CachingManager();
+        if (sInstance == null) {
+          sInstance = new CachingManager();
         }
       }
     }
 
-    return instance;
+    return sInstance;
   }
 
   /**
@@ -44,72 +48,120 @@ public final class CachingManager {
     try {
       Class objectType = Class.forName(CacheBufferConfigurationView.getInstance().getCacheProvider());
 
-      this.cacheProvider = (CacheProvider) objectType.newInstance();
-    } catch (ClassNotFoundException ex) {
-      ex.printStackTrace();
-    } catch (InstantiationException ex) {
-      ex.printStackTrace();
-    } catch (IllegalAccessException ex) {
-      ex.printStackTrace();
+      cacheProvider = (CacheProvider) objectType.newInstance();
+    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
+      logger.error(ex.toString());
     } catch (RuntimeException ex) {
+      logger.error(ex.toString());
       throw ex;
     }
-
   }
 
+  // -------------------------------------------------------
+  // 值
+  // -------------------------------------------------------
+
   /**
-   * 包含
+   * 是否包含缓存记录
    *
    * @param name 名称
-   * @return
+   * @return true | false
    */
   public static boolean contains(String name) {
-    return getInstance().cacheProvider.Contains(name);
+    return getInstance().cacheProvider.contains(name);
   }
 
   /**
-   * @param name
-   * @return
+   * 获取缓存对象
+   *
+   * @param name 名称
+   * @return 对象
    */
   public static Object get(String name) {
-    return getInstance().cacheProvider.Get(name);
+    return getInstance().cacheProvider.get(name);
   }
 
   /**
-   * @param name
-   * @return
-   */
-  public static void set(String name, Object value) {
-    getInstance().cacheProvider.Set(name, value);
-  }
-
-  /**
-   * 写入缓存项
+   * 设置缓存对象
    *
-   * @param name  名称
+   * @param name 名称
    * @param value 值
    */
-  public static void add(String name, Object value) {
-    getInstance().cacheProvider.Add(name, value);
+  public static void set(String name, Object value) {
+    getInstance().cacheProvider.set(name, value);
   }
 
   /**
-   * 写入缓存项
+   * 设置缓存对象
    *
-   * @param name    名称
-   * @param value   值
+   * @param name 名称
+   * @param value 值
    * @param minutes 有效分钟
    */
-  public static void add(String name, Object value, int minutes) {
-    getInstance().cacheProvider.Add(name, value, minutes);
+  public static void set(String name, Object value, int minutes) {
+    getInstance().cacheProvider.set(name, value, minutes);
   }
 
   /**
-   * 删除缓存项
+   * 删除缓存对象
    *
    * @param name 名称
    */
-  public static void remove(String name) {
-    getInstance().cacheProvider.Remove(name);
+  public static void delete(String name) {
+    getInstance().cacheProvider.delete(name);
+  }
+
+  /**
+   * 删除缓存对象
+   *
+   * @param pattern 模式
+   */
+  public static void deleteByPattern(String pattern) {
+    getInstance().cacheProvider.deleteByPattern(pattern);
+  }
+
+  // -------------------------------------------------------
+  // 字典
+  // -------------------------------------------------------
+
+  /**
+   * 是否包含缓存记录
+   *
+   * @param dict 字典
+   * @return true | false
+   */
+  public static boolean contains(String dict, String name) {
+    return getInstance().cacheProvider.contains(dict, name);
+  }
+
+  /**
+   * 获取缓存记录
+   *
+   * @param name 名称
+   * @return 缓存对象的详细信息
+   */
+  public static Object get(String dict, String name) {
+    return getInstance().cacheProvider.get(dict, name);
+  }
+
+  /**
+   * 设置缓存记录
+   *
+   * @param dict 字典
+   * @param name 名称
+   * @param value 值
+   */
+  public static void set(String dict, String name, Object value) {
+    getInstance().cacheProvider.set(dict, name, value);
+  }
+
+  /**
+   * 删除缓存记录
+   *
+   * @param dict 字典
+   * @param name 名称
+   */
+  public static void delete(String dict, String name) {
+    getInstance().cacheProvider.delete(dict, name);
   }
 }

@@ -4,7 +4,10 @@ import com.x3platform.membership.Account;
 import com.x3platform.util.StringUtil;
 
 /**
- * 开发环境验证请求管理 登录帐号统一使用系统管理员配置登录密码
+ * 开发环境验证请求管理
+ * 登录帐号统一使用系统管理员配置登录密码
+ * 
+ * @author ruanyu
  */
 public final class DevelopmentAuthenticationManagement extends GenericAuthenticationManagement {
 

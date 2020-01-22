@@ -1,10 +1,14 @@
 package com.x3platform.util;
 
+import static com.x3platform.Constants.TEXT_EMPTY;
+import static com.x3platform.Constants.TEXT_UNDERLINE;
+
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Random;
 import java.util.UUID;
@@ -22,7 +26,7 @@ public class StringUtil {
    * 将文本信息转为 Unicode 编码
    *
    * @param text 文本信息
-   * @return
+   * @return 文本信息
    */
   public static String unicodeEncode(String text) {
     StringBuilder outString = new StringBuilder();
@@ -90,7 +94,6 @@ public class StringUtil {
     return outString.toString();
   }
 
-
   public static boolean isNullOrEmpty(String text) {
     return StringUtils.isEmpty(text) || StringUtils.isBlank(text);
   }
@@ -100,10 +103,11 @@ public class StringUtil {
   }
 
   /**
-   * 对输入的字符串格式化，得到首字母为大写的字符床. e.g. user -> User.
+   * 对输入的字符串格式化，得到首字母为大写的字符串.
+   * e.g. user -&gt; User.
    *
    * @param text 需要处理的字符串
-   * @return
+   * @return 首字母大写的字符串
    */
   public static String toFirstUpper(String text) {
     if (isNullOrEmpty(text)) {
@@ -114,7 +118,8 @@ public class StringUtil {
   }
 
   /**
-   * 对输入的字符格式化，得到首字母为小写的字符串. 例如 User -> user.
+   * 对输入的字符格式化，得到首字母为小写的字符串.
+   * e.g. User -&gt; user.
    *
    * @param text 需要处理的字符串
    * @return
@@ -182,7 +187,7 @@ public class StringUtil {
    * 处理SQL格式中的非法字符
    *
    * @param text       文本信息
-   * @param removeTags
+   * @param removeTags 需要移除的标签
    * @return
    */
   public static String toSafeSQL(String text, String[] removeTags) {
@@ -193,7 +198,7 @@ public class StringUtil {
     //-------------------------------------------------------
 
     if (StringUtil.isNullOrEmpty(text)) {
-      return "";
+      return TEXT_EMPTY;
     }
 
     // 替换一个单引号为两个单引号;
@@ -215,14 +220,15 @@ public class StringUtil {
         text = text.replace(matches.getItem(i).Value, String.format("'%1$s'", matchValue));
       }
     }
+    */
 
     // 移除自定义标签
     for (String removeTag : removeTags) {
-      if (matchValue.indexOf(removeTag) != 0) {
+      if (text.indexOf(removeTag) != 0) {
         text = text.replace(removeTag, "");
       }
     }
-    */
+
     return text;
   }
 
@@ -323,7 +329,7 @@ public class StringUtil {
   /**
    * 解密为 ASCII 编码方式的 Base64 字符串，如果是其他编码方式的请设置 charsetName
    *
-   * @param base64Text
+   * @param base64Text Base64 字符串
    * @return 字符串
    */
   public static String fromBase64(String base64Text) {
@@ -350,7 +356,7 @@ public class StringUtil {
   /**
    * 解密为 ASCII 编码方式的 Base64 字符串，如果是其他编码方式的请设置 charsetName
    *
-   * @param base64Text
+   * @param base64Text Base64 字符串
    * @return Base64 格式字符串
    */
   public static String fromBase64(String base64Text, String charsetName) {
@@ -374,6 +380,77 @@ public class StringUtil {
     return decode;
   }
 
+  //-------------------------------------------------------
+  // 命名规则处理 Camel Underline
+  //-------------------------------------------------------
+
+  /**
+   * 驼峰命名规则转为下划线命名规则
+   */
+  public static String camelToUnderline(String text) {
+    if (isNullOrEmpty(text)) {
+      return TEXT_EMPTY;
+    }
+
+    int len = text.length();
+    StringBuilder outString = new StringBuilder(len);
+
+    for (int i = 0; i < len; i++) {
+      char c = text.charAt(i);
+      if (Character.isUpperCase(c)) {
+        outString.append(TEXT_UNDERLINE);
+      }
+      outString.append(c);
+    }
+
+    return outString.toString().toLowerCase();
+  }
+
+  /**
+   * 下划线命名规则转为驼峰命名规则
+   */
+
+  public static String underlineToCamel(String text) {
+    if (isNullOrEmpty(text)) {
+      return TEXT_EMPTY;
+    }
+
+    int len = text.length();
+    StringBuilder outString = new StringBuilder(len);
+
+    for (int i = 0; i < len; i++) {
+      char c = text.charAt(i);
+      if (c == '_') {
+        if (++i < len) {
+          // 转换 _ 符号后面的字符为大写字母
+          outString.append(Character.toUpperCase(text.charAt(i)));
+        }
+      } else {
+        outString.append(c);
+      }
+    }
+
+    return outString.toString();
+  }
+
+  /**
+   * 格式化数字
+   *
+   * @param number  输入字符串
+   * @param pattern 需要格式化格式
+   * @return 格式化后的字符串
+   */
+  public static String toNumber(int number, String pattern) {
+    String result = "";
+    if (StringUtil.isNullOrEmpty(pattern)) {
+      result = String.valueOf(number);
+    } else {
+      DecimalFormat df = new DecimalFormat(pattern);
+      result = df.format(number);
+    }
+    return result;
+  }
+
   /**
    * 格式化日期
    *
@@ -382,9 +459,9 @@ public class StringUtil {
    */
   public static String toDate(String date) {
     try {
-      return toDate(java.time.LocalDateTime.parse(date));
+      return toDate(LocalDateTime.parse(date));
     } catch (java.lang.Exception e) {
-      //当日期格式无法识别,转换失败,返回原始数据.
+      // 当日期格式无法识别，转换失败，返回原始数据。
       return date;
     }
   }
@@ -393,9 +470,9 @@ public class StringUtil {
    * 格式化日期
    *
    * @param date 时间对象
-   * @return 返回 yyyy-MM-dd 格式的字符串
+   * @return yyyy-MM-dd 格式的字符串
    */
-  public static String toDate(java.time.LocalDateTime date) {
+  public static String toDate(LocalDateTime date) {
     DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
     return format.format(date);
   }
@@ -403,10 +480,10 @@ public class StringUtil {
   /**
    * 格式化时间
    *
-   * @param date
-   * @return
+   * @param date 时间对象
+   * @return yyyy-MM-dd HH:mm:ss 格式的字符串
    */
-  public static String toTime(java.time.LocalDateTime date) {
+  public static String toTime(LocalDateTime date) {
     DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     return format.format(date);
   }
@@ -414,11 +491,11 @@ public class StringUtil {
   /**
    * 智能日期格式
    *
-   * @param date
+   * @param date 日期时间
    * @return
    */
-  public static String toSmartTime(java.time.LocalDateTime date) {
-    //
+  public static String toSmartTime(LocalDateTime date) {
+    // 显示规则
     // 1.今年以前的时间显示 "yyyy年"
     //
     // 2.今年的时间显示为 "MM月dd日"
@@ -426,20 +503,19 @@ public class StringUtil {
     // 3.当天的时间显示为 "HH:mm:ss"
     //
     // 4.其他时间 显示为 "yyyy-MM-dd HH:mm:ss"
-    //
 
     DateFormat format = null;
 
-    if (date.getYear() < java.time.LocalDateTime.now().getYear()) {
+    if (date.getYear() < LocalDateTime.now().getYear()) {
       format = new SimpleDateFormat("yyyy年");
 
       return format.format(date);
     } else {
-      if (java.time.LocalDateTime.now().getDayOfYear() == date.getDayOfYear()) {
+      if (LocalDateTime.now().getDayOfYear() == date.getDayOfYear()) {
         format = new SimpleDateFormat("HH:mm:ss");
         return format.format(date);
         // return date.toString("HH:mm:ss");
-      } else if (java.time.LocalDateTime.now().getYear() == date.getYear()) {
+      } else if (LocalDateTime.now().getYear() == date.getYear()) {
         format = new SimpleDateFormat("MM月dd日");
         return format.format(date);
         // return date.toString("MM月dd日");
@@ -454,10 +530,11 @@ public class StringUtil {
   /**
    * 格式化日期
    *
-   * @param date
-   * @return
+   * @param date 日期时间
+   * @param pattern 模式
+   * @return 格式时间
    */
-  public static String toDateFormat(java.time.LocalDateTime date, String pattern) {
+  public static String toDateFormat(LocalDateTime date, String pattern) {
     return toDateFormat(DateUtil.toDate(date), pattern);
   }
 
@@ -476,13 +553,12 @@ public class StringUtil {
   }
 
   /**
-   * 生成一个Uuid格式字符串
+   * 生成一个 UUID 格式字符串
    *
-   * @param uuid
-   * @return
+   * @param uuid 对象
+   * @return Uuid 格式
    */
   public static String toUuid(UUID uuid) {
-    //
     // 说明符      返回值的格式
     //
     // N             32 位：
@@ -496,9 +572,8 @@ public class StringUtil {
     //
     // P             括在圆括号中、由连字符分隔的 32 位数字：
     //               (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)
-    //
 
-    return UUIDUtil.toString(uuid, "N");
+    return UUIDUtil.stringify(uuid, "D");
   }
 
   private static String[] chars = new String[]{"a", "b", "c", "d", "e", "f",
@@ -511,9 +586,9 @@ public class StringUtil {
   public static String to8DigitUuid() {
     // 通过随机生成32位UUID，由于 UUID 都为十六进制，所以将 UUID 分成 8 组，
     // 每4个为一组，然后通过模 62 操作，结果作为索引取出字符.
-    String uuid = toUuid();
+    String uuid = UUIDUtil.stringify(UUID.randomUUID(), "N");
 
-    StringBuffer shortBuffer = new StringBuffer();
+    StringBuilder shortBuffer = new StringBuilder();
 
     for (int i = 0; i < 8; i++) {
       String code = uuid.substring(i * 4, i * 4 + 4);
@@ -525,12 +600,16 @@ public class StringUtil {
     return shortBuffer.toString();
   }
 
+  //-------------------------------------------------------
+  // 格式化字符串处理
+  //-------------------------------------------------------
+
   /**
    * 格式化字符串
    *
-   * @param stringFormat
-   * @param args
-   * @return
+   * @param stringFormat 字符串格式
+   * @param args 参数
+   * @return 格式化后的字符串
    */
   public static String format(String stringFormat, String... args) {
     for (int i = 0; i < args.length; i++) {
@@ -613,25 +692,4 @@ public class StringUtil {
 
     return (substring(text, text.length() - trimText.length(), trimText.length()).equals(trimText)) ? text.substring(0, text.length() - trimText.length()) : text;
   }
-
-  /**
-   * @param inputN  输入字符串
-   * @param pattern 需要格式化格式
-   * @return 将数字转换成字符串需要个格式
-   */
-  public static String numberToStr(int inputN, String pattern) {
-    String result = "";
-    if (StringUtil.isNullOrEmpty(pattern)) {
-      result = String.valueOf(inputN);
-    } else {
-      DecimalFormat df = new DecimalFormat(pattern);
-      result = df.format(inputN);
-    }
-    return result;
-  }
-
-  public static void main(String[] args) {
-    System.out.println(numberToStr(13, "0000"));
-  }
-
 }

@@ -2,14 +2,11 @@ package com.x3platform.membership.services.impl;
 
 import com.x3platform.membership.models.SettingInfo;
 import com.x3platform.membership.services.SettingService;
-
 import java.util.List;
 
 /**
- * 新实现类
  *
- * @author xueqian.huang
- * @Date 2018-12-24
+ * @author ruanyu
  */
 public class SettingServiceImpl implements SettingService {
 

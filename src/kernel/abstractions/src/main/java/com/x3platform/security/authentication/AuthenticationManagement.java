@@ -46,11 +46,16 @@ public interface AuthenticationManagement {
 
   /**
    * 新增会话
+   *
+   * @param sessionId 会话标识
+   * @param account 帐号信息
    */
   void addSession(String appKey, String sessionId, Account account);
 
   /**
    * 移除会话
+   *
+   * @param sessionId 会话标识
    */
   void removeSession(String sessionId);
 

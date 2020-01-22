@@ -1,5 +1,6 @@
 package com.x3platform.membership.models;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.x3platform.membership.Account;
 import com.x3platform.membership.AccountOrganizationUnitRelation;
 import com.x3platform.membership.OrganizationUnit;
@@ -12,6 +13,7 @@ import java.util.Date;
  * 帐户和组织的关联信息
  */
 public class AccountOrganizationUnitRelationInfo implements AccountOrganizationUnitRelation {
+
   /**
    */
   public AccountOrganizationUnitRelationInfo() {
@@ -24,100 +26,101 @@ public class AccountOrganizationUnitRelationInfo implements AccountOrganizationU
     this.setOrganizationUnitId(organizationId);
   }
 
-  private String mAccountId = "";
+  private String accountId = "";
 
   /**
    * 帐号标识
    */
   public String getAccountId() {
-    return mAccountId;
+    return accountId;
   }
 
   public void setAccountId(String value) {
-    mAccountId = value;
+    accountId = value;
   }
 
-  private String mAccountGlobalName = "";
+  private String accountGlobalName = "";
 
   /**
    * 帐号名称
    */
   public String getAccountGlobalName() {
-    return mAccountGlobalName;
+    return accountGlobalName;
   }
 
   public void setAccountGlobalName(String value) {
-    mAccountGlobalName = value;
+    accountGlobalName = value;
   }
 
-  private String mOrganizationUnitId = "";
+  private String organizationUnitId = "";
 
   /**
    * 组织标识
    */
   public String getOrganizationUnitId() {
-    return mOrganizationUnitId;
+    return organizationUnitId;
   }
 
   public void setOrganizationUnitId(String value) {
-    mOrganizationUnitId = value;
+    organizationUnitId = value;
   }
 
-  private String mOrganizationUnitGlobalName = "";
+  private String organizationUnitGlobalName = "";
 
   /**
    * 组织全局名称
    */
   public String getOrganizationUnitGlobalName() {
-    return mOrganizationUnitGlobalName;
+    return organizationUnitGlobalName;
   }
 
   public void setOrganizationUnitGlobalName(String value) {
-    mOrganizationUnitGlobalName = value;
+    organizationUnitGlobalName = value;
   }
 
-  private int mIsDefault = 0;
+  private int isDefault = 0;
 
   /**
    * 是否默认组织
    */
   public int getIsDefault() {
-    return mIsDefault;
+    return isDefault;
   }
 
   public void setIsDefault(int value) {
-    mIsDefault = value;
+    isDefault = value;
   }
 
-  private Date mBeginDate = DateUtil.getDefaultDate();
+  private Date beginDate = DateUtil.getDefaultDate();
 
   /**
    * 生效时间
    */
   public Date getBeginDate() {
-    return mBeginDate;
+    return beginDate;
   }
 
   public void setBeginDate(Date value) {
-    mBeginDate = value;
+    beginDate = value;
   }
 
-  private Date mEndDate = DateUtil.getDefaultDate();
+  private Date endDate = DateUtil.getDefaultDate();
 
   /**
    * 失效时间
    */
   public Date getEndDate() {
-    return mEndDate;
+    return endDate;
   }
 
   public void setEndDate(Date value) {
-    mEndDate = value;
+    endDate = value;
   }
 
   /**
    * 获取相关帐号信息
    */
+  @JSONField(serialize = false)
   public Account getAccount() {
     return MembershipManagement.getInstance().getAccountService().findOne(this.getAccountId());
   }
@@ -125,9 +128,8 @@ public class AccountOrganizationUnitRelationInfo implements AccountOrganizationU
   /**
    * 获取相关组织信息
    */
+  @JSONField(serialize = false)
   public OrganizationUnit getOrganizationUnit() {
-    // TODO 待处理
-    // return MembershipManagement.getInstance().getOrganizationUnitService().findOne(this.getOrganizationUnitId());
-    return null;
+    return MembershipManagement.getInstance().getOrganizationUnitService().findOne(this.getOrganizationUnitId());
   }
 }

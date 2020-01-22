@@ -1,5 +1,6 @@
 package com.x3platform.membership.models;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.x3platform.membership.Account;
 import com.x3platform.membership.AccountRoleRelation;
 import com.x3platform.membership.Role;
@@ -25,100 +26,102 @@ public class AccountRoleRelationInfo implements AccountRoleRelation {
     this.setRoleId(roleId);
   }
 
-  private String mAccountId = "";
+  private String accountId = "";
 
   /**
    * 帐号标识
    */
   public String getAccountId() {
-    return mAccountId;
+    return accountId;
   }
 
   public void setAccountId(String value) {
-    mAccountId = value;
+    accountId = value;
   }
 
-  private String mAccountGlobalName = "";
+  private String accountGlobalName = "";
 
   /**
    * 帐号全局名称
    */
   public String getAccountGlobalName() {
-    return mAccountGlobalName;
+    return accountGlobalName;
   }
 
   public void setAccountGlobalName(String value) {
-    mAccountGlobalName = value;
+    accountGlobalName = value;
   }
 
-  private String mRoleId = "";
+  private String roleId = "";
 
   /**
    * 角色标识
    */
   public String getRoleId() {
-    return mRoleId;
+    return roleId;
   }
 
   public void setRoleId(String value) {
-    mRoleId = value;
+    roleId = value;
   }
 
-  private String mRoleGlobalName = "";
+  private String roleGlobalName = "";
 
   /**
    * 角色全局名称
    */
   public String getRoleGlobalName() {
-    return mRoleGlobalName;
+    return roleGlobalName;
   }
 
   public void setRoleGlobalName(String value) {
-    mRoleGlobalName = value;
+    roleGlobalName = value;
   }
 
-  private int mIsDefault = 0;
+  private int isDefault = 0;
 
   /**
    * 是否默认角色
    */
   public int getIsDefault() {
-    return mIsDefault;
+    return isDefault;
   }
 
   public void setIsDefault(int value) {
-    mIsDefault = value;
+    isDefault = value;
   }
 
-  private Date mBeginDate = DateUtil.getDefaultDate();
+  private Date beginDate = DateUtil.getDefaultDate();
 
   /**
    * 生效时间
    */
   public Date getBeginDate() {
-    return mBeginDate;
+    return beginDate;
   }
 
   public void setBeginDate(Date value) {
-    mBeginDate = value;
+    beginDate = value;
   }
 
-  private Date mEndDate = DateUtil.getDefaultDate();
+  private Date endDate = DateUtil.getDefaultDate();
 
   /**
    * 失效时间
    */
   public Date getEndDate() {
-    return mEndDate;
+    return endDate;
   }
 
   public void setEndDate(Date value) {
-    mEndDate = value;
+    endDate = value;
   }
 
   /**
    * 获取相关帐号信息
    */
+  @Override
+  @JSONField(serialize = false)
   public Account getAccount() {
     return MembershipManagement.getInstance().getAccountService().findOne(this.getAccountId());
   }
@@ -126,9 +129,9 @@ public class AccountRoleRelationInfo implements AccountRoleRelation {
   /**
    * 获取相关角色信息
    */
+  @Override
+  @JSONField(serialize = false)
   public Role getRole() {
-    // TODO 待处理
-    // return MembershipManagement.getInstance().getRoleService().findOne(this.getRoleId());
-    return null;
+    return MembershipManagement.getInstance().getRoleService().findOne(this.getRoleId());
   }
 }

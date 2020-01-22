@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.x3platform.membership.mappers.OrganizationUnitMapper">
-  <resultMap id="findOne_Result" type="com.x3platform.membership.models.OrganizationUnitInfo">
+  <resultMap id="BaseResultMap" type="com.x3platform.membership.models.OrganizationUnitInfo">
     <result property="id" column="id"/>
     <result property="parentId" column="parent_id"/>
-    <result property="parentName" column="parent_name"/>
     <result property="code" column="code"/>
     <result property="name" column="name"/>
     <result property="globalName" column="global_name"/>
     <result property="fullName" column="full_name"/>
-    <result property="pinyin" column="pinyin"/>
+    <result property="pinYin" column="pinyin"/>
     <result property="type" column="type"/>
     <result property="typeView" column="type_view"/>
     <result property="level" column="level"/>
-    <result property="standardOrganizationId" column="standard_organization_id"/>
-    <result property="standardOrganizationName" column="standard_organization_name"/>
+    <result property="chiefRoleId" column="chief_role_id"/>
+    <result property="standardOrganizationUnitId" column="standard_organization_unit_id"/>
+    <result property="standardOrganizationUnitName" column="standard_organization_unit_name"/>
     <result property="enableEmail" column="enable_email"/>
     <result property="effectScope" column="effect_scope"/>
     <result property="treeViewScope" column="tree_view_scope"/>
@@ -27,43 +27,137 @@
     <result property="modifiedDate" column="modified_date"/>
     <result property="createdDate" column="created_date"/>
   </resultMap>
-  <resultMap id="findAll_Result" type="com.x3platform.membership.models.OrganizationUnitInfo">
-    <result property="id" column="id"/>
-    <result property="parentId" column="parent_id"/>
-    <result property="parentName" column="parent_name"/>
-    <result property="code" column="code"/>
-    <result property="name" column="name"/>
-    <result property="globalName" column="global_name"/>
-    <result property="fullName" column="full_name"/>
-    <result property="pinyin" column="pinyin"/>
-    <result property="type" column="type"/>
-    <result property="typeView" column="type_view"/>
-    <result property="level" column="level"/>
-    <result property="standardOrganizationId" column="standard_organization_id"/>
-    <result property="standardOrganizationName" column="standard_organization_name"/>
-    <result property="enableEmail" column="enable_email"/>
-    <result property="effectScope" column="effect_scope"/>
-    <result property="treeViewScope" column="tree_view_scope"/>
-    <result property="locking" column="locking"/>
-    <result property="orderId" column="order_id"/>
-    <result property="status" column="status"/>
-    <result property="remark" column="remark"/>
-    <result property="fullPath" column="full_path"/>
-    <result property="distinguishedName" column="distinguished_name"/>
-    <result property="modifiedDate" column="modified_date"/>
-    <result property="createdDate" column="created_date"/>
-  </resultMap>
-  <resultMap id="findAllRelation_Result" type="com.x3platform.membership.models.AccountOrganizationUnitRelationInfo" >
-    <result property="mAccountId" column="account_id" />
-    <result property="mAccountGlobalName" column="account_global_name" />
-    <result property="mOrganizationUnitId" column="organization_unit_id" />
-    <result property="mOrganizationUnitGlobalName" column="organization_unit_global_name" />
-    <result property="mIsDefault" column="is_default" />
-    <result property="mBeginDate" column="begin_date" />
-    <result property="mEndDate" column="end_date" />
-  </resultMap>
+  <resultMap id="AccountOrganizationUnitRelationResultMap" type="com.x3platform.membership.models.AccountOrganizationUnitRelationInfo" >
+    <result property="accountId" column="account_id" />
+    <result property="accountGlobalName" column="account_global_name" />
+    <result property="organizationUnitId" column="organization_unit_id" />
+    <result property="organizationUnitGlobalName" column="organization_unit_global_name" />
+    <result property="isDefault" column="is_default" />
+    <result property="beginDate" column="begin_date" />
+    <result property="endDate" column="end_date" />
+  </resultMap><!-- 列表查询条件 -->
+  <sql id="Select_Where_Clause">
+    <where>
+      <!-- 列表查询 -->
+      <if test="var_scene == 'Query'">
+        <if test="param_search_text != null and param_search_text != ''">
+          t.global_name LIKE concat('%',#{param_search_text},'%') OR t.name LIKE concat('%',#{param_search_text},'%')
+        </if>
+        <if test="param_status == null">
+          AND t.status = 1
+        </if>
+      </if>
+      <!-- 通讯录查询 -->
+      <if test="var_scene == 'Contacts'">
+        <if test="param_name != null and param_name != ''">
+          AND (t.global_name LIKE  #{param_name} OR t.name LIKE #{param_name})
+        </if>
+        <if test="param_status != null and param_status != ''">
+          AND t.status = #{param_status}
+        </if>
+      </if>
+      <!-- 默认 -->
+      <if test="var_scene == 'default'">
+        <if test="param_parent_id != null and param_parent_id != ''">
+          AND t.parent_id = #{param_parent_id}
+        </if>
+        <if test="param_status != null and param_status != ''">
+          AND t.status = #{param_status}
+        </if>
+        <if test="param_status == null">
+          AND t.status = 1
+        </if>
+        <if test="id != null and id != ''">
+          AND t.id = #{id}
+        </if>
+        <if test="name != null and name != ''">
+          AND t.name like concat('%',#{name},'%') or global_name like concat('%',#{name},'%')
+        </if>
+        <if test="status != null and status != ''">
+          AND t.status = #{status}
+        </if>
+        <if test="type != null and type != ''">
+          AND t.type = #{type}
+        </if>
+      </if>
+    </where>
+  </sql>
+  <sql id="Select_Where_Clause_Default">
+    <where>
+      <!-- 默认 -->
+      <if test="param_parent_id != null and param_parent_id != ''">
+        AND t.parent_id = #{param_parent_id}
+      </if>
+      <if test="param_status != null and param_status != ''">
+        AND t.status = #{param_status}
+      </if>
+      <if test="param_status == null">
+        AND t.status = 1
+      </if>
+      <if test="id != null and id != ''">
+        AND t.id = #{id}
+      </if>
+      <if test="name != null and name != ''">
+        AND t.name like concat('%',#{name},'%') or global_name like concat('%',#{name},'%')
+      </if>
+      <if test="status != null and status != ''">
+        AND t.status = #{status}
+      </if>
+      <if test="type != null and type != ''">
+        AND t.type = #{type}
+      </if>
+    </where>
+  </sql>
+  <insert id="insert" parameterType="com.x3platform.membership.models.OrganizationUnitInfo">
+    INSERT INTO sys_organization_unit (
+      id,
+      parent_id,
+      code,
+      name,
+      global_name,
+      full_name,
+      pinyin,
+      type,
+      level,
+      chief_role_id,
+      standard_organization_unit_id,
+      enable_email,
+      effect_scope,
+      locking,
+      order_id,
+      status,
+      remark,
+      full_path,
+      distinguished_name,
+      modified_date,
+      created_date
+    )
+    values (
+      #{id},
+      #{parentId},
+      #{code},
+      #{name},
+      #{globalName},
+      #{fullName},
+      #{pinYin},
+      #{type},
+      #{level},
+      #{chiefRoleId},
+      #{standardOrganizationUnitId},
+      #{enableEmail},
+      #{effectScope},
+      #{locking},
+      #{orderId},
+      #{status},
+      #{remark},
+      #{fullPath},
+      #{distinguishedName},
+      CURRENT_TIMESTAMP,
+      CURRENT_TIMESTAMP
+    )
+  </insert>
   <update id="update" parameterType="com.x3platform.membership.models.OrganizationUnitInfo">
-update sys_organization_unit
+    update sys_organization_unit
     <trim prefix="set" suffixOverrides=",">
     <if test="parentId != null">
       parent_id=#{parentId},
@@ -80,8 +174,8 @@ update sys_organization_unit
     <if test="fullName != null">
       full_name=#{fullName},
     </if>
-    <if test="pinyin != null">
-      pinyin=#{pinyin},
+    <if test="pinYin != null">
+      pinyin=#{pinYin},
     </if>
     <if test="type != null">
       type=#{type},
@@ -89,10 +183,11 @@ update sys_organization_unit
     <if test="level!= null">
       level=#{level},
     </if>
-    <if test="standardOrganizationId!= null">
-      standard_organization_id=#{standardOrganizationId},
+      chief_role_id = #{chiefRoleId},
+    <if test="standardOrganizationUnitId!= null">
+      standard_organization_unit_id=#{standardOrganizationUnitId},
     </if>
-    <if test="enableEmail!= null">
+    <if test="enableEmail != null">
       enable_email=#{enableEmail},
     </if>
     <if test="effectScope!= null">
@@ -122,292 +217,175 @@ update sys_organization_unit
     </trim>
   where id = #{id}
   </update>
-
-
-  <insert id="save" parameterType="com.x3platform.membership.models.OrganizationUnitInfo">
-    INSERT INTO sys_organization_unit
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-    <if test="id != null">
-      id,
-    </if>
-    <if test="parentId != null">
-      parent_id,
-    </if>
-    <if test="code != null">
-      code,
-    </if>
-    <if test="name != null">
-      name,
-    </if>
-    <if test="globalName != null">
-      global_name,
-    </if>
-    <if test="fullName != null">
-      full_name,
-    </if>
-    <if test="pinyin != null">
-      pinyin,
-    </if>
-    <if test="type != null">
-      type,
-    </if>
-    <if test="level!= null">
-      level,
-    </if>
-    <if test="standardOrganizationId!= null">
-      standard_organization_id,
-    </if>
-    <if test="enableEmail!= null">
-      enable_email,
-    </if>
-    <if test="effectScope!= null">
-      effect_scope,
-    </if>
-
-    <if test=" locking!= null">
-      locking,
-    </if>
-    <if test=" orderId!= null">
-      order_id,
-    </if>
-    <if test=" status!= null">
-      status,
-    </if>
-    <if test=" remark!= null">
-      remark,
-    </if>
-    <if test=" fullPath!= null">
-      full_path,
-    </if>
-    <if test=" distinguishedName!= null">
-      distinguished_name,
-    </if>
-    <if test=" modifiedDate!= null">
-      modified_date,
-    </if>
-    <if test=" createdDate!= null">
-      created_date,
-    </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-    <if test="id != null">
-      #{id},
-    </if>
-    <if test="parentId != null">
-      #{parentId},
-    </if>
-    <if test="code != null">
-      #{code},
-    </if>
-    <if test="name != null">
-      #{name},
-    </if>
-    <if test="globalName != null">
-      #{globalName},
-    </if>
-    <if test="fullName != null">
-      #{fullName},
-    </if>
-    <if test="pinyin != null">
-      #{pinyin},
-    </if>
-    <if test="type != null">
-      #{type},
-    </if>
-    <if test=" level!= null">
-      #{level},
-    </if>
-    <if test=" standardOrganizationId!= null">
-      #{standardOrganizationId},
-    </if>
-    <if test=" enableEmail!= null">
-      #{enableEmail},
-    </if>
-    <if test=" effectScope!= null">
-      #{effectScope},
-    </if>
-<!--    <if test=" mTreeViewScope!= null">
-      #{mTreeViewScope},
-    </if>-->
-    <if test=" locking!= null">
-      #{locking},
-    </if>
-    <if test=" orderId!= null">
-      #{orderId},
-    </if>
-    <if test=" status!= null">
-      #{status},
-    </if>
-    <if test=" remark!= null">
-      #{remark},
-    </if>
-    <if test=" fullPath!= null">
-      #{fullPath},
-    </if>
-    <if test=" distinguishedName!= null">
-      #{distinguishedName},
-    </if>
-    <if test=" modifiedDate!= null">
-      CURRENT_TIMESTAMP,
-    </if>
-    <if test=" createdDate!= null">
-      CURRENT_TIMESTAMP,
-    </if>
-    </trim>
-  </insert>
   <delete id="delete">
     update  sys_organization_unit set status = 0  WHERE id = #{id}
   </delete>
-  <select id="findOne" resultMap="findOne_Result">
+  <select id="findOne" resultMap="BaseResultMap">
     select t.* , b.`name` as parent_name from sys_organization_unit t left join  sys_organization_unit b on  (t.parent_id = b.id ) WHERE t.id = #{id}
   </select>
-  <select id="findMaxCode" resultMap="findOne_Result">
-    SELECT * FROM sys_organization_unit WHERE code in (select max(code) from sys_organization_unit)
+  <select id="findOneByGlobalName" resultMap="BaseResultMap">
+     SELECT * FROM sys_organization_unit where global_name=#{globalName,jdbcType=VARCHAR}
   </select>
-  <select id="findCorporationByOrganizationUnitId" resultMap="findOne_Result">
+  <select id="findOneByRoleId" resultMap="BaseResultMap">
+    SELECT * FROM sys_organization_unit WHERE  id IN ( SELECT organization_unit_id FROM sys_role WHERE id = ${role_id})
+  </select>
+  <select id="findOneByRoleIdAndLevel" resultMap="BaseResultMap">
+    SELECT * FROM sys_organization_unit where  id IN (
+      SELECT func_GetDepartmentIdByOrganizationUnitId( organization_unit_id , #{level} ) FROM sys_role WHERE id = ${role_id} )
+  </select>
+  <select id="findCorporationByOrganizationUnitId" resultMap="BaseResultMap">
     SELECT * FROM sys_organization_unit where  id IN ( func_GetCorporationIdByOrganizationUnitId(#{id}) )
   </select>
-  <select id="findAll" resultMap="findAll_Result">
-    select t.* , b.`name` as parent_name from sys_organization_unit t left join  sys_organization_unit b on  (t.parent_id = b.id )
-    <where>
-      <!-- 列表查询 -->
-      <if test="var_scence == 'Query'">
-        <if test="param_search_text != null and param_search_text != ''">
-          t.global_name LIKE concat('%',#{param_search_text},'%') OR t.name LIKE concat('%',#{param_search_text},'%')
-        </if>
-        <if test="param_status == null">
-          AND t.status = 1
-        </if>
-      </if>
-      <if test="var_scence == 'default'">
-        <if test="param_parent_id != null and param_parent_id != ''">
-          AND t.parent_id = #{param_parent_id}
-        </if>
-        <if test="param_status != null and param_status != ''">
-          AND t.status = #{param_status}
-        </if>
-        <if test="param_status == null">
-          AND t.status = 1
-        </if>
-      </if>
-    </where>
+
+  <select id="findAll" resultMap="BaseResultMap">
+    select t.* from sys_organization_unit t
+    <include refid="Select_Where_Clause_Default" />
     <if test="orders != null and orders.size() > 0">
       ORDER BY
       <foreach collection="orders" item="order" index="index" separator=",">
-        #{order}
+        ${order}
       </foreach>
     </if>
     <if test="length > 0">
       LIMIT 0, ${length}
     </if>
   </select>
-  <select id="findAllByParentId" resultMap="findAll_Result">
-    SELECT * FROM sys_organization_unit where id = #{parentId}
+  <select id="queryAll" resultMap="BaseResultMap">
+    select t.* , b.`name` as parent_name from sys_organization_unit t left join sys_organization_unit b on  (t.parent_id = b.id )
+    <include refid="Select_Where_Clause" />
+    order by t.modified_date desc
   </select>
-  <select id="getChildOrganizationByOrganizationUnitId" resultMap="findAll_Result">
+  <select id="findAllByParentId" resultMap="BaseResultMap">
+    SELECT * FROM sys_organization_unit where parent_id = #{parent_id}
+  </select>
+  <select id="getChildOrganizationByOrganizationUnitId" resultMap="BaseResultMap">
     SELECT
-      *
+      t3.* , t4.name as parent_name
     FROM
-      sys_organization_unit
-    WHERE
-        id IN (
+      (
         SELECT
-          id
+          T1.*,
+          IF
+            (
+            FIND_IN_SET( parent_id, @PIDS ) > 0,
+            @PIDS := CONCAT( @PIDS, ',', T1.ID ),
+            0
+            ) AS ISCHILD
         FROM
-          (
-            SELECT
-              t1.id,
-              IF
-                ( find_in_set( parent_id, @pids ) > 0, @pids := concat( @pids, ',', id ), '0' ) AS ischild
-            FROM
-              ( SELECT id, parent_id FROM sys_organization_unit t ORDER BY parent_id, id ) t1,
-              ( SELECT @pids := #{organizationUnitId}) t2
-          ) t3
-        WHERE
-          ischild != '0'
-    )
-    ORDER BY
-      id
-  </select>
-  <select id="findAllByAccountId" resultMap="findAll_Result">
-    SELECT
-      b.*
-    FROM
-      sys_account_organization_unit a,
-      sys_organization_unit b
+            ( SELECT A.* FROM sys_organization_unit A where  status = 1 ) AS T1,
+            ( SELECT @PIDS := #{organizationUnitId} ) t2
+      ) t3 left join sys_organization_unit t4 on (t3.parent_id = t4.id)
     WHERE
-      b.`status` = 1
-      AND b.id = a.organization_unit_id
-      AND a.account_id = #{accountId}
-      and a.is_default = 1
+      ISCHILD != '0'
+    order by created_date
+
+  </select>
+  <select id="findAllByAccountId" resultMap="BaseResultMap">
+  SELECT * FROM sys_organization_unit WHERE Id IN (
+    SELECT organization_unit_id FROM sys_role WHERE Id IN (
+      SELECT role_id FROM sys_account_role WHERE account_id = #{account_id} )
+  )
+  </select>
+  <select id="findTreeNodesByParentId" resultMap="BaseResultMap">
+    SELECT * FROM sys_organization_unit T WHERE parent_id = #{parent_id} AND status = 1 ORDER BY order_id, code
   </select>
   <select id="isExist" resultType="boolean">
     SELECT COUNT(0) AS "Count" FROM sys_organization_unit WHERE id =#{id}
   </select>
   <select id="isExistName" resultType="boolean">
-    SELECT COUNT(0) AS "Count" FROM sys_organization_unit WHERE Name = #{name}
+    SELECT COUNT(0) AS "Count" FROM sys_organization_unit WHERE name = #{name}
   </select>
-  <select id="findAllRelation" resultMap="findAllRelation_Result" >
+  <select id="isExistGlobalName" resultType="boolean">
+    SELECT COUNT(0) AS "Count" FROM sys_organization_unit WHERE global_name = #{global_name}
+  </select>
+  <update id="rename" parameterType="com.x3platform.membership.models.OrganizationUnitInfo">
+    UPDATE sys_organization_unit SET name = #{name}, modified_date = CURRENT_TIMESTAMP WHERE id = #{id}
+  </update>
+  <update id="setGlobalName" parameterType="com.x3platform.membership.models.OrganizationUnitInfo">
+    UPDATE sys_organization_unit SET global_name = #{global_name}, modified_date = CURRENT_TIMESTAMP WHERE id = #{id}
+  </update>
+  <update id="setParentId" >
+    UPDATE sys_organization_unit SET parent_id = #{parent_id}, modified_date = CURRENT_TIMESTAMP WHERE id = #{id}
+  </update>
+  <select id="findAllRelationByAccountId" resultMap="AccountOrganizationUnitRelationResultMap">
     SELECT
-    AccountId,
-    tb_Account.GlobalName AS AccountGlobalName,
-    OrganizationUnitId,
-    tb_OrganizationUnit.GlobalName AS OrganizationUnitGlobalName,
-    IsDefault,
-    BeginDate,
-    EndDate
+      account_id,
+      sys_account.global_name AS account_global_name,
+      organization_unit_id,
+      sys_organization_unit.global_name AS organization_unit_global_name,
+      is_default,
+      begin_date,
+      end_date
     FROM
-    tb_Account_OrganizationUnit
-    INNER JOIN tb_Account ON tb_Account_OrganizationUnit.AccountId = tb_Account.Id
-    INNER JOIN tb_OrganizationUnit ON tb_Account_OrganizationUnit.OrganizationUnitId = tb_OrganizationUnit.Id
-    WHERE
-    ${WhereClause}
+      sys_account_organization_unit
+      INNER JOIN sys_account ON sys_account_organization_unit.account_id = sys_account.Id
+      INNER JOIN sys_organization_unit ON sys_account_organization_unit.organization_unit_id = sys_organization_unit.Id
+    WHERE account_id = #{account_id}
+  </select>
+  <select id="findAllRelationByOrganizationUnitId" resultMap="AccountOrganizationUnitRelationResultMap">
+    SELECT
+      account_id,
+      sys_account.global_name AS account_global_name,
+      organization_unit_id,
+      sys_organization_unit.global_name AS organization_unit_global_name,
+      is_default,
+      begin_date,
+      end_date
+    FROM
+      sys_account_organization_unit
+      INNER JOIN sys_account ON sys_account_organization_unit.account_id = sys_account.Id
+      INNER JOIN sys_organization_unit ON sys_account_organization_unit.organization_unit_id = sys_organization_unit.Id
+    WHERE organization_unit_id = #{organization_unit_id}
   </select>
   <insert id="addRelation">
-    insert into
-      sys_account_organization_unit
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="accountId != null">
-        account_id,
-      </if>
-      <if test="organizationId != null">
-        organization_unit_id,
-      </if>
-      <if test="isDefault != null">
-        is_default,
-      </if>
-      <if test="beginDate != null">
-        begin_date,
-      </if>
-      <if test="endDate != null">
-        end_date,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="accountId != null">
-        #{accountId},
-      </if>
-      <if test="organizationId != null">
-        #{organizationId},
-      </if>
-      <if test="isDefault != null">
-        #{isDefault},
-      </if>
-      <if test="beginDate != null">
-        #{beginDate},
-      </if>
-      <if test="endDate != null">
-        #{endDate},
-      </if>
-    </trim>
+    INSERT INTO sys_account_organization_unit (
+      account_id,
+      organization_unit_id,
+      is_default,
+      begin_date,
+      end_date
+    )
+    VALUES
+    (
+      #{account_id},
+      #{organization_unit_id},
+      #{is_default},
+      #{begin_date},
+      #{end_date}
+    )
+    ON DUPLICATE KEY UPDATE
+      is_default = #{is_default},
+      begin_date = #{begin_date},
+      end_date = #{end_date}
   </insert>
-  <delete id="removeAllRelation">
-    delete from sys_account_organization_unit  where  account_id=#{accountId}
+  <update id="extendRelation" >
+    UPDATE sys_account_organization_unit SET end_date = #{end_date} WHERE account_id = #{account_id} AND organization_unit_id = ${organization_unit_id}
+  </update>
+  <delete id="removeRelation">
+    DELETE FROM sys_account_organization_unit WHERE account_id = #{account_id} AND organization_unit_id = ${organization_unit_id}
   </delete>
-  <select id="hasDefaultRelation" resultType="java.lang.Boolean">
-    select COUNT(0) AS "Count" from sys_account_organization_unit  where  account_id=#{accountId}
+  <delete id="removeDefaultRelation">
+    delete from sys_account_organization_unit where account_id = #{account_id} AND is_default = 1
+  </delete>
+  <delete id="removeNondefaultRelation">
+    delete from sys_account_organization_unit where account_id = #{account_id} AND is_default = 0
+  </delete>
+  <delete id="removeExpiredRelation">
+    delete from sys_account_organization_unit where account_id = #{account_id} AND end_date &lt; CURRENT_TIMESTAMP
+  </delete>
+  <delete id="removeAllRelation">
+    delete from sys_account_organization_unit where account_id = #{account_id}
+  </delete>
+  <select id="hasRelation" resultType="java.lang.Boolean">
+    SELECT COUNT(0) AS "Count" FROM sys_account_organization_unit WHERE account_id = #{accountId} and organization_unit_id = #{organization_unit_id}
   </select>
+  <select id="hasDefaultRelation" resultType="java.lang.Boolean">
+    select COUNT(0) AS "Count" from sys_account_organization_unit  where account_id = #{account_id}
+  </select>
+  <update id="setDefaultRelation" >
+    UPDATE sys_user SET organization_unit_id = #{organization_unit_id}, modified_date = CURRENT_TIMESTAMP WHERE account_id = #{account_id}
+  </update>
   <delete id="clearupRelation">
-    delete from sys_account_organization_unit  where  organization_unit_id=#{organizationId}
+    delete from sys_account_organization_unit  where  organization_unit_id = #{organization_unit_id}
   </delete>
 </mapper>

@@ -1,10 +1,9 @@
 package com.x3platform.apps.mappers;
 
 import com.x3platform.apps.models.ApplicationSetting;
-import com.x3platform.apps.models.ApplicationSettingLite;
+import java.util.List;
+import java.util.Map;
 import org.apache.ibatis.annotations.Param;
-
-import java.util.*;
 
 /**
  */
@@ -17,14 +16,14 @@ public interface ApplicationSettingMapper {
   /**
    * 添加记录
    *
-   * @param param 实例<see cref="ApplicationSetting"/>详细信息
+   * @param param 实例{@link ApplicationSetting}详细信息
    */
   int insert(ApplicationSetting param);
 
   /**
    * 修改记录
    *
-   * @param param 实例<see cref="ApplicationSetting"/>详细信息
+   * @param param 实例{@link ApplicationSetting}详细信息
    */
   int updateByPrimaryKey(ApplicationSetting param);
 

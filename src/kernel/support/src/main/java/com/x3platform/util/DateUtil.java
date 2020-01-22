@@ -11,25 +11,36 @@ import java.util.TimeZone;
  * 日期处理辅助类
  */
 public class DateUtil {
-  private static LocalDateTime baseTime = LocalDateTime.of(1970, 1, 1, 0, 0, 0);
 
-  /**
-   * 默认时间 (Date 格式)
-   */
-  public static Date getDefaultDate() {
-    LocalDateTime localDateTime = getDefaultLocalDateTime();
-
-    ZoneId zone = ZoneId.systemDefault();
-    Instant instant = localDateTime.atZone(zone).toInstant();
-
-    return Date.from(instant);
-  }
+  private static final LocalDateTime BASE_DATE_TIME = LocalDateTime.of(1970, 1, 1, 0, 0, 0);
+  private static final LocalDateTime MAX_DATE_TIME = LocalDateTime.of(9999, 12, 31, 23, 59, 59, 999);
 
   /**
    * 默认时间 (LocalDateTime 格式)
    */
   public static LocalDateTime getDefaultLocalDateTime() {
-    return baseTime;
+    return BASE_DATE_TIME;
+  }
+
+  /**
+   * 最大时间 (LocalDateTime 格式)
+   */
+  public static LocalDateTime getMaxLocalDateTime() {
+    return MAX_DATE_TIME;
+  }
+
+  /**
+   * 默认时间 (Date 格式)
+   */
+  public static Date getDefaultDate() {
+    return toDate(getDefaultLocalDateTime());
+  }
+
+  /**
+   * 最大时间 (Date 格式)
+   */
+  public static Date getMaxDate() {
+    return toDate(getMaxLocalDateTime());
   }
 
   /**
@@ -48,7 +59,7 @@ public class DateUtil {
     // return (dateTime.Ticks - baseTime.Ticks) / 10000000 - 8 * 60 * 60;
     // return (long)(datetime - baseTime.ToLocalTime()).TotalSeconds;
     // return (toDate(datetime).getTime() - toDate(baseTime).getTime()) / 10000000;
-    return (toDate(datetime).getTime() - toDate(baseTime).getTime()) / 1000;
+    return (toDate(datetime).getTime() - toDate(BASE_DATE_TIME).getTime()) / 1000;
   }
 
   /**

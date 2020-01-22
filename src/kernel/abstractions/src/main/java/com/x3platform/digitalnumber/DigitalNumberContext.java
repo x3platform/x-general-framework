@@ -2,6 +2,7 @@ package com.x3platform.digitalnumber;
 
 import com.x3platform.KernelContext;
 import com.x3platform.SpringContext;
+import com.x3platform.data.GenericSqlCommand;
 import com.x3platform.digitalnumber.configuration.DigitalNumberConfiguration;
 import com.x3platform.digitalnumber.configuration.DigitalNumberConfigurationView;
 import com.x3platform.digitalnumber.services.DigitalNumberService;
@@ -14,6 +15,7 @@ import com.x3platform.plugins.CustomPlugin;
  * @author ruanyu
  */
 public class DigitalNumberContext extends CustomPlugin {
+
   @Override
   public String getName() {
     return "流水号";
@@ -61,7 +63,7 @@ public class DigitalNumberContext extends CustomPlugin {
   /**
    * 重启
    *
-   * @return 返回信息. =0代表重启成功, >0代表重启失败.
+   * @return 消息代码 0-重启成功, 大于0-重启失败.
    */
   @Override
   public int restart() {
@@ -99,9 +101,6 @@ public class DigitalNumberContext extends CustomPlugin {
 
   /**
    * 生成通用的流水编号
-   *
-   * @param name
-   * @return
    */
   public static String generate(String name) {
     return getInstance().getDigitalNumberService().generate(name);
@@ -111,70 +110,90 @@ public class DigitalNumberContext extends CustomPlugin {
    * 根据自定义的编号前缀生成的流水编号
    */
   public static String generateCodeByPrefixCode(String entityTableName, String prefixCode) {
-    return getInstance().getDigitalNumberService().generateCodeByPrefixCode(entityTableName, prefixCode, "{prefix}{code}");
+    return getInstance().getDigitalNumberService()
+      .generateCodeByPrefixCode(entityTableName, prefixCode, "{prefix}{code}");
   }
 
   /**
    * 根据自定义的编号前缀生成的流水编号
    */
   public static String generateCodeByPrefixCode(String entityTableName, String prefixCode, int incrementCodeLength) {
-    return getInstance().getDigitalNumberService().generateCodeByPrefixCode(entityTableName, prefixCode, "{prefix}{code:" + incrementCodeLength + "}");
+    return getInstance().getDigitalNumberService()
+      .generateCodeByPrefixCode(entityTableName, prefixCode, "{prefix}{code:" + incrementCodeLength + "}");
   }
 
   /**
    * 根据自定义的编号前缀生成的流水编号
    */
-  public static String generateCodeByCategoryId(String entityTableName, String entityCategoryTableName, String entityCategoryId) {
-    return getInstance().getDigitalNumberService().generateCodeByCategoryId(entityTableName, entityCategoryTableName, entityCategoryId, "{prefix}{code}");
+  public static String generateCodeByCategoryId(String entityTableName, String entityCategoryTableName,
+    String entityCategoryId) {
+    return getInstance().getDigitalNumberService()
+      .generateCodeByCategoryId(entityTableName, entityCategoryTableName, entityCategoryId, "{prefix}{code}");
   }
 
   /**
    * 根据自定义的编号前缀生成的流水编号
    */
-  public static String generateCodeByCategoryId(String entityTableName, String entityCategoryTableName, String entityCategoryId, int incrementCodeLength) {
-    return getInstance().getDigitalNumberService().generateCodeByCategoryId(entityTableName, entityCategoryTableName, entityCategoryId, "{prefix}{code:" + incrementCodeLength + "}");
+  public static String generateCodeByCategoryId(String entityTableName, String entityCategoryTableName,
+    String entityCategoryId, int incrementCodeLength) {
+    return getInstance().getDigitalNumberService()
+      .generateCodeByCategoryId(entityTableName, entityCategoryTableName, entityCategoryId,
+        "{prefix}{code:" + incrementCodeLength + "}");
   }
 
   /**
    * 根据自定义的编号前缀生成日期流水编号
    */
   public static String generateDateCodeByPrefixCode(String entityTableName, String prefixCode) {
-    return getInstance().getDigitalNumberService().generateCodeByPrefixCode(entityTableName, prefixCode, "{prefix}{date}{code}");
+    return getInstance().getDigitalNumberService()
+      .generateCodeByPrefixCode(entityTableName, prefixCode, "{prefix}{date}{code}");
   }
 
   /**
    * 根据自定义的编号前缀生成日期流水编号
    */
-  public static String generateDateCodeByPrefixCode(String entityTableName, String prefixCode, int incrementCodeLength) {
-    return getInstance().getDigitalNumberService().generateCodeByPrefixCode(entityTableName, prefixCode, "{prefix}{date}{code:" + incrementCodeLength + "}");
+  public static String generateDateCodeByPrefixCode(String entityTableName, String prefixCode,
+    int incrementCodeLength) {
+    return getInstance().getDigitalNumberService()
+      .generateCodeByPrefixCode(entityTableName, prefixCode, "{prefix}{date}{code:" + incrementCodeLength + "}");
   }
 
   /**
    * 根据自定义的编号前缀生成日期流水编号
-   public static String generateDateCodeByPrefixCode(GenericSqlCommand command, String entityTableName, String prefixCode) {
-   return getInstance().getDigitalNumberService().GenerateCodeByPrefixCode(command, entityTableName, prefixCode, "{prefix}{date}{code}");
-   }
    */
+  public static String generateDateCodeByPrefixCode(GenericSqlCommand command, String entityTableName,
+    String prefixCode) {
+    return getInstance().getDigitalNumberService().generateCodeByPrefixCode(command, entityTableName,
+      prefixCode, "{prefix}{date}{code}");
+  }
 
   /**
    * 根据自定义的编号前缀生成日期流水编号
-   public static String generateDateCodeByPrefixCode(GenericSqlCommand command, String entityTableName, String prefixCode, int incrementCodeLength) {
-   return getInstance().getDigitalNumberService().GenerateCodeByPrefixCode(command, entityTableName, prefixCode, "{prefix}{date}{code:" + incrementCodeLength + "}");
-   }
    */
+  public static String generateDateCodeByPrefixCode(GenericSqlCommand command, String entityTableName,
+    String prefixCode, int incrementCodeLength) {
+    return getInstance().getDigitalNumberService().generateCodeByPrefixCode(command, entityTableName,
+      prefixCode, "{prefix}{date}{code:" + incrementCodeLength + "}");
+  }
+
 
   /**
    * 根据自定义的编号前缀生成的流水编号
    */
-  public static String generateDateCodeByCategoryId(String entityTableName, String entityCategoryTableName, String entityCategoryId) {
-    return getInstance().getDigitalNumberService().generateCodeByCategoryId(entityTableName, entityCategoryTableName, entityCategoryId, "{prefix}{date}{code}");
+  public static String generateDateCodeByCategoryId(String entityTableName, String entityCategoryTableName,
+    String entityCategoryId) {
+    return getInstance().getDigitalNumberService()
+      .generateCodeByCategoryId(entityTableName, entityCategoryTableName, entityCategoryId, "{prefix}{date}{code}");
   }
 
   /**
    * 根据自定义的编号前缀生成的流水编号
    */
-  public static String generateDateCodeByCategoryId(String entityTableName, String entityCategoryTableName, String entityCategoryId, int incrementCodeLength) {
-    return getInstance().getDigitalNumberService().generateCodeByCategoryId(entityTableName, entityCategoryTableName, entityCategoryId, "{prefix}{date}{code:" + incrementCodeLength + "}");
+  public static String generateDateCodeByCategoryId(String entityTableName, String entityCategoryTableName,
+    String entityCategoryId, int incrementCodeLength) {
+    return getInstance().getDigitalNumberService()
+      .generateCodeByCategoryId(entityTableName, entityCategoryTableName, entityCategoryId,
+        "{prefix}{date}{code:" + incrementCodeLength + "}");
   }
 
   /**

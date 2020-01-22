@@ -67,7 +67,7 @@ public class Ticket {
   private String accountObjectType;
 
   /**
-   * AccountObject的类型
+   * AccountObject 的类型
    */
   public String getAccountObjectType() {
     return accountObjectType;

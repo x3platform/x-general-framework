@@ -1,74 +1,114 @@
 package com.x3platform.membership.models;
 
+import com.x3platform.membership.Account;
+import com.x3platform.membership.Organization;
 import java.io.Serializable;
 import java.util.Date;
 
 /**
- *   顶层组织结构 ;
+ * 组织信息
  */
-public class OrganizationInfo implements Serializable {
+public class OrganizationInfo implements Organization {
 
-  private String id ;
-  private String accountId;
-  private String name ;
-  private String domain;
-  private String pattern ;
-  private Date modifiedDate;
-  private  Date createdDate;
+  private String id;
 
+  @Override
   public String getId() {
     return id;
   }
 
-  public void setId(String id) {
-    this.id = id;
+  @Override
+  public void setId(String value) {
+    this.id = value;
   }
 
-  public String getAccountId() {
-    return accountId;
+  private String code;
+
+  @Override
+  public String getCode() {
+    return code;
   }
 
-  public void setAccountId(String accountId) {
-    this.accountId = accountId;
+  @Override
+  public void setCode(String value) {
+    this.code = value;
   }
 
+  private String name;
+
+  @Override
   public String getName() {
     return name;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  @Override
+  public void setName(String value) {
+    this.name = value;
   }
 
+  private String domain;
+
+  @Override
   public String getDomain() {
     return domain;
   }
 
-  public void setDomain(String domain) {
-    this.domain = domain;
+  @Override
+  public void setDomain(String value) {
+    this.domain = value;
   }
 
-  public String getPattern() {
-    return pattern;
+  private String license;
+
+  @Override
+  public String getLicense() {
+    return license;
   }
 
-  public void setPattern(String pattern) {
-    this.pattern = pattern;
+  @Override
+  public void setLicense(String value) {
+    this.license = value;
   }
+
+  private int status = 0;
+
+  /**
+   * 获取状态
+   *
+   * @return 状态
+   */
+  @Override
+  public int getStatus() {
+    return status;
+  }
+
+  /**
+   * 设置状态
+   *
+   * @param value 值
+   */
+  @Override
+  public void setStatus(int value) {
+    status = value;
+  }
+
+  private Date modifiedDate;
 
   public Date getModifiedDate() {
     return modifiedDate;
   }
 
-  public void setModifiedDate(Date modifiedDate) {
-    this.modifiedDate = modifiedDate;
+  public void setModifiedDate(Date value) {
+    this.modifiedDate = value;
   }
+
+  private Date createdDate;
 
   public Date getCreatedDate() {
     return createdDate;
   }
 
-  public void setCreatedDate(Date createdDate) {
-    this.createdDate = createdDate;
+  public void setCreatedDate(Date value) {
+    this.createdDate = value;
   }
 }

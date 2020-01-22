@@ -1,4 +1,5 @@
 package com.x3platform.util;
+
 import net.sourceforge.pinyin4j.PinyinHelper;
 import net.sourceforge.pinyin4j.format.HanyuPinyinCaseType;
 import net.sourceforge.pinyin4j.format.HanyuPinyinOutputFormat;
@@ -80,8 +81,8 @@ public class PinYinUtil {
             cl_chars[i], defaultFormat)[0];
         } else if (str.matches("[0-9]+")) {// 如果字符是数字,取数字
           hanyupinyin += cl_chars[i];
-        } else if (str.matches("[a-zA-Z]+")) {// 如果字符是字母,取字母
-
+        } else if (str.matches("[a-zA-Z]+")) {
+          // 如果字符是字母,取字母
           hanyupinyin += cl_chars[i];
         } else {// 否则不转换
         }
@@ -91,15 +92,12 @@ public class PinYinUtil {
     }
     return hanyupinyin;
   }
+
   /**
    * 取第一个汉字的第一个字符
-   * @Title: getFirstLetter
-   * @Description: TODO
-   * @return String
-   * @throws
    */
-  public static String getFirstLetter(String ChineseLanguage){
-    char[] cl_chars = ChineseLanguage.trim().toCharArray();
+  public static String getFirstLetter(String text){
+    char[] cl_chars = text.trim().toCharArray();
     String hanyupinyin = "";
     HanyuPinyinOutputFormat defaultFormat = new HanyuPinyinOutputFormat();
     defaultFormat.setCaseType(HanyuPinyinCaseType.UPPERCASE);// 输出拼音全部大写

@@ -144,7 +144,7 @@ public class AccountLogServiceImpl implements AccountLogService {
    * @param accountId          所属帐号标识
    * @param operationName      操作名称
    * @param description        描述信息
-   * @param operationAccountId 操作者标识
+   * @param operationBy 操作者标识
    * @return 消息代码 0 保存成功 | 1 保存失败
    */
   @Override

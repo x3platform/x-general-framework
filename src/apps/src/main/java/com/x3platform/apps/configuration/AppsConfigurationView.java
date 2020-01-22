@@ -7,18 +7,18 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 /**
- * 人员及权限的配置信息视图
+ * 应用管理的配置信息视图
  */
-
-@Configuration
+@Component
 public class AppsConfigurationView {
   private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
   private static volatile AppsConfigurationView instance = null;
 
-  private static Object lockObject = new Object();
+  private static final Object lockObject = new Object();
 
   /**
    * 实例

@@ -1,13 +1,13 @@
 package com.x3platform.apps.models;
 
+import static com.x3platform.apps.configuration.AppsConfiguration.APPLICATION_NAME;
+
 import com.x3platform.apps.AppsContext;
 import com.x3platform.util.StringUtil;
 import com.x3platform.util.UUIDUtil;
 
-import java.util.*;
-
 /**
- * 应用菜单查询类
+ * 应用菜单精简信息
  *
  * @author ruanyu
  */
@@ -19,372 +19,337 @@ public class ApplicationMenuLite {
   public ApplicationMenuLite() {
   }
 
-  private String mId = "";
+  private String id = "";
 
   /**
    */
-  public final String getId() {
-    return mId;
+  public String getId() {
+    return id;
   }
 
-  public final void setId(String value) {
-    mId = value;
+  public void setId(String value) {
+    id = value;
   }
 
-  private Application mApplication;
+  private Application application;
 
   /**
    * 应用
    */
-  public final Application getApplication() {
-    if (mApplication == null && !StringUtil.isNullOrEmpty(this.getApplicationId())) {
-      mApplication = AppsContext.getInstance().getApplicationService().findOne(this.getApplicationId());
+  public Application getApplication() {
+    if (application == null && !StringUtil.isNullOrEmpty(getApplicationId())) {
+      application = AppsContext.getInstance().getApplicationService().findOne(getApplicationId());
     }
 
-    return mApplication;
+    return application;
   }
-  ///#endregion
 
-  ///#region 属性:ApplicationId
-  private String mApplicationId = "";
+  private String applicationId = "";
 
   /**
    */
-  public final String getApplicationId() {
-    return mApplicationId;
+  public String getApplicationId() {
+    return applicationId;
   }
 
-  public final void setApplicationId(String value) {
-    mApplicationId = value;
+  public void setApplicationId(String value) {
+    applicationId = value;
   }
-  ///#endregion
-
-  ///#region 属性:ApplicationName
 
   /**
    */
-  public final String getApplicationName() {
-    return this.getApplication() == null ? "" : this.getApplication().getApplicationName();
+  public String getApplicationName() {
+    return getApplication() == null ? "" : getApplication().getApplicationName();
   }
-  ///#endregion
-
-  ///#region 属性:ApplicationDisplayName
 
   /**
    */
-  public final String getApplicationDisplayName() {
-    return this.getApplication() == null ? "" : this.getApplication().getApplicationDisplayName();
+  public String getApplicationDisplayName() {
+    return getApplication() == null ? "" : getApplication().getApplicationDisplayName();
   }
-  ///#endregion
 
-  ///#region 属性:Parent
-  private ApplicationMenu mParent;
+  private ApplicationMenu parent;
 
   /**
    * 应用
    */
-  public final ApplicationMenu getParent() {
-    if (UUIDUtil.emptyString().equals(this.getParentId())) {
+  public ApplicationMenu getParent() {
+    if (UUIDUtil.emptyString().equals(getParentId())) {
       return null;
     }
 
-    if (mParent == null && !StringUtil.isNullOrEmpty(this.getParentId())) {
-      mParent = AppsContext.getInstance().getApplicationMenuService().findOne(this.getParentId());
+    if (parent == null && !StringUtil.isNullOrEmpty(getParentId())) {
+      parent = AppsContext.getInstance().getApplicationMenuService().findOne(getParentId());
     }
 
-    return mParent;
+    return parent;
   }
-  ///#endregion
 
-  ///#region 属性:ParentId
-  private String mParentId = UUIDUtil.emptyString();
+  private String parentId = UUIDUtil.emptyString();
 
   /**
    */
-  public final String getParentId() {
-    return mParentId;
+  public String getParentId() {
+    return parentId;
   }
 
-  public final void setParentId(String value) {
-    mParentId = value;
+  public void setParentId(String value) {
+    parentId = value;
   }
-  ///#endregion
-
-  ///#region 属性:ParentName
 
   /**
    */
-  public final String getParentName() {
-    return this.getParent() == null ? this.getApplicationDisplayName() : this.getParent().getName();
+  public String getParentName() {
+    return getParent() == null ? getApplicationDisplayName() : getParent().getName();
   }
-  ///#endregion
 
-  ///#region 属性:Code
-  private String mCode = "";
+  private String code = "";
 
   /**
    */
-  public final String getCode() {
-    return mCode;
+  public String getCode() {
+    return code;
   }
 
-  public final void setCode(String value) {
-    mCode = value;
+  public void setCode(String value) {
+    code = value;
   }
-  ///#endregion
 
-  ///#region 属性:Name
-  private String mName = "";
+  private String name = "";
 
   /**
    */
-  public final String getName() {
-    return mName;
+  public String getName() {
+    return name;
   }
 
-  public final void setName(String value) {
-    mName = value;
+  public void setName(String value) {
+    name = value;
   }
-  ///#endregion
 
-  ///#region 属性:Description
-  private String mDescription = "";
+  private String description = "";
 
   /**
    */
-  public final String getDescription() {
-    return mDescription;
+  public String getDescription() {
+    return description;
   }
 
-  public final void setDescription(String value) {
-    mDescription = value;
+  public void setDescription(String value) {
+    description = value;
   }
-  ///#endregion
 
-  ///#region 属性:Url
-  private String mUrl = "";
+  private String url = "";
 
   /**
    */
-  public final String getUrl() {
-    return mUrl;
+  public String getUrl() {
+    return url;
   }
 
-  public final void setUrl(String value) {
-    mUrl = value;
+  public void setUrl(String value) {
+    url = value;
   }
-  ///#endregion
 
-  ///#region 属性:Target
-  private String mTarget = "_self";
+  private String target = "_self";
 
   /**
    */
-  public final String getTarget() {
-    return mTarget;
+  public String getTarget() {
+    return target;
   }
 
-  public final void setTarget(String value) {
-    mTarget = value;
+  public void setTarget(String value) {
+    target = value;
   }
-  ///#endregion
 
-  ///#region 属性:TargetView
-  private String mTargetView = "";
+  private String targetView = "";
 
   /**
    */
-  public final String getTargetView() {
-    if (StringUtil.isNullOrEmpty(mTargetView) && !StringUtil.isNullOrEmpty(this.getTarget())) {
-      this.mTargetView = AppsContext.getInstance().getApplicationSettingService().getText(AppsContext.getInstance().getApplicationService().findOneByApplicationName("ApplicationManagement").getId(), "应用管理_应用链接打开方式", this.getTarget());
+  public String getTargetView() {
+    if (StringUtil.isNullOrEmpty(targetView) && !StringUtil.isNullOrEmpty(getTarget())) {
+      targetView = AppsContext.getInstance().getApplicationSettingService().getText(
+        AppsContext.getInstance().getApplicationService().findOneByApplicationName(APPLICATION_NAME).getId(),
+        "应用管理_应用链接打开方式",
+        getTarget());
     }
 
-    return mTargetView;
+    return targetView;
   }
 
-  private String mMenuType = "ApplicationMenu";
+  private String menuType = "ApplicationMenu";
 
   /**
    */
-  public final String getMenuType() {
-    return mMenuType;
+  public String getMenuType() {
+    return menuType;
   }
 
-  public final void setMenuType(String value) {
-    mMenuType = value;
+  public void setMenuType(String value) {
+    menuType = value;
   }
 
-  private String mMenuTypeView = null;
+  private String menuTypeView = null;
 
   /**
    */
-  public final String getMenuTypeView() {
-    if (StringUtil.isNullOrEmpty(mMenuTypeView) && !StringUtil.isNullOrEmpty(this.getMenuType())) {
-      this.mMenuTypeView = AppsContext.getInstance().getApplicationSettingService().getText(AppsContext.getInstance().getApplicationService().findOneByApplicationName("ApplicationManagement").getId(), "应用管理_应用菜单类别", mMenuType);
+  public String getMenuTypeView() {
+    if (StringUtil.isNullOrEmpty(menuTypeView) && !StringUtil.isNullOrEmpty(getMenuType())) {
+      menuTypeView = AppsContext.getInstance().getApplicationSettingService().getText(
+        AppsContext.getInstance().getApplicationService().findOneByApplicationName(APPLICATION_NAME).getId(),
+        "应用管理_应用菜单类别", menuType);
     }
 
-    return mMenuTypeView;
+    return menuTypeView;
   }
-  ///#endregion
 
-  ///#region 属性:IconPath
-  private String mIconPath = "";
+  private String iconPath = "";
 
   /**
    */
-  public final String getIconPath() {
-    return mIconPath;
+  public String getIconPath() {
+    return iconPath;
   }
 
-  public final void setIconPath(String value) {
-    mIconPath = value;
+  public void setIconPath(String value) {
+    iconPath = value;
   }
-  ///#endregion
 
-  ///#region 属性:BigIconPath
-  private String mBigIconPath = "";
+  private String bigIconPath = "";
 
   /**
    */
-  public final String getBigIconPath() {
-    return mBigIconPath;
+  public String getBigIconPath() {
+    return bigIconPath;
   }
 
-  public final void setBigIconPath(String value) {
-    mBigIconPath = value;
+  public void setBigIconPath(String value) {
+    bigIconPath = value;
   }
-  ///#endregion
 
-  ///#region 属性:DisplayType
-  private String mDisplayType = "";
+  private String displayType = "";
 
   /**
    * 显示方式
    */
-  public final String getDisplayType() {
-    return mDisplayType;
+  public String getDisplayType() {
+    return displayType;
   }
 
-  public final void setDisplayType(String value) {
-    mDisplayType = value;
+  public void setDisplayType(String value) {
+    displayType = value;
   }
-  ///#endregion
 
-  ///#region 属性:DisplayTypeView
-  private String mDisplayTypeView = "";
+  private String displayTypeView = "";
 
   /**
    */
-  public final String getDisplayTypeView() {
-    if (StringUtil.isNullOrEmpty(mDisplayTypeView) && !StringUtil.isNullOrEmpty(this.getDisplayType())) {
-      this.mDisplayTypeView = AppsContext.getInstance().getApplicationSettingService().getText(AppsContext.getInstance().getApplicationService().findOneByApplicationName("ApplicationManagement").getId(), "应用管理_应用菜单展现方式", this.getDisplayType());
+  public String getDisplayTypeView() {
+    if (StringUtil.isNullOrEmpty(displayTypeView) && !StringUtil.isNullOrEmpty(getDisplayType())) {
+      displayTypeView = AppsContext.getInstance().getApplicationSettingService().getText(
+        AppsContext.getInstance().getApplicationService().findOneByApplicationName(APPLICATION_NAME).getId(),
+        "应用管理_应用菜单展现方式",
+        getDisplayType());
     }
 
-    return mDisplayTypeView;
+    return displayTypeView;
   }
 
-  private int mHasChild;
+  private int hasChild;
 
   /**
    */
-  public final int getHasChild() {
-    return mHasChild;
+  public int getHasChild() {
+    return hasChild;
   }
 
-  public final void setHasChild(int value) {
-    mHasChild = value;
+  public void setHasChild(int value) {
+    hasChild = value;
   }
-  ///#endregion
 
-  ///#region 属性:ContextObject
-  private String mContextObject = "";
+  private String contextObject = "";
 
   /**
    * 上下文对象
    */
-  public final String getContextObject() {
-    return mContextObject;
+  public String getContextObject() {
+    return contextObject;
   }
 
-  public final void setContextObject(String value) {
-    mContextObject = value;
+  public void setContextObject(String value) {
+    contextObject = value;
   }
-  ///#endregion
 
-  ///#region 属性:OrderId
-  private String mOrderId = "";
+  private String orderId = "";
 
   /**
    */
-  public final String getOrderId() {
-    return mOrderId;
+  public String getOrderId() {
+    return orderId;
   }
 
-  public final void setOrderId(String value) {
-    mOrderId = value;
+  public void setOrderId(String value) {
+    orderId = value;
   }
-  ///#endregion
 
-  ///#region 属性:Status
-  private int mStatus;
+  private int status;
 
   /**
    */
-  public final int getStatus() {
-    return mStatus;
+  public int getStatus() {
+    return status;
   }
 
-  public final void setStatus(int value) {
-    mStatus = value;
+  public void setStatus(int value) {
+    status = value;
   }
-  ///#endregion
 
-  ///#region 属性:Remark
-  private String mRemark = "";
+  private String remark = "";
 
   /**
    */
-  public final String getRemark() {
-    return mRemark;
+  public String getRemark() {
+    return remark;
   }
 
-  public final void setRemark(String value) {
-    mRemark = value;
+  public void setRemark(String value) {
+    remark = value;
   }
 
-  private String mFullPath = "";
+  private String fullPath = "";
 
   /**
    */
-  public final String getFullPath() {
-    return mFullPath;
+  public String getFullPath() {
+    return fullPath;
   }
 
-  public final void setFullPath(String value) {
-    mFullPath = value;
+  public void setFullPath(String value) {
+    fullPath = value;
   }
 
-  private java.time.LocalDateTime mModifiedDate = java.time.LocalDateTime.MIN;
+  private java.time.LocalDateTime modifiedDate = java.time.LocalDateTime.MIN;
 
   /**
    */
-  public final java.time.LocalDateTime getModifiedDate() {
-    return mModifiedDate;
+  public java.time.LocalDateTime getModifiedDate() {
+    return modifiedDate;
   }
 
-  public final void setModifiedDate(java.time.LocalDateTime value) {
-    mModifiedDate = value;
+  public void setModifiedDate(java.time.LocalDateTime value) {
+    modifiedDate = value;
   }
 
-  private java.time.LocalDateTime mCreatedDate = java.time.LocalDateTime.MIN;
+  private java.time.LocalDateTime createdDate = java.time.LocalDateTime.MIN;
 
   /**
    */
-  public final java.time.LocalDateTime getCreatedDate() {
-    return mCreatedDate;
+  public java.time.LocalDateTime getCreatedDate() {
+    return createdDate;
   }
 
-  public final void setCreatedDate(java.time.LocalDateTime value) {
-    mCreatedDate = value;
+  public void setCreatedDate(java.time.LocalDateTime value) {
+    createdDate = value;
   }
 }

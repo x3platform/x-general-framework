@@ -3,9 +3,13 @@ package com.x3platform.membership.services;
 import com.x3platform.AuthorizationObject;
 import com.x3platform.data.DataQuery;
 import com.x3platform.membership.AccountOrganizationUnitRelation;
-import com.x3platform.membership.models.OrganizationUnitInfo;
+import com.x3platform.membership.OrganizationUnit;
+import com.x3platform.tree.DynamicTreeView;
+import com.x3platform.tree.TreeView;
+
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author ruanyu
@@ -18,22 +22,22 @@ public interface OrganizationUnitService {
   /**
    * 保存记录
    *
-   * @param param OrganizationUnitInfo 实例详细信息
-   * @return OrganizationUnitInfo 实例详细信息
+   * @param param OrganizationUnit 实例详细信息
+   * @return OrganizationUnit 实例详细信息
    */
-  int save(OrganizationUnitInfo param);
+  int save(OrganizationUnit param);
 
   /**
    * 删除记录
    *
    * @param id 标识
    */
-  void delete(String id);
+  int delete(String id);
 
   /**
    * 根据父级查询最大的编码
    */
-  OrganizationUnitInfo findMaxCode();
+  // OrganizationUnit findMaxCode();
 
   // -------------------------------------------------------
   // 查询
@@ -45,105 +49,95 @@ public interface OrganizationUnitService {
    * @param id 组织单位标识
    * @return 返回一个 OrganizationUnit 实例的详细信息
    */
-  OrganizationUnitInfo findOne(String id);
+  OrganizationUnit findOne(String id);
 
   /**
    * 查询某条记录
    *
    * @param globalName 组织的全局名称
-   * @return 返回一个<see                                                                                                                               cref                                                               =                                                               "                                                               OrganizationUnit                                                               "                                                               />实例的详细信息
+   * @return 返回一个{@link OrganizationUnit}实例的详细信息
    */
-  OrganizationUnitInfo findOneByGlobalName(String globalName);
+  OrganizationUnit findOneByGlobalName(String globalName);
 
   /**
    * 查询某个角色所属的组织信息
    *
    * @param roleId 角色标识
-   * @return 返回所有<see                                                                                                                               cref                                                               =                                                               "                                                               OrganizationUnit                                                               "                                                               />实例的详细信息
+   * @return 返回所有{@link OrganizationUnit}实例的详细信息
    */
-  OrganizationUnitInfo findOneByRoleId(String roleId);
+  OrganizationUnit findOneByRoleId(String roleId);
 
   /**
    * 查询某个角色所属的某一级次的组织信息
    *
    * @param roleId 角色标识
    * @param level 层次
-   * @return 返回所有<see                                                                                                                                                                                                                                                               cref                                                                                                                               =                                                                                                                               "                                                                                                                               OrganizationUnit                                                                                                                               "                                                                                                                               />实例的详细信息
+   * @return 返回所有{@link OrganizationUnit}实例的详细信息
    */
-  OrganizationUnitInfo findOneByRoleId(String roleId, int level);
+  OrganizationUnit findOneByRoleId(String roleId, int level);
 
   /**
    * 查询某个组织所属的公司信息
    *
    * @param organizationId 组织标识
-   * @return 返回所有<see                                                                                                                               cref                                                               =                                                               "                                                               OrganizationUnit                                                               "                                                               />实例的详细信息
+   * @return 返回所有{@link OrganizationUnit}实例的详细信息
    */
-  OrganizationUnitInfo findCorporationByOrganizationUnitId(String organizationId);
+  OrganizationUnit findCorporationByOrganizationUnitId(String organizationId);
 
   /**
    * 查询某个组织的所属某个上级部门信息
    *
    * @param organizationId 组织标识
    * @param level 层次
-   * @return 返回所有<see                                                                                                                                                                                                                                                               cref                                                                                                                               =                                                                                                                               "                                                                                                                               OrganizationUnit                                                                                                                               "                                                                                                                               />实例的详细信息
+   * @return 返回所有{@link OrganizationUnit}实例的详细信息
    */
-  OrganizationUnitInfo findDepartmentByOrganizationUnitId(String organizationId, int level);
+  OrganizationUnit findDepartmentByOrganizationUnitId(String organizationId, int level);
 
   /**
    * 查询所有相关记录
    *
    * @param query 数据查询参数
-   * @return 返回所有 Application 实例的详细信息
+   * @return 返回所有 {@link OrganizationUnit} 实例的详细信息
    */
-  List<OrganizationUnitInfo> findAll(DataQuery query);
+  List<OrganizationUnit> findAll(DataQuery query);
+
+  /**
+   * 查询列表型 数据问题；
+   *
+   * @param params
+   * @return
+   */
+  List<OrganizationUnit> findAll(Map params);
 
   /**
    * 查询所有相关记录
    *
-   * @return 返回所有<see                                                                                                                               cref                                                               =                                                               "                                                               OrganizationUnit                                                               "                                                                                                                               />实例的详细信息
+   * @return 所有 {@link OrganizationUnit} 实例的详细信息
    */
-  List<OrganizationUnitInfo> findAll();
-
-  /**
-   * 查询所有相关记录
-   *
-   * @param whereClause SQL 查询条件
-   * @return 返回所有<see                                                                                                                               cref                                                               =                                                               "                                                               OrganizationUnit                                                               "                                                                                                                               />实例的详细信息
-   */
-  // List<OrganizationUnit> findAll(String whereClause);
-
-  /**
-   * 查询所有相关记录
-   *
-   * @param whereClause SQL 查询条件
-   * @param length      条数
-   * @return 返回所有<see                                                                                                                               cref                                                               =                                                               "                                                               OrganizationUnit                                                               "                                                                                                                               />实例的详细信息
-   */
-  // List<OrganizationUnit> findAll(String whereClause, int length);
+  List<OrganizationUnit> findAll();
 
   /**
    * 查询某个父节点下的所有组织单位
    *
    * @param parentId 父节标识
-   * @return 返回一个<see                                                                                                                               cref                                                               =                                                               "                                                               OrganizationUnit                                                               "                                                               />实例的详细信息
+   * @return 一个 {@link OrganizationUnit} 实例的详细信息
    */
-  List<OrganizationUnitInfo> findAllByParentId(String parentId);
-  ///#endregion
-
-  ///#region 函数:FindAllByParentId(string parentId, int depth)
+  List<OrganizationUnit> findAllByParentId(String parentId);
 
   /**
    * 查询某个父节点下的所有组织单位
    *
    * @param parentId 父节标识
-   * @param depth 深入获取的层次，0表示只获取本层次，-1表示全部获取
-   * @return 返回所有实例<see                                                                                                                                                                                                                                                               cref                                                                                                                               =                                                                                                                               "                                                                                                                               OrganizationUnit                                                                                                                               "                                                                                                                               />的详细信息
+   * @param depth 深入获取的层次，0 表示只获取本层次，-1 表示全部获取
+   * @return 返回所有实例 {@link OrganizationUnit} 的详细信息
    */
-  List<OrganizationUnitInfo> findAllByParentId(String parentId, int depth);
+  List<OrganizationUnit> findAllByParentId(String parentId, int depth);
 
-  ///#endregion
-
-  ///#region 函数:FindAllByAccountId(string accountId)
+  /**
+   * @param level 查询等级
+   * @param parentId 查询等级
+   */
+  OrganizationUnit findPhysicalTreeView(String parentId, int level);
 
   /**
    * 查询某个用户所在的所有组织单位
@@ -151,78 +145,55 @@ public interface OrganizationUnitService {
    * @param accountId 帐号标识
    * @return 返回一个 OrganizationUnit 实例的详细信息
    */
-  List<OrganizationUnitInfo> findAllByAccountId(String accountId);
-  ///#endregion
-
-  ///#region 函数:FindAllByRoleIds(string roleIds)
+  List<OrganizationUnit> findAllByAccountId(String accountId);
 
   /**
    * 查询某个角色的所属相关组织
    *
    * @param roleIds 角色标识
-   * @return 返回所有<see                                                                                                                               cref                                                               =                                                               "                                                               OrganizationUnit                                                               "                                                               />实例的详细信息
+   * @return 返回所有{@link OrganizationUnit}实例的详细信息
    */
-  List<OrganizationUnitInfo> findAllByRoleIds(String roleIds);
-  ///#endregion
-
-  ///#region 函数:FindAllByRoleIds(string roleIds, int level)
+  List<OrganizationUnit> findAllByRoleIds(String roleIds);
 
   /**
    * 查询某个角色的所属相关组织
    *
    * @param roleIds 角色标识
    * @param level 层次
-   * @return 返回所有<see                                                                                                                                                                                                                                                               cref                                                                                                                               =                                                                                                                               "                                                                                                                               OrganizationUnit                                                                                                                               "                                                                                                                               />实例的详细信息
+   * @return 返回所有{@link OrganizationUnit}实例的详细信息
    */
-  List<OrganizationUnitInfo> findAllByRoleIds(String roleIds, int level);
-  ///#endregion
-
-  ///#region 函数:FindAllByCorporationId(string corporationId)
+  List<OrganizationUnit> findAllByRoleIds(String roleIds, int level);
 
   /**
    * 递归查询某个公司下面所有的组织
    *
    * @param corporationId 公司标识
-   * @return 返回所有<see                                                                                                                               cref                                                               =                                                               "                                                               OrganizationUnit                                                               "                                                               />实例的详细信息
+   * @return 返回所有{@link OrganizationUnit}实例的详细信息
    */
-  List<OrganizationUnitInfo> findAllByCorporationId(String corporationId);
-  ///#endregion
-
-  ///#region 函数:FindAllByProjectId(string projectId)
+  List<OrganizationUnit> findAllByCorporationId(String corporationId);
 
   /**
    * 递归查询某个项目下面所有的组织
    *
    * @param projectId 项目标识
-   * @return 返回所有<see                                                                                                                               cref                                                               =                                                               "                                                               OrganizationUnit                                                               "                                                               />实例的详细信息
+   * @return 返回所有{@link OrganizationUnit}实例的详细信息
    */
-  List<OrganizationUnitInfo> findAllByProjectId(String projectId);
+  List<OrganizationUnit> findAllByProjectId(String projectId);
 
   /**
    * 查询某个帐户所属的所有公司信息
    *
    * @param accountId 帐号标识
-   * @return 返回所有<see                                                                                                                               cref                                                               =                                                               "                                                               OrganizationUnit                                                               "                                                               />实例的详细信息
+   * @return 返回所有{@link OrganizationUnit}实例的详细信息
    */
-  List<OrganizationUnitInfo> findCorporationsByAccountId(String accountId);
+  List<OrganizationUnit> findCorporationsByAccountId(String accountId);
 
   // -------------------------------------------------------
   // 自定义功能
   // -------------------------------------------------------
 
   /**
-   * 分页函数
-   *
-   * @param startIndex 开始行索引数,由0开始统计
-   * @param pageSize   页面大小
-   * @param query      数据查询参数
-   * @param rowCount   记录行数
-   * @return 返回一个列表<see                                                                                                                               cref                                                               =                                                               "                                                               OrganizationUnit                                                               "                                                               />
-   */
-  // List<OrganizationUnit> getPaging(int startIndex, int pageSize, DataQuery query, tangible.RefObject<Integer> rowCount);
-
-  /**
-   * 检测是否存在相关的记录
+   * 查询是否存在相关的记录
    *
    * @param id 组织单位标识
    * @return 布尔值
@@ -230,7 +201,7 @@ public interface OrganizationUnitService {
   boolean isExist(String id);
 
   /**
-   * 检测是否存在相关的记录
+   * 查询是否存在相关的记录
    *
    * @param name 组织单位名称
    * @return 布尔值
@@ -238,7 +209,7 @@ public interface OrganizationUnitService {
   boolean isExistName(String name);
 
   /**
-   * 检测是否存在相关的记录
+   * 查询是否存在相关的记录
    *
    * @param globalName 组织单位全局名称
    * @return 布尔值
@@ -246,7 +217,7 @@ public interface OrganizationUnitService {
   boolean isExistGlobalName(String globalName);
 
   /**
-   * 检测是否存在相关的记录
+   * 查询是否存在相关的记录
    *
    * @param id 组织标识
    * @param name 组织名称
@@ -282,7 +253,7 @@ public interface OrganizationUnitService {
    *
    * @param organizationId 组织标识
    */
-  String getLDAPOUPathByOrganizationUnitId(String organizationId);
+  String getLdapOuPathByOrganizationUnitId(String organizationId);
 
   /**
    * 设置全局名称
@@ -294,7 +265,7 @@ public interface OrganizationUnitService {
   int setGlobalName(String id, String globalName);
 
   /**
-   * 检测是否存在相关的记录
+   * 查询是否存在相关的记录
    *
    * @param id 组织标识
    * @param parentId 父级组织标识
@@ -321,32 +292,41 @@ public interface OrganizationUnitService {
   /**
    * 查询当前组织下， 及 一级所有的组织机构
    */
-  List<OrganizationUnitInfo> getChildOrganizationByOrganizationUnitId(String organizationUnitId);
-
-  /**
-   * 创建数据包
-   *
-   * @param beginDate 开始时间
-   * @param endDate   结束时间
-   */
-  // String CreatePackage(Date beginDate, Date endDate);
+  List<OrganizationUnit> getChildOrganizationByOrganizationUnitId(String organizationUnitId);
 
   /**
    * 同步信息至 Active Directory
    *
    * @param param 组织信息
+   * @return 消息代码
    */
-  int syncToLDAP(OrganizationUnitInfo param);
-  ///#endregion
+  int syncToLdap(OrganizationUnit param);
 
-  ///#region 函数:SyncFromPackPage(OrganizationUnit param)
+  // -------------------------------------------------------
+  // 树形视图
+  // -------------------------------------------------------
 
   /**
-   * 同步信息
+   * 获取树形数据信息
    *
-   * @param param 组织单位信息
+   * @param treeViewName 树形视图名称
+   * @param treeViewRootTreeNodeId 树形视图根节点标识
+   * @param commandFormat 命令格式
+   * @return {@link TreeView} 对象
    */
-  // int SyncFromPackPage(OrganizationUnit param);
+  TreeView getTreeView(String treeViewName, String treeViewRootTreeNodeId, String commandFormat);
+
+  /**
+   * 根据父级节点标识动态获取下一层级的数据信息
+   *
+   * @param treeViewName 树形视图名称
+   * @param treeViewRootTreeNodeId 树形视图根节点标识
+   * @param parentId 父级节点标识
+   * @param commandFormat 命令格式
+   * @return {@link DynamicTreeView} 对象
+   */
+  DynamicTreeView getDynamicTreeView(String treeViewName, String treeViewRootTreeNodeId, String parentId,
+    String commandFormat);
 
   // -------------------------------------------------------
   // 设置帐号和组织关系
@@ -363,10 +343,10 @@ public interface OrganizationUnitService {
   /**
    * 根据组织查询相关帐号的关系
    *
-   * @param organizationId 组织标识
+   * @param organizationUnitId 组织标识
    * @return Table Columns：AccountId, OrganizationUnitId, IsDefault, BeginDate, EndDate
    */
-  List<AccountOrganizationUnitRelation> findAllRelationByRoleId(String organizationId);
+  List<AccountOrganizationUnitRelation> findAllRelationByOrganizationUnitId(String organizationUnitId);
 
   /**
    * 添加帐号与相关组织的关系
@@ -384,6 +364,7 @@ public interface OrganizationUnitService {
    * @param isDefault 是否是默认组织
    * @param beginDate 启用时间
    * @param endDate 停用时间
+   * @return 消息代码
    */
   int addRelation(String accountId, String organizationId, boolean isDefault, Date beginDate, Date endDate);
 
@@ -424,6 +405,7 @@ public interface OrganizationUnitService {
    * 移除帐号相关组织的默认关系
    *
    * @param accountId 帐号标识
+   * @return 消息代码
    */
   int removeDefaultRelation(String accountId);
 
@@ -431,6 +413,7 @@ public interface OrganizationUnitService {
    * 移除帐号相关组织的非默认关系
    *
    * @param accountId 帐号标识
+   * @return 消息代码
    */
   int removeNondefaultRelation(String accountId);
 

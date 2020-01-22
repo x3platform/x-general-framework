@@ -9,7 +9,7 @@ public interface PasswordEncryptionManagement {
   /**
    * 获取名称
    *
-   * @return 返回管理器名称
+   * @return 管理器名称
    */
   String getName();
 

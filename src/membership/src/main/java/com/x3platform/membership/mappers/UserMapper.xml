@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.x3platform.membership.mappers.UserMapper">
+  <resultMap id="BaseResultMap" type="com.x3platform.membership.models.UserInfo">
+    <result property="id" jdbcType="VARCHAR" column="id" />
+    <result property="accountId" jdbcType="VARCHAR" column="account_id" />
+    <result property="corporationId" jdbcType="VARCHAR" column="corporation_id" />
+    <result property="departmentId" jdbcType="VARCHAR" column="department_id" />
+    <result property="department2Id" jdbcType="VARCHAR" column="department2_id" />
+    <result property="department3Id" jdbcType="VARCHAR" column="department3_id" />
+    <result property="organizationUnitId" jdbcType="VARCHAR" column="organization_unit_id" />
+    <result property="roleId" jdbcType="VARCHAR" column="role_id" />
+    <result property="headship" jdbcType="VARCHAR" column="headship" />
+    <result property="gender" jdbcType="VARCHAR" column="gender" />
+    <result property="birthday" jdbcType="TIMESTAMP" column="birthday" />
+    <result property="graduationDate" jdbcType="TIMESTAMP" column="graduation_date" />
+    <result property="entryDate" jdbcType="TIMESTAMP" column="entry_date" />
+    <result property="promotionDate" jdbcType="TIMESTAMP" column="promotion_date" />
+    <result property="city" jdbcType="VARCHAR" column="city" />
+    <result property="mobile" jdbcType="VARCHAR" column="mobile" />
+    <result property="email" jdbcType="VARCHAR" column="email" />
+    <result property="fullPath" jdbcType="VARCHAR" column="full_path" />
+    <result property="modifiedDate" jdbcType="TIMESTAMP" column="modified_date" />
+    <result property="createdDate" jdbcType="TIMESTAMP" column="created_date" />
+  </resultMap>
+  <sql id="Select_Where_Clause">
+    <where>
+      <!-- 默认查询场景 -->
+      <if test="var_scene == 'default'">
+        <if test="param_id != null and param_id != ''">
+          AND t.id = #{param_id}
+        </if>
+        <if test="param_account_id != null and param_account_id != ''">
+          AND t.account_id = #{param_account_id}
+        </if>
+        <if test="param_corporation_id != null and param_corporation_id != ''">
+          AND t.corporation_id = #{param_corporation_id}
+        </if>
+        <if test="param_department_id != null and param_department_id != ''">
+          AND t.department_id = #{param_department_id}
+        </if>
+        <if test="param_department2_id != null and param_department2_id != ''">
+          AND t.department2_id = #{param_department2_id}
+        </if>
+        <if test="param_department3_id != null and param_department3_id != ''">
+          AND t.department3_id = #{param_department3_id}
+        </if>
+        <if test="param_organization_unit_id != null and param_organization_unit_id != ''">
+          AND t.organization_unit_id = #{param_organization_unit_id}
+        </if>
+        <if test="param_role_id != null and param_role_id != ''">
+          AND t.role_id = #{param_role_id}
+        </if>
+        <if test="param_job_id != null and param_job_id != ''">
+          AND t.job_id = #{param_job_id}
+        </if>
+        <if test="param_assigned_job_id != null and param_assigned_job_id != ''">
+          AND t.assigned_job_id = #{param_assigned_job_id}
+        </if>
+        <if test="param_job_grade_id != null and param_job_grade_id != ''">
+          AND t.job_grade_id = #{param_job_grade_id}
+        </if>
+        <if test="param_headship != null and param_headship != ''">
+          AND t.headship = #{param_headship}
+        </if>
+        <if test="param_gender != null and param_gender != ''">
+          AND t.gender = #{param_gender}
+        </if>
+        <if test="param_birthday != null">
+          AND t.birthday = #{param_birthday}
+        </if>
+        <if test="param_graduation_date != null">
+          AND t.graduation_date = #{param_graduation_date}
+        </if>
+        <if test="param_entry_date != null">
+          AND t.entry_date = #{param_entry_date}
+        </if>
+        <if test="param_promotion_date != null">
+          AND t.promotion_date = #{param_promotion_date}
+        </if>
+        <if test="param_city != null and param_city != ''">
+          AND t.city = #{param_city}
+        </if>
+        <if test="param_mobile != null and param_mobile != ''">
+          AND t.mobile = #{param_mobile}
+        </if>
+        <if test="param_email != null and param_email != ''">
+          AND t.email = #{param_email}
+        </if>
+        <if test="param_full_path != null and param_full_path != ''">
+          AND t.full_path = #{param_full_path}
+        </if>
+        <if test="param_modified_date != null">
+          AND t.modified_date = #{param_modified_date}
+        </if>
+        <if test="param_created_date != null">
+          AND t.created_date = #{param_created_date}
+        </if>
+      </if>
+    </where>
+  </sql>
+  <insert id="insert" parameterType="com.x3platform.membership.models.UserInfo">
+    INSERT INTO sys_user
+    (
+      id,
+      account_id,
+      corporation_id,
+      department_id,
+      department2_id,
+      department3_id,
+      organization_unit_id,
+      role_id,
+      headship,
+      gender,
+      birthday,
+      graduation_date,
+      entry_date,
+      promotion_date,
+      city,
+      full_path,
+      modified_date,
+      created_date
+    )
+    VALUES
+    (
+      #{id,jdbcType=VARCHAR},
+      #{accountId,jdbcType=VARCHAR},
+      #{corporationId,jdbcType=VARCHAR},
+      #{departmentId,jdbcType=VARCHAR},
+      #{department2Id,jdbcType=VARCHAR},
+      #{department3Id,jdbcType=VARCHAR},
+      #{organizationUnitId,jdbcType=VARCHAR},
+      #{roleId,jdbcType=VARCHAR},
+      #{headship,jdbcType=VARCHAR},
+      #{gender,jdbcType=VARCHAR},
+      #{birthday,jdbcType=TIMESTAMP},
+      #{graduationDate,jdbcType=TIMESTAMP},
+      #{entryDate,jdbcType=TIMESTAMP},
+      #{promotionDate,jdbcType=TIMESTAMP},
+      #{city,jdbcType=VARCHAR},
+      #{fullPath,jdbcType=VARCHAR},
+      CURRENT_TIMESTAMP,
+      CURRENT_TIMESTAMP
+    )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.x3platform.membership.models.UserInfo">
+    UPDATE sys_user SET
+
+      account_id = #{accountId,jdbcType=VARCHAR},
+      corporation_id = #{corporationId,jdbcType=VARCHAR},
+      department_id = #{departmentId,jdbcType=VARCHAR},
+      department2_id = #{department2Id,jdbcType=VARCHAR},
+      department3_id = #{department3Id,jdbcType=VARCHAR},
+      organization_unit_id = #{organizationUnitId,jdbcType=VARCHAR},
+      role_id = #{roleId,jdbcType=VARCHAR},
+      headship = #{headship,jdbcType=VARCHAR},
+      gender = #{gender,jdbcType=VARCHAR},
+      birthday = #{birthday,jdbcType=TIMESTAMP},
+      graduation_date = #{graduationDate,jdbcType=TIMESTAMP},
+      entry_date = #{entryDate,jdbcType=TIMESTAMP},
+      promotion_date = #{promotionDate,jdbcType=TIMESTAMP},
+      city = #{city,jdbcType=VARCHAR},
+      full_path = #{fullPath,jdbcType=VARCHAR},
+      modified_date = CURRENT_TIMESTAMP
+
+    WHERE id = #{id}
+  </update>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    DELETE FROM sys_user WHERE id = #{id}
+  </delete>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap" >
+    SELECT * FROM sys_user WHERE id = #{id}
+  </select>
+  <select id="findAll" parameterType="java.util.Map" resultMap="BaseResultMap" >
+    SELECT * FROM sys_user t
+    <if test="_parameter != null">
+      <include refid="Select_Where_Clause" />
+    </if>
+    <if test="orders != null and orders.size() > 0">
+      ORDER BY
+      <foreach collection="orders" item="order" index="index" separator="," >
+        ${order}
+      </foreach>
+    </if>
+    <if test="length > 0">
+      LIMIT 0, ${length}
+    </if>
+  </select>
+  <select id="isExist" resultType="java.lang.Boolean" >
+    SELECT COUNT(0) AS "Count" FROM sys_user WHERE id = #{id}
+  </select>
+
+  <update id="setDefaultCorporationAndDepartments" parameterType="com.x3platform.membership.models.UserInfo" >
+    UPDATE sys_user SET
+
+      corporation_id = #{corporation_id},
+      department_id = #{department_id},
+      department2_id = #{department2_id},
+      department3_id = #{department3_id},
+      modified_date = CURRENT_TIMESTAMP
+
+    WHERE account_id = #{account_id}
+  </update>
+
+  <update id="setDefaultOrganizationUnit" parameterType="com.x3platform.membership.models.UserInfo" >
+    UPDATE sys_user SET organization_unit_id = #{organization_unit_id}, modified_date = CURRENT_TIMESTAMP WHERE account_id = #{account_id}
+  </update>
+
+  <update id="setDefaultRole" parameterType="com.x3platform.membership.models.UserInfo" >
+    UPDATE sys_user SET role_id = #{role_id}, modified_date = CURRENT_TIMESTAMP WHERE account_id = #{account_id}
+  </update>
+</mapper>

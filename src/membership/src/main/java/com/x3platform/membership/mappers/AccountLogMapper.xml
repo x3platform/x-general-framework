@@ -84,7 +84,7 @@
     <if test="orders != null and orders.size() > 0">
       ORDER BY
       <foreach collection="orders" item="order" index="index" separator="," >
-        #{order}
+        ${order}
       </foreach>
     </if>
     <if test="length > 0">
@@ -100,7 +100,7 @@
       <include refid="Select_Where_Clause" />
     </if>
   </select>
-  <select id="isExist" resultType="boolean" >
+  <select id="isExist" resultType="java.lang.Boolean" >
     SELECT COUNT(0) AS "Count" FROM sys_account_log WHERE id = #{id}
   </select>
 </mapper>

@@ -6,6 +6,7 @@ package com.x3platform.membership;
 public interface Organization {
   /**
    * 获取标识
+   * @return 标识
    */
   String getId();
 
@@ -14,6 +15,18 @@ public interface Organization {
    * @param value 值
    */
   void setId(String value);
+
+  /**
+   * 获取编码
+   * @return 标识
+   */
+  String getCode();
+
+  /**
+   * 设置编码
+   * @param value 值
+   */
+  void setCode(String value);
 
   /**
    * 获取名称
@@ -38,13 +51,27 @@ public interface Organization {
   void setDomain(String value);
 
   /**
-   * 模式
+   * 许可信息
    */
-  String getPattern();
+  String getLicense();
 
   /**
-   * 设置模式
+   * 设置许可信息
    * @param value 值
    */
-  void setPattern(String value);
+  void setLicense(String value);
+
+  /**
+   * 获取状态
+   *
+   * @return 状态
+   */
+  int getStatus();
+
+  /**
+   * 设置状态
+   *
+   * @param value 值
+   */
+  void setStatus(int value);
 }

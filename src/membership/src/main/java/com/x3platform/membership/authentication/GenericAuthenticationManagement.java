@@ -1,5 +1,7 @@
 package com.x3platform.membership.authentication;
 
+import static com.x3platform.Constants.HTTP_HEADER_AUTHORIZATION;
+
 import com.x3platform.membership.Account;
 import com.x3platform.membership.MembershipManagement;
 import com.x3platform.membership.configuration.MembershipConfigurationView;
@@ -17,8 +19,6 @@ import java.util.Map;
 import javax.servlet.http.Cookie;
 import org.springframework.stereotype.Component;
 
-// import com.x3platform.membership.services.RedisTemplateService;
-
 /**
  * 通用的验证请求管理 分三层， 第一层 本地缓存 ， 第二层 Redis 缓存 ， 第三层 数据库缓存
  */
@@ -28,11 +28,7 @@ public abstract class GenericAuthenticationManagement implements AuthenticationM
   /**
    * 日志打印
    */
-  // private static Logger logger = LoggerFactory.getLogger(GenericAuthenticationManagement.class);
-  public static String hashKey = "account";
-  // public RedisTemplateService redisTemplate = null;
-  private Object cacheSyncRootObject;
-  // 设置是否启用 redis 缓存，
+  public static final String hashKey = "account";
 
   /**
    * 锁
@@ -104,7 +100,7 @@ public abstract class GenericAuthenticationManagement implements AuthenticationM
     String accessToken = null;
 
     // Headers 权重优先表单内容
-    if (HttpContextUtil.getRequest().getHeader("Authorization") == null) {
+    if (HttpContextUtil.getRequest().getHeader(HTTP_HEADER_AUTHORIZATION) == null) {
       // 支持直接的表单
       accessToken = HttpContextUtil.getRequest().getParameter("accessToken");
 
@@ -114,15 +110,10 @@ public abstract class GenericAuthenticationManagement implements AuthenticationM
       return accessToken;
     } else {
       // 支持 Headers
-      String authorization = HttpContextUtil.getRequest().getHeader("Authorization");
+      String authorization = HttpContextUtil.getRequest().getHeader(HTTP_HEADER_AUTHORIZATION);
 
       if (authorization.startsWith("Bearer ")) {
         accessToken = authorization.replace("Bearer ", "");
-      }
-
-      // 当接入其他平台 集成的时候使用 AMI_ACCESS_TOKEN 默认使用  Authorization
-      if (StringUtil.isNullOrEmpty(accessToken)) {
-        accessToken = HttpContextUtil.getRequest().getHeader("AMI_ACCESS_TOKEN");
       }
 
       if (StringUtil.isNullOrEmpty(accessToken)) {
@@ -132,12 +123,6 @@ public abstract class GenericAuthenticationManagement implements AuthenticationM
       return accessToken;
     }
   }
-
-  /**
-   * 获取认证的用户信息
-   */
-  @Override
-  public abstract Account getAuthUser();
 
   /**
    * 登录
@@ -165,7 +150,7 @@ public abstract class GenericAuthenticationManagement implements AuthenticationM
   }
 
   /**
-   * 注销
+   * 退出
    */
   @Override
   public int logout() {
@@ -181,13 +166,8 @@ public abstract class GenericAuthenticationManagement implements AuthenticationM
    */
   @Override
   public Map<String, Account> getSessions() {
-//    if (redisTemplate == null) {
-//      redisTemplate = MembershipManagement.getInstance().getIRedisTemplateService();
-//    }
-//    List<Object> hashAllValues = redisTemplate.hashGetHashAllValues(hashKey); // hashGetHashAllValues
-//    logger.info("------------------->" + JSON.toJSONString(hashAllValues));
     HashMap hashMap = new HashMap<String, Account>();
-    // return new HashMap<String, Account>(this.cacheStorage);
+
     return hashMap;
   }
 

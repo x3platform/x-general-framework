@@ -4,7 +4,6 @@ import com.x3platform.SpringContext;
 
 import com.x3platform.configuration.KernelConfiguration;
 import com.x3platform.data.DataQuery;
-import com.x3platform.util.ApplicationContextUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -30,24 +29,24 @@ public class DataQueryTests {
   public void testCreate() {
     DataQuery query = null;
 
-    query = DataQuery.create("{scence:'test',length:100,'where':[{name:'name',value:'hello'}]}");
+    query = DataQuery.create("{scene:'test',length:100,'where':[{name:'name',value:'hello'}]}");
 
     assertNotNull("query is not null.", query);
     assertEquals("query.getLength() == 100.", 100, query.getLength());
-    assertEquals("query.getVariables().get(\"scence\") == test.", "test", query.getVariables().get("scence"));
+    assertEquals("query.getVariables().get(\"scene\") == test.", "test", query.getVariables().get("scene"));
 
-    query = DataQuery.create("<scence>test</scence><length>100</length>");
+    query = DataQuery.create("<scene>test</scene><length>100</length>");
 
     assertNotNull("query is not null.", query);
     assertEquals("query.getLength() == 100.", 100, query.getLength());
-    assertEquals("query.getVariables().get(\"scence\") == test.", "test", query.getVariables().get("scence"));
+    assertEquals("query.getVariables().get(\"scene\") == test.", "test", query.getVariables().get("scene"));
   }
 
   @Test
   public void testGetMap() {
     DataQuery query = null;
 
-    query = DataQuery.create("<scence>test_get_map</scence><length>100</length>");
+    query = DataQuery.create("<scene>test_get_map</scene><length>100</length>");
 
     assertNotNull("query is not null.", query);
 
@@ -56,6 +55,6 @@ public class DataQueryTests {
     assertNotNull("map is not null.", map);
     assertTrue("map.get(\"length\") ==== 100.", map.size() > 0);
     assertEquals("map.get(\"length\") == 100.", 100, map.get("length"));
-    assertEquals("map.get(\"var_scence\") == test_get_map.", "test_get_map", map.get("var_scence"));
+    assertEquals("map.get(\"var_scene\") == test_get_map.", "test_get_map", map.get("var_scene"));
   }
 }

@@ -3,7 +3,7 @@ package com.x3platform.cachebuffer;
 import java.util.Date;
 
 /**
- * 对象缓存接口
+ * 可缓存的对象缓存接口
  *
  * @author ruanyu
  */

@@ -5,15 +5,15 @@
     <result property="name" column="name"/>
     <result property="expression" column="expression"/>
     <result property="seed" column="seed"/>
-    <result property="modifiedDate" column="modified_date"/>
-    <result property="createdDate" column="created_date"/>
+    <result property="modifiedDate" jdbcType="TIMESTAMP" column="modified_date"/>
+    <result property="createdDate" jdbcType="TIMESTAMP" column="created_date"/>
   </resultMap>
   <resultMap id="findAll_Result" type="com.x3platform.digitalnumber.models.DigitalNumber">
     <result property="name" column="name"/>
     <result property="expression" column="expression"/>
     <result property="seed" column="seed"/>
-    <result property="modifiedDate" column="modified_date"/>
-    <result property="createdDate" column="created_date"/>
+    <result property="modifiedDate" jdbcType="TIMESTAMP" column="modified_date"/>
+    <result property="createdDate" jdbcType="TIMESTAMP" column="created_date"/>
   </resultMap>
   <insert id="insert" parameterType="com.x3platform.digitalnumber.models.DigitalNumber">
     INSERT INTO sys_digital_number
@@ -203,34 +203,30 @@
         </where>
       </select>
       -->
-  <select id="isExist">
-    SELECT COUNT(0) AS "Count" FROM sys_digital_number WHERE $WhereClause$
-  </select>
   <select id="isExistName" resultType="boolean">
     SELECT COUNT(0) AS "Count" FROM sys_digital_number WHERE Name = #{name}
   </select>
-  <select id="getMaxSeedByPrefix#MySql">
-      SELECT
-      IF( COUNT(0)>0,
-      (SELECT CAST(MAX(REPLACE(Code, '$Prefix$', '')) AS SIGNED) FROM $EntityTableName$ WHERE Code LIKE '$Prefix$%'),
+  <select id="getMaxSeedByPrefix" resultType="java.lang.Integer" databaseId="mysql">
+      SELECT IF( COUNT(0)>0,
+      (SELECT CAST(MAX(REPLACE(code, '${prefix}', '')) AS SIGNED) FROM ${entity_table_name} WHERE code LIKE '${prefix}%'),
       0
       ) AS MaxCode
       FROM $EntityTableName$
-      WHERE Code LIKE '$Prefix$%' ;
+      WHERE code LIKE '${prefix}%';
     </select>
-  <select id="getMaxSeedByPrefix#SqlServer">
-      IF EXISTS ( SELECT 0 FROM $EntityTableName$ WHERE Code LIKE '$Prefix$%' )
+  <select id="getMaxSeedByPrefix" resultType="java.lang.Integer" databaseId="sqlserver">
+      IF EXISTS ( SELECT 0 FROM ${entity_table_name} WHERE Code LIKE '${prefix}%' )
       BEGIN
-      SELECT CONVERT(int, MAX(REPLACE(Code, '$Prefix$', '')))
-      FROM $EntityTableName$
-      WHERE Code LIKE '$Prefix$%'
+        SELECT CONVERT(int, MAX(REPLACE(Code, '${prefix}', '')))
+        FROM ${entity_table_name}
+        WHERE code LIKE '${prefix}%'
       END
       ELSE
       BEGIN
-      SELECT 0
+        SELECT 0
       END
     </select>
-  <select id="getPrefixCodeByCategoryId">
-    SELECT PrefixCode FROM $EntityCategoryTableName$ T WHERE id = #{entityCategoryId}
+  <select id="getPrefixCodeByCategoryId" resultType="java.lang.String">
+    SELECT prefix_code FROM ${entity_category_table_name} T WHERE id = #{entity_category_id}
   </select>
 </mapper>

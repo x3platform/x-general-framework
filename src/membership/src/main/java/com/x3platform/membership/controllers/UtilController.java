@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * 用来获取只能通过后台获取的转换的数字
+ * 辅助工具 API 接口
  */
-@Lazy(true)
+@Lazy
 @RestController("com.x3platform.membership.controllers.UtilController")
 @RequestMapping("/api/membership/util")
 public class UtilController {

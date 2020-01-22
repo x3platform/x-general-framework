@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.x3platform.membership.mappers.AuthorizationObjectMapper">
+  <resultMap id="BaseResultMap" type="com.x3platform.AuthorizationScope">
+    <result property="authorizationObjectType" jdbcType="VARCHAR" column="authorization_object_type" />
+    <result property="authorizationObjectId" jdbcType="VARCHAR" column="authorization_object_id" />
+    <result property="authorizationObjectName" jdbcType="VARCHAR" column="authorization_object_name" />
+  </resultMap>
+  <select id="filter">
+    SELECT * FROM view_authobject_account t
+    <where>
+      <if test="param_authorization_object_name != null and param_authorization_object_name != ''">
+        AND t.authorization_object_name = #{param_authorization_object_name}
+      </if>
+    </where>
+  </select>
+  <select id="hasAuthority" resultType="java.lang.Boolean" >
+    SELECT COUNT(*) AS "Count"
+    FROM ${scope_table_name}
+    WHERE entity_id = #{entity_id}
+    AND entity_class_name = #{entity_class_name}
+    AND authority_id = #{authority_id}
+    AND authorization_object_type = #{authorization_object_type}
+    AND authorization_object_id = #{authorization_object_id}
+  </select>
+  <select id="hasAuthorityWithAccount" resultType="java.lang.Boolean" >
+    SELECT COUNT(*) AS "Count"
+    FROM ${scope_table_name} LEFT JOIN view_authobject_account ON (
+      view_authobject_account.authorization_object_type = ${scope_table_name}.authorization_object_type
+      AND view_authobject_account.authorization_object_id = ${scope_table_name}.authorization_object_id
+      AND view_authobject_account.account_id = #{account_id})
+    WHERE entity_id = #{entity_id}
+      AND entity_class_name = #{entity_class_name}
+      AND authority_id = #{authority_id}
+  </select>
+  <insert id="addAuthorizationScope">
+    INSERT INTO ${scope_table_name}
+    (
+      entity_id,
+      entity_class_name,
+      authority_id,
+      authorization_object_type,
+      authorization_object_id
+    )
+    SELECT
+      #{entity_id},
+      #{entity_class_name},
+      #{authority_id},
+      #{authorization_object_type},
+      #{authorization_object_id}
+    FROM DUAL
+    WHERE NOT EXISTS ( SELECT * FROM ${scope_table_name} WHERE entity_id = #{entity_id} AND authority_id = #{authority_id} AND authorization_object_type = #{authorization_object_type} AND authorization_object_id = #{authorization_object_id})
+  </insert>
+  <insert id="addAuthorizationScope" databaseId="mysql">
+    INSERT INTO ${scope_table_name}
+    (
+    entity_id,
+    entity_class_name,
+    authority_id,
+    authorization_object_type,
+    authorization_object_id
+    )
+    SELECT
+    #{entity_id},
+    #{entity_class_name},
+    #{authority_id},
+    #{authorization_object_type},
+    #{authorization_object_id}
+    FROM DUAL
+    WHERE NOT EXISTS ( SELECT * FROM ${scope_table_name} WHERE entity_id = #{entity_id} AND authority_id = #{authority_id} AND authorization_object_type = #{authorization_object_type} AND authorization_object_id = #{authorization_object_id})
+  </insert>
+  <insert id="addAuthorizationScope" databaseId="oracle">
+    MERGE INTO ${scope_table_name} T1
+    USING (SELECT
+    N#{entity_id} entity_id,
+    N#{entity_class_name} entity_class_name,
+    N#{authority_id} authority_id,
+    N#{authorization_object_type} authorization_object_type,
+    N#{authorization_object_id} authorization_object_id
+    FROM DUAL) T2
+    ON ( T1.entity_id = T2.entity_id
+    AND T1.authority_id = T2.authority_id
+    AND T1.authorization_object_type = T2.authorization_object_type
+    AND T1.authorization_object_id = T2.authorization_object_id
+    )
+    WHEN NOT MATCHED THEN
+    INSERT
+    (
+      entity_id,
+      entity_class_name,
+      authority_id,
+      authorization_object_type,
+      authorization_object_id
+    )
+    VALUES
+    (
+      N#{entity_id},
+      N#{entity_class_name},
+      N#{authority_id},
+      N#{authorization_object_type},
+      N#{$authorization_object_id}
+    )
+  </insert>
+  <insert id="addAuthorizationScope" databaseId="sqlserver">
+    IF NOT EXISTS ( SELECT 0 FROM ${scope_table_name} WHERE entity_id = #{entity_id} AND authority_id = #{authority_id} AND authorization_object_type = #{authorization_object_type} AND authorization_object_id = '$authorization_object_id$' )
+    BEGIN
+    INSERT INTO ${scope_table_name}
+    (
+      entity_id,
+      entity_class_name,
+      authority_id,
+      authorization_object_type,
+      authorization_object_id
+    )
+    VALUES
+    (
+      #{entity_id},
+      #{entity_class_name},
+      #{authority_id},
+      #{authorization_object_type},
+      #{authorization_object_id}
+    )
+    END
+  </insert>
+  <delete id="removeAuthorizationScopeByEntityId">
+    DELETE FROM ${scope_table_name}
+    WHERE entity_id = #{entity_id} AND entity_class_name = #{entity_class_name} AND authority_id = #{authority_id}
+  </delete>
+  <delete id="removeAuthorizationScopeByAuthorizationObjectId">
+    DELETE FROM ${scope_table_name}
+    WHERE authorization_object_type = #{authorization_object_type} AND authorization_object_id = #{authorization_object_id} AND authority_id = #{authority_id}
+  </delete>
+  <delete id="removeAuthorizationScopeByAuthorizationObjectIdAndEntityId">
+    DELETE FROM ${scope_table_name}
+    WHERE authorization_object_type = #{authorization_object_type} AND authorization_object_id = #{authorization_object_id} AND authority_id = #{authority_id} and entity_id = #{entity_id}
+  </delete>
+  <select id="getAuthorizationScopes" resultMap="BaseResultMap">
+    SELECT DISTINCT ${scope_table_name}.authorization_object_type,
+           ${scope_table_name}.authorization_object_id,
+           authorization_object_name
+    FROM ${scope_table_name} LEFT JOIN view_authobject ON (
+    view_authobject.authorization_object_type = ${scope_table_name}.authorization_object_type
+    AND view_authobject.authorization_object_id = ${scope_table_name}.authorization_object_id )
+    WHERE
+    entity_id = #{entity_id} AND entity_class_name = #{entity_class_name} AND authority_id = #{authority_id}
+  </select>
+  <select id="getAuthorizationScopeRelationByAuthorizationObjectId" resultType="java.util.HashMap">
+    SELECT
+      entity_id as entityId,
+      entity_class_name as entityClassName,
+      authority_id as authorityId,
+      authorization_object_type as authorizationObjectType,
+      authorization_object_id as authorizationObjectId
+    FROM ${scope_table_name}
+    WHERE authorization_object_type = #{authorization_object_type}
+      AND authorization_object_id = #{authorization_object_id} AND authority_id = #{authority_id}
+  </select>
+</mapper>

@@ -1,15 +1,10 @@
 package com.x3platform.membership.mappers;
 
 import com.x3platform.membership.Account;
-import com.x3platform.membership.models.AccountInfo;
-import org.apache.ibatis.annotations.Param;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-// import com.x3platform.Spring.*;
-// import com.x3platform.Membership.Scope.*;
-// import com.x3platform.Data.*;
+import org.apache.ibatis.annotations.Param;
 
 /**
  */
@@ -55,21 +50,16 @@ public interface AccountMapper {
   /**
    * 查询某条记录
    *
-   * @param id IAccount id号
-   * @return 返回一个 IAccount 实例的详细信息
+   * @param id 帐号标识
+   * @return 一个 IAccount 实例的详细信息
    */
   Account findOne(String id);
-
-  /**
-   * 根据id 查询，
-   */
-  AccountInfo findOneById(String id);
 
   /**
    * 查询某条记录
    *
    * @param globalName 帐号的全局名称
-   * @return 返回一个实例的详细信息
+   * @return 一个实例的详细信息
    */
   Account findOneByGlobalName(String globalName);
 
@@ -77,7 +67,7 @@ public interface AccountMapper {
    * 查询某条记录
    *
    * @param loginName 登录名
-   * @return 返回一个 IAccount 实例的详细信息
+   * @return 一个 IAccount 实例的详细信息
    */
   Account findOneByLoginName(String loginName);
 
@@ -85,7 +75,7 @@ public interface AccountMapper {
    * 根据已验证的手机号查询某条记录
    *
    * @param certifiedMobile 已验证的手机号
-   * @return 返回一个实例的详细信息
+   * @return 一个实例的详细信息
    */
   Account findOneByCertifiedMobile(String certifiedMobile);
 
@@ -93,56 +83,48 @@ public interface AccountMapper {
    * 根据已验证的邮箱地址查询某条记录
    *
    * @param certifiedEmail 已验证的邮箱地址
-   * @return 返回一个实例的详细信息
+   * @return 一个实例的详细信息
    */
   Account findOneByCertifiedEmail(String certifiedEmail);
 
   /**
    * 查询所有相关记录
    *
-   * @return 返回所有实例的详细信息
+   * @return 所有实例的详细信息
    */
   List<Account> findAll(Map params);
 
   /**
    * 查询所有相关记录
-   * @return 返回所有实例的详细信息
-   */
-  List<AccountInfo> queryAll(Map params);
-
-
-
-  /**
-   * 查询所有相关记录
    *
    * @param whereClause SQL 查询条件
-   * @param length      条数
-   * @return 返回所有实例的详细信息
+   * @param length 条数
+   * @return 所有实例的详细信息
    */
   List<Account> findAll(String whereClause, int length);
 
   /**
    * 查询某个用户所在的所有组织单位
    *
-   * @param organizationId 组织标识
-   * @return 返回一个实例的详细信息
+   * @param organizationUnitId 组织单元标识
+   * @return 一个实例的详细信息
    */
-  List<Account> findAllByOrganizationUnitId(String organizationId);
+  List<Account> findAllByOrganizationUnitId(@Param("organization_unit_id") String organizationUnitId);
 
   /**
    * 查询某个组织下的所有相关帐号
    *
-   * @param organizationId                  组织标识
+   * @param organizationUnitId 组织单元标识
    * @param defaultOrganizationUnitRelation 默认组织关系
-   * @return 返回一个实例的详细信息
+   * @return 一个实例的详细信息
    */
-  List<Account> findAllByOrganizationUnitId(String organizationId, boolean defaultOrganizationUnitRelation);
+  List<Account> findAllByOrganizationUnitIdAndDefault(@Param("organization_unit_id") String organizationUnitId);
 
   /**
    * 查询某个角色下的所有相关帐号
    *
    * @param roleId 组织标识
-   * @return 返回一个实例的详细信息
+   * @return 一个实例的详细信息
    */
   List<Account> findAllByRoleId(String roleId);
 
@@ -150,15 +132,15 @@ public interface AccountMapper {
    * 查询某个群组下的所有相关帐号
    *
    * @param groupId 群组标识
-   * @return 返回一个实例的详细信息
+   * @return 一个实例的详细信息
    */
   List<Account> findAllByGroupId(String groupId);
 
   /**
-   * 返回所有没有成员信息的帐号信息
+   * 所有没有成员信息的帐号信息
    *
    * @param length 条数, 0表示全部
-   * @return 返回所有实例的详细信息
+   * @return 所有实例的详细信息
    */
   List<Account> findAllWithoutMemberInfo(int length);
   ///#endregion
@@ -166,11 +148,11 @@ public interface AccountMapper {
   ///#region 函数:findForwardLeaderAccountsByOrganizationUnitId(string organizationId, int level)
 
   /**
-   * 返回所有正向领导的帐号信息
+   * 所有正向领导的帐号信息
    *
    * @param organizationId 组织标识
-   * @param level          层次
-   * @return 返回所有实例的详细信息
+   * @param level 层次
+   * @return 所有实例的详细信息
    */
   List<Account> findForwardLeaderAccountsByOrganizationUnitId(String organizationId, int level);
   ///#endregion
@@ -178,11 +160,11 @@ public interface AccountMapper {
   ///#region 函数:findBackwardLeaderAccountsByOrganizationUnitId(string organizationId, int level)
 
   /**
-   * 返回所有反向领导的帐号信息
+   * 所有反向领导的帐号信息
    *
    * @param organizationId 组织标识
-   * @param level          层次
-   * @return 返回所有实例的详细信息
+   * @param level 层次
+   * @return 所有实例的详细信息
    */
   List<Account> findBackwardLeaderAccountsByOrganizationUnitId(String organizationId, int level);
   ///#endregion
@@ -192,97 +174,61 @@ public interface AccountMapper {
   // -------------------------------------------------------
 
   /**
-   * 分页函数
-   *
-   * @param startIndex 开始行索引数,由0开始统计
-   * @param pageSize   页面大小
-   * @param query      数据查询参数
-   * @param rowCount   记录行数
-   * @return 返回一个列表
-   */
-  // List<Account> getPaging(int startIndex, int pageSize, DataQuery query, tangible.RefObject<Integer> rowCount);
-
-  /**
-   * 检测是否存在相关的记录.
+   * 查询是否存在相关的记录
    *
    * @param id 帐号标识
    * @return 布尔值
    */
   boolean isExist(String id);
-  ///#endregion
-
-  ///#region 函数:isExistLoginNameAndGlobalName(string loginName, string name);
 
   /**
-   * 检测是否存在相关的记录,登录名和姓名两者都不能重复.
+   * 查询是否存在相关的记录登录名和姓名两者都不能重复.
    *
    * @param loginName 登录名
-   * @param name      姓名
+   * @param name 姓名
    * @return 布尔值
    */
-  boolean isExistLoginNameAndGlobalName(String loginName, String name);
-  ///#endregion
-
-  ///#region 函数:isExistLoginName(string loginName)
+  boolean isExistLoginNameAndGlobalName(@Param("login_name") String loginName, @Param("name") String name);
 
   /**
-   * 检测是否存在相关的记录, 用户中心, 登录名不能重复. [添加帐号]
-   *
-   * @param loginName 登录名
-   * @return 布尔值
-   */
-  boolean isExistLoginName(@Param("loginName") String loginName);
-
-  /**
-   * 检测是否存在相关的记录, 用户中心, 登录名不能重复. [添加帐号]
-   *
-   * @param displayName 显示名称
-   * @return 布尔值
-   */
-  boolean isExistDisplayName(@Param("displayName") String displayName);
-
-  /**
-   * 检测是否存在相关的记录, 用户中心, 登录名不能重复. [添加帐号]
-   *
-   * @param certifiedEmail 邮箱
-   * @return 布尔值
-   */
-  boolean existCertifiedEmail(@Param("certifiedEmail") String certifiedEmail);
-
-
-  /**
-   * 检测是否存在相关的记录, 用户中心, 登录名不能重复. [添加帐号]
-   *
-   * @param identityCard 登录名
-   * @return 布尔值
-   */
-  boolean isExistIdentityCard(@Param("identityCard") String identityCard);
-
-  ///#endregion
-
-  ///#region 函数:isExistName(string name)
-
-  /**
-   * 检测是否存在相关的记录, 由于在同一个OU下面,所以姓名不能重复. 修改姓名时
+   * 查询是否存在相关的记录 由于在同一个OU下面,所以姓名不能重复. 修改姓名时
    *
    * @param name 姓名
    * @return 布尔值
    */
   boolean isExistName(@Param("name") String name);
-  ///#endregion
-
-  ///#region 函数:isExistGlobalName(string globalName)
 
   /**
-   * 检测是否存在相关的记录
+   * 查询是否存在相关的记录 用户中心, 登录名不能重复. [添加帐号]
+   *
+   * @param loginName 登录名
+   * @return 布尔值
+   */
+  boolean isExistLoginName(@Param("login_name") String loginName);
+
+  /**
+   * 查询是否存在相关的记录 用户中心, 登录名不能重复. [添加帐号]
+   *
+   * @param displayName 显示名称
+   * @return 布尔值
+   */
+  boolean isExistDisplayName(@Param("display_name") String displayName);
+
+  /**
+   * 查询是否存在相关的记录 用户中心, 登录名不能重复. [添加帐号]
+   *
+   * @param identityCard 登录名
+   * @return 布尔值
+   */
+  boolean isExistIdentityCard(@Param("identity_card") String identityCard);
+
+  /**
+   * 查询是否存在相关的记录
    *
    * @param globalName 组织单位全局名称
    * @return 布尔值
    */
-  boolean isExistGlobalName(String globalName);
-  ///#endregion
-
-  ///#region 函数:isExistCertifiedMobile(string certifiedMobile)
+  boolean isExistGlobalName(@Param("global_name") String globalName);
 
   /**
    * 检测是否存在相关的手机号
@@ -290,10 +236,7 @@ public interface AccountMapper {
    * @param certifiedMobile 已验证的手机号
    * @return 布尔值
    */
-  boolean isExistCertifiedMobile(@Param("certifiedMobile") String certifiedMobile);
-  ///#endregion
-
-  ///#region 函数:isExistCertifiedEmail(string certifiedEmail)
+  boolean isExistCertifiedMobile(@Param("certified_mobile") String certifiedMobile);
 
   /**
    * 检测是否存在相关的邮箱
@@ -301,12 +244,12 @@ public interface AccountMapper {
    * @param certifiedEmail 已验证的邮箱地址
    * @return 布尔值
    */
-  boolean isExistCertifiedEmail(String certifiedEmail);
+  boolean isExistCertifiedEmail(@Param("certified_email") String certifiedEmail);
 
   /**
-   * 检测是否存在相关的记录
+   * 查询是否存在相关的记录
    *
-   * @param id   帐号标识
+   * @param id 帐号标识
    * @param name 帐号名称
    * @return 0:代表成功 1:代表已存在相同名称
    */
@@ -319,7 +262,7 @@ public interface AccountMapper {
   /**
    * 设置全局名称
    *
-   * @param accountId  帐户标识
+   * @param accountId 帐户标识
    * @param globalName 全局名称
    * @return 0 操作成功 | 1 操作失败
    */
@@ -332,9 +275,6 @@ public interface AccountMapper {
    * @return 密码
    */
   String getPassword(String loginName);
-  ///#endregion
-
-  ///#region 函数:GetPasswordChangedDate(string loginName)
 
   /**
    * 获取密码更新时间
@@ -342,21 +282,15 @@ public interface AccountMapper {
    * @param loginName 帐号
    */
   Date getPasswordChangedDate(String loginName);
-  ///#endregion
-
-  ///#region 函数:SetPassword(string accountId, string password)
 
   /**
    * 设置帐号密码(管理员)
    *
-   * @param accountId 编号
-   * @param password  密码
-   * @return 修改成功, 返回 0, 旧密码不匹配, 返回 1.
+   * @param accountId 帐号标识
+   * @param password 密码
+   * @return 修改成功,  0, 旧密码不匹配,  1.
    */
-  int setPassword(String accountId, String password);
-  ///#endregion
-
-  ///#region 函数:SetLoginName(string accountId, string loginName)
+  int setPassword(@Param("id") String accountId, @Param("password") String password);
 
   /**
    * 设置登录名
@@ -365,76 +299,67 @@ public interface AccountMapper {
    * @param loginName 登录名
    * @return 0 操作成功 | 1 操作失败
    */
-  int setLoginName(String accountId, String loginName);
-  ///#endregion
-
-  ///#region 函数:SetCertifiedMobile(string accountId, string telephone)
+  int setLoginName(@Param("id") String accountId, @Param("login_name") String loginName);
 
   /**
    * 设置已验证的联系电话
    *
    * @param accountId 帐户标识
-   * @param telephone 联系电话
+   * @param mobile 联系电话
    * @return 0 操作成功 | 1 操作失败
    */
-  int setCertifiedMobile(String accountId, String telephone);
-  ///#endregion
-
-  ///#region 函数:SetCertifiedEmail(string accountId, string email)
+  int setCertifiedMobile(@Param("id") String accountId, @Param("certified_mobile") String mobile);
 
   /**
    * 设置已验证的邮箱
    *
    * @param accountId 帐户标识
-   * @param email     邮箱
+   * @param email 邮箱
    * @return 0 操作成功 | 1 操作失败
    */
-  int setCertifiedEmail(String accountId, String email);
-  ///#endregion
-
-  ///#region 函数:SetCertifiedAvatar(string accountId, string avatarVirtualPath)
+  int setCertifiedEmail(@Param("id") String accountId, @Param("certified_email") String email);
 
   /**
    * 设置已验证的头像
    *
-   * @param accountId         帐户标识
+   * @param accountId 帐户标识
    * @param avatarVirtualPath 头像的虚拟路径
    * @return 0 操作成功 | 1 操作失败
    */
-  int setCertifiedAvatar(@Param("accountId") String accountId, @Param("avatarVirtualPath") String avatarVirtualPath);
+  int setCertifiedAvatar(@Param("accountId") String accountId, @Param("certified_avatar") String avatarVirtualPath);
 
   /**
    * 设置邮箱状态
    *
    * @param accountId 帐户标识
-   * @param status    状态标识, 1:启用, 0:禁用
+   * @param status 状态标识, 1:启用, 0:禁用
    * @return 0 操作成功 | 1 操作失败
    */
-  int setExchangeStatus(@Param("accountId") String accountId, int status);
+  int setEnableEmail(@Param("id") String accountId, @Param("enable_email") int status);
 
   /**
    * 设置状态
    *
    * @param accountId 帐户标识
-   * @param status    状态标识, 1:启用, 0:禁用
+   * @param status 状态标识, 1:启用, 0:禁用
    * @return 0 操作成功 | 1 操作失败
    */
-  int setStatus(@Param("id") String accountId,@Param("CreatedBy") String CreatedBy, @Param("status")  int status);
+  int setStatus(@Param("id") String accountId, @Param("status") int status);
 
   /**
    * 设置状态
    *
    * @param accountId 帐户标识
-   * @param status    状态标识, 1:启用, 0:禁用
+   * @param locking 状态标识, 1:锁定, 0:未锁定
    * @return 0 操作成功 | 1 操作失败
    */
-  int setLocking(@Param("id") String accountId, @Param("locking")  int locking);
+  int setLocking(@Param("id") String accountId, @Param("locking") int locking);
 
   /**
    * 设置登录名
    *
    * @param accountId 帐户标识
-   * @param ip        登录名
+   * @param ip 登录名
    * @param loginDate 登录时间
    * @return 0 操作成功 | 1 操作失败
    */
@@ -447,10 +372,10 @@ public interface AccountMapper {
   /**
    * 确认密码
    *
-   * @param accountId    帐号唯一标识
+   * @param accountId 帐号唯一标识
    * @param passwordType 密码类型: default 默认, query 查询密码, trader 交易密码
-   * @param password     密码
-   * @return 返回值: 0 成功 | 1 失败
+   * @param password 密码
+   * @return 值: 0 成功 | 1 失败
    */
   int confirmPassword(String accountId, String passwordType, String password);
 
@@ -458,14 +383,13 @@ public interface AccountMapper {
    * 登陆检测
    *
    * @param loginName 帐号
-   * @param password  密码
+   * @param password 密码
    * @return IAccount 实例
    */
   Account loginCheck(@Param("loginName") String loginName, @Param("password") String password);
 
   /**
-   * @param params
-   * @return 返回相关实例
+   * @return 相关实例
    */
   Account findMaxCode(Map params);
 
@@ -479,18 +403,21 @@ public interface AccountMapper {
   /**
    * 修改密码
    *
-   * @param loginName        登录名
-   * @param password         新密码
+   * @param loginName 登录名
+   * @param password 新密码
    * @param originalPassword 原始密码
-   * @return 修改成功, 返回 0, 旧密码不匹配, 返回 1.
+   * @return 受影响的行数
    */
-  int changePassword(String loginName, String password, String originalPassword);
+  int changePassword(
+    @Param("login_name") String loginName,
+    @Param("password") String password,
+    @Param("original_password") String originalPassword);
 
   /**
    * 刷新帐号的更新时间
    *
    * @param accountId 帐户标识
-   * @return 0 设置成功, 1 设置失败.
+   * @return 受影响的行数
    */
   int refreshModifiedDate(String accountId);
 
@@ -498,7 +425,7 @@ public interface AccountMapper {
   /**
    * 获取帐号相关的权限对象
    *
-   * @param account IAccount 实例的详细信息
+   * @param account Account 实例的详细信息
    */
   // List<MembershipAuthorizationScopeObject> getAuthorizationScopeObjects(Account account);
 
@@ -506,6 +433,7 @@ public interface AccountMapper {
    * 同步信息
    *
    * @param param 帐号信息
+   * @return 受影响的行数
    */
   int syncFromPackPage(Account param);
 
@@ -514,15 +442,7 @@ public interface AccountMapper {
    * @param applicationName 应用名称
    * @param selectKey 搜索输入条件
    */
-  List<Account> findAllAccountByAccountName(@Param("authType") String authType, @Param("applicationName") String applicationName, @Param("selectKey") String selectKey);
-
-  /**
-   * 默认密码查询
-   * @param applicationId 应用id
-   * @return
-   * @deprecated 密码查询重置
-   */
-  String findDefaultPassword(@Param("applicationId") String applicationId);
-
-  int setCreatedBy(@Param("accountId")String accountId, @Param("createdBy")String createdBy);
+  List<Account> findAllAccountByAccountName(@Param("authType") String authType,
+    @Param("applicationName") String applicationName,
+    @Param("selectKey") String selectKey);
 }

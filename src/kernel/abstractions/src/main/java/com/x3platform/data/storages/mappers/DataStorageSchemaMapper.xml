@@ -2,14 +2,14 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.x3platform.data.storages.mappers.DataStorageSchemaMapper">
   <resultMap id="BaseResultMap" type="com.x3platform.data.storages.models.DataStorageSchema">
-    <result property="id" jdbcType="VARCHAR" column="id" />
-    <result property="name" jdbcType="VARCHAR" column="name" />
-    <result property="options" jdbcType="VARCHAR" column="options" />
-    <result property="storageAdapterClassName" jdbcType="VARCHAR" column="storage_adapter_class_name" />
-    <result property="storageStrategyClassName" jdbcType="VARCHAR" column="storage_strategy_class_name" />
-    <result property="orderId" jdbcType="VARCHAR" column="order_id" />
-    <result property="modifiedDate" jdbcType="TIMESTAMP" column="modified_date" />
-    <result property="createdDate" jdbcType="TIMESTAMP" column="created_date" />
+    <result property="id" jdbcType="VARCHAR" column="id"/>
+    <result property="name" jdbcType="VARCHAR" column="name"/>
+    <result property="options" jdbcType="VARCHAR" column="options"/>
+    <result property="storageAdapterClassName" jdbcType="VARCHAR" column="storage_adapter_class_name"/>
+    <result property="storageStrategyClassName" jdbcType="VARCHAR" column="storage_strategy_class_name"/>
+    <result property="orderId" jdbcType="VARCHAR" column="order_id"/>
+    <result property="modifiedDate" jdbcType="TIMESTAMP" column="modified_date"/>
+    <result property="createdDate" jdbcType="TIMESTAMP" column="created_date"/>
   </resultMap>
   <sql id="Select_Where_Clause">
     <where>
@@ -78,37 +78,44 @@
   <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
     DELETE FROM data_storage_schema WHERE id = #{id}
   </delete>
-  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap" >
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
     SELECT * FROM data_storage_schema WHERE id = #{id}
   </select>
-  <select id="findOneByApplicationId" parameterType="java.lang.String" resultMap="BaseResultMap" >
+  <select id="findOneByApplicationId" parameterType="java.lang.String" resultMap="BaseResultMap">
     SELECT * FROM data_storage_schema
     LEFT JOIN data_storage_schema_application ON data_storage_schema_application.storage_schema_id = data_storage_schema.id
-    WHERE data_storage_schema_application.application_id = #{applicationId}
+    WHERE data_storage_schema_application.application_id = #{application_id}
     LIMIT 0,1
   </select>
-  <select id="findAll" parameterType="java.util.Map" resultMap="BaseResultMap" >
+  <select id="findOneByApplicationName" parameterType="java.lang.String" resultMap="BaseResultMap">
+    SELECT * FROM data_storage_schema
+    LEFT JOIN data_storage_schema_application ON data_storage_schema_application.storage_schema_id = data_storage_schema.id
+    WHERE data_storage_schema_application.application_id IN (
+      SELECT id from application WHERE application_name = #{application_name})
+    LIMIT 0,1
+  </select>
+  <select id="findAll" parameterType="java.util.Map" resultMap="BaseResultMap">
     SELECT * FROM data_storage_schema t
     <if test="_parameter != null">
-      <include refid="Select_Where_Clause" />
+      <include refid="Select_Where_Clause"/>
     </if>
     <if test="orders != null and orders.size() > 0">
       ORDER BY
-      <foreach collection="orders" item="order" index="index" separator="," >
-        #{order}
+      <foreach collection="orders" item="order" index="index" separator=",">
+        ${order}
       </foreach>
     </if>
     <if test="length > 0">
       LIMIT 0, ${length}
     </if>
   </select>
-  <select id="getRowCount" >
+  <select id="getRowCount">
     SELECT COUNT(0) AS "RowCount" FROM data_storage_schema t
     <if test="_parameter != null">
-      <include refid="Select_Where_Clause" />
+      <include refid="Select_Where_Clause"/>
     </if>
   </select>
-  <select id="isExist" resultType="boolean" >
+  <select id="isExist" resultType="boolean">
     SELECT COUNT(0) AS "Count" FROM data_storage_schema WHERE id = #{id}
   </select>
 </mapper>

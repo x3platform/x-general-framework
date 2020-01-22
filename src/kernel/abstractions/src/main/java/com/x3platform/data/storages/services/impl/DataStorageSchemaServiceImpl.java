@@ -45,7 +45,7 @@ public class DataStorageSchemaServiceImpl implements DataStorageSchemaService {
       affectedRows = provider.updateByPrimaryKey(entity);
     }
 
-    KernelContext.getLog().debug("save entity id:'" + id + "', affectedRows:" + affectedRows);
+    KernelContext.getLog().debug("save entity id:'{}', affectedRows:{}", id, affectedRows);
 
     return 0;
   }
@@ -59,7 +59,7 @@ public class DataStorageSchemaServiceImpl implements DataStorageSchemaService {
   public int delete(String id) {
     int affectedRows = provider.deleteByPrimaryKey(id);
 
-    KernelContext.getLog().debug("delete entity id:'" + id + "', affectedRows:" + affectedRows);
+    KernelContext.getLog().debug("delete entity id:'{}', affectedRows:{}", id, affectedRows);
 
     return 0;
   }
@@ -98,10 +98,7 @@ public class DataStorageSchemaServiceImpl implements DataStorageSchemaService {
    */
   @Override
   public DataStorageSchema findOneByApplicationName(String applicationName){
-    // Application application = AppsContext.getInstance().getApplicationService().findOneByApplicationName(applicationName);
-
-    // return provider.findOneByApplicationId(application.getId()) ;
-    return provider.findOneByApplicationId(applicationName);
+    return provider.findOneByApplicationName(applicationName);
   }
 
   /**

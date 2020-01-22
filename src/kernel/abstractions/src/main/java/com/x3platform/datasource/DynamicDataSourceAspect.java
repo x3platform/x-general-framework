@@ -1,28 +1,23 @@
 package com.x3platform.datasource;
 
-import java.lang.reflect.Method;
-
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
-
+import com.x3platform.data.DataSourceName;
+import com.x3platform.data.DynamicDataSourceContextHolder;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.reflect.MethodSignature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-
-import com.x3platform.data.DataSourceName;
-import com.x3platform.data.DynamicDataSourceContextHolder;
 
 /**
  * 数据源注入，新加入服务包时需要修改此类。
  *
- * @author dev
+ * @author ruanyu
  */
 @Aspect
-@Order(-1)// 保证该AOP在@Transactional之前执行
+@Order(-1)// 保证该 AOP 在 @Transactional 之前执行
 @Component
 public class DynamicDataSourceAspect {
 

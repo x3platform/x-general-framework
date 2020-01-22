@@ -1,5 +1,15 @@
 package com.x3platform.util;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
@@ -21,21 +31,10 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.CharsetUtils;
 import org.apache.http.util.EntityUtils;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.TypeReference;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 /**
  * HTTP 请求辅助函数
+ *
+ * @author ruanyu
  */
 public class HttpClientUtil {
 
@@ -60,12 +59,12 @@ public class HttpClientUtil {
   /**
    * 发送 post请求
    *
-   * @param httpUrl 地址
-   * @return 返回响应信息
+   * @param uri 地址
+   * @return 响应信息
    */
-  public String sendHttpPost(String httpUrl) {
-    // 创建httpPost
-    HttpPost httpPost = new HttpPost(httpUrl);
+  public String sendHttpPost(String uri) {
+    // 创建 HttpPost
+    HttpPost httpPost = new HttpPost(uri);
 
     return sendHttpPost(httpPost);
   }
@@ -74,7 +73,7 @@ public class HttpClientUtil {
    * 发送 post请求
    *
    * @param httpUrl 地址
-   * @param params  参数(格式:key1=value1&amp;key2=value2)
+   * @param params 参数(格式:key1=value1&amp;key2=value2)
    * @return 返回响应信息
    */
   public String sendHttpPost(String httpUrl, String params) {
@@ -95,15 +94,15 @@ public class HttpClientUtil {
    * 发送 post请求
    *
    * @param httpUrl 地址
-   * @param maps    参数
+   * @param maps 参数
    * @return 返回响应信息
    */
-  public String sendHttpPost(String httpUrl, Map<String, String> maps) {
+  public String sendHttpPost(String httpUrl, Map<String, Object> maps) {
     HttpPost httpPost = new HttpPost(httpUrl);// 创建httpPost
     // 创建参数队列
     List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
     for (String key : maps.keySet()) {
-      nameValuePairs.add(new BasicNameValuePair(key, maps.get(key)));
+      nameValuePairs.add(new BasicNameValuePair(key, (String) maps.get(key)));
     }
     try {
       httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs, "UTF-8"));
@@ -115,10 +114,36 @@ public class HttpClientUtil {
   }
 
   /**
+   * 发送 post请求
+   *
+   * @param httpUrl 地址
+   * @param maps 参数
+   * @param headers 请求头参数
+   * @return 返回响应信息
+   */
+  public String sendHttpPost(String httpUrl, Map<String, Object> maps, Map<String, Object> headers) {
+    HttpPost httpPost = new HttpPost(httpUrl);// 创建httpPost
+    //添加请求头信息
+    if (headers != null && headers.size() > 0) {
+      for (Map.Entry<String, Object> entry : headers.entrySet()) {
+        httpPost.addHeader(entry.getKey(), entry.getValue().toString());
+      }
+    }
+    try {
+      //JSON请求体
+      httpPost.setEntity(new StringEntity(JSON.toJSONString(maps), "UTF-8"));
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    return sendHttpPost(httpPost);
+  }
+
+  /**
    * 发送 post请求（带文件）
    *
-   * @param url       地址
-   * @param maps      参数
+   * @param url 地址
+   * @param maps 参数
    * @param fileLists 附件
    * @return 返回响应信息
    */
@@ -144,7 +169,6 @@ public class HttpClientUtil {
   /**
    * 发送  请求
    *
-   * @param httpPost
    * @return 返回响应信息
    */
   private String sendHttpPost(HttpPost httpPost) {
@@ -236,7 +260,6 @@ public class HttpClientUtil {
   /**
    * 发送Get请求
    *
-   * @param httpGet
    * @return 返回响应信息
    */
   private String sendHttpGet(HttpGet httpGet) {
@@ -273,7 +296,6 @@ public class HttpClientUtil {
   /**
    * 发送Get请求Https
    *
-   * @param httpGet
    * @return 返回响应信息
    */
   private String sendHttpsGet(HttpGet httpGet) {

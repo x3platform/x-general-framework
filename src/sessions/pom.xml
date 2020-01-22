@@ -59,7 +59,7 @@
     <dependency>
       <groupId>org.mybatis.spring.boot</groupId>
       <artifactId>mybatis-spring-boot-starter</artifactId>
-      <version>1.3.2</version>
+      <version>1.3.5</version>
     </dependency>
     <!-- Commons Lang3 -->
     <dependency>
@@ -99,4 +99,18 @@
       </resource>
     </resources>
   </build>
+  <distributionManagement>
+    <repository>
+      <uniqueVersion>false</uniqueVersion>
+      <id>releases</id>
+      <name>Nexus Release Repository</name>
+      <url>http://nexus.amiintellect.com/repository/maven-releases/</url>
+    </repository>
+    <snapshotRepository>
+      <uniqueVersion>true</uniqueVersion>
+      <id>snapshots</id>
+      <name>Nexus Snapshot Repository</name>
+      <url>http://nexus.amiintellect.com/repository/maven-snapshots/</url>
+    </snapshotRepository>
+  </distributionManagement>
 </project>

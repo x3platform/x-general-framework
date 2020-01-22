@@ -3,42 +3,41 @@ package com.x3platform.membership.controllers;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
-import com.x3platform.KernelContext;
 import com.x3platform.data.DataPaging;
 import com.x3platform.data.DataPagingUtil;
 import com.x3platform.data.DataQuery;
+import com.x3platform.digitalnumber.DigitalNumberContext;
 import com.x3platform.globalization.I18n;
-import com.x3platform.membership.Account;
 import com.x3platform.membership.MembershipManagement;
+import com.x3platform.membership.OrganizationUnit;
 import com.x3platform.membership.Role;
-import com.x3platform.membership.models.OrganizationInfo;
 import com.x3platform.membership.models.OrganizationUnitInfo;
 import com.x3platform.membership.services.OrganizationUnitService;
 import com.x3platform.messages.MessageObject;
+import com.x3platform.tree.DynamicTreeView;
+import com.x3platform.tree.TreeView;
 import com.x3platform.util.StringUtil;
-import java.util.List;
+import java.util.Date;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 组织单元 API 接口
  *
  * @author ruanyu
  */
-@Lazy(true)
+@Lazy
 @RestController
 @RequestMapping("/api/membership/organizationUnit")
 public class OrganizationUnitController {
 
-  // @Autowired(required = false)
-  // OrganizationService organizationService;
-
-  OrganizationUnitService organizationUnitService = MembershipManagement.getInstance().getOrganizationUnitService();
-
-  // @Autowired(required = false)
-  // RoleService roleService ;
+  OrganizationUnitService service = MembershipManagement.getInstance().getOrganizationUnitService();
 
   // -------------------------------------------------------
   // 保存 删除
@@ -51,37 +50,91 @@ public class OrganizationUnitController {
    */
   @RequestMapping("/save")
   public final String save(@RequestBody String data) {
+    JSONObject req = JSON.parseObject(data);
+    OrganizationUnit param = JSON.parseObject(data, OrganizationUnitInfo.class);
 
-    OrganizationUnitInfo param = JSON.parseObject(data, OrganizationUnitInfo.class);
-    organizationUnitService.save(param);
+    String originalName = req.getString("originalName");
+    String originalGlobalName = req.getString("originalGlobalName");
+
+    if (StringUtil.isNullOrEmpty(param.getName())) {
+      return MessageObject.stringify(
+        I18n.getExceptions().text("code_membership_name_is_required"),
+        I18n.getExceptions().text("text_membership_name_is_required"));
+    }
+
+    if (StringUtil.isNullOrEmpty(param.getGlobalName())) {
+      return MessageObject.stringify(
+        I18n.getExceptions().text("code_membership_global_name_is_required"),
+        I18n.getExceptions().text("text_membership_global_name_is_required"));
+    }
+
+    if (StringUtil.isNullOrEmpty(param.getId())) {
+      // 新增
+      if (this.service.isExistGlobalName(param.getGlobalName())) {
+        // code_membership_global_name_already_exists
+        return MessageObject.stringify(
+          I18n.getExceptions().text("code_membership_global_name_already_exists"),
+          I18n.getExceptions().text("text_membership_global_name_already_exists"));
+      }
+
+      param.setId(DigitalNumberContext.generate("Key_Guid"));
+    } else {
+      // 修改
+      if (!originalGlobalName.equals(param.getGlobalName())) {
+        if (this.service.isExistGlobalName(param.getGlobalName())) {
+          return MessageObject.stringify(
+            I18n.getExceptions().text("code_membership_global_name_already_exists"),
+            I18n.getExceptions().text("text_membership_global_name_already_exists"));
+        }
+      }
+
+      if (!originalName.equals(param.getName())) {
+        List<OrganizationUnit> list = MembershipManagement.getInstance().getOrganizationUnitService()
+          .findAllByParentId(param.getParentId());
+
+        for (OrganizationUnit item : list) {
+          if (item.getName().equals(param.getName())) {
+            return MessageObject.stringify(
+              I18n.getExceptions().text("code_membership_organization_unit_child_node_name_already_exists"),
+              I18n.getExceptions().text("text_membership_organization_unit_child_node_name_already_exists"));
+          }
+        }
+      }
+    }
+
+    service.save(param);
+
     return MessageObject.stringify("0", I18n.getStrings().text("msg_save_success"));
   }
 
   /**
-   *
    * 逻辑删除部门
-   * @param  data
+   *
    * @return 返回操作结果
    */
   @RequestMapping("/delete")
   public final String delete(@RequestBody String data) {
     JSONObject req = JSON.parseObject(data);
     String id = req.getString("id");
-    // 组织结构删除 ， 1、判断是否有子组织 ， 2， 判断是否有角色 （如果有角色）
-    List<OrganizationUnitInfo> isExistChildList = organizationUnitService.getChildOrganizationByOrganizationUnitId(id);
-    if(isExistChildList!=null && isExistChildList.size() > 0){
-      return MessageObject.stringify("1", I18n.getStrings().text("membership_organization_unit_is_exist_children_organization_failed"));
+    // 删除组织单元时需要判断限制条件
+    // 1.判断是否有子组织
+    List<OrganizationUnit> organizationUnits = service.getChildOrganizationByOrganizationUnitId(id);
+
+    if (organizationUnits != null && !organizationUnits.isEmpty()) {
+      return MessageObject.stringify("1",
+        I18n.getStrings().text("membership_organization_unit_is_exist_children_organization_failed"));
     }
-    List<Role> isExist = MembershipManagement.getInstance().getRoleService().findAllByOrganizationUnitId(id, -1);
-    if(isExist!=null && isExist.size() > 0){
-      return MessageObject.stringify("1", I18n.getStrings().text("membership_organization_unit_is_exist_children_role_failed"));
+
+    // 2.判断是否有角色
+    List<Role> roles = MembershipManagement.getInstance().getRoleService().findAllByOrganizationUnitId(id, -1);
+
+    if (roles != null && !roles.isEmpty()) {
+      return MessageObject.stringify("1",
+        I18n.getStrings().text("membership_organization_unit_is_exist_children_role_failed"));
     }
-    // 判断 是否存在
-    try{
-      organizationUnitService.delete(id);
-    }catch (Exception e){
-      return MessageObject.stringify("1", I18n.getStrings().text(e.getLocalizedMessage()));
-    }
+
+    service.delete(id);
+
     return MessageObject.stringify("0", I18n.getStrings().text("msg_delete_success"));
   }
 
@@ -90,179 +143,139 @@ public class OrganizationUnitController {
   // -------------------------------------------------------
 
   /**
-   * 获取分页内容 / get paging.
+   * 根据组织单元标识查询对象详细信息
    *
-   * @param data JSON 对象
-   * @return 返回一个相关的实例列表.
+   * @param data 请求的数据内容
+   * @return 一个相关的实例详细信息
    */
   @RequestMapping("/findOne")
   public final String findOne(@RequestBody String data) {
-    StringBuilder outString = new StringBuilder();
     JSONObject req = JSON.parseObject(data);
-    // 组织单位唯一标识
+    // 组织单元唯一标识
     String id = req.getString("id");
-    OrganizationUnitInfo param = organizationUnitService.findOne(id);
-    outString.append("{\"data\":" + JSON.toJSONString(param) + ",");
-    outString.append(MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}");
-    return outString.toString();
-  }
 
-  /*
-   * 动态加载 判断当前登录人员 ；  判断是否是超级管理员  ； 如果是内置的超级管理员 则查看所有 ； 不是超级管理员则查询当前账户绑定的顶级 组织 ； （组织机构必填）
-   * 获取动态加载的树节点数据
-   * @param data 请求的数据
-   * @return 返回树型结构结果
-   */
-  @RequestMapping("/getDynamicTreeView")
-  public String getDynamicTreeView(@RequestBody String data) {
-    // 查找 所属组织顶级 ; 判断当前用户是否是管理员，
+    OrganizationUnit entity = service.findOne(id);
 
-    /**
-     *  is 默认管理员，则查询所有数据 ；
-     */
-    JSONObject reqTree = JSON.parseObject(data);
-    /* 必填字段 */
-    String tree = reqTree.getString("tree");
-    String global = reqTree.getString("global");  // 初始化的时候必填 ，必填 ， 是否为默认管理员，如果不是默认管理员，则查询当前登录人员所在组织 ；
-    String parentId = reqTree.getString("parentId");
-    // 附加属性
-    String treeViewId = reqTree.getString("treeViewId");
-    String treeViewName = reqTree.getString("treeViewName");
-    String treeViewRootTreeNodeId = reqTree.getString("treeViewRootTreeNodeId");
-    String url = reqTree.getString("url");
-
-    StringBuilder outString = new StringBuilder();
-
-
-    // 树形控件默认根节点标识为0, 需要特殊处理.
-    if(parentId.equals("0")){
-
-      if (StringUtil.isNullOrEmpty(global)) {
-        // 缺少参数
-        return MessageObject.stringify("1", I18n.getStrings().text("interface_not_params"));
-      }
-      /**
-       * 查询前所有， 不然查询，当前父节点的子节点即可
-       */
-      if(global.equals("true")){
-        outString.append("{\"data\":");
-        outString.append("{\"tree\":\"" + tree + "\",");
-        outString.append("\"parentId\":\"" + parentId + "\",");
-        outString.append("\"childNodes\":[");
-        List<OrganizationInfo> infos = MembershipManagement.getInstance().getOrganizationService().findAll();
-        if(infos !=null && infos.size() > 0){
-          for (OrganizationInfo item : infos) {
-            outString.append("{");
-            outString.append("\"id\":\"" + item.getId() + "\",");
-            outString.append("\"parentId\":\"" + StringUtil.toSafeJson("0") + "\",");
-            outString.append("\"name\":\"" + StringUtil.toSafeJson(item.getName()) + "\",");
-            outString.append("\"url\":\"" + StringUtil.toSafeJson(url.replace("{treeNodeId}", item.getId()).replace("{treeNodeName}", item.getName())) + "\",");
-            outString.append("\"target\":\"_self\"");
-            outString.append("},");
-          }
-          if (StringUtil.substring(outString.toString(), outString.length() - 1, 1).equals(",")) {
-            outString = outString.deleteCharAt(outString.length() - 1);
-          }
-        }
-      }else{
-        // 初始化，初始化则查询当前用户的顶层节点
-        Account Account = KernelContext.getCurrent().getUser();
-        if(Account==null){
-          return  MessageObject.stringify("-1", I18n.getStrings().text("connect_session_passed"));
-        }
-        /**
-         * 强制转换，转换后注意查询为空 ；
-         */
-        List<OrganizationUnitInfo> info =  organizationUnitService.findAllByAccountId(Account.getId());
-        OrganizationUnitInfo rootOrganization =  organizationUnitService.findCorporationByOrganizationUnitId(info.get(0).getId());
-        // 根据设置 ，查询对应所有数据问题,如果一个人有多个组织， 则设置他的顶级组织是一样的。 ；
-        parentId = rootOrganization.getId();
-        outString.append("{\"data\":");
-        outString.append("{\"tree\":\"" + tree + "\",");
-        outString.append("\"parentId\":\"" + parentId + "\",");
-        outString.append("\"childNodes\":[");
-
-        outString.append("{");
-        outString.append("\"id\":\"" + rootOrganization.getId() + "\",");
-        outString.append("\"parentId\":\"" + StringUtil.toSafeJson(rootOrganization.getParentId().equals(treeViewRootTreeNodeId) ? "0" : rootOrganization.getParentId()) + "\",");
-        outString.append("\"name\":\"" + StringUtil.toSafeJson(rootOrganization.getName()) + "\",");
-        outString.append("\"url\":\"" + StringUtil.toSafeJson(url.replace("{treeNodeId}", rootOrganization.getId()).replace("{treeNodeName}", rootOrganization.getName())) + "\",");
-        outString.append("\"target\":\"_self\"");
-        outString.append("}");
-
-/*        DataQuery query = new DataQuery();
-          query.getWhere().put("parent_id", parentId);
-          query.getWhere().put("status", 1);
-          query.getOrders().add("order_id");
-          query.getOrders().add("code");
-        List<OrganizationUnit> list = this.service.findAll(query);
-        if(list!=null && list.size() > 0){
-          for (OrganizationUnit item : list) {
-            outString.append("{");
-            outString.append("\"id\":\"" + item.getId() + "\",");
-            outString.append("\"parentId\":\"" + StringUtil.toSafeJson(item.getParentId().equals(treeViewRootTreeNodeId) ? "0" : item.getParentId()) + "\",");
-            outString.append("\"name\":\"" + StringUtil.toSafeJson(item.getName()) + "\",");
-            outString.append("\"url\":\"" + StringUtil.toSafeJson(url.replace("{treeNodeId}", item.getId()).replace("{treeNodeName}", item.getName())) + "\",");
-            outString.append("\"target\":\"_self\"");
-            outString.append("},");
-          }
-          if (StringUtil.substring(outString.toString(), outString.length() - 1, 1).equals(",")) {
-            outString = outString.deleteCharAt(outString.length() - 1);
-          }
-        }*/
-      }
-    }else{
-      //  parentId = (StringUtil.isNullOrEmpty(parentId) || parentId.equals("0")) ? treeViewRootTreeNodeId : parentId;
-      //  当为 00000-000000-00000-00000
-      // 查找树的子节点
-      outString.append("{\"data\":");
-      outString.append("{\"tree\":\"" + tree + "\",");
-      outString.append("\"parentId\":\"" + parentId + "\",");
-      outString.append("\"childNodes\":[");
-
-      DataQuery query = new DataQuery();
-      query.getWhere().put("parent_id", parentId);
-      query.getWhere().put("status", 1);
-      query.getOrders().add("order_id");
-      query.getOrders().add("code");
-      List<OrganizationUnitInfo> list = organizationUnitService.findAll(query);
-      if(list!=null && list.size() > 0){
-        for (OrganizationUnitInfo item : list) {
-          outString.append("{");
-          outString.append("\"id\":\"" + item.getId() + "\",");
-          outString.append("\"parentId\":\"" + StringUtil.toSafeJson(item.getParentId().equals(treeViewRootTreeNodeId) ? "0" : item.getParentId()) + "\",");
-          outString.append("\"name\":\"" + StringUtil.toSafeJson(item.getName()) + "\",");
-          outString.append("\"url\":\"" + StringUtil.toSafeJson(url.replace("{treeNodeId}", item.getId()).replace("{treeNodeName}", item.getName())) + "\",");
-          outString.append("\"target\":\"_self\"");
-          outString.append("},");
-        }
-        if (StringUtil.substring(outString.toString(), outString.length() - 1, 1).equals(",")) {
-          outString = outString.deleteCharAt(outString.length() - 1);
-        }
-      }
-
-    }
-
-
-    outString.append("]}," + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}");
-    return outString.toString();
+    return "{\"data\":" + JSON.toJSONString(entity) + ","
+      + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";
   }
 
   /**
-   * 获取分页内容
+   *
+   */
+  @RequestMapping("/findAll")
+  public String findAll(@RequestBody String data) {
+    JSONObject req = JSON.parseObject(data);
+    // 查询公司，查询等级
+    DataPaging paging = DataPagingUtil.create(req.getString("paging"));
+
+    PageHelper.startPage(paging.getCurrentPage(), paging.getPageSize());
+
+    Map params = (Map) JSONObject.parse(data);
+
+    List<OrganizationUnit> list = service.findAll(params);
+
+    paging.setTotal(DataPagingUtil.getTotal(list));
+
+    return "{\"data\":" + JSON.toJSONString(list) + ",\"paging\":" + JSON.toJSONString(paging) + ","
+      + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";
+  }
+
+  /**
+   * 获取带分页信息的列表内容
    *
    * @param data 请求的数据内容
-   * @return 返回一个相关的实例列表信息
+   * @return 一个相关的实例列表信息
    */
   @RequestMapping("/query")
-  public String Query(@RequestBody String data) {
+  public String query(@RequestBody String data) {
     JSONObject req = JSON.parseObject(data);
+
     DataPaging paging = DataPagingUtil.create(req.getString("paging"));
+
     DataQuery query = DataQuery.create(req.getString("query"));
+
     PageHelper.startPage(paging.getCurrentPage(), paging.getPageSize());
-    List<OrganizationUnitInfo> list = organizationUnitService.findAll(query);
+
+    List<OrganizationUnit> list = service.findAll(query);
+
     paging.setTotal(DataPagingUtil.getTotal(list));
+
     return "{\"data\":" + JSON.toJSONString(list) + ",\"paging\":" + JSON.toJSONString(paging) + ","
+      + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";
+  }
+
+  // -------------------------------------------------------
+  // 自定义功能
+  // -------------------------------------------------------
+
+  /**
+   * 创建新的对象信息
+   *
+   * @param data 请求的数据内容
+   * @return 响应的数据内容
+   */
+  @RequestMapping("/create")
+  public String create(@RequestBody String data) {
+    OrganizationUnitInfo entity = JSON.parseObject(data, OrganizationUnitInfo.class);
+
+    entity.setId(DigitalNumberContext.generate("Key_Guid"));
+
+    // 根据实际需要设置默认值
+    entity.setLocking(0);
+    entity.setStatus(1);
+    entity.setModifiedDate(new Date());
+    entity.setCreatedDate(new Date());
+
+    return "{\"data\":" + JSON.toJSONString(entity) + ","
+      + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";
+  }
+
+  /**
+   * 获取树节点数据
+   *
+   * @param data 请求的数据
+   * @return 返回树形结构数据
+   */
+  @RequestMapping("/getTreeView")
+  public String getTreeView(@RequestBody String data) {
+    JSONObject req = JSON.parseObject(data);
+    // 树的显示名称
+    String treeViewName = req.getString("treeViewName");
+    // 树的根节点标识
+    String treeViewRootTreeNodeId = req.getString("treeViewRootTreeNodeId");
+    // 命令输出格式化
+    String commandFormat = req.getString("commandFormat");
+
+    TreeView treeView = service.getTreeView(treeViewName, treeViewRootTreeNodeId, commandFormat);
+
+    return "{\"data\":" + JSON.toJSONString(treeView) + ","
+      + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";
+  }
+
+  /**
+   * 获取动态加载的树节点数据
+   *
+   * @param data 请求的数据
+   * @return 返回树形结构数据
+   */
+  @RequestMapping("/getDynamicTreeView")
+  public String getDynamicTreeView(@RequestBody String data) {
+    JSONObject req = JSON.parseObject(data);
+    // 必填字段
+    // 树的显示名称
+    String treeViewName = req.getString("treeViewName");
+    // 树的根节点标识
+    String treeViewRootTreeNodeId = req.getString("treeViewRootTreeNodeId");
+    // 父级节点标识
+    String parentId = req.getString("parentId");
+    // 命令输出格式化
+    String commandFormat = req.getString("commandFormat");
+
+    DynamicTreeView treeView = service
+      .getDynamicTreeView(treeViewName, treeViewRootTreeNodeId, parentId, commandFormat);
+
+    return "{\"data\":" + JSON.toJSONString(treeView) + ","
       + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";
   }
 }

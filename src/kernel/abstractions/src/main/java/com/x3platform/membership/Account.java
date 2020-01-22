@@ -1,9 +1,9 @@
 package com.x3platform.membership;
 
 import com.x3platform.AuthorizationObject;
-
 import java.io.Serializable;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
 
 /**
  * 帐号信息
@@ -60,6 +60,13 @@ public interface Account extends AuthorizationObject, Serializable {
   void setLoginName(String value);
 
   /**
+   * 密码盐值
+   */
+  String getPasswordSalt();
+
+  void  setPasswordSalt(String value);
+
+  /**
    * 密码更新时间
    */
   Date getPasswordChangedDate();
@@ -114,12 +121,6 @@ public interface Account extends AuthorizationObject, Serializable {
   void setEnableEmail(int value);
 
   /**
-   * 修改人
-   */
-  String getCreatedBy();
-
-  void  setCreatedBy(String value);
-  /**
    * 排序标识
    */
   String getOrderId();
@@ -131,22 +132,12 @@ public interface Account extends AuthorizationObject, Serializable {
    */
   String getIP();
 
+  /**
+   * 设置 IP 地址
+   *
+   * @param value 值
+   */
   void setIP(String value);
-
-  /**
-   * 组织信息
-   */
-  List<AccountOrganizationUnitRelation> getOrganizationUnitRelations();
-
-  /**
-   * 角色集合
-   */
-  List<AccountRoleRelation> getRoleRelations();
-
-  /**
-   * 群组集合
-   */
-  List<AccountGroupRelation> getGroupRelations();
 
   /**
    * 登录时间
@@ -163,11 +154,39 @@ public interface Account extends AuthorizationObject, Serializable {
   void setDistinguishedName(String value);
 
   /**
-   * 创建时间
+   * 获取创建时间
+   *
+   * @return 创建时间
    */
   Date getCreatedDate();
 
+  /**
+   * 设置创建时间
+   *
+   * @param value 值
+   */
   void setCreatedDate(Date value);
 
+  /**
+   * 组织单元信息
+   */
+  List<AccountOrganizationUnitRelation> getOrganizationUnitRelations();
 
+  /**
+   * 角色集合
+   */
+  List<AccountRoleRelation> getRoleRelations();
+
+  /**
+   * 群组集合
+   */
+  List<AccountGroupRelation> getGroupRelations();
+
+  /**
+   * 重置关系
+   *
+   * @param relationType 关系类型
+   * @param relationText 文本格式的关系数据
+   */
+  void resetRelations(String relationType, String relationText);
 }

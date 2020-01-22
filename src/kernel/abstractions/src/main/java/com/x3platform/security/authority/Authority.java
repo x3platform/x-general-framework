@@ -10,7 +10,7 @@ import java.util.Date;
  *
  * @author ruanyu
  */
-public class Authority implements Cacheable {
+public class Authority {
 
   /**
    * 构造函数
@@ -18,125 +18,106 @@ public class Authority implements Cacheable {
   public Authority() {
   }
 
-  private String mId;
+  private String id;
 
   /**
    * 唯一标识
    */
-  public final String getId() {
-    return mId;
+  public String getId() {
+    return id;
   }
 
-  public final void setId(String value) {
-    mId = value;
+  public void setId(String value) {
+    id = value;
   }
 
-  private String mName;
+  private String name;
 
   /**
    * 名称
    */
-  public final String getName() {
-    return this.mName;
+  public String getName() {
+    return this.name;
   }
 
-  public final void setName(String value) {
-    this.mName = value;
+  public void setName(String value) {
+    this.name = value;
   }
 
-  private String mDescription;
+  private String description;
 
   /**
    * 描述信息
    */
-  public final String getDescription() {
-    return mDescription;
+  public String getDescription() {
+    return description;
   }
 
-  public final void setDescription(String value) {
-    mDescription = value;
+  public void setDescription(String value) {
+    description = value;
   }
 
-  private int mLocking;
+  private int locking;
 
   /**
    * 锁定 0=未锁定, 1=锁定
    */
-  public final int getLocking() {
-    return mLocking;
+  public int getLocking() {
+    return locking;
   }
 
-  public final void setLocking(int value) {
-    mLocking = value;
+  public void setLocking(int value) {
+    locking = value;
   }
 
-  private String mTags;
+  private String tags;
 
   /**
    * 标签
    */
-  public final String getTags() {
-    return mTags;
+  public String getTags() {
+    return tags;
   }
 
-  public final void setTags(String value) {
-    mTags = value;
+  public void setTags(String value) {
+    tags = value;
   }
 
-  private String mOrderId;
+  private String orderId;
 
   /**
    */
-  public final String getOrderId() {
-    return mOrderId;
+  public String getOrderId() {
+    return orderId;
   }
 
-  public final void setOrderId(String value) {
-    mOrderId = value;
+  public void setOrderId(String value) {
+    orderId = value;
   }
 
-  private java.time.LocalDateTime mModifiedDate = java.time.LocalDateTime.MIN;
+  private java.time.LocalDateTime modifiedDate = java.time.LocalDateTime.MIN;
 
   /**
    * 修改时间
    */
-  public final java.time.LocalDateTime getModifiedDate() {
-    return mModifiedDate;
+  public java.time.LocalDateTime getModifiedDate() {
+    return modifiedDate;
   }
 
-  public final void setModifiedDate(java.time.LocalDateTime value) {
-    mModifiedDate = value;
+  public void setModifiedDate(java.time.LocalDateTime value) {
+    modifiedDate = value;
   }
 
-  private java.time.LocalDateTime mCreatedDate = java.time.LocalDateTime.MIN;
+  private java.time.LocalDateTime createdDate = java.time.LocalDateTime.MIN;
 
   /**
    * 创建时间
    */
-  public final java.time.LocalDateTime getCreatedDate() {
-    return mCreatedDate;
+  public java.time.LocalDateTime getCreatedDate() {
+    return createdDate;
   }
 
-  public final void setCreatedDate(java.time.LocalDateTime value) {
-    mCreatedDate = value;
-  }
-
-  // -------------------------------------------------------
-  // 显式实现 ICacheable
-  // -------------------------------------------------------
-
-  private Date mExpires = DateUtil.toDate(java.time.LocalDateTime.MAX);
-
-  /**
-   * 过期时间
-   */
-  @Override
-  public Date getExpires() {
-    return mExpires;
-  }
-
-  @Override
-  public void setExpires(Date value) {
-    mExpires = value;
+  public void setCreatedDate(java.time.LocalDateTime value) {
+    createdDate = value;
   }
 }
