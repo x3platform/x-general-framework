@@ -14,6 +14,7 @@ import com.x3platform.globalization.I18n;
 import com.x3platform.membership.Account;
 import com.x3platform.membership.MembershipManagement;
 import com.x3platform.messages.MessageObject;
+import com.x3platform.security.Encrypter;
 import com.x3platform.util.StringUtil;
 import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
@@ -54,13 +55,16 @@ public class ConnectAuthController {
 
       return createLoginPage(clientId, redirectUri, responseType, scope);
     } else {
-      KernelContext.getLog().info("loginName:" + loginName + ",password:" + password);
+      if (password.startsWith("{RSA}")) {
+        password = Encrypter.decryptRsa(password.substring(5));
+      }
+
       Account account = KernelContext.getCurrent().getAuthenticationManagement().login(loginName, password, true);
 
       if (account == null) {
         if (StringUtil.isNullOrEmpty(responseType)) {
-          outString.append(MessageObject.stringify("1", "帐号或者密码错误。"));
-          return outString.toString();
+          return MessageObject.stringify(I18n.getExceptions().text("code_connect_user_or_password_is_incorrect"),
+            I18n.getExceptions().text("text_connect_user_or_password_is_incorrect"));
         } else {
           // 输出登录页面
           // 设置输出的内容类型，默认为 html 格式。
@@ -69,8 +73,13 @@ public class ConnectAuthController {
           return createLoginPage(clientId, redirectUri, responseType, scope);
         }
       } else {
+        //判断用户是否被禁用
+        if ("0".equals(String.valueOf(account.getStatus()))) {
+          return MessageObject.stringify(I18n.getExceptions().text("code_connect_disable_is_incorrect"),
+            I18n.getExceptions().text("text_connect_disable_is_incorrect"));
+        }
         // 获取当前用户信息
-        KernelContext.getLog().info(account.getGlobalName() + " 验证成功。");
+        KernelContext.getLog().info("{} 验证成功。", account.getGlobalName());
         // 检验是否有授权码
         if (!ConnectContext.getInstance().getConnectAuthorizationCodeService().isExist(clientId, account.getId())) {
           ConnectAuthorizationCode authorizationCode = new ConnectAuthorizationCode();
@@ -90,12 +99,9 @@ public class ConnectAuthController {
         ConnectAccessToken token = ConnectContext.getInstance().getConnectAccessTokenService()
           .findOneByAccountId(clientId, account.getId());
 
-        // String sessionId = token.getAccountId() + "." + token.getId();
         String sessionId = token.getId();
 
         KernelContext.getCurrent().getAuthenticationManagement().addSession(clientId, sessionId, account);
-
-        // HttpAuthenticationCookieSetter.SetUserCookies(sessionId);
 
         String code = ConnectContext.getInstance().getConnectAuthorizationCodeService()
           .getAuthorizationCode(clientId, account);
@@ -158,9 +164,9 @@ public class ConnectAuthController {
 
 
   /**
-   * 合并Url地址和授权码
+   * 合并 Url 地址和授权码
    */
-  private String CombineUrlAndAuthorizationCode(String redirectUri, String code) {
+  private String combineUrlAndAuthorizationCode(String redirectUri, String code) {
     if (redirectUri.indexOf("?") == -1 && redirectUri.indexOf("&") == -1) {
       return redirectUri + "?code=" + code;
     } else if (redirectUri.indexOf("?") > -1 && redirectUri.indexOf("&") == -1) {
@@ -173,7 +179,7 @@ public class ConnectAuthController {
   /**
    * 合并Url地址和访问令牌
    */
-  private String CombineUrlAndAccessToken(String redirectUri, ConnectAccessToken token) {
+  private String combineUrlAndAccessToken(String redirectUri, ConnectAccessToken token) {
     if (redirectUri == null) {
       redirectUri = "";
     }
@@ -189,7 +195,7 @@ public class ConnectAuthController {
   }
 
   // -------------------------------------------------------
-  // 接口地址:/api/connect/oauth/token
+  // 接口地址:/api/connect/auth/token
   // -------------------------------------------------------
 
   /***

@@ -33,12 +33,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
+ * 附件 API 接口
  *
+ * @author ruanyu
  */
-@Lazy(true)
+@Lazy
 @RestController
 @RequestMapping("/api/attachmentstorage/file")
 public class AttachmentFileController {
+
   /**
    * 业务服务接口
    */
@@ -59,6 +62,12 @@ public class AttachmentFileController {
     return MessageObject.stringify("0", I18n.getStrings().text("msg_delete_success"));
   }
 
+  /**
+   * 获取详细信息
+   *
+   * @param data 请求的数据内容
+   * @return 一个相关的实例列表信息
+   */
   @RequestMapping("/findOne")
   public String findOne(@RequestBody String data) {
     JSONObject req = JSON.parseObject(data);
@@ -71,6 +80,12 @@ public class AttachmentFileController {
       + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";
   }
 
+  /**
+   * 获取列表信息
+   *
+   * @param data 请求的数据内容
+   * @return 一个相关的实例列表信息
+   */
   @RequestMapping("/findAll")
   public String findAll(@RequestBody String data) {
     JSONObject req = JSON.parseObject(data);
@@ -78,7 +93,14 @@ public class AttachmentFileController {
     String entityId = req.getString("entityId");
     String entityClassName = req.getString("entityClassName");
     String orderBy = req.getString("orderBy");
-    int length = req.getInteger("length");
+    String lengthValue = req.getString("length");
+    if (StringUtil.isNullOrEmpty(orderBy)) {
+      orderBy = "attachment_name";
+    }
+    int length = 0;
+    if (!StringUtil.isNullOrEmpty(lengthValue)) {
+      length = Integer.valueOf(lengthValue);
+    }
 
     DataQuery query = new DataQuery();
 
@@ -143,6 +165,11 @@ public class AttachmentFileController {
       String attachmentEntityClassName = req.getString("attachmentEntityClassName");
       // (必填)文件夹名称
       String attachmentFolder = req.getString("attachmentFolder");
+
+      // 设置默认输出内容类型
+      if (StringUtil.isNullOrEmpty(outputType)) {
+        outputType = "object";
+      }
 
       if (!StringUtil.isNullOrEmpty(base64Data)) {
         byte[] fileData = Base64.getDecoder().decode(base64Data);

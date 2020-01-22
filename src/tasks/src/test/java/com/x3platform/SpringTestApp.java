@@ -12,9 +12,9 @@ import org.springframework.context.annotation.Import;
 import java.util.Properties;
 
 @SpringBootApplication
-@Import(DynamicDataSourceRegister.class)
 @ComponentScan(basePackages = {"com.x3platform"})
 @MapperScan({"com.x3platform"})
+@Import(DynamicDataSourceRegister.class)
 public class SpringTestApp {
 
   /**

@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.x3platform.sync.mappers.SyncPkgMapper">
+  <resultMap id="BaseResultMap" type="com.x3platform.sync.models.SyncPkg">
+    <result property="id" jdbcType="VARCHAR" column="id"/>
+    <result property="applicationId" jdbcType="VARCHAR" column="application_id"/>
+    <result property="path" jdbcType="VARCHAR" column="path"/>
+    <result property="recordCount" jdbcType="BIGINT" column="record_count"/>
+    <result property="beginDate" jdbcType="TIMESTAMP" column="begin_date"/>
+    <result property="endDate" jdbcType="TIMESTAMP" column="end_date"/>
+    <result property="isSend" jdbcType="INTEGER" column="is_send"/>
+    <result property="createdDate" jdbcType="TIMESTAMP" column="created_date"/>
+  </resultMap>
+  <sql id="Select_Where_Clause">
+    <where>
+      <!-- 默认查询场景 -->
+      <if test="var_scene == 'default'">
+        <if test="param_id != null and param_id != ''">
+          AND t.id = #{param_id}
+        </if>
+        <if test="param_application_id != null and param_application_id != ''">
+          AND t.application_id = #{param_application_id}
+        </if>
+        <if test="param_path != null and param_path != ''">
+          AND t.path = #{param_path}
+        </if>
+        <if test="param_table_name != null and param_table_name != ''">
+          AND t.table_name = #{param_table_name}
+        </if>
+        <if test="param_begin_date != null">
+          AND t.begin_date = #{param_begin_date}
+        </if>
+        <if test="param_end_date != null">
+          AND t.end_date = #{param_end_date}
+        </if>
+        <if test="param_created_date != null">
+          AND t.created_date = #{param_created_date}
+        </if>
+      </if>
+    </where>
+  </sql>
+  <insert id="insert" parameterType="com.x3platform.sync.models.SyncPkg">
+    INSERT INTO sync_pkg
+    (
+      id,
+      application_id,
+      path,
+      record_count,
+      begin_date,
+      end_date,
+      is_send,
+      created_date
+    )
+    VALUES
+      (
+        #{id,jdbcType=VARCHAR},
+        #{applicationId,jdbcType=VARCHAR},
+        #{path,jdbcType=VARCHAR},
+        #{recordCount,jdbcType=VARCHAR},
+        #{beginDate,jdbcType=TIMESTAMP},
+        #{endDate,jdbcType=TIMESTAMP},
+        #{isSend,jdbcType=INTEGER},
+        CURRENT_TIMESTAMP
+      )
+  </insert>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    DELETE FROM sync_pkg
+    WHERE id = #{id}
+  </delete>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    SELECT *
+    FROM sync_pkg
+    WHERE id = #{id}
+  </select>
+  <select id="findAll" parameterType="java.util.Map" resultMap="BaseResultMap">
+    SELECT * FROM sync_pkg t
+    <if test="_parameter != null">
+      <include refid="Select_Where_Clause"/>
+    </if>
+    <if test="orders != null and orders.size() > 0">
+      ORDER BY
+      <foreach collection="orders" item="order" index="index" separator=",">
+        ${order}
+      </foreach>
+    </if>
+    <if test="length > 0">
+      LIMIT 0, ${length}
+    </if>
+  </select>
+  <select id="findAllByStartPkgId" parameterType="java.util.Map" resultMap="BaseResultMap">
+    SELECT *
+    FROM sync_pkg
+    WHERE id >= #{id}
+    ORDER BY created_date
+  </select>
+  <select id="findAllByStartDate" parameterType="java.util.Map" resultMap="BaseResultMap">
+    SELECT *
+    FROM sync_pkg
+    WHERE created_date > #{created_date}
+    ORDER BY created_date
+  </select>
+  <select id="getLastPkgEndDate" resultType="java.time.LocalDateTime" useCache="false">
+    SELECT MAX(end_date)
+    FROM sync_pkg
+    ORDER BY end_date desc
+  </select>
+  <update id="setSend">
+    UPDATE sync_pkg
+    SET is_send = #{is_send}
+    WHERE id = #{id}
+  </update>
+  <select id="fetchData" resultType="java.util.Map">
+    SELECT
+    <if test="fields == null || fields == '' || fields == &quot;*&quot;">
+      *
+    </if>
+    <if test="fields != null and fields != '' and fields != &quot;*&quot;">
+      <foreach collection="fields" item="field" index="index" separator=",">
+        ${field}
+      </foreach>
+    </if>
+    FROM ${table_name}
+    WHERE ${modified_date_field} BETWEEN #{begin_date} AND #{end_date}
+    ORDER BY ${modified_date_field}
+  </select>
+  <select id="fetchDataByApplicationId" resultType="java.util.Map">
+    SELECT
+    <if test="fields == null || fields == '' || fields == &quot;*&quot;">
+      *
+    </if>
+    <if test="fields != null and fields != '' and fields != &quot;*&quot;">
+      <foreach collection="fields" item="field" index="index" separator=",">
+        ${field}
+      </foreach>
+    </if>
+    FROM ${table_name}
+    WHERE
+    ${application_id_field} = #{application_id} AND ${modified_date_field} BETWEEN #{begin_date} AND #{end_date}
+    ORDER BY ${modified_date_field}
+  </select>
+  <insert id="syncData">
+    INSERT INTO ${table_name}
+    <foreach collection="data" index="key" item="value" open="(" separator="," close=")">
+      ${key}
+    </foreach>
+    VALUES
+    <foreach collection="data" index="key" item="value" open="(" separator="," close=")">
+      #{value}
+    </foreach>
+    ON DUPLICATE KEY UPDATE
+    <foreach collection="data" index="key" item="value" separator=",">
+      <if test="key != 'id'">
+        ${key} = #{value}
+      </if>
+    </foreach>
+  </insert>
+</mapper>

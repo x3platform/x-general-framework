@@ -5,3 +5,4 @@
 mvn install
 ```
 
+环境要求 Java 1.8

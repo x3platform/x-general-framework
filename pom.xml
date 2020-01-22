@@ -12,15 +12,24 @@
     <module>src/tests</module>
     <!-- 通用组件 -->
     <module>src/kernel/support</module>
+    <module>src/kernel/cachebuffer/redis</module>
     <module>src/kernel/abstractions</module>
+    <module>src/ldap</module>
     <module>src/sessions</module>
     <module>src/membership</module>
     <module>src/apps</module>
+    <module>src/sync</module>
     <module>src/connect</module>
     <module>src/tasks</module>
     <module>src/attachmentstorage</module>
   </modules>
-
+  <developers>
+    <developer>
+      <name>ruanyu</name>
+      <email>ruanyu@x3platform.com</email>
+      <organization>x3platform</organization>
+    </developer>
+  </developers>
   <!-- git 远程仓库配置 -->
   <scm>
     <connection>scm:git:https://github.com/x3platform/x-general-framework.git</connection>

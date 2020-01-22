@@ -9,8 +9,8 @@ before_install:
 install:
   - echo install ok.
 before_script:
-  - echo "USE mysql;\nUPDATE user SET password=PASSWORD('root') WHERE user='root';\nFLUSH PRIVILEGES;\n" | mysql -u root
-  - mysql -uroot -proot x3_base < db/x3_base-1.0.0.sql
+  - echo "USE mysql;\nUPDATE user SET authentication_string=PASSWORD('root') WHERE user='root';\nFLUSH PRIVILEGES;\n" | mysql -u root
+  - mysql -uroot -proot x3_base < database/scripts/install-script-latest-mysql.sql
 script:
   - mvn clean resources:resources install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 after_success:

@@ -87,7 +87,7 @@ public class AttachmentStorageConfiguration {
   private String allowFileTypes;
 
   /**
-   * 允许文件的类型
+   * 允许上传的文件类型
    */
   public String getAllowFileTypes() {
     return allowFileTypes;

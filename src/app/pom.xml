@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.x3platform</groupId>
   <artifactId>x3platform-app</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>1.0</version>
   <packaging>jar</packaging>
   <name>x3platform-app</name>
   <url>http://maven.apache.org</url>
@@ -11,6 +11,8 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>1.8</java.version>
+    <maven.compiler.source>${java.version}</maven.compiler.source>
+    <maven.compiler.target>${java.version}</maven.compiler.target>
   </properties>
 
   <parent>
@@ -20,23 +22,30 @@
   </parent>
 
   <dependencies>
-    <!-- Spring Boot web -->
+    <!-- Spring Boot -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-web</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.springframework.boot</groupId>
-          <artifactId>spring-boot-starter-logging</artifactId>
-        </exclusion>
-      </exclusions>
+      <artifactId>spring-boot-starter</artifactId>
     </dependency>
     <!-- Spring Test -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
-      <version>2.0.2.RELEASE</version>
       <scope>test</scope>
+    </dependency>
+    <!-- Spring WebSocket -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-websocket</artifactId>
+    </dependency>
+    <!-- Spring Session -->
+    <dependency>
+      <groupId>org.springframework.data</groupId>
+      <artifactId>spring-data-redis</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.session</groupId>
+      <artifactId>spring-session-data-redis</artifactId>
     </dependency>
     <!-- Spring Devtools -->
     <dependency>
@@ -44,11 +53,24 @@
       <artifactId>spring-boot-devtools</artifactId>
       <scope>runtime</scope>
     </dependency>
-    <!-- slf4j-log4j12 -->
+    <!-- Logging -->
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>1.2.3</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-to-slf4j</artifactId>
+      <version>2.11.2</version>
+      <scope>compile</scope>
+    </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-      <version>1.7.21</version>
+      <artifactId>jul-to-slf4j</artifactId>
+      <version>1.7.28</version>
+      <scope>compile</scope>
     </dependency>
     <!-- Alibaba Fastjson -->
     <dependency>
@@ -59,10 +81,10 @@
     <!-- Alibaba Druid -->
     <dependency>
       <groupId>com.alibaba</groupId>
-      <artifactId>druid</artifactId>
-      <version>1.1.9</version>
+      <artifactId>druid-spring-boot-starter</artifactId>
+      <version>1.1.10</version>
     </dependency>
-    <!-- commons lang3 -->
+    <!-- Commons Lang3 -->
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
@@ -72,6 +94,7 @@
     <dependency>
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>
+      <version>5.1.48</version>
     </dependency>
     <!-- Mybatis -->
     <dependency>
@@ -92,36 +115,56 @@
       <version>4.12</version>
       <scope>test</scope>
     </dependency>
-    <!-- x3platform -->
+    <!-- X3Platform -->
     <dependency>
       <groupId>com.x3platform</groupId>
       <artifactId>x3platform-support</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
+      <version>0.1.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>com.x3platform</groupId>
+      <artifactId>x3platform-cachebuffer-redis</artifactId>
+      <version>0.1.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.x3platform</groupId>
       <artifactId>x3platform-abstractions</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
+      <version>0.1.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>com.x3platform</groupId>
+      <artifactId>x3platform-ldap</artifactId>
+      <version>0.1.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.x3platform</groupId>
       <artifactId>x3platform-membership</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
+      <version>0.1.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.x3platform</groupId>
       <artifactId>x3platform-apps</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
+      <version>0.1.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.x3platform</groupId>
-      <artifactId>x3platform-attachmentstorage</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
+      <artifactId>x3platform-sync</artifactId>
+      <version>0.1.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>com.x3platform</groupId>
+      <artifactId>x3platform-connect</artifactId>
+      <version>0.1.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.x3platform</groupId>
       <artifactId>x3platform-tasks</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
+      <version>0.1.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>com.x3platform</groupId>
+      <artifactId>x3platform-attachmentstorage</artifactId>
+      <version>0.1.0-SNAPSHOT</version>
     </dependency>
   </dependencies>
   <build>
