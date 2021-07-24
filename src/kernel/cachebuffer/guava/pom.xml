@@ -2,10 +2,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.x3platform</groupId>
-  <artifactId>x3platform-cachebuffer-redis</artifactId>
+  <artifactId>x3platform-cachebuffer-guava</artifactId>
   <version>0.1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
-  <name>x3platform-cachebuffer-redis</name>
+  <name>x3platform-cachebuffer-guava</name>
   <url>http://maven.apache.org</url>
   <!-- Properties -->
   <properties>
@@ -24,17 +24,16 @@
       <artifactId>spring-boot-starter</artifactId>
       <scope>provided</scope>
     </dependency>
-    <!-- Spring Web-->
+    <!-- Spring Web -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
       <scope>provided</scope>
     </dependency>
-    <!-- Spring Redis -->
+    <!-- Spring Cache -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-data-redis</artifactId>
-      <scope>provided</scope>
+      <artifactId>spring-boot-starter-cache</artifactId>
     </dependency>
     <!-- Spring Test -->
     <dependency>
@@ -47,6 +46,18 @@
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-pool2</artifactId>
       <version>2.8.0</version>
+    </dependency>
+    <!-- Google Guava -->
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>22.0</version>
+    </dependency>
+    <!-- Alibaba Druid -->
+    <dependency>
+      <groupId>com.alibaba</groupId>
+      <artifactId>druid-spring-boot-starter</artifactId>
+      <version>1.1.22</version>
     </dependency>
     <!-- MySQL -->
     <dependency>
@@ -68,11 +79,11 @@
       <artifactId>x3platform-support</artifactId>
       <version>0.1.0-SNAPSHOT</version>
     </dependency>
-    <dependency>
+    <!-- <dependency>
       <groupId>com.x3platform</groupId>
       <artifactId>x3platform-abstractions</artifactId>
       <version>0.1.0-SNAPSHOT</version>
-    </dependency>
+    </dependency> -->
   </dependencies>
   <build>
     <resources>
