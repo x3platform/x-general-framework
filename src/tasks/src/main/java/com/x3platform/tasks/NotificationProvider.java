@@ -10,6 +10,11 @@ import java.util.List;
 public interface NotificationProvider {
 
   /**
+   * 消息提供器名称
+   */
+  String getName();
+
+  /**
    * 发送通知
    *
    * @param workItem    任务信息

@@ -14,22 +14,22 @@ public interface ConnectMapper {
   /**
    * 保存记录
    *
-   * @param param <see cref="Connect"/>实例详细信息
-   * @return <see cref="Connect"/>实例详细信息
+   * @param param {@link Connect}实例详细信息
+   * @return {@link Connect}实例详细信息
    */
   int save(Connect param);
 
   /**
    * 添加记录
    *
-   * @param param <see cref="Connect"/>实例的详细信息
+   * @param param {@link Connect}实例的详细信息
    */
   void insert(Connect param);
 
   /**
    * 修改记录
    *
-   * @param param <see cref="Connect"/>实例的详细信息
+   * @param param {@link Connect}实例的详细信息
    */
   void update(Connect param);
 

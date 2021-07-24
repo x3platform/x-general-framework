@@ -22,7 +22,7 @@ import java.util.List;
  * @author ruanyu
  */
 @Lazy
-@RestController
+@RestController("com.x3platform.apps.controllers.ApplicationOptionController")
 @RequestMapping("/api/apps/applicationOption")
 public class ApplicationOptionController {
 

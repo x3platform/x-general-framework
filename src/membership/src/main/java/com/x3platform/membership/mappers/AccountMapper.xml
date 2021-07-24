@@ -13,7 +13,7 @@
     <result property="passwordChangedDate" column="password_changed_date" />
     <result property="identityCard" column="identity_card" />
     <result property="type" column="type" />
-    <result property="certifiedMobile" column="certified_telephone" />
+    <result property="certifiedMobile" column="certified_mobile" />
     <result property="certifiedEmail" column="certified_email" />
     <result property="certifiedAvatar" column="certified_avatar" />
     <result property="enableEmail" column="enable_email" />
@@ -39,7 +39,7 @@
     <result property="passwordChangedDate" column="password_changed_date" />
     <result property="identityCard" column="identity_card" />
     <result property="type" column="type" />
-    <result property="certifiedMobile" column="certified_telephone" />
+    <result property="certifiedMobile" column="certified_mobile" />
     <result property="certifiedEmail" column="certified_email" />
     <result property="certifiedAvatar" column="certified_avatar" />
     <result property="enableEmail" column="enable_email" />
@@ -53,8 +53,73 @@
     <result property="modifiedDate" column="modified_date" />
     <result property="createdDate" column="created_date" />
   </resultMap>
+  <sql id="Select_Where_Clause">
+    <where>
+      <!-- 列表查询 -->
+      <if test="var_scene == 'Query'">
+        <if test="param_search_text != null and param_search_text != ''">
+          AND ( t.name LIKE CONCAT('%',#{param_search_text},'%')
+                OR t.login_name LIKE CONCAT('%',#{param_search_text},'%')
+                OR t.certified_mobile LIKE CONCAT('%',#{param_search_text},'%') )
+        </if>
+        <if test="param_name != null and param_name != ''">
+          AND t.name Like CONCAT('%',#{param_name},'%')
+        </if>
+        <if test="param_login_name != null and param_login_name != ''">
+          AND t.login_name Like CONCAT('%',#{param_login_name},'%')
+        </if>
+        <if test="param_certified_mobile != null and param_certified_mobile != ''">
+          AND t.certified_mobile Like CONCAT('%',#{param_certified_mobile},'%')
+        </if>
+        <if test="param_organization_unit_id != null and param_organization_unit_id != ''">
+          AND id IN( SELECT account_id FROM sys_account_organization_unit WHERE organization_unit_id = #{param_organization_unit_id} )
+        </if>
+      </if>
+      <!-- 通讯录查询 -->
+      <if test="var_scene == 'Contacts'">
+        <if test="param_name != null and param_name != ''">
+          AND (t.name Like #{param_name} OR t.login_name Like #{param_name})
+        </if>
+        <if test="param_status != null and param_status != ''">
+          AND t.status = #{param_status}
+        </if>
+      </if>
+      <if test="var_scene == 'default'">
+        <if test="param_code != null and param_code != ''">
+          AND t.code = #{param_code}
+        </if>
+        <if test="param_name != null and param_name != ''">
+          AND t.name Like CONCAT('%',#{param_name},'%')
+        </if>
+        <if test="param_login_name != null and param_login_name != ''">
+          AND t.login_name Like CONCAT('%',#{param_login_name},'%')
+        </if>
+        <if test="param_global_name != null and param_global_name != ''">
+          AND t.global_name Like CONCAT('%',#{param_globalName},'%')
+        </if>
+        <if test="param_display_name != null and param_display_name != ''">
+          AND t.display_name Like CONCAT('%',#{param_displayName},'%')
+        </if>
+        <if test="param_pinyin != null and param_pinyin != ''">
+          AND t.pinyin Like CONCAT('%',#{param_pinyin},'%')
+        </if>
+        <if test="param_type != null and param_type != ''">
+          AND t.type = #{param_type}
+        </if>
+        <if test="param_locking != null and param_locking != ''">
+          AND t.locking = #{param_locking}
+        </if>
+        <if test="param_status != null and param_status != ''">
+          AND t.status = #{param_status}
+        </if>
+        <if test="param_certified_mobile != null and param_certified_mobile != ''">
+          AND t.certified_mobile = #{param_certified_mobile}
+        </if>
+      </if>
+    </where>
+  </sql>
   <insert id="insert" parameterType="com.x3platform.membership.models.AccountInfo">
-    INSERT INTO sys_account(
+    INSERT INTO sys_account (
         id,
         code,
         name,
@@ -67,7 +132,7 @@
         password_changed_date,
         identity_card,
         type,
-        certified_telephone,
+        certified_mobile,
         certified_email,
         certified_avatar,
         enable_email,
@@ -120,7 +185,7 @@
       type = #{type},
       enable_email = #{enableEmail},
       certified_email = #{certifiedEmail},
-      certified_telephone = #{certifiedMobile},
+      certified_mobile = #{certifiedMobile},
       locking = #{locking},
       order_id = #{orderId},
       status = #{status},
@@ -136,60 +201,21 @@
     SELECT * FROM sys_account WHERE id = #{id}
   </select>
   <select id="findOneByLoginName" resultMap="findOne_Result">
-    SELECT *  FROM sys_account WHERE login_name = #{loginName}
+    SELECT * FROM sys_account WHERE login_name = #{login_name}
   </select>
-  <sql id="Select_Where_Clause">
-    <where>
-      <!-- 通讯录查询 -->
-      <if test="var_scene == 'Contacts'">
-        <if test="param_name != null and param_name != ''">
-          AND (t.name Like #{param_name} OR t.login_name Like #{param_name})
-        </if>
-        <if test="param_status != null and param_status != ''">
-          AND t.status = #{param_status}
-        </if>
-      </if>
-
-      <if test="var_scene == 'default'">
-        <if test="param_code != null and param_code != ''">
-          AND t.code = #{param_code}
-        </if>
-        <if test="param_name != null and param_name != ''">
-          AND t.name Like CONCAT('%',#{param_name},'%')
-        </if>
-        <if test="param_loginName != null and param_loginName != ''">
-          AND t.login_name Like CONCAT('%',#{param_loginName},'%')
-        </if>
-        <if test="param_globalName != null and param_globalName != ''">
-          AND t.global_name Like CONCAT('%',#{param_globalName},'%')
-        </if>
-        <if test="param_displayName != null and param_displayName != ''">
-          AND t.display_name Like CONCAT('%',#{param_displayName},'%')
-        </if>
-        <if test="param_pinYin != null and param_pinYin != ''">
-          AND t.pinyin Like CONCAT('%',#{param_pinYin},'%')
-        </if>
-        <if test="param_type != null and param_type != ''">
-          AND t.type = #{param_type}
-        </if>
-        <if test="param_locking != null and param_locking != ''">
-          AND t.locking = #{param_locking}
-        </if>
-        <if test="param_status != null and param_status != ''">
-          AND t.status = #{param_status}
-        </if>
-        <if test="param_certifiedMobile != null and param_certifiedMobile != ''">
-          AND t.certified_telephone = #{param_certifiedMobile}
-        </if>
-      </if>
-    </where>
-  </sql>
+  <select id="findOneByCertifiedMobile" resultMap="findOne_Result">
+    SELECT * FROM sys_account WHERE certified_mobile = #{certified_mobile}
+  </select>
+  <select id="findOneByCertifiedEmail" resultMap="findOne_Result">
+    SELECT * FROM sys_account WHERE certified_email = #{certified_email}
+  </select>
   <select id="findAll" parameterType="java.util.Map" resultMap="findAll_Result">
     SELECT * FROM sys_account t
     <if test="_parameter != null">
       <include refid="Select_Where_Clause" />
     </if>
     <if test="orders != null and orders.size() > 0">
+      ORDER BY
       <foreach collection="orders" item="order" index="index" separator="," >
         ${order}
       </foreach>
@@ -219,7 +245,7 @@
         AND t.display_name Like CONCAT('%',#{param_displayName},'%')
       </if>
       <if test="param_certifiedMobile != null and param_certifiedMobile != ''">
-        AND t.certified_telephone Like CONCAT('%',#{param_certifiedMobile},'%')
+        AND t.certified_mobile Like CONCAT('%',#{param_certifiedMobile},'%')
       </if>
       <if test="param_status != null and param_status != ''">
         AND t.status = #{param_status}
@@ -242,7 +268,6 @@
         )
         )
       </if>
-
     </if>
     <if test="orders != null and orders.size() > 0">
       ORDER BY t.modified_date
@@ -254,7 +279,6 @@
     <if test="length > 0">
       LIMIT 0, ${length}
     </if>
-
   </select>
   <select id="findAllByOrganizationUnitId" resultMap="findAll_Result">
     SELECT * FROM sys_account WHERE id IN (
@@ -266,8 +290,11 @@
        WHERE organization_unit_id = #{organization_unit_id} AND is_default = 1)
   </select>
   <select id="findAllByRoleId" resultMap="findAll_Result">
-    select DISTINCT s.* from sys_account s , sys_account_role t where s.id = t.account_id and t.role_id=#{roleId}
-   </select>
+    select DISTINCT s.* from sys_account s , sys_account_role t where s.id = t.account_id and t.role_id=#{role_id}
+  </select>
+  <select id="findAllByGroupId" resultMap="findAll_Result">
+    SELECT * FROM sys_account t WHERE id IN (SELECT account_id FROM sys_account_group WHERE group_id = #{group_id})
+  </select>
 
   <select id="isExist" resultType="java.lang.Boolean">
     SELECT COUNT(0) AS "Count" FROM sys_account WHERE id = #{id}
@@ -316,18 +343,17 @@
   <select id="isExistCertifiedMobile" resultType="java.lang.Boolean">
     SELECT COUNT(0) AS "Count"
     FROM sys_account
-    WHERE certified_telephone = #{certified_mobile}
+    WHERE certified_mobile = #{certified_mobile}
   </select>
-
-  <select id="loginCheck" parameterType="java.util.Map" resultMap="findOne_Result" >
-    SELECT * FROM sys_account WHERE login_name = #{loginName} AND password = #{password}
+  <select id="loginCheckByLoginName" parameterType="java.util.Map" resultMap="findOne_Result" >
+    SELECT * FROM sys_account WHERE login_name = #{login_name} AND password = #{password}
   </select>
-  <select id="findMaxCode" parameterType="java.util.Map" resultMap="findOne_Result" >
-    SELECT * FROM sys_account WHERE code in (
-      select max(code) from sys_account
-    )
+  <select id="loginCheckByCertifiedMobile" parameterType="java.util.Map" resultMap="findOne_Result" >
+    SELECT * FROM sys_account WHERE certified_mobile = #{certified_mobile} AND password = #{password}
   </select>
-
+  <select id="loginCheckByCertifiedEmail" parameterType="java.util.Map" resultMap="findOne_Result" >
+    SELECT * FROM sys_account WHERE certified_email = #{certified_email} AND password = #{password}
+  </select>
   <update id="rename" parameterType="com.x3platform.membership.models.AccountInfo" >
     UPDATE sys_account SET name = #{name}, modified_date = CURRENT_TIMESTAMP WHERE id = #{id}
   </update>
@@ -382,10 +408,10 @@
   <update id="changePassword" parameterType="com.x3platform.membership.models.AccountInfo"  >
     UPDATE sys_account SET password = #{password} WHERE login_name = #{login_name} AND password = #{original_password}
   </update>
-  <update id="refresh_Table_Account" >
+  <update id="refreshTableAccount" >
     UPDATE sys_account SET modified_date = CURRENT_TIMESTAMP WHERE id = #{id}
   </update>
-  <update id="refresh_Table_Member" >
+  <update id="refreshTableMember" >
     UPDATE sys_Member SET modified_date = CURRENT_TIMESTAMP WHERE account_id = #{id}
   </update>
   <select id="findAllAccountByAccountName" resultMap="findAll_Result" >

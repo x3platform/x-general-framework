@@ -11,8 +11,19 @@ import java.io.File;
  */
 public final class UploadPathUtil {
   /**
+   * 创建上传文件夹物理路径
+   * @return 物理路径
+   */
+  public static String createPhysicalUploadFolder() {
+    File physicalFolderPath = new File(AttachmentStorageConfigurationView.getInstance().getPhysicalUploadFolder());
+    if(!physicalFolderPath.exists()){
+      physicalFolderPath.mkdirs();
+    }
+    return DirectoryUtil.formatLocalPath(physicalFolderPath.getAbsolutePath() + PathUtil.getFileSeparator());
+  }
+
+  /**
    * 获取上传文件夹物理路径
-   *
    * @return 物理路径
    */
   public static String getPhysicalUploadFolder() {

@@ -13,6 +13,7 @@ import com.x3platform.security.authority.Authority;
 import com.x3platform.security.authority.AuthorityContext;
 import com.x3platform.util.StringUtil;
 import com.x3platform.util.UUIDUtil;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.dom4j.Element;
@@ -43,12 +44,12 @@ public class ApplicationMenu extends EntityClass {
     id = value;
   }
 
+  @JSONField(serialize = false)
   private Application application;
 
   /**
-   * 应用
+   * 所属应用
    */
-  @JSONField(serialize = false)
   public Application getApplication() {
     if (application == null && !StringUtil.isNullOrEmpty(getApplicationId())) {
       application = AppsContext.getInstance().getApplicationService().findOne(getApplicationId());
@@ -59,6 +60,7 @@ public class ApplicationMenu extends EntityClass {
   private String applicationId = "";
 
   /**
+   * 所属应用标识
    */
   public String getApplicationId() {
     return applicationId;
@@ -83,7 +85,7 @@ public class ApplicationMenu extends EntityClass {
   }
 
   /**
-   * 父级菜单对象
+   * 父级对象
    */
   @JSONField(serialize = false)
   private ApplicationMenu parent = null;
@@ -106,6 +108,7 @@ public class ApplicationMenu extends EntityClass {
   private String parentId = UUIDUtil.emptyString();
 
   /**
+   * 父级对象标识
    */
   public String getParentId() {
     return parentId;
@@ -116,7 +119,7 @@ public class ApplicationMenu extends EntityClass {
   }
 
   /**
-   * 父级名称
+   * 父级对象名称
    */
   public String getParentName() {
     return getParent() == null ? getApplicationDisplayName() : getParent().getName();
@@ -262,6 +265,7 @@ public class ApplicationMenu extends EntityClass {
   private String displayTypeView = "";
 
   /**
+   * 显示方式视图
    */
   public String getDisplayTypeView() {
     if (StringUtil.isNullOrEmpty(displayTypeView) && !StringUtil.isNullOrEmpty(getDisplayType())) {
@@ -345,11 +349,11 @@ public class ApplicationMenu extends EntityClass {
     fullPath = value;
   }
 
-  private java.time.LocalDateTime modifiedDate = java.time.LocalDateTime.MIN;
+  private LocalDateTime modifiedDate = java.time.LocalDateTime.MIN;
 
   /**
    */
-  public java.time.LocalDateTime getModifiedDate() {
+  public LocalDateTime getModifiedDate() {
     return modifiedDate;
   }
 
@@ -357,7 +361,7 @@ public class ApplicationMenu extends EntityClass {
     modifiedDate = value;
   }
 
-  private java.time.LocalDateTime createdDate = java.time.LocalDateTime.MIN;
+  private LocalDateTime createdDate = java.time.LocalDateTime.MIN;
 
   /**
    */

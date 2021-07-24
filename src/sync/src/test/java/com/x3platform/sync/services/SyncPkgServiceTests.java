@@ -1,6 +1,6 @@
 package com.x3platform.sync.services;
 
-import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
+import static org.junit.Assert.assertNotNull;
 
 import com.x3platform.sync.SyncSerializer;
 import com.x3platform.sync.configuration.SyncConfigurationView;

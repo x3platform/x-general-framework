@@ -2,19 +2,19 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.x3platform.tasks.mappers.TaskWorkItemMapper">
   <resultMap id="BaseResultMap" type="com.x3platform.tasks.models.TaskWorkItem">
-    <result property="id" jdbcType="VARCHAR" column="id" />
-    <result property="applicationId" jdbcType="VARCHAR" column="application_id" />
-    <result property="taskCode" jdbcType="VARCHAR" column="task_code" />
-    <result property="type" jdbcType="VARCHAR" column="type" />
-    <result property="title" jdbcType="VARCHAR" column="title" />
-    <result property="content" jdbcType="VARCHAR" column="content" />
-    <result property="tags" jdbcType="VARCHAR" column="tags" />
-    <result property="senderId" jdbcType="VARCHAR" column="sender_id" />
-    <result property="receiverId" jdbcType="VARCHAR" column="receiver_id" />
-    <result property="isRead" jdbcType="BOOLEAN" column="is_read" />
-    <result property="status" jdbcType="INTEGER" column="status" />
-    <result property="finishTime" jdbcType="TIMESTAMP" column="finish_time" />
-    <result property="createdDate" jdbcType="TIMESTAMP" column="created_date" />
+    <result property="id" jdbcType="VARCHAR" column="id"/>
+    <result property="applicationId" jdbcType="VARCHAR" column="application_id"/>
+    <result property="taskCode" jdbcType="VARCHAR" column="task_code"/>
+    <result property="type" jdbcType="VARCHAR" column="type"/>
+    <result property="title" jdbcType="VARCHAR" column="title"/>
+    <result property="content" jdbcType="VARCHAR" column="content"/>
+    <result property="tags" jdbcType="VARCHAR" column="tags"/>
+    <result property="senderId" jdbcType="VARCHAR" column="sender_id"/>
+    <result property="receiverId" jdbcType="VARCHAR" column="receiver_id"/>
+    <result property="isRead" jdbcType="BOOLEAN" column="is_read"/>
+    <result property="status" jdbcType="INTEGER" column="status"/>
+    <result property="finishTime" jdbcType="TIMESTAMP" column="finish_time"/>
+    <result property="createdDate" jdbcType="TIMESTAMP" column="created_date"/>
   </resultMap>
 
   <sql id="Select_Where_Clause">
@@ -92,109 +92,156 @@
       #{finishTime,jdbcType=TIMESTAMP},
       CURRENT_TIMESTAMP
     FROM DUAL
-    WHERE NOT EXISTS ( SELECT * FROM task_work_item WHERE id = #{id} AND receiver_id = #{receiverId})
+    WHERE NOT EXISTS(SELECT *
+    FROM task_work_item
+    WHERE id = #{id} AND receiver_id = #{receiverId})
   </insert>
   <update id="updateByPrimaryKey" parameterType="com.x3platform.tasks.models.TaskWorkItem">
-    UPDATE task_work_item SET
+    UPDATE task_work_item
+    SET
 
       application_id = #{applicationId,jdbcType=VARCHAR},
-      task_code = #{taskCode,jdbcType=VARCHAR},
-      type = #{type,jdbcType=VARCHAR},
-      title = #{title,jdbcType=VARCHAR},
-      content = #{content,jdbcType=VARCHAR},
-      tags = #{tags,jdbcType=VARCHAR},
-      sender_id = #{senderId,jdbcType=VARCHAR},
-      receiver_id = #{receiverId,jdbcType=VARCHAR},
-      is_read = #{isRead,jdbcType=BOOLEAN},
-      status = #{status,jdbcType=INTEGER},
-      finish_time = #{finishTime,jdbcType=TIMESTAMP}
+    task_code = #{taskCode,jdbcType=VARCHAR},
+    type = #{type,jdbcType=VARCHAR},
+    title = #{title,jdbcType=VARCHAR},
+    content = #{content,jdbcType=VARCHAR},
+    tags = #{tags,jdbcType=VARCHAR},
+    sender_id = #{senderId,jdbcType=VARCHAR},
+    receiver_id = #{receiverId,jdbcType=VARCHAR},
+    is_read = #{isRead,jdbcType=BOOLEAN},
+    status = #{status,jdbcType=INTEGER},
+    finish_time = #{finishTime,jdbcType=TIMESTAMP}
 
     WHERE id = #{id}
   </update>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
-    DELETE FROM task_work_item WHERE id = #{id}
+    DELETE FROM task_work_item
+    WHERE id = #{id}
   </delete>
   <delete id="deleteByTaskCode" parameterType="java.lang.String">
-    DELETE FROM task_work_item WHERE application_id = #{applicationId} and task_code= #{taskCode}
+    DELETE FROM task_work_item
+    WHERE application_id = #{applicationId} AND task_code = #{taskCode}
   </delete>
-  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap" >
-    SELECT * FROM task_work_item WHERE id = #{id}
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    SELECT *
+    FROM task_work_item
+    WHERE id = #{id}
   </select>
-  <select id="findAllByReceiverId" resultMap="BaseResultMap" >
-    SELECT * FROM task_work_item T
-
-    <where>
-      receiver_id = #{receiverId}
-    </where>
-    <if test="orderBy != null and orderBy !=''">
-      ORDER BY ${orderBy}
-    </if>
-    <if test="length > 0">
-      LIMIT 0, ${length}
-    </if>
+  <select id="findOne" resultMap="BaseResultMap">
+    SELECT *
+    FROM task_work_item T
+    WHERE id = #{id} AND receiver_id = #{receiver_id}
   </select>
-  <select id="findAll" parameterType="java.util.Map" resultMap="BaseResultMap" >
+  <select id="findOneByTaskCode" resultMap="BaseResultMap">
+    SELECT *
+    FROM task_work_item T
+    WHERE application_id = #{application_id} AND task_code = #{task_code} AND receiver_id = #{receiver_id}
+  </select>
+  <select id="findAll" parameterType="java.util.Map" resultMap="BaseResultMap">
     SELECT * FROM task_work_item t
     <if test="_parameter != null">
-      <include refid="Select_Where_Clause" />
+      <include refid="Select_Where_Clause"/>
     </if>
     <if test="orders != null and orders.size() > 0">
       ORDER BY
-      <foreach collection="orders" item="order" index="index" separator="," >
-        #{order}
+      <foreach collection="orders" item="order" index="index" separator=",">
+        ${order}
       </foreach>
     </if>
     <if test="length > 0">
       LIMIT 0, ${length}
     </if>
   </select>
-  <select id="getRowCount" >
-    SELECT COUNT(0) AS "RowCount" FROM task_work_item t
-    <if test="_parameter != null">
-      <include refid="Select_Where_Clause" />
+  <select id="findAllByReceiverId" resultMap="BaseResultMap">
+    SELECT *
+    FROM task_work_item
+    WHERE receiver_id = #{receiver_id} AND status = 0
+    ORDER BY created_date
+    LIMIT 0, ${length}
+  </select>
+  <select id="findAllByTaskCodes" parameterType="java.util.Map" resultMap="BaseResultMap">
+    SELECT * FROM task_work_item WHERE application_id = #{application_id}
+    <if test="task_codes != null and task_codes.size() > 0">
+      AND task_code IN
+      <foreach collection="task_codes" item="task_code" index="index" open="(" separator="," close=")">
+        ${task_code}
+      </foreach>
     </if>
   </select>
-  <select id="isExist" resultType="boolean" >
-    SELECT COUNT(0) AS "Count" FROM task_work_item WHERE id = #{id}
+  <select id="isExist" resultType="java.lang.Boolean">
+    SELECT COUNT(0) AS "Count"
+    FROM task_work_item
+    WHERE id = #{id} AND receiver_id = #{receiver_id}
   </select>
-
-  <!--待优化(具体需要字段)，查询出对应id待办信息的详情-->
-  <select id="selectTask" parameterType="string" resultMap="BaseResultMap">
-    SELECT * FROM task_work_item WHERE id=#{id}
+  <select id="isExistTaskCode" resultType="java.lang.Boolean">
+    SELECT COUNT(0) AS "Count"
+    FROM task_work_item
+    WHERE application_id = #{application_id} AND task_code = #{task_code}
   </select>
-
-  <!--待确定需要字段,查询出所有对应接收人的待办信息-->
-  <select id="queryAllTasK" parameterType="string" resultMap="BaseResultMap">
-    SELECT id,title,content,created_date,is_read,type FROM task_work_item WHERE receiver_id=#{receiver_id} AND status!=1
-  </select>
-
-  <!--统计有多少需要处理的消息的条数-->
-  <select id="countTask" parameterType="string" resultType="_int">
-    SELECT COUNT(id) FROM task_work_item WHERE receiver_id=#{receiver_id} AND status!=1
-  </select>
-
   <!-- 设置任务阅读状态 -->
-  <update id="setRead" >
-    UPDATE task_work_item SET is_read=#{is_read} WHERE id=#{id} and receiver_id = #{receiver_id}
+  <update id="setRead">
+    UPDATE task_work_item
+    SET is_read = #{is_read}
+    WHERE id = #{id} AND receiver_id = #{receiver_id}
+  </update>
+  <!-- 设置任务状态 -->
+  <update id="setStatus">
+    UPDATE task_work_item
+    SET status = #{status}
+    WHERE id = #{id} AND receiver_id = #{receiver_id}
   </update>
   <!-- 设置任务完成状态 -->
-  <update id="setStatus" >
-    UPDATE task_work_item SET status=#{status} WHERE id=#{id} and receiver_id = #{receiver_id}
-
+  <update id="setFinished">
+    UPDATE task_work_item
+    SET status = 1
+    WHERE receiver_id = #{receiver_id}
   </update>
-
-  <select id="findOne" resultMap="BaseResultMap" >
-    SELECT * FROM task_work_item T WHERE id = #{id} AND receiverId = #{receiverId}
-  </select>
+  <update id="setFinishedByIds">
+    UPDATE task_work_item SET status = 1 WHERE receiver_id = #{receiver_id}
+    <if test="ids != null">
+      AND id IN
+      <foreach item="id" index="index" collection="ids" open="(" separator="," close=")">
+        #{id}
+      </foreach>
+    </if>
+  </update>
+  <update id="setFinishedByTaskCodes">
+    UPDATE task_work_item SET status = 1 WHERE receiver_id = #{receiver_id} AND application_id = #{application_id}
+    <if test="ids != null">
+      AND task_code IN
+      <foreach item="task_code" index="index" collection="task_codes" open="(" separator="," close=")">
+        #{task_code}
+      </foreach>
+    </if>
+  </update>
+  <!-- 设置任务完成状态 -->
+  <update id="setFinishedByType">
+    UPDATE task_work_item
+    SET status = 1
+    WHERE receiver_id = #{receiver_id} AND type = #{type}
+  </update>
+  <update id="setAllFinished">
+    UPDATE task_work_item SET status = 1 WHERE application_id = #{application_id}
+    <if test="ids != null">
+      AND task_code IN
+      <foreach item="task_code" index="index" collection="task_codes" open="(" separator="," close=")">
+        #{task_code}
+      </foreach>
+    </if>
+  </update>
   <select id="getUnfinishedQuantities" resultType="java.util.Map" databaseId="oracle">
-    SELECT CONVERT(INT, Type) AS 'type', COUNT(*) AS 'count'
-      FROM task_work_item
+    SELECT
+    CONVERT(INT, Type) AS 'type',
+    COUNT(*) AS 'count'
+    FROM task_work_item
     WHERE receiver_id = #{receiverId} AND status = 0
     GROUP BY Type
     ORDER BY Type
   </select>
   <select id="getUnfinishedQuantities" resultType="java.util.Map" databaseId="mysql">
-    SELECT CONVERT(Type, SIGNED) AS 'type', COUNT(*) AS 'count'
+    SELECT
+    CONVERT(Type, SIGNED) AS 'type',
+    COUNT(*) AS 'count'
     FROM task_work_item
     WHERE receiver_id = #{receiverId} AND status = 0
     GROUP BY Type

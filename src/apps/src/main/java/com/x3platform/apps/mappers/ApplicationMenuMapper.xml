@@ -45,6 +45,32 @@
     <result property="modifiedDate" column="modified_date" />
     <result property="createdDate" column="created_date" />
   </resultMap>
+  <sql id="Select_Where_Clause">
+    <where>
+      <!-- 列表查询 -->
+      <if test="var_scene == 'Query'">
+        <if test="param_search_text != null and param_search_text != ''">
+          t.name LIKE concat('%',#{param_search_text},'%')
+        </if>
+      </if>
+
+      <!-- 默认 -->
+      <if test="var_scene == 'default'">
+        <if test="param_menu_type != null and param_menu_type != ''">
+          AND menu_type = #{param_menu_type}
+        </if>
+        <if test="param_application_id != null and param_application_id != ''">
+          AND application_id = #{param_application_id}
+        </if>
+        <if test="param_parent_id != null and param_parent_id != ''">
+          AND parent_id = #{param_parent_id}
+        </if>
+        <if test="param_status != null and param_status != ''">
+          AND status = #{param_status}
+        </if>
+      </if>
+    </where>
+  </sql>
   <insert id="insert" parameterType="com.x3platform.apps.models.ApplicationMenu" >
     INSERT INTO application_menu
     (
@@ -118,27 +144,16 @@
     WHERE id = #{id}
   </update>
   <delete id="deleteByPrimaryKey">
-    update application_menu set status = 0 WHERE id = #{id}
+    DELETE FROM application_menu WHERE id = #{id}
   </delete>
   <select id="selectByPrimaryKey" parameterType="com.x3platform.apps.models.ApplicationMenu" resultMap="BaseResultMap" >
     SELECT * FROM application_menu WHERE id = #{id}
   </select>
   <select id="findAll" resultMap="BaseResultMap" >
     SELECT * FROM application_menu t
-    <where>
-      <if test="param_menu_type != null and param_menu_type != ''">
-        AND menu_type = #{param_menu_type}
-      </if>
-      <if test="param_application_id != null and param_application_id != ''">
-        AND application_id = #{param_application_id}
-      </if>
-      <if test="param_parent_id != null and param_parent_id != ''">
-        AND parent_id = #{param_parent_id}
-      </if>
-      <if test="param_status != null and param_status != ''">
-        AND status = #{param_status}
-      </if>
-    </where>
+    <if test="_parameter != null">
+      <include refid="Select_Where_Clause" />
+    </if>
     <if test="orders != null and orders.size() > 0">
       ORDER BY
       <foreach collection="orders" item="order" index="index" separator="," >
@@ -151,20 +166,9 @@
   </select>
   <select id="findAllLites" resultMap="LiteResultMap">
     SELECT * FROM application_menu t
-    <where>
-      <if test="param_menu_type != null and param_menu_type != ''">
-        AND menu_type = #{param_menu_type}
-      </if>
-      <if test="param_application_id != null and param_application_id != ''">
-        AND application_id = #{param_application_id}
-      </if>
-      <if test="param_parent_id != null and param_parent_id != ''">
-        AND parent_id = #{param_parent_id}
-      </if>
-      <if test="param_status != null and param_status != ''">
-        AND status = #{param_status}
-      </if>
-    </where>
+    <if test="_parameter != null">
+      <include refid="Select_Where_Clause" />
+    </if>
     <if test="orders != null and orders.size() > 0">
       ORDER BY
       <foreach collection="orders" item="order" index="index" separator="," >
@@ -174,6 +178,21 @@
     <if test="length > 0">
       LIMIT 0, ${length}
     </if>
+  </select>
+  <select id="findTreeNodesByApplicationId" resultMap="LiteResultMap">
+    SELECT * FROM application_menu T
+    WHERE application_id = #{application_id}
+          AND parent_id = '00000000-0000-0000-0000-000000000000'
+          AND menu_type = #{menu_type}
+          AND status = 1
+    ORDER BY order_id, code
+  </select>
+  <select id="findTreeNodesByParentId" resultMap="LiteResultMap">
+    SELECT * FROM application_menu T
+    WHERE parent_id = #{parent_id}
+          AND menu_type = #{menu_type}
+          AND status = 1
+    ORDER BY order_id, code
   </select>
   <select id="isExist" resultType="boolean" >
     SELECT COUNT(0) AS "Count" FROM application_menu t WHERE id=#{id}

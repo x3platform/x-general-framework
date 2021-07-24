@@ -1,5 +1,6 @@
 package com.x3platform.apps.controllers;
 
+import static com.x3platform.Constants.TEXT_EMPTY;
 import static com.x3platform.apps.Constants.APPLICATION_MENU_ROOT_ID;
 
 import com.alibaba.fastjson.JSON;
@@ -15,17 +16,22 @@ import com.x3platform.apps.services.ApplicationMenuService;
 import com.x3platform.data.DataPaging;
 import com.x3platform.data.DataPagingUtil;
 import com.x3platform.data.DataQuery;
+import com.x3platform.digitalnumber.DigitalNumberContext;
 import com.x3platform.globalization.I18n;
 import com.x3platform.membership.Account;
 import com.x3platform.membership.MembershipManagement;
 import com.x3platform.membership.Role;
 import com.x3platform.messages.MessageObject;
+import com.x3platform.tree.DynamicTreeView;
 import com.x3platform.tree.TreeView;
 import com.x3platform.util.StringUtil;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.springframework.context.annotation.Lazy;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,16 +46,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController("com.x3platform.apps.controllers.ApplicationMenuController")
 @RequestMapping("/api/apps/applicationMenu")
 public class ApplicationMenuController {
-
+  
   /**
    * 业务逻辑服务接口
    */
   private ApplicationMenuService service = AppsContext.getInstance().getApplicationMenuService();
-
+  
   // -------------------------------------------------------
   // 保存 删除
   // -------------------------------------------------------
-
+  
   /**
    * 保存记录
    *
@@ -59,18 +65,18 @@ public class ApplicationMenuController {
   @RequestMapping("/save")
   public String save(@RequestBody String data) {
     JSONObject req = JSON.parseObject(data);
-
+    
     ApplicationMenu entity = JSON.parseObject(data, ApplicationMenu.class);
-
+    
     String authorizationReadScopeText = req.getString("authorizationReadScopeText");
-
+    
     service.save(entity);
-
+    
     service.bindAuthorizationScopeByEntityId(entity.getEntityId(), "应用_通用_查看权限", authorizationReadScopeText);
-
+    
     return MessageObject.stringify("0", I18n.getStrings().text("msg_save_success"));
   }
-
+  
   /**
    * 删除记录
    *
@@ -80,18 +86,18 @@ public class ApplicationMenuController {
   @RequestMapping("/delete")
   public String delete(@RequestBody String data) {
     JSONObject req = JSON.parseObject(data);
-
+    
     String id = req.getString("id");
-
+    
     service.delete(id);
-
+    
     return MessageObject.stringify("0", I18n.getStrings().text("msg_delete_success"));
   }
-
+  
   // -------------------------------------------------------
   // 查询
   // -------------------------------------------------------
-
+  
   /**
    * 获取详细信息
    *
@@ -101,15 +107,15 @@ public class ApplicationMenuController {
   @RequestMapping("/findOne")
   public String findOne(@RequestBody String data) {
     JSONObject req = JSON.parseObject(data);
-
+    
     String id = req.getString("id");
-
+    
     ApplicationMenu entity = service.findOne(id);
-
+    
     return "{\"data\":" + JSON.toJSONString(entity) + ","
       + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";
   }
-
+  
   /**
    * 获取列表信息
    *
@@ -119,19 +125,19 @@ public class ApplicationMenuController {
   @RequestMapping("/findAll")
   public String findAll(@RequestBody String data) {
     JSONObject req = JSON.parseObject(data);
-
+    
     DataQuery query = DataQuery.create(req.getString("query"));
-
+    
     List<ApplicationMenu> list = service.findAll(query);
-
+    
     return "{\"data\":" + JSON.toJSONString(list) + ","
       + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";
   }
-
+  
   // -------------------------------------------------------
   // 自定义功能
   // -------------------------------------------------------
-
+  
   /**
    * 获取分页内容
    *
@@ -141,21 +147,21 @@ public class ApplicationMenuController {
   @RequestMapping("/query")
   public String query(@RequestBody String data) {
     JSONObject req = JSON.parseObject(data);
-
+    
     DataPaging paging = DataPagingUtil.create(req.getString("paging"));
-
+    
     DataQuery query = DataQuery.create(req.getString("query"));
-
+    
     PageHelper.startPage(paging.getCurrentPage(), paging.getPageSize());
-
+    
     List<ApplicationMenuLite> list = service.findAllLites(query);
-
+    
     paging.setTotal(DataPagingUtil.getTotal(list));
-
+    
     return "{\"data\":" + JSON.toJSONString(list) + ",\"paging\":" + JSON.toJSONString(paging) + ","
       + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";
   }
-
+  
   /**
    * 查询是否存在相关的记录
    *
@@ -165,15 +171,34 @@ public class ApplicationMenuController {
   @RequestMapping("/isExist")
   public String isExist(@RequestBody String data) {
     JSONObject req = JSON.parseObject(data);
-
+    
     String id = req.getString("id");
-
+    
     boolean result = service.isExist(id);
-
+    
     return "{\"data\":" + JSON.toJSONString(result) + ","
       + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";
   }
-
+  
+  /**
+   * 创建新的对象信息
+   *
+   * @param data 请求的数据内容
+   * @return 响应的数据内容
+   */
+  @RequestMapping("/create")
+  public String create(@RequestBody String data) {
+    ApplicationMenu entity = JSON.parseObject(data, ApplicationMenu.class);
+    
+    entity.setId(DigitalNumberContext.generate("Key_Guid"));
+    entity.setName(TEXT_EMPTY);
+    entity.setStatus(1);
+    entity.setModifiedDate(LocalDateTime.now());
+    
+    return "{\"data\":" + JSON.toJSONString(entity) + ","
+      + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";
+  }
+  
   /**
    * 获取树节点数据
    *
@@ -189,22 +214,46 @@ public class ApplicationMenuController {
     String treeViewRootTreeNodeId = req.getString("treeViewRootTreeNodeId");
     // 命令输出格式化
     String commandFormat = req.getString("commandFormat");
-
-    // TreeView treeView = service.getTreeView(treeViewName, treeViewRootTreeNodeId, commandFormat);
-    TreeView treeView = null;
-
+    
+    TreeView treeView = service.getTreeView(treeViewName, treeViewRootTreeNodeId, commandFormat);
+    
     return "{\"data\":" + JSON.toJSONString(treeView) + ","
       + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";
   }
-
+  
+  /**
+   * 获取动态加载的树节点数据
+   *
+   * @param data 请求的数据
+   * @return 树形结构数据
+   */
+  @RequestMapping("/getDynamicTreeView")
+  public String getDynamicTreeView(@RequestBody String data) {
+    JSONObject req = JSON.parseObject(data);
+    // 树的显示名称
+    String treeViewName = req.getString("treeViewName");
+    // 树的根节点标识
+    String treeViewRootTreeNodeId = req.getString("treeViewRootTreeNodeId");
+    // 父级节点标识
+    String parentId = req.getString("parentId");
+    // 命令输出格式化
+    String commandFormat = req.getString("commandFormat");
+    
+    DynamicTreeView treeView = service.getDynamicTreeView(treeViewName, treeViewRootTreeNodeId, parentId,
+      commandFormat);
+    
+    return "{\"data\":" + JSON.toJSONString(treeView) + ","
+      + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";
+  }
+  
   /**
    * 获取动态加载的树节点数据
    *
    * @param data 请求的数据内容
    * @return 返回树形结构数据
    */
-  @RequestMapping("/getDynamicTreeView")
-  public String getDynamicTreeView(@RequestBody String data) {
+  @RequestMapping("/getDynamicTreeView2")
+  public String getDynamicTreeView2(@RequestBody String data) {
     JSONObject req = JSON.parseObject(data);
     // 必填字段
     String treeViewName = req.getString("treeViewName");
@@ -217,21 +266,22 @@ public class ApplicationMenuController {
     // 树形控件默认根节点标识为0, 需要特殊处理.
     parentId = (StringUtil.isNullOrEmpty(parentId) || parentId.equals("0")) ? treeViewRootTreeNodeId
       : parentId;
-
+    
     // commandFormat 空值处理
     if (StringUtil.isNullOrEmpty(commandFormat)) {
       commandFormat = "";
     }
+    
     StringBuilder outString = new StringBuilder();
     outString.append("{\"data\":");
     outString.append("{\"tree\":\"" + treeViewName + "\",");
     outString.append("\"parentId\":\"" + parentId + "\",");
     outString.append("\"childNodes\":[");
-
+    
     // 特殊类型
     if ("menu#applicationId#00000000-0000-0000-0000-000000000001#menuId#00000000-0000-0000-0000-000000000000"
       .equals(parentId)) {
-
+      
       if (!AppsConfigurationView.getInstance().getHiddenStartMenu()) {
         // 获取
         outString.append("{");
@@ -245,7 +295,7 @@ public class ApplicationMenuController {
         outString.append("\"target\":\"_self\"");
         outString.append("},");
       }
-
+      
       if (!AppsConfigurationView.getInstance().getHiddenTopMenu()) {
         // 获取顶部菜单
         outString.append("{");
@@ -259,7 +309,7 @@ public class ApplicationMenuController {
         outString.append("\"target\":\"_self\"");
         outString.append("},");
       }
-
+      
       if (!AppsConfigurationView.getInstance().getHiddenShortcutMenu()) {
         // 获取快捷菜单
         outString.append("{");
@@ -274,7 +324,7 @@ public class ApplicationMenuController {
         outString.append("},");
       }
     }
-
+    
     DataQuery query = new DataQuery();
     String[] keys = parentId.split("#");
     keys[0] = (keys[0].equals("menu")) ? "ApplicationMenu" : StringUtil.toFirstUpper(keys[0]);
@@ -287,9 +337,9 @@ public class ApplicationMenuController {
       query.getWhere().put("status", 1);
       query.getOrders().add("order_id");
       query.getOrders().add("code");
-
+      
       List<Application> list = AppsContext.getInstance().getApplicationService().findAll(query);
-
+      
       for (Application item : list) {
         outString.append("{");
         outString.append("\"id\":\"" + String
@@ -325,7 +375,7 @@ public class ApplicationMenuController {
         query.getWhere().put("status", 1);
         query.getOrders().add("order_id");
       }
-
+      
       // List<ApplicationMenu> list = AppsContext.getInstance().getApplicationMenuService().findAll(whereClause);
       List<ApplicationMenu> list = AppsContext.getInstance().getApplicationMenuService()
         .findAll(query);
@@ -359,14 +409,14 @@ public class ApplicationMenuController {
     if (StringUtil.substring(outString.toString(), outString.length() - 1, 1).equals(",")) {
       outString = outString.deleteCharAt(outString.length() - 1);
     }
-
+    
     outString.append(
       "]}," + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true)
         + "}");
-
+    
     return outString.toString();
   }
-
+  
   /**
    * 获取菜单
    *
@@ -383,29 +433,37 @@ public class ApplicationMenuController {
     String parentFullPath = req.getString("parentFullPath");
     String currentId = req.getString("currentId");
     String currentFullPath = req.getString("currentFullPath");
-
+    
     Application application = AppsContext.getInstance().getApplicationService()
       .findOneByApplicationName(applicationName);
-
+    
+    if (application == null) {
+      return MessageObject.stringify(I18n.getExceptions().text("code_general_object_is_null"),
+        I18n.getExceptions().format("text_general_object_is_null", "application:" + applicationName));
+    }
+    
+    if (StringUtil.isNullOrEmpty(parentId) || "0".equals(parentId)) {
+      parentId = APPLICATION_MENU_ROOT_ID;
+    }
+    
     StringBuilder outString = new StringBuilder();
-
+    
     // 根节点的标识为 00000000-0000-0000-0000-000000000000
     if (StringUtil.isNullOrEmpty(parentId) || "0".equals(parentId)) {
       parentId = APPLICATION_MENU_ROOT_ID;
     }
-
+    
     outString.append("{\"data\":{");
     outString.append("\"applicationId\":\"" + application.getId() + "\",");
     outString.append("\"applicationName\":\"" + applicationName + "\",");
     outString.append("\"parentId\":\"" + parentId + "\",");
-    outString.append("\"childNodes\":"
-      + getMenuChildNodes(application.getId(), parentId, menuType));
+    outString.append("\"childNodes\":" + getMenuChildNodes(application.getId(), parentId, menuType));
     outString.append("},"
       + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}");
-
+    
     return outString.toString();
   }
-
+  
   /**
    * 获取顶部菜单信息
    *
@@ -415,7 +473,7 @@ public class ApplicationMenuController {
   @RequestMapping("/getTopMenus")
   public String getTopMenus(@RequestBody String data) {
     StringBuilder outString = new StringBuilder();
-
+    
     JSONObject req = JSON.parseObject(data);
     // 应用名称
     String applicationName = req.getString("applicationName");
@@ -428,7 +486,7 @@ public class ApplicationMenuController {
     String accountId = KernelContext.getCurrent().getUser().getId();
     Application application = AppsContext.getInstance().getApplicationService()
       .findOneByApplicationName(applicationName);
-
+    
     //  获取等级菜单 分为2中情况 ，
     // 一种是 菜单 TopMenu ，
     // 一种是应用 Application
@@ -458,16 +516,16 @@ public class ApplicationMenuController {
             outString = outString.deleteCharAt(outString.length() - 1);
           }
         }
-
+        
         outString.append("]");
         outString.append(
           "}," + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true)
             + "}");
         // 查询应用 ， 如果不是应用 则是菜单 ， 菜单则查询顶级菜单 ；
       } else if ("TopMenu".equals(type)) {
-
+      
       }
-
+      
     } else {
       // 获取对应平台应用
      /* outString.append("{\"data\":{");
@@ -477,11 +535,11 @@ public class ApplicationMenuController {
       outString.append("\"childNodes\":" + getMenuChildNodes(application.getId(), parentId, menuType));
       outString.append("}," + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}");*/
     }
-
+    
     return outString.toString();
   }
-
-
+  
+  
   /**
    * 获取Scope，使用角色和 EveryOne
    */
@@ -541,12 +599,12 @@ public class ApplicationMenuController {
 //  }
   private String getMenuChildNodes(String applicationId, String parentId, String menuType) {
     StringBuilder outString = new StringBuilder();
-
+    
     List<ApplicationMenu> list = AppsContext.getInstance().getApplicationMenuService()
       .getMenusByParentId(applicationId, parentId, menuType);
-
+    
     outString.append("[");
-
+    
     for (ApplicationMenu item : list) {
       outString.append("{");
       outString.append("\"id\":\"" + item.getId() + "\",");
@@ -562,16 +620,16 @@ public class ApplicationMenuController {
         item.getMenuType()));
       outString.append("},");
     }
-
+    
     if (StringUtil.substring(outString.toString(), outString.length() - 1, 1).equals(",")) {
       outString = outString.deleteCharAt(outString.length() - 1);
     }
-
+    
     outString.append("]");
-
+    
     return outString.toString();
   }
-
+  
   // "{"path":"/search/subdivide","name":"search_subdivide","icon":"database","locale":"menu.search_subdivide","children":
   //  [{"path":"/search/customs_policy","name":"search_customs_policy2","icon":"database","
   //  exact":true,"locale":"menu.search_subdivide.search_customs_policy2"},
@@ -625,19 +683,18 @@ public class ApplicationMenuController {
 //    }
 //    return os.toString();
 //  }
-
+  
   @RequestMapping("/getMenuAllByApplicationKey")
   public String getMenuAllByApplicationKey(@RequestBody String data) {
     JSONObject req = JSON.parseObject(data);
     String applicationKey = req.getString("AppKey");
     Application Application = AppsContext.getInstance().getApplicationService().findOneByApplicationKey(applicationKey);
-    List<ApplicationMenu> ApplicationMenuList = service
-      .getMenusByApplicationId(Application.getId());
+    List<ApplicationMenu> ApplicationMenuList = service.getMenusByApplicationId(Application.getId());
     // 当前用户， 和传递的 applicationKey  获得对应的菜单
     return "{\"data\":" + JSON.toJSONString(ApplicationMenuList) + ","
       + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";
   }
-
+  
   /**
    * 查询当前角色，对应已经分配了的角色 ；
    */
@@ -649,8 +706,8 @@ public class ApplicationMenuController {
 //    return "{\"data\":" + JSON.toJSONString(roles) + ","
 //      + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";
 //  }
-
-
+  
+  
   /**
    * 根据 菜单 或者 组织 获得 该菜单所对应的所有人 或者 角色 ， 请注意 ，逻辑操作，注意判断只配角色 或者 只配人员情况 或者 人员、角色一起
    *
@@ -672,7 +729,7 @@ public class ApplicationMenuController {
     return "{\"data\":" + JSON.toJSONString(params) + ","
       + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";
   }
-
+  
   @RequestMapping("/getAllUserOrRoleByMenuApplication")
   public String getAllUserOrRoleByMenuApplication(@RequestBody String data) {
     Map params = new HashMap();
@@ -700,7 +757,7 @@ public class ApplicationMenuController {
     return "{\"data\":" + JSON.toJSONString(params) + ","
       + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";
   }
-
+  
   /**
    * 获取角色对应的所有的菜单节点， 及已经拥有的菜单节点
    *
@@ -710,7 +767,7 @@ public class ApplicationMenuController {
   @RequestMapping("/getAllDynamicTreeByRole")
   public String getAllDynamicTreeByRole(@RequestBody String data) {
     // 发送 applicationKey:则查询当前发送key ， 如果不发送key 则查询 当前 能访问的所有应用 ，  获取对应是否全局， 如果是全局 则查询所有的应用信息
-
+    
     // Menus#Application#00000000-0000-0000-0000-000000000000#ApplicationMenu#00000000-0000-0000-0000-000000000000 ；默认顶级
     JSONObject req = JSON.parseObject(data);
     // 必须字段 ，注释 觉得id
@@ -730,9 +787,9 @@ public class ApplicationMenuController {
     return "{\"data\":" + JSON.toJSONString(allApplication) + ","
       + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";
   }
-
+  
   /**
-   * @param parentId 上一级id
+   * @param parentId      上一级id
    * @param applicationId 所属应用id return [{},{},{}]    返回对应菜单问题
    */
   private List<Object> getChildMenuNodes(String parentId, String applicationId) {
@@ -754,16 +811,16 @@ public class ApplicationMenuController {
 //    }
     return result;
   }
-
+  
   /**
    * @param parentId 所属应用对应上一级
    * @return [{}，{}，{}] 0
    */
   private List<Object> getChildApplicationNodes(String parentId, String inApplicationId) {
-
+    
     List<Object> result = new ArrayList<>();
     List<Object> apps = new ArrayList<>();
-
+    
     /**
      * 1、如果传入applicationId 则查询 ，当前下所有的菜单
      */
@@ -780,11 +837,11 @@ public class ApplicationMenuController {
         apps.addAll(applications);
       }
     }
-
+    
     // 发送 applicationKey:则查询当前发送key ， 如果不发送key 则查询 当前 能访问的所有应用 ，  获取对应是否全局， 如果是全局 则查询所有的应用信息
-
+    
     DataQuery query = new DataQuery();
-
+    
     // 应用系统
     query.getWhere().put("parent_id", parentId);
     query.getWhere().put("status", 1);
@@ -803,22 +860,22 @@ public class ApplicationMenuController {
     }
     return result;
   }
-
+  
   /**
    * 根据授权对象绑定菜单
    */
   @RequestMapping("/bindAuthorizationScopeByAuthorizationObjectIds")
   public String bindAuthorizationScopeByAuthorizationObjectIds(@RequestBody String data) {
     JSONObject req = JSON.parseObject(data);
-
+    
     String authorizationObjectType = req.getString("authorizationObjectType");
     String authorizationObjectId = req.getString("authorizationObjectId");
     String authorityName = req.getString("authorityName");
     String entityIds = req.getString("entityIds");
-
+    
     service.bindAuthorizationScopeByAuthorizationObjectIds(authorizationObjectType, authorizationObjectId,
       authorityName, entityIds);
-
+    
     return MessageObject.stringify("0", I18n.getStrings().text("msg_commit_success"));
   }
 }

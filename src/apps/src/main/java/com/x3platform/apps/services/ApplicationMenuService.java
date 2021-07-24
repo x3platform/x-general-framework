@@ -5,10 +5,12 @@ import com.x3platform.apps.models.ApplicationMenu;
 import com.x3platform.apps.models.ApplicationMenuLite;
 import com.x3platform.data.DataQuery;
 import com.x3platform.membership.Account;
+import com.x3platform.tree.DynamicTreeView;
+import com.x3platform.tree.TreeView;
 import java.util.List;
 
 /**
- * 应用菜单服务器接口
+ * 应用菜单服务接口
  *
  * @author ruanyu
  */
@@ -20,8 +22,8 @@ public interface ApplicationMenuService {
   /**
    * 保存记录
    *
-   * @param param 实例 ApplicationMenu 详细信息
-   * @return 实例 ApplicationMenu 详细信息
+   * @param param 实例 {@link ApplicationMenu} 详细信息
+   * @return 实例 {@link ApplicationMenu} 详细信息
    */
   int save(ApplicationMenu param);
 
@@ -59,6 +61,20 @@ public interface ApplicationMenuService {
    * @return 返回所有实例 {@link ApplicationMenuLite} 的详细信息
    */
   List<ApplicationMenuLite> findAllLites(DataQuery query);
+
+  /**
+   * 根据应用标识查询所有可用的树节点信息
+   *
+   * @param applicationId 应用标识
+   */
+  List<ApplicationMenuLite> findTreeNodesByApplicationId(String applicationId, String menuType);
+
+  /**
+   * 根据父节点标识查询所有可用的树节点信息
+   *
+   * @param parentId 父级对象标识
+   */
+  List<ApplicationMenuLite> findTreeNodesByParentId(String parentId, String menuType);
 
   // -------------------------------------------------------
   // 自定义功能
@@ -169,4 +185,30 @@ public interface ApplicationMenuService {
    * @param id 角色
    */
   // List<String> getMenusScopeByRoleId(String id);
+
+  // -------------------------------------------------------
+  // 树形视图
+  // -------------------------------------------------------
+
+  /**
+   * 获取树形数据信息
+   *
+   * @param treeViewName 树形视图名称
+   * @param treeViewRootTreeNodeId 树形视图根节点标识
+   * @param commandFormat 命令格式
+   * @return {@link TreeView} 对象
+   */
+  TreeView getTreeView(String treeViewName, String treeViewRootTreeNodeId, String commandFormat);
+
+  /**
+   * 根据父级节点标识动态获取下一层级的数据信息
+   *
+   * @param treeViewName 树形视图名称
+   * @param treeViewRootTreeNodeId 树形视图根节点标识
+   * @param parentId 父级节点标识
+   * @param commandFormat 命令格式
+   * @return {@link DynamicTreeView} 对象
+   */
+  DynamicTreeView getDynamicTreeView(String treeViewName, String treeViewRootTreeNodeId, String parentId,
+    String commandFormat);
 }

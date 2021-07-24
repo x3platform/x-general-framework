@@ -30,6 +30,13 @@ public interface Group extends AuthorizationObject {
   void setCode(String value);
 
   /**
+   * 名称
+   */
+  String getName();
+
+  void setName(String value);
+
+  /**
    * 全局名称
    */
   String getGlobalName();

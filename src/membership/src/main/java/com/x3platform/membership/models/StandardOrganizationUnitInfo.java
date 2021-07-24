@@ -9,6 +9,7 @@ import com.x3platform.membership.StandardOrganizationUnit;
 import com.x3platform.util.*;
 
 import java.math.*;
+import java.time.LocalDateTime;
 import java.util.*;
 import org.dom4j.Element;
 
@@ -241,13 +242,13 @@ public class StandardOrganizationUnitInfo implements StandardOrganizationUnit
     remark = value;
   }
 
-  private Date modifiedDate = DateUtil.getDefaultDate();
+  private LocalDateTime modifiedDate = DateUtil.getDefaultLocalDateTime();
 
   /**
    * 获取
    * @return
    */
-  public Date getModifiedDate() {
+  public LocalDateTime getModifiedDate() {
     return modifiedDate;
   }
 
@@ -255,17 +256,17 @@ public class StandardOrganizationUnitInfo implements StandardOrganizationUnit
    * 设置修改时间
    * @param value 值
    */
-  public void setModifiedDate(Date value) {
+  public void setModifiedDate(LocalDateTime value) {
     modifiedDate = value;
   }
 
-  private Date createdDate = DateUtil.getDefaultDate();
+  private LocalDateTime createdDate = DateUtil.getDefaultLocalDateTime();
 
   /**
    * 获取创建时间
    * @return 创建时间
    */
-  public Date getCreatedDate() {
+  public LocalDateTime getCreatedDate() {
     return createdDate;
   }
 
@@ -273,7 +274,7 @@ public class StandardOrganizationUnitInfo implements StandardOrganizationUnit
    * 设置
    * @param value 值
    */
-  public void setCreatedDate(Date value) {
+  public void setCreatedDate(LocalDateTime value) {
     createdDate = value;
   }
 

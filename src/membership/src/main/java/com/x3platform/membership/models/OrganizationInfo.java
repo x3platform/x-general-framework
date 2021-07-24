@@ -3,6 +3,7 @@ package com.x3platform.membership.models;
 import com.x3platform.membership.Account;
 import com.x3platform.membership.Organization;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -92,23 +93,23 @@ public class OrganizationInfo implements Organization {
     status = value;
   }
 
-  private Date modifiedDate;
+  private LocalDateTime modifiedDate;
 
-  public Date getModifiedDate() {
+  public LocalDateTime getModifiedDate() {
     return modifiedDate;
   }
 
-  public void setModifiedDate(Date value) {
+  public void setModifiedDate(LocalDateTime value) {
     this.modifiedDate = value;
   }
 
-  private Date createdDate;
+  private LocalDateTime createdDate;
 
-  public Date getCreatedDate() {
+  public LocalDateTime getCreatedDate() {
     return createdDate;
   }
 
-  public void setCreatedDate(Date value) {
+  public void setCreatedDate(LocalDateTime value) {
     this.createdDate = value;
   }
 }

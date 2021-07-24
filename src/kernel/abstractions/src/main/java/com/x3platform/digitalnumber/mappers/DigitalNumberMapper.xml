@@ -5,6 +5,8 @@
     <result property="name" column="name"/>
     <result property="expression" column="expression"/>
     <result property="seed" column="seed"/>
+    <result property="description" column="description"/>
+    <result property="locking" column="locking"/>
     <result property="modifiedDate" jdbcType="TIMESTAMP" column="modified_date"/>
     <result property="createdDate" jdbcType="TIMESTAMP" column="created_date"/>
   </resultMap>
@@ -12,15 +14,39 @@
     <result property="name" column="name"/>
     <result property="expression" column="expression"/>
     <result property="seed" column="seed"/>
+    <result property="description" column="description"/>
+    <result property="locking" column="locking"/>
     <result property="modifiedDate" jdbcType="TIMESTAMP" column="modified_date"/>
     <result property="createdDate" jdbcType="TIMESTAMP" column="created_date"/>
   </resultMap>
+  <sql id="Select_Where_Clause">
+    <where>
+      <!-- 列表查询 -->
+      <if test="var_scene == 'Query'">
+        <if test="param_search_text != null and param_search_text != ''">
+          t.name LIKE concat('%',#{param_search_text},'%') OR t.description LIKE concat('%',#{param_search_text},'%')
+        </if>
+      </if>
+
+      <!-- 默认 -->
+      <if test="var_scene == 'default'">
+        <if test="param_name != null and param_name != ''">
+          AND t.name = #{param_name}
+        </if>
+        <if test="param_description != null and param_description != ''">
+          AND t.description = #{param_description}
+        </if>
+      </if>
+    </where>
+  </sql>
   <insert id="insert" parameterType="com.x3platform.digitalnumber.models.DigitalNumber">
     INSERT INTO sys_digital_number
     (
       name,
       expression,
       seed,
+      description,
+      locking,
       modified_date,
       created_date
     )
@@ -29,6 +55,8 @@
       #{name},
       #{expression},
       #{seed},
+      #{description},
+      #{locking},
       CURRENT_TIMESTAMP,
       CURRENT_TIMESTAMP
     )
@@ -36,20 +64,22 @@
   <update id="update" parameterType="com.x3platform.digitalnumber.models.DigitalNumber">
     UPDATE sys_digital_number SET
 
-    expression = #{expression},
-    seed = #{seed},
-    modified_date = CURRENT_TIMESTAMP
+      expression = #{expression},
+      seed = #{seed},
+      description = #{description},
+      locking = #{locking},
+      modified_date = CURRENT_TIMESTAMP
 
-    WHERE Name = #{name}
+    WHERE name = #{name}
   </update>
   <insert id="save" parameterType="com.x3platform.digitalnumber.models.DigitalNumber">
       IF EXISTS(SELECT 0 FROM sys_digital_number WHERE Name = #name#)
       BEGIN
       UPDATE sys_digital_number SET
 
-      Expression = #Expression#,
-      Seed = #Seed#,
-      ModifiedDate = CURRENT_TIMESTAMP
+      expression = #Expression#,
+      seed = #Seed#,
+      modified_date = CURRENT_TIMESTAMP
 
       WHERE Name = #Name#
       END
@@ -57,19 +87,19 @@
       BEGIN
       INSERT INTO sys_digital_number
       (
-      Name,
-      Expression,
-      Seed,
-      ModifiedDate,
-      CreatedDate
+        Name,
+        Expression,
+        Seed,
+        ModifiedDate,
+        CreatedDate
       )
       VALUES
       (
-      #Name#,
-      #Expression#,
-      #Seed#,
-      CURRENT_TIMESTAMP,
-      CURRENT_TIMESTAMP
+        #Name#,
+        #Expression#,
+        #Seed#,
+        CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP
       )
       END
   </insert>
@@ -80,129 +110,20 @@
     SELECT * FROM sys_digital_number WHERE Name = #{name}
   </select>
   <select id="findAll" resultMap="findAll_Result">
-    SELECT * FROM sys_digital_number T
-    <where>
-      <if test="whereClause != null and whereClause !=''">
-        ${whereClause}
-      </if>
-    </where>
-    <if test="orderBy != null and orderBy !=''">
-      ORDER BY ${orderBy}
+    SELECT * FROM sys_digital_number t
+    <if test="_parameter != null">
+      <include refid="Select_Where_Clause" />
+    </if>
+    <if test="orders != null and orders.size() > 0">
+      ORDER BY
+      <foreach collection="orders" item="order" index="index" separator="," >
+        ${order}
+      </foreach>
     </if>
     <if test="length > 0">
       LIMIT 0, ${length}
     </if>
   </select>
-  <!--
-      <select id="FindAll#MySql" resultMap="findAll_Result" >
-        SELECT * FROM sys_digital_number T
-
-        <dynamic prepend="WHERE">
-          <isParameterPresent>
-            <isNotEmpty prepend="AND" property="WhereClause" >
-              $WhereClause$
-            </isNotEmpty>
-          </isParameterPresent>
-        </dynamic>
-
-        <dynamic prepend="ORDER BY">
-          <isNotEmpty prepend="AND" property="OrderBy" >
-            $OrderBy$
-          </isNotEmpty>
-        </dynamic>
-
-        <dynamic prepend="LIMIT">
-          <isNotEqual prepend="LIMIT" property="Length" compareValue="0">
-            0, $Length$
-          </isNotEqual>
-        </dynamic>
-      </select>
-      <select id="FindAll#SqlServer" resultMap="findAll_Result" >
-        SELECT
-
-        <dynamic prepend="TOP">
-          <isNotEqual prepend="TOP" property="Length" compareValue = "0">
-            $Length$
-          </isNotEqual>
-        </dynamic>
-
-        * FROM sys_digital_number T
-
-        <dynamic prepend="WHERE">
-          <isParameterPresent>
-            <isNotEmpty prepend="AND" property="WhereClause" >
-              $WhereClause$
-            </isNotEmpty>
-          </isParameterPresent>
-        </dynamic>
-
-        <dynamic prepend="ORDER BY">
-          <isParameterPresent>
-            <isNotEmpty prepend="AND" property="OrderBy" >
-              $OrderBy$
-            </isNotEmpty>
-          </isParameterPresent>
-        </dynamic>
-      </select>
-      <select id="GetPaging#MySql"  resultMap="findAll_Result" >
-        SELECT * FROM sys_digital_number T
-
-        <dynamic prepend="WHERE">
-          <isParameterPresent>
-            <isNotEmpty prepend="AND" property="WhereClause" >
-              $WhereClause$
-            </isNotEmpty>
-          </isParameterPresent>
-        </dynamic>
-
-        <dynamic prepend="ORDER BY">
-          <isNotEmpty prepend="AND" property="OrderBy" >
-            $OrderBy$
-          </isNotEmpty>
-        </dynamic>
-
-        LIMIT $StartIndex$, $PageSize$
-      </select>
-
-      <select id="GetPaging#Oracle" resultMap="findAll_Result" >
-        SELECT T2.* FROM (
-        SELECT ROWNUM RowIndex, T1.* FROM (
-        SELECT * FROM sys_digital_number T
-
-        <where>
-          <if test="WhereClause != null">
-            $WhereClause$
-          </if>
-        </where>
-        ORDER BY $OrderBy$
-
-        ) T1 WHERE ROWNUM &lt;= ($StartIndex$ + $PageSize$)
-        ) T2 WHERE T2.RowIndex &gt; $StartIndex$
-      </select>
-      <select id="GetPaging#SqlServer" resultMap="findAll_Result" >
-        SELECT *
-
-        FROM (SELECT *, ROW_NUMBER() OVER(ORDER BY $OrderBy$) AS RowIndex
-
-        FROM sys_digital_number T
-
-        <where>
-          <if test="WhereClause != null">
-            $WhereClause$
-          </if>
-        </where>) TableIndex
-
-        WHERE TableIndex.RowIndex BETWEEN $StartIndex$ + 1 AND $StartIndex$ + $PageSize$
-      </select>
-      <select id="GetRowCount" >
-        SELECT COUNT(0) AS "RowCount" FROM sys_digital_number T
-        <where>
-          <if test="WhereClause != null">
-              $WhereClause$
-          </if>
-        </where>
-      </select>
-      -->
   <select id="isExistName" resultType="boolean">
     SELECT COUNT(0) AS "Count" FROM sys_digital_number WHERE Name = #{name}
   </select>
@@ -225,7 +146,7 @@
       BEGIN
         SELECT 0
       END
-    </select>
+  </select>
   <select id="getPrefixCodeByCategoryId" resultType="java.lang.String">
     SELECT prefix_code FROM ${entity_category_table_name} T WHERE id = #{entity_category_id}
   </select>

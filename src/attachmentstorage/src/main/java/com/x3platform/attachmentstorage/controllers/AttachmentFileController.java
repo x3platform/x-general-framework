@@ -1,36 +1,36 @@
 package com.x3platform.attachmentstorage.controllers;
 
-import java.io.IOException;
-import java.util.*;
-import java.util.regex.Pattern;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.x3platform.KernelContext;
-import com.x3platform.attachmentstorage.GeneralAttachmentFile;
-import com.x3platform.attachmentstorage.AttachmentStorageContext;
 import com.x3platform.attachmentstorage.AttachmentFile;
+import com.x3platform.attachmentstorage.AttachmentStorageContext;
 import com.x3platform.attachmentstorage.configuration.AttachmentStorageConfigurationView;
 import com.x3platform.attachmentstorage.services.AttachmentFileService;
 import com.x3platform.attachmentstorage.util.UploadFileUtil;
+import com.x3platform.attachmentstorage.util.UploadPathUtil;
 import com.x3platform.configuration.KernelConfigurationView;
 import com.x3platform.data.DataPaging;
 import com.x3platform.data.DataPagingUtil;
 import com.x3platform.data.DataQuery;
-import com.x3platform.digitalnumber.DigitalNumberContext;
 import com.x3platform.globalization.I18n;
 import com.x3platform.messages.MessageObject;
 import com.x3platform.util.StringUtil;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
-import sun.misc.BASE64Decoder;
-
+import java.io.IOException;
+import java.util.Base64;
+import java.util.List;
+import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 /**
  * 附件 API 接口
@@ -220,23 +220,26 @@ public class AttachmentFileController {
         // 检测文件名后缀限制
         String allowFileTypes = AttachmentStorageConfigurationView.getInstance().getAllowFileTypes();
         allowFileTypes = ".*(." + allowFileTypes.replace(",", "|.") + ")$";
-        if (!Pattern.compile(allowFileTypes, Pattern.CASE_INSENSITIVE).matcher(attachment.getAttachmentName()).matches()) {
+        if (!Pattern.compile(allowFileTypes, Pattern.CASE_INSENSITIVE).matcher(attachment.getAttachmentName())
+          .matches()) {
           return MessageObject.stringify("500", "Attachment file type is invalid.");
         }
 
         attachment.save();
 
-        KernelContext.getLog().info("attachment id: " + attachment.getId());
+        KernelContext.getLog().info("attachment id: {}", attachment.getId());
 
         if (outputType.equals("uri")) {
           // 输出 uri
-          return attachment.getVirtualPath().replace("{uploads}", AttachmentStorageConfigurationView.getInstance().getVirtualUploadFolder());
+          return attachment.getVirtualPath()
+            .replace("{uploads}", AttachmentStorageConfigurationView.getInstance().getVirtualUploadFolder());
         } else if (outputType.equals("id")) {
           // 输出 id
           return attachment.getId();
         } else {
           // 输出 object
-          return "{\"data\":{\"id\":\"" + attachment.getId() + "\",\"url\":\"" + attachment.getVirtualPath().replace("{uploads}", AttachmentStorageConfigurationView.getInstance().getVirtualUploadFolder()) + "\"},"
+          return "{\"data\":{\"id\":\"" + attachment.getId() + "\",\"url\":\"" + attachment.getVirtualPath()
+            .replace("{uploads}", AttachmentStorageConfigurationView.getInstance().getVirtualUploadFolder()) + "\"},"
             + MessageObject.stringify("0", "Attachment file upload success", true) + "}";
         }
       }
@@ -276,10 +279,14 @@ public class AttachmentFileController {
       // (必填)文件夹名称
       String attachmentFolder = request.getParameter("attachmentFolder");
 
-      if (!file.isEmpty()) {
-        String name = file.getName();
+      // 设置默认输出内容类型
+      if (StringUtil.isNullOrEmpty(outputType)) {
+        outputType = "object";
+      }
 
-        byte[] buffer = file.getBytes();
+      if (!file.isEmpty()) {
+        // String name = file.getName();
+        // byte[] buffer = file.getBytes();
 
         AttachmentFile attachment = UploadFileUtil.createAttachmentFile(
           entityId,
@@ -301,34 +308,40 @@ public class AttachmentFileController {
         // 检测文件名后缀限制
         String allowFileTypes = AttachmentStorageConfigurationView.getInstance().getAllowFileTypes();
         allowFileTypes = ".*(." + allowFileTypes.replace(",", "|.") + ")$";
-        if (!Pattern.compile(allowFileTypes, Pattern.CASE_INSENSITIVE).matcher(attachment.getAttachmentName()).matches()) {
+        if (!Pattern.compile(allowFileTypes, Pattern.CASE_INSENSITIVE).matcher(attachment.getAttachmentName())
+          .matches()) {
           return MessageObject.stringify("500", "Attachment file type is invalid.");
         }
 
         attachment.save();
 
-        KernelContext.getLog().info("attachment id: " + attachment.getId());
+        KernelContext.getLog().info("attachment id: {}", attachment.getId());
 
         if (outputType.equals("uri")) {
           // 输出 uri
-          return attachment.getVirtualPath().replace("{uploads}", AttachmentStorageConfigurationView.getInstance().getVirtualUploadFolder());
+          return attachment.getVirtualPath()
+            .replace("{uploads}", AttachmentStorageConfigurationView.getInstance().getVirtualUploadFolder());
         } else if (outputType.equals("id")) {
           // 输出 id
           return attachment.getId();
         } else {
           // 输出 object
-          return "{\"data\":{\"id\":\"" + attachment.getId() + "\",\"url\":\"" + attachment.getVirtualPath().replace("{uploads}", AttachmentStorageConfigurationView.getInstance().getVirtualUploadFolder()) + "\"},"
+          return "{\"data\":{\"id\":\"" + attachment.getId() + "\",\"url\":\"" + attachment.getVirtualPath()
+            .replace("{uploads}", AttachmentStorageConfigurationView.getInstance().getVirtualUploadFolder()) + "\"},"
             + MessageObject.stringify("0", "Attachment file upload success", true) + "}";
         }
       }
     } catch (Exception ex) {
-      KernelContext.getLog().error(ex.getMessage(), ex);
+      KernelContext.getLog().error("AttachmentFileController.fileUpload()", ex);
       return MessageObject.stringify("1", ex.getMessage());
     }
 
     return MessageObject.stringify("1", "Fail");
   }
 
+  /**
+   * 下载文件
+   */
   @RequestMapping(value = "/download", method = RequestMethod.GET)
   public void download(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
@@ -336,7 +349,7 @@ public class AttachmentFileController {
 
     AttachmentFile file = this.service.findOne(id);
 
-    String location = file.getVirtualPath().replace("{uploads}", AttachmentStorageConfigurationView.getInstance().getVirtualUploadFolder());
+    String location = file.getVirtualPath().replace("{uploads}", UploadPathUtil.getVirtualUploadFolder());
 
     response.sendRedirect(KernelConfigurationView.getInstance().getFileHost() + location);
   }

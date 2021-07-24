@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.List;
 
 public final class AttachmentFileServiceImpl implements AttachmentFileService {
+
   /**
    * 数据提供器
    */
@@ -56,13 +57,18 @@ public final class AttachmentFileServiceImpl implements AttachmentFileService {
   public int delete(String id) {
     Account account = KernelContext.getCurrent().getUser();
 
-    if (AppsSecurity.isAdministrator(account, AttachmentStorageConfiguration.APPLICATION_NAME)) {
+    if (account == null) {
+      // account == null 一般是在测试环境中使用.
       this.provider.delete(id);
     } else {
-      AttachmentFile file = this.findOne(id);
-
-      if (file.getCreatedBy().equals(account.getId())) {
+      if (AppsSecurity.isAdministrator(account, AttachmentStorageConfiguration.APPLICATION_NAME)) {
         this.provider.delete(id);
+      } else {
+        AttachmentFile file = this.findOne(id);
+
+        if (file.getCreatedBy().equals(account.getId())) {
+          this.provider.delete(id);
+        }
       }
     }
 
@@ -103,7 +109,7 @@ public final class AttachmentFileServiceImpl implements AttachmentFileService {
    * 查询所有相关记录
    *
    * @param entityClassName 实体类名称
-   * @param entityId        实体类标识
+   * @param entityId 实体类标识
    * @return 返回所有实例 AttachmentFile 的详细信息
    */
   @Override
@@ -142,7 +148,7 @@ public final class AttachmentFileServiceImpl implements AttachmentFileService {
   /**
    * 重命名
    *
-   * @param id   附件标识
+   * @param id 附件标识
    * @param name 新的附件名称
    */
   @Override
@@ -153,8 +159,8 @@ public final class AttachmentFileServiceImpl implements AttachmentFileService {
   /**
    * 设置有效的文件信息
    *
-   * @param entityClassName   实体类名称
-   * @param entityId          实体标识
+   * @param entityClassName 实体类名称
+   * @param entityId 实体标识
    * @param attachmentFileIds 附件唯一标识，多个附件以逗号隔开
    */
   @Override
@@ -165,10 +171,10 @@ public final class AttachmentFileServiceImpl implements AttachmentFileService {
   /**
    * 设置有效的文件信息
    *
-   * @param entityClassName   实体类名称
-   * @param entityId          实体标识
+   * @param entityClassName 实体类名称
+   * @param entityId 实体标识
    * @param attachmentFileIds 附件唯一标识，多个附件以逗号隔开
-   * @param append            附加文件
+   * @param append 附加文件
    */
   @Override
   public void setValid(String entityClassName, String entityId, String attachmentFileIds, boolean append) {
@@ -184,8 +190,8 @@ public final class AttachmentFileServiceImpl implements AttachmentFileService {
   /**
    * 物理复制全部附件信息到实体类
    *
-   * @param param           AttachmentFile 实例详细信息
-   * @param entityId        实体标识
+   * @param param AttachmentFile 实例详细信息
+   * @param entityId 实体标识
    * @param entityClassName 实体类名称
    * @return 新的 AttachmentFile 实例详细信息
    */
@@ -215,7 +221,7 @@ public final class AttachmentFileServiceImpl implements AttachmentFileService {
    * 物理移动附件路径
    *
    * @param param 实例 AttachmentFile 详细信息
-   * @param path  文件目标路径
+   * @param path 文件目标路径
    * @return 新的 实例 AttachmentFile 详细信息
    */
   @Override

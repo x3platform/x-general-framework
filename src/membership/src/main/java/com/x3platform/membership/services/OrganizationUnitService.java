@@ -28,16 +28,18 @@ public interface OrganizationUnitService {
   int save(OrganizationUnit param);
 
   /**
+   * 虚拟删除记录
+   *
+   * @param id 标识
+   */
+  int remove(String id);
+
+  /**
    * 删除记录
    *
    * @param id 标识
    */
   int delete(String id);
-
-  /**
-   * 根据父级查询最大的编码
-   */
-  // OrganizationUnit findMaxCode();
 
   // -------------------------------------------------------
   // 查询
@@ -148,6 +150,13 @@ public interface OrganizationUnitService {
   List<OrganizationUnit> findAllByAccountId(String accountId);
 
   /**
+   * 基于组织关系查询
+   * @param accountId
+   * @return
+   */
+  List<OrganizationUnit> findAllRelationOrganizationUnitByAccountId(String accountId);
+
+  /**
    * 查询某个角色的所属相关组织
    *
    * @param roleIds 角色标识
@@ -209,7 +218,7 @@ public interface OrganizationUnitService {
   boolean isExistName(String name);
 
   /**
-   * 查询是否存在相关的记录
+   * 查询是否存在全局名称的相关的记录
    *
    * @param globalName 组织单位全局名称
    * @return 布尔值
@@ -217,9 +226,9 @@ public interface OrganizationUnitService {
   boolean isExistGlobalName(String globalName);
 
   /**
-   * 查询是否存在相关的记录
+   * 重命名
    *
-   * @param id 组织标识
+   * @param id 组织单元标识
    * @param name 组织名称
    * @return 0:代表成功 1:代表已存在相同名称
    */
@@ -258,7 +267,7 @@ public interface OrganizationUnitService {
   /**
    * 设置全局名称
    *
-   * @param id 组织标识
+   * @param id 组织单元标识
    * @param globalName 全局名称
    * @return 修改成功, 返回 0, 修改失败, 返回 1.
    */
@@ -267,7 +276,7 @@ public interface OrganizationUnitService {
   /**
    * 查询是否存在相关的记录
    *
-   * @param id 组织标识
+   * @param id 组织单元标识
    * @param parentId 父级组织标识
    * @return 修改成功, 返回 0, 修改失败, 返回 1.
    */
@@ -276,11 +285,20 @@ public interface OrganizationUnitService {
   /**
    * 设置企业邮箱状态
    *
-   * @param accountId 帐户标识
+   * @param id 组织单元标识
    * @param status 状态标识, 1:启用, 0:禁用
    * @return 0 设置成功, 1 设置失败.
    */
-  int setEmailStatus(String accountId, int status);
+  int setEmailStatus(String id, int status);
+
+  /**
+   * 设置状态
+   *
+   * @param id 组织单元标识
+   * @param status 状态标识, 1:启用, 0:禁用
+   * @return 0 设置成功, 1 设置失败.
+   */
+  int setStatus(String id, int status);
 
   /**
    * 获取组织的子成员
@@ -293,6 +311,11 @@ public interface OrganizationUnitService {
    * 查询当前组织下， 及 一级所有的组织机构
    */
   List<OrganizationUnit> getChildOrganizationByOrganizationUnitId(String organizationUnitId);
+
+  /**
+   *  查询当前组织级删除的组织
+   */
+  List<OrganizationUnit> getChildOrganizationByDeleteOrganizationUnitId(String organizationUnitId);
 
   /**
    * 同步信息至 Active Directory
@@ -327,6 +350,14 @@ public interface OrganizationUnitService {
    */
   DynamicTreeView getDynamicTreeView(String treeViewName, String treeViewRootTreeNodeId, String parentId,
     String commandFormat);
+
+  /**
+   * 获取树形表格数据信息
+   *
+   * @param id 根节点标识
+   * @return {@link List} 对象
+   */
+  List<OrganizationUnit> getTreeTable(String id);
 
   // -------------------------------------------------------
   // 设置帐号和组织关系

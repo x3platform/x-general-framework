@@ -59,16 +59,6 @@ public interface AttachmentFileService {
   // 自定义功能
   // -------------------------------------------------------
 
-  ///#region 函数:GetPaging(int startIndex, int pageSize, DataQuery query, out int rowCount)
-  /** 分页函数
-   @param startIndex 开始行索引数,由0开始统计
-   @param pageSize 页面大小
-   @param query 数据查询参数
-    * @param rowCount 行数
-   * @return 返回一个列表实例
-   */
-  // List<AttachmentFile> getPaging(int startIndex, int pageSize, DataQuery query, tangible.RefObject<Integer> rowCount);
-
   /**
    * 查询是否存在相关的记录
    *

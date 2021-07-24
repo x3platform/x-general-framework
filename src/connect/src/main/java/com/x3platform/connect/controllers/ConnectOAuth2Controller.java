@@ -25,13 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.*;
 
 /**
- * @author xiaofei
- * @version V1.0
- * @company 阿米智能
- * @FileName CategoryController
- * @Package com.cisdigroup.datamanager.controllers
- * @Description 数据源分类控制类
- * @create 2018-08-17 16:37
+ * @author ruanyu
  */
 @RestController("com.x3platform.connect.controllers.ConnectOAuth2Controller")
 @RequestMapping("/api/connect/oauth2")
@@ -89,9 +83,6 @@ public class ConnectOAuth2Controller {
           return createLoginPage(clientId, redirectUri, responseType, scope);
         }
       } else {
-        // 获取当前用户信息
-        // Account account = KernelContext.getCurrent().getAuthenticationManagement().getAuthUser();
-
         // 检验是否有授权码
         if (!ConnectContext.getInstance().getConnectAuthorizationCodeService().isExist(clientId, account.getId())) {
           ConnectAuthorizationCode authorizationCode = new ConnectAuthorizationCode();
@@ -105,16 +96,16 @@ public class ConnectOAuth2Controller {
         }
 
         // 设置访问令牌
-        ConnectContext.getInstance().getConnectAccessTokenService().write(clientId, account.getId());
+        ConnectAccessToken token = ConnectContext.getInstance().getConnectAccessTokenService().write(clientId, account.getId());
 
         // 设置会话信息
-        ConnectAccessToken token = ConnectContext.getInstance().getConnectAccessTokenService().findOneByAccountId(clientId, account.getId());
+        // ConnectAccessToken token = ConnectContext.getInstance().getConnectAccessTokenService().findOneByAccountId(clientId, account.getId());
 
         String sessionId = token.getAccountId() + "-" + token.getId();
 
         KernelContext.getCurrent().getAuthenticationManagement().addSession(clientId, sessionId, account);
 
-//        HttpAuthenticationCookieSetter.SetUserCookies(sessionId);
+        // HttpAuthenticationCookieSetter.SetUserCookies(sessionId);
 
         String code = ConnectContext.getInstance().getConnectAuthorizationCodeService().getAuthorizationCode(clientId, account);
 

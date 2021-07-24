@@ -1,5 +1,6 @@
 package com.x3platform.apps.models;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.x3platform.EntityClass;
 import com.x3platform.apps.AppsContext;
 import com.x3platform.cachebuffer.Cacheable;
@@ -7,6 +8,8 @@ import com.x3platform.util.DateUtil;
 import com.x3platform.util.StringUtil;
 import java.util.Date;
 import org.dom4j.Element;
+
+import static com.x3platform.Constants.TEXT_EMPTY;
 
 /**
  */
@@ -30,6 +33,7 @@ public class ApplicationSettingGroup extends EntityClass implements Cacheable {
     id = value;
   }
 
+  @JSONField(serialize = false)
   private Application application;
 
   /**
@@ -67,6 +71,7 @@ public class ApplicationSettingGroup extends EntityClass implements Cacheable {
     return getApplication() == null ? "" : getApplication().getApplicationDisplayName();
   }
 
+  @JSONField(serialize = false)
   private ApplicationSettingGroup parent;
 
   /**
@@ -101,7 +106,7 @@ public class ApplicationSettingGroup extends EntityClass implements Cacheable {
   /**
    */
   public final String getParentDisplayName() {
-    return getParent() == null ? "" : getParent().getDisplayName();
+    return getParent() == null ? TEXT_EMPTY : getParent().getDisplayName();
   }
 
   private String code;

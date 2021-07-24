@@ -20,8 +20,8 @@
     <result property="remark" column="remark"/>
     <result property="fullPath" column="full_path"/>
     <result property="distinguishedName" column="distinguished_name"/>
-    <result property="modifiedDate" column="modifiedDate"/>
-    <result property="createdDate" column="createdDate"/>
+    <result property="modifiedDate" column="modified_date"/>
+    <result property="createdDate" column="created_date"/>
   </resultMap>
   <resultMap id="AccountRoleRelationResultMap" type="com.x3platform.membership.models.AccountRoleRelationInfo">
     <result property="accountId" column="account_id"/>
@@ -96,9 +96,9 @@
       modified_date = CURRENT_TIMESTAMP
     WHERE id = #{id}
   </update>
-  <update id="delete">
-    update sys_role set status = 0 where id = #{id}
-  </update>
+  <delete id="delete">
+    delete from sys_role where id = #{id}
+  </delete>
   <select id="findOne" resultMap="BaseResultMap">
     SELECT * FROM sys_role WHERE id = #{id}
   </select>
@@ -124,7 +124,7 @@
       <if test="var_scene == 'Query'">
         t.status = 1
         <if test="param_search_text != null and param_search_text != ''">
-          AND t.global_name LIKE concat('%',#{param_search_text},'%') OR name LIKE concat('%',#{param_search_text},'%')
+          AND t.global_name LIKE concat('%',#{param_search_text},'%') OR t.name LIKE concat('%',#{param_search_text},'%')
         </if>
         <if test='param_parent_id != null and param_parent_id != "" and param_parent_id != "0" '>
           AND t.parent_id = #{param_parent_id}
@@ -251,9 +251,7 @@
     SELECT COUNT(0) AS "Count" FROM sys_role WHERE name = #{name} and organization_unit_id = #{organizationUnitId}
   </select>
   <select id="isExistGlobalName" resultType="boolean">
-    SELECT COUNT(0) AS "Count"
-    FROM sys_role
-    WHERE global_name = #{global_name}
+    SELECT COUNT(0) AS "Count" FROM sys_role WHERE global_name = #{global_name}
   </select>
   <select id="findAllRelationByAccountId" resultMap="AccountRoleRelationResultMap">
     SELECT
@@ -328,13 +326,23 @@
     SELECT COUNT(0) AS "Count" FROM sys_account_role WHERE account_id = #{account_id} AND role_id = #{role_id}
   </select>
   <select id="hasDefaultRelation" resultType="java.lang.Boolean">
-    SELECT COUNT(0) AS "Count" FROM sys_account_role WHERE account_id = #{account_id}
+    SELECT COUNT(0) AS "Count" FROM sys_account_role WHERE account_id = #{account_id} AND is_default = 1
   </select>
+  <update id="setDefaultRelation" >
+    UPDATE sys_account_role SET is_default = 1 WHERE account_id = #{account_id} AND role_id = #{role_id}
+  </update>
+  <!--
   <update id="setDefaultRelation" >
     UPDATE sys_user SET role_id = #{role_id}, modified_date = CURRENT_TIMESTAMP WHERE account_id = #{account_id}
   </update>
+  <update id="setNullDefaultRelation" >
+    UPDATE sys_user SET role_id = '', modified_date = CURRENT_TIMESTAMP WHERE account_id = #{account_id}
+  </update>
+  -->
   <delete id="clearupRelation">
     delete from sys_account_role WHERE role_id = #{role_id}
   </delete>
-
+  <select id="isNormalAdmin" resultType="java.lang.Boolean">
+    select COUNT(0) AS "Count" from sys_role where id=#{id} and name=#{roleName} and organization_unit_id = #{standardOrganizationUnit} and `status`=1
+  </select>
 </mapper>

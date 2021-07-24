@@ -50,9 +50,7 @@
       end_date,
       is_send,
       created_date
-    )
-    VALUES
-      (
+    )  VALUES  (
         #{id,jdbcType=VARCHAR},
         #{applicationId,jdbcType=VARCHAR},
         #{path,jdbcType=VARCHAR},

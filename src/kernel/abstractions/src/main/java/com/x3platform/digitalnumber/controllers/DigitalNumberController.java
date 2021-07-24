@@ -11,8 +11,10 @@ import com.x3platform.digitalnumber.models.DigitalNumber;
 import com.x3platform.digitalnumber.services.DigitalNumberService;
 import com.x3platform.globalization.I18n;
 import com.x3platform.messages.MessageObject;
+
 import java.time.LocalDateTime;
 import java.util.List;
+
 import org.springframework.context.annotation.Lazy;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -150,6 +152,25 @@ public class DigitalNumberController {
     String result = service.generate(name);
 
     return "{\"data\":\"" + result + "\","
+      + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";
+  }
+
+  /**
+   * 生成流水号
+   *
+   * @param data 请求的数据内容
+   * @return 响应的数据内容
+   */
+  @RequestMapping("/generates")
+  public String generates(@RequestBody String data) {
+    JSONObject req = JSON.parseObject(data);
+
+    String name = req.getString("name");
+    String lengthValue = req.getString("length");
+
+    List<String> result = service.generates(name, Integer.valueOf(lengthValue));
+
+    return "{\"data\":" + JSON.toJSONString(result)  + ","
       + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";
   }
 }

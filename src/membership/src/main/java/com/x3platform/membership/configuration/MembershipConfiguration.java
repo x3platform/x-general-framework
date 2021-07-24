@@ -200,4 +200,28 @@ public class MembershipConfiguration {
   public String getProhibitedPreviewObjects() {
     return prohibitedPreviewObjects;
   }
+
+  // -------------------------------------------------------
+  // 其他
+  // -------------------------------------------------------
+
+  /**
+   * 设置默认系统跟人员关系， 默认角色为普通访问者(审查员、管理员需要手动配置 或者系统初始化)
+   */
+  @Value("${x3platform." + SECTION_NAME + ".default-bind-relationship:off}")
+  public String mRelationShip;
+
+  public String getRelationShip() {
+    return mRelationShip;
+  }
+
+  /**
+   * 设置默认系统跟人员关系， 默认角色为普通访问者(审查员、管理员需要手动配置 或者系统初始化)
+   */
+  @Value("${x3platform." + SECTION_NAME + ".default-bind-relationship-management:ami-ocr-edge}")
+  public String mRelationshipManagement;
+
+  public String getRelationshipManagement() {
+    return mRelationshipManagement;
+  }
 }

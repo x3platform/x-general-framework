@@ -23,25 +23,17 @@ public final class LdapAuthenticationManagement extends GenericAuthenticationMan
    */
   @Override
   public Account getAuthUser() {
-    String accountIdentity = getIdentityValue();
+    String sessionId = getIdentityValue();
     // Http 方式的验证, accountIdentity 不允许为空.
-    if (StringUtil.isNullOrEmpty(accountIdentity)) {
+    if (StringUtil.isNullOrEmpty(sessionId)) {
       return null;
     }
 
     // 获取帐号信息
-    Account account = getSessionAccount(accountIdentity);
+    Account account = getSessionAccount(sessionId);
+    
     if (account == null) {
       return null;
-    }
-
-    // 写入临时存储
-    if (!cacheStorage.containsKey(accountIdentity)) {
-      synchronized (cacheSyncRoot) {
-        if (!cacheStorage.containsKey(accountIdentity)) {
-          super.addSession(accountIdentity, account);
-        }
-      }
     }
 
     return account;

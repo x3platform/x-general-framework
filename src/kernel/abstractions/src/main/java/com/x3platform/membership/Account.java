@@ -2,6 +2,7 @@ package com.x3platform.membership;
 
 import com.x3platform.AuthorizationObject;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -158,14 +159,14 @@ public interface Account extends AuthorizationObject, Serializable {
    *
    * @return 创建时间
    */
-  Date getCreatedDate();
+  LocalDateTime getCreatedDate();
 
   /**
    * 设置创建时间
    *
    * @param value 值
    */
-  void setCreatedDate(Date value);
+  void setCreatedDate(LocalDateTime value);
 
   /**
    * 组织单元信息

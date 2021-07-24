@@ -66,13 +66,12 @@
   <update id="updateByPrimaryKey" parameterType="com.x3platform.security.authority.Authority">
     UPDATE sys_authority SET
 
-      id = #{id,jdbcType=VARCHAR},
       name = #{name,jdbcType=VARCHAR},
       description = #{description,jdbcType=VARCHAR},
       locking = #{locking,jdbcType=INTEGER},
       tags = #{tags,jdbcType=VARCHAR},
       order_id = #{orderId,jdbcType=VARCHAR},
-      modified_date = CURRENT_TIMESTAMP,
+      modified_date = CURRENT_TIMESTAMP
 
     WHERE id = #{id}
   </update>

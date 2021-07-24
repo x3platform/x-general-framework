@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author ruanyu
  */
 @Lazy
-@RestController
+@RestController("com.x3platform.membership.controllers.ContactsController")
 @RequestMapping("/api/membership/contacts")
 public class ContactsController {
 
@@ -197,8 +197,7 @@ public class ContactsController {
       }
 
       // 屏蔽保密角色成员信息
-      if (MembershipConfigurationView.getInstance().getProhibitedPreviewObjects().indexOf(temp[2])
-        > -1) {
+      if (MembershipConfigurationView.getInstance().getProhibitedPreviewObjects().contains(temp[2])) {
         return "{\"message\":{\"returnCode\":0,\"value\":\"\"}}";
       }
 
@@ -515,15 +514,12 @@ public class ContactsController {
     outString.append("{");
     outString.append("\"id\":\"" + item.getId() + "\",");
     outString.append("\"name\":\"[部门]" + StringUtil.toSafeJson(item.getGlobalName()) + "\",");
-    outString.append("\"type\":\"organization\" ");
+    outString.append("\"type\":\"organizationUnit\" ");
     outString.append("},");
 
     return outString.toString();
   }
-  ///#endregion
-
-  ///#region 私有函数:FormatRole(IList<AssignedJob> list, int includeProhibited)
-
+  
   /**
    * 格式化数据
    *

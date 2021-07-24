@@ -42,8 +42,23 @@ public interface UserService {
    * @return {@link User} 实例的详细信息
    */
   User findOne(String id);
-
-
+  
+  /**
+   * 根据帐号标识查询某条记录
+   *
+   * @param accountId 帐号标识
+   * @return 一个 {@link User} 实例的详细信息
+   */
+  User findOneByAccountId(String accountId);
+  
+  /**
+   * 根据登录名查询某条记录
+   *
+   * @param loginName 登录名
+   * @return 一个 {@link User} 实例的详细信息
+   */
+  User findOneByLoginName(String loginName);
+  
   /**
    * 查询所有相关记录
    *

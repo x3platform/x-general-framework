@@ -304,7 +304,10 @@ public class AuthorizationObjectServiceImpl implements AuthorizationObjectServic
       }
 
       String[] keys = item.split("#");
+
       String authorizationObjectType = AuthorizationObjectType.getValue(keys[0]);
+      authorizationObjectType = StringUtil.toFirstUpper(authorizationObjectType);
+
       if (!StringUtil.isNullOrEmpty(authorizationObjectType) && !StringUtil.isNullOrEmpty(keys[1])) {
         provider.addAuthorizationScope(scopeTableName, entityId, entityClassName, authority.getId(),
           authorizationObjectType, keys[1]);
@@ -353,6 +356,8 @@ public class AuthorizationObjectServiceImpl implements AuthorizationObjectServic
       if (StringUtil.isNullOrEmpty(item)) {
         continue;
       }
+      authorizationObjectType = StringUtil.toFirstUpper(authorizationObjectType);
+
       provider.addAuthorizationScope(scopeTableName, item, entityClassName, authority.getId(),
         authorizationObjectType, authorizationObjectId);
     }

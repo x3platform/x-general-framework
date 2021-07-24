@@ -1,5 +1,6 @@
 package com.x3platform.membership.services.impl;
 
+import com.x3platform.digitalnumber.DigitalNumberContext;
 import com.x3platform.membership.*;
 import com.x3platform.membership.services.*;
 import com.x3platform.membership.mappers.*;
@@ -9,6 +10,7 @@ import com.x3platform.data.*;
 import com.x3platform.util.*;
 
 import java.time.LocalDateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
@@ -17,6 +19,10 @@ import java.util.*;
  * @author ruanyu
  */
 public class GroupServiceImpl implements GroupService {
+
+  private static String CACHE_KEY_ID_PREFIX = "x3platform:membership:group:id:";
+
+  private static String DIGITAL_NUMBER_KEY_CODE = "Table_Group_Key_Code";
 
   /**
    * 数据提供器
@@ -44,10 +50,27 @@ public class GroupServiceImpl implements GroupService {
       throw new NullPointerException("必须填写对象标识");
     }
 
-    if (this.provider.selectByPrimaryKey(id) == null) {
+    boolean isExist = provider.isExist(entity.getId());
+
+    if (!isExist) {
+      if (StringUtil.isNullOrEmpty(entity.getCode())) {
+        entity.setCode(DigitalNumberContext.generate(DIGITAL_NUMBER_KEY_CODE));
+      }
       affectedRows = this.provider.insert(entity);
     } else {
       affectedRows = this.provider.updateByPrimaryKey(entity);
+    }
+
+    if (affectedRows > 0) {
+      // 绑定新的关系
+      if (!StringUtil.isNullOrEmpty(id)) {
+        // 1.移除非默认成员关系
+        MembershipManagement.getInstance().getGroupService().clearupRelation(id);
+        // 2.设置新的关系
+        for (Account item : entity.getMembers()) {
+          MembershipManagement.getInstance().getGroupService().addRelation(item.getId(), id);
+        }
+      }
     }
 
     KernelContext.getLog().debug("save entity id:'{}', affectedRows:{}", id, affectedRows);
@@ -157,7 +180,7 @@ public class GroupServiceImpl implements GroupService {
   /**
    * 检测是否存在相关的记录
    *
-   * @param id 群组标识
+   * @param id   群组标识
    * @param name 群组名称
    * @return 0:代表成功 1:代表已存在相同名称
    */
@@ -169,7 +192,7 @@ public class GroupServiceImpl implements GroupService {
   /**
    * 角色全路径
    *
-   * @param name 通用角色名称
+   * @param name          通用角色名称
    * @param catalogItemId 所属类别标识
    */
   public String combineFullPath(String name, String catalogItemId) {
@@ -183,7 +206,7 @@ public class GroupServiceImpl implements GroupService {
   /**
    * 通用角色唯一名称
    *
-   * @param name 通用角色名称
+   * @param name          通用角色名称
    * @param catalogItemId 所属类别标识
    */
   public String combineDistinguishedName(String name, String catalogItemId) {
@@ -199,7 +222,7 @@ public class GroupServiceImpl implements GroupService {
   /**
    * 设置全局名称
    *
-   * @param id 帐户标识
+   * @param id         帐户标识
    * @param globalName 全局名称
    * @return 0 操作成功 | 1 操作失败
    */
@@ -247,7 +270,7 @@ public class GroupServiceImpl implements GroupService {
   /**
    * 设置企业邮箱状态
    *
-   * @param id 群组标识
+   * @param id     群组标识
    * @param status 状态标识, 1:启用, 0:禁用
    * @return 0 设置成功, 1 设置失败.
    */
@@ -286,7 +309,7 @@ public class GroupServiceImpl implements GroupService {
    * 添加帐号与相关群组的关系
    *
    * @param accountId 帐号标识
-   * @param groupId 群组标识
+   * @param groupId   群组标识
    */
   @Override
   public int addRelation(String accountId, String groupId) {
@@ -297,9 +320,9 @@ public class GroupServiceImpl implements GroupService {
    * 添加帐号与相关群组的关系
    *
    * @param accountId 帐号标识
-   * @param groupId 群组标识
+   * @param groupId   群组标识
    * @param beginDate 启用时间
-   * @param endDate 停用时间
+   * @param endDate   停用时间
    */
   @Override
   public int addRelation(String accountId, String groupId, LocalDateTime beginDate, LocalDateTime endDate) {
@@ -333,8 +356,8 @@ public class GroupServiceImpl implements GroupService {
    * 续约帐号与相关角色的关系
    *
    * @param accountId 帐号标识
-   * @param groupId 群组标识
-   * @param endDate 新的截止时间
+   * @param groupId   群组标识
+   * @param endDate   新的截止时间
    */
   @Override
   public int extendRelation(String accountId, String groupId, java.time.LocalDateTime endDate) {
@@ -345,7 +368,7 @@ public class GroupServiceImpl implements GroupService {
    * 移除帐号与相关群组的关系
    *
    * @param accountId 帐号标识
-   * @param groupId 群组标识
+   * @param groupId   群组标识
    */
   @Override
   public int removeRelation(String accountId, String groupId) {

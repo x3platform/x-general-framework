@@ -1,5 +1,6 @@
 package com.x3platform;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -50,16 +51,21 @@ public interface AuthorizationObject extends SerializedObject {
   void setStatus(int value);
 
   /**
-   * 备注
+   * 获取备注
    */
   String getRemark();
 
+  /**
+   * 设置备注
+   *
+   * @param value 值
+   */
   void setRemark(String value);
 
   /**
    * 更新时间
    */
-  Date getModifiedDate();
+  LocalDateTime getModifiedDate();
 
-  void setModifiedDate(Date value);
+  void setModifiedDate(LocalDateTime value);
 }

@@ -9,6 +9,8 @@ import com.x3platform.digitalnumber.services.DigitalNumberService;
 import com.x3platform.globalization.I18n;
 import com.x3platform.plugins.CustomPlugin;
 
+import java.util.List;
+
 /**
  * 流水号上下文环境
  *
@@ -107,6 +109,15 @@ public class DigitalNumberContext extends CustomPlugin {
   }
 
   /**
+   * 生成多个通用的流水编号
+   * @param name 规则名称
+   * @param length 编码数量
+   */
+  public static List<String> generates(String name, int length) {
+    return getInstance().getDigitalNumberService().generates(name, length);
+  }
+
+  /**
    * 根据自定义的编号前缀生成的流水编号
    */
   public static String generateCodeByPrefixCode(String entityTableName, String prefixCode) {
@@ -118,15 +129,14 @@ public class DigitalNumberContext extends CustomPlugin {
    * 根据自定义的编号前缀生成的流水编号
    */
   public static String generateCodeByPrefixCode(String entityTableName, String prefixCode, int incrementCodeLength) {
-    return getInstance().getDigitalNumberService()
-      .generateCodeByPrefixCode(entityTableName, prefixCode, "{prefix}{code:" + incrementCodeLength + "}");
+    return getInstance().getDigitalNumberService().generateCodeByPrefixCode(entityTableName, prefixCode, "{prefix}{code:" + incrementCodeLength + "}");
   }
 
   /**
    * 根据自定义的编号前缀生成的流水编号
    */
   public static String generateCodeByCategoryId(String entityTableName, String entityCategoryTableName,
-    String entityCategoryId) {
+                                                String entityCategoryId) {
     return getInstance().getDigitalNumberService()
       .generateCodeByCategoryId(entityTableName, entityCategoryTableName, entityCategoryId, "{prefix}{code}");
   }
@@ -135,7 +145,7 @@ public class DigitalNumberContext extends CustomPlugin {
    * 根据自定义的编号前缀生成的流水编号
    */
   public static String generateCodeByCategoryId(String entityTableName, String entityCategoryTableName,
-    String entityCategoryId, int incrementCodeLength) {
+                                                String entityCategoryId, int incrementCodeLength) {
     return getInstance().getDigitalNumberService()
       .generateCodeByCategoryId(entityTableName, entityCategoryTableName, entityCategoryId,
         "{prefix}{code:" + incrementCodeLength + "}");
@@ -153,7 +163,7 @@ public class DigitalNumberContext extends CustomPlugin {
    * 根据自定义的编号前缀生成日期流水编号
    */
   public static String generateDateCodeByPrefixCode(String entityTableName, String prefixCode,
-    int incrementCodeLength) {
+                                                    int incrementCodeLength) {
     return getInstance().getDigitalNumberService()
       .generateCodeByPrefixCode(entityTableName, prefixCode, "{prefix}{date}{code:" + incrementCodeLength + "}");
   }
@@ -162,7 +172,7 @@ public class DigitalNumberContext extends CustomPlugin {
    * 根据自定义的编号前缀生成日期流水编号
    */
   public static String generateDateCodeByPrefixCode(GenericSqlCommand command, String entityTableName,
-    String prefixCode) {
+                                                    String prefixCode) {
     return getInstance().getDigitalNumberService().generateCodeByPrefixCode(command, entityTableName,
       prefixCode, "{prefix}{date}{code}");
   }
@@ -171,17 +181,16 @@ public class DigitalNumberContext extends CustomPlugin {
    * 根据自定义的编号前缀生成日期流水编号
    */
   public static String generateDateCodeByPrefixCode(GenericSqlCommand command, String entityTableName,
-    String prefixCode, int incrementCodeLength) {
+                                                    String prefixCode, int incrementCodeLength) {
     return getInstance().getDigitalNumberService().generateCodeByPrefixCode(command, entityTableName,
       prefixCode, "{prefix}{date}{code:" + incrementCodeLength + "}");
   }
-
 
   /**
    * 根据自定义的编号前缀生成的流水编号
    */
   public static String generateDateCodeByCategoryId(String entityTableName, String entityCategoryTableName,
-    String entityCategoryId) {
+                                                    String entityCategoryId) {
     return getInstance().getDigitalNumberService()
       .generateCodeByCategoryId(entityTableName, entityCategoryTableName, entityCategoryId, "{prefix}{date}{code}");
   }
@@ -190,7 +199,7 @@ public class DigitalNumberContext extends CustomPlugin {
    * 根据自定义的编号前缀生成的流水编号
    */
   public static String generateDateCodeByCategoryId(String entityTableName, String entityCategoryTableName,
-    String entityCategoryId, int incrementCodeLength) {
+                                                    String entityCategoryId, int incrementCodeLength) {
     return getInstance().getDigitalNumberService()
       .generateCodeByCategoryId(entityTableName, entityCategoryTableName, entityCategoryId,
         "{prefix}{date}{code:" + incrementCodeLength + "}");

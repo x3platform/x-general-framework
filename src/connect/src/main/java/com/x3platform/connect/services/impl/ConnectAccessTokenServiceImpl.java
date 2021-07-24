@@ -1,152 +1,32 @@
 package com.x3platform.connect.services.impl;
 
-import com.x3platform.connect.configuration.*;
+import com.x3platform.cachebuffer.CachingManager;
+import com.x3platform.connect.configuration.ConnectConfigurationView;
 import com.x3platform.connect.mappers.ConnectAccessTokenMapper;
 import com.x3platform.connect.models.ConnectAccessToken;
 import com.x3platform.connect.services.ConnectAccessTokenService;
 import com.x3platform.data.DataQuery;
 import com.x3platform.digitalnumber.DigitalNumberContext;
+import com.x3platform.util.DateUtil;
 import com.x3platform.util.StringUtil;
+
+import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.*;
-
 public final class ConnectAccessTokenServiceImpl implements ConnectAccessTokenService {
-
-  @Autowired
-  private ConnectAccessTokenMapper provider = null;
-
-  // -------------------------------------------------------
-  // 保存 删除
-  // -------------------------------------------------------
-
-  /**
-   * 保存记录
-   *
-   * @param  entity 实例详细信息
-   * @return ConnectAccessToken 实例详细信息
-   */
-  @Override
-  public int save(ConnectAccessToken entity) {
-    String id = entity.getId();
-
-    if (StringUtil.isNullOrEmpty(entity.getId())) {
-      throw new NullPointerException("实例标识不能为空。");
-    }
-
-    if (this.provider.findOne(id) == null) {
-      return this.provider.insert(entity);
-    } else {
-      return this.provider.updateByPrimaryKey(entity);
-    }
-  }
-
-  /**
-   * 删除记录
-   *
-   * @param id 标识
-   */
-  @Override
-  public int delete(String id) {
-    return this.provider.delete(id);
-  }
-
-  // -------------------------------------------------------
-  // 查询
-  // -------------------------------------------------------
-
-  /**
-   * 查询某条记录
-   *
-   * @param id 连接器标识
-   * @return 返回一个实例 ConnectAccessToken 的详细信息
-   */
-  @Override
-  public ConnectAccessToken findOne(String id) {
-    return this.provider.findOne(id);
-  }
-
-  /**
-   * 查询某条记录
-   *
-   * @param appKey    应用标识
-   * @param accountId 帐号标识
-   * @return 返回一个实例 ConnectAccessToken 的详细信息
-   */
-  @Override
-  public ConnectAccessToken findOneByAccountId(String appKey, String accountId) {
-    return this.provider.findOneByAccountId(appKey, accountId);
-  }
-
-  /**
-   * 查询某条记录
-   *
-   * @param appKey       应用标识
-   * @param refreshToken 刷新令牌
-   * @return 返回一个实例 ConnectAccessToken 的详细信息
-   */
-  @Override
-  public ConnectAccessToken findOneByRefreshToken(String appKey, String refreshToken) {
-    return this.provider.findOneByRefreshToken(appKey, refreshToken);
-  }
-
-  @Override
-  public List<ConnectAccessToken> findAllByRefreshToken(String appKey, String refreshToken) {
-    return this.provider.findAllByRefreshToken(appKey, refreshToken);
-  }
-
-  /**
-   * 查询所有相关记录
-   *
-   * @param query 数据查询参数
-   * @return 返回所有实例 ConnectAccessToken 的详细信息
-   */
-  @Override
-  public List<ConnectAccessToken> findAll(DataQuery query) {
-    return this.provider.findAll(query.getMap());
-  }
-
-  // -------------------------------------------------------
-  // 自定义功能
-  // -------------------------------------------------------
-
-  /**
-   * 分页函数
-   *
-   * @param startIndex 开始行索引数,由0开始统计
-   * @param pageSize   页面大小
-   * @param query      数据查询参数
-   * @param rowCount   行数
-   * @return 返回一个列表实例
-   */
-  //public List<ConnectAccessToken> GetPaging(int startIndex, int pageSize, DataQuery query, tangible.RefObject<Integer> rowCount) {
-  //  return this.provider.GetPaging(startIndex, pageSize, query, rowCount);
-  //}
-
-  /**
-   * 查询是否存在相关的记录
-   *
-   * @param id 会员标识
-   * @return 布尔值
-   */
-  @Override
-  public boolean isExist(String id) {
-    return this.provider.isExist(id);
-  }
-
-  /**
-   * 查询是否存在相关的记录
-   *
-   * @param appKey    应用标识
-   * @param accountId 帐号标识
-   * @return 布尔值
-   */
-  @Override
-  public boolean isExist(String appKey, String accountId) {
-    return this.provider.isExistAccountId(appKey, accountId);
-  }
-
+  
+  private static final String CACHE_KEY_ACCESS_TOKEN_ID_PREFIX = "x3platform:connect:access-token:id:";
+  
+  // private static final String CACHE_KEY_ACCESS_TOKEN_ACCOUNT_ID_PREFIX = "x3platform:connect:access-token:account-id:";
+  
+  private static final String CACHE_KEY_ACCESS_TOKEN_REFRESH_TOKEN_PREFIX = "x3platform:connect:access-token:refresh-token:";
+  
+  // @Autowired
+  // private ConnectAccessTokenMapper provider = null;
+  
   /**
    * 写入的帐号的访问令牌信息
    *
@@ -155,55 +35,157 @@ public final class ConnectAccessTokenServiceImpl implements ConnectAccessTokenSe
    * @return
    */
   @Override
-  public int write(String appKey, String accountId) {
-    ConnectAccessToken param = this.findOneByAccountId(appKey, accountId);
-
-    if (param == null) {
-      param = new ConnectAccessToken();
-
-      param.setId(DigitalNumberContext.generate("Key_32DigitGuid"));
-      param.setAppKey(appKey);
-      param.setAccountId(accountId);
-      param.setExpireDate(java.time.LocalDateTime.now().plusSeconds(ConnectConfigurationView.getInstance().getSessionTimeLimit()));
-      param.setRefreshToken(DigitalNumberContext.generate("Key_32DigitGuid"));
-
-      this.save(param);
-    } else {
-      this.refresh(appKey, param.getRefreshToken(), new Date((new Date()).getTime() + ConnectConfigurationView.getInstance().getSessionTimeLimit()));
+  public ConnectAccessToken write(String appKey, String accountId) {
+    if (StringUtil.isNullOrEmpty(accountId)) {
+      return null;
     }
-
-    return 0;
+    
+    String id = DigitalNumberContext.generate("Key_32DigitGuid");
+    
+    ConnectAccessToken entity = new ConnectAccessToken();
+    
+    entity.setId(id);
+    entity.setAppKey(appKey);
+    entity.setAccountId(accountId);
+    entity.setExpireDate(LocalDateTime.now().plusSeconds(ConnectConfigurationView.getInstance().getSessionTimeLimit()));
+    entity.setRefreshToken(DigitalNumberContext.generate("Key_32DigitGuid"));
+    entity.setModifiedDate(LocalDateTime.now());
+    entity.setCreatedDate(LocalDateTime.now());
+    
+    if (StringUtil.isNullOrEmpty(entity.getId())) {
+      throw new NullPointerException("实例标识不能为空。");
+    }
+    
+    // 添加缓存项
+    if (!StringUtil.isNullOrEmpty(id)) {
+      String key = CACHE_KEY_ACCESS_TOKEN_ID_PREFIX + id;
+      CachingManager.set(key, entity, entity.getExpiresIn() / 60);
+    }
+    
+    if (!StringUtil.isNullOrEmpty(entity.getRefreshToken())) {
+      String key = CACHE_KEY_ACCESS_TOKEN_REFRESH_TOKEN_PREFIX + entity.getRefreshToken() + "_" + entity.getAppKey();
+      CachingManager.set(key, id, entity.getExpiresIn() / 60);
+    }
+    
+    return entity;
   }
-
+  
   /**
    * 刷新帐号的访问令牌
    *
    * @param appKey       应用标识
    * @param refreshToken 刷新令牌
    * @param expireDate   过期时间
-   * @return
+   * @return 消息代码 0=表示成功
    */
   @Override
-  public int refresh(String appKey, String refreshToken, Date expireDate) {
-    String nextRefreshToken = DigitalNumberContext.generate("Key_32DigitGuid");
-    return this.provider.refresh(appKey, refreshToken, expireDate, nextRefreshToken);
+  public int refresh(String appKey, String refreshToken, LocalDateTime expireDate) {
+    if (StringUtil.isNullOrEmpty(refreshToken)) {
+      return 0;
+    }
+    
+    ConnectAccessToken entity = findOneByRefreshToken(appKey, refreshToken);
+    
+    if (entity != null) {
+      String id = entity.getId();
+      String nextRefreshToken = DigitalNumberContext.generate("Key_32DigitGuid");
+      entity.setExpireDate(expireDate);
+      entity.setRefreshToken(nextRefreshToken);
+      // 添加缓存项
+      if (!StringUtil.isNullOrEmpty(id)) {
+        String key = CACHE_KEY_ACCESS_TOKEN_ID_PREFIX + id;
+        CachingManager.set(key, entity, entity.getExpiresIn() / 60);
+      }
+      
+      if (!StringUtil.isNullOrEmpty(refreshToken)) {
+        String key = CACHE_KEY_ACCESS_TOKEN_REFRESH_TOKEN_PREFIX + refreshToken + "_" + appKey;
+        CachingManager.delete(key);
+      }
+      
+      if (!StringUtil.isNullOrEmpty(nextRefreshToken)) {
+        String key = CACHE_KEY_ACCESS_TOKEN_REFRESH_TOKEN_PREFIX + nextRefreshToken + "_" + appKey;
+        CachingManager.set(key, id, entity.getExpiresIn() / 60);
+      }
+    }
+    
+    return 0;
   }
-
+  
   /**
-   * 清理过期时间之前的缓存记录
+   * 删除记录
    *
-   * @param expiryTime 过期时间
+   * @param id 标识
+   * @return 消息代码 0=表示成功
    */
   @Override
-  public int clear(Date expiryTime) {
-    return this.provider.clear(expiryTime);
+  public int delete(String id) {
+    ConnectAccessToken entity = findOne(id);
+    
+    if (entity != null) {
+      // 删除缓存项
+      if (!StringUtil.isNullOrEmpty(entity.getId())) {
+        String key = CACHE_KEY_ACCESS_TOKEN_ID_PREFIX + entity.getId();
+        CachingManager.delete(key);
+      }
+      
+      if (!StringUtil.isNullOrEmpty(entity.getRefreshToken())) {
+        String key = CACHE_KEY_ACCESS_TOKEN_REFRESH_TOKEN_PREFIX + entity.getRefreshToken() + "_" + entity.getAppKey();
+        CachingManager.delete(key);
+      }
+    }
+    
+    return 0;
   }
-
+  
+  /**
+   * 根据访问令牌查询某条记录
+   *
+   * @param id 访问令牌标识
+   * @return 返回一个 {@link ConnectAccessToken} 实例的详细信息
+   */
+  @Override
+  public ConnectAccessToken findOne(String id) {
+    if (!StringUtil.isNullOrEmpty(id)) {
+      String key = CACHE_KEY_ACCESS_TOKEN_ID_PREFIX + id;
+      if (CachingManager.contains(key)) {
+        return (ConnectAccessToken) CachingManager.get(key);
+      }
+    }
+    
+    return null;
+  }
+  
+  /**
+   * 根据刷新令牌查询某条记录
+   *
+   * @param appKey       应用标识
+   * @param refreshToken 刷新令牌
+   * @return 返回一个 {@link ConnectAccessToken} 实例的详细信息
+   */
+  @Override
+  public ConnectAccessToken findOneByRefreshToken(String appKey, String refreshToken) {
+    if (!StringUtil.isNullOrEmpty(refreshToken)) {
+      String key = CACHE_KEY_ACCESS_TOKEN_REFRESH_TOKEN_PREFIX + refreshToken + "_" + appKey;
+      if (CachingManager.contains(key)) {
+        // 查找过程 refreshToken + appKey -> id -> token
+        String id = (String) CachingManager.get(key);
+        return findOne(id);
+      }
+    }
+    
+    return null;
+  }
+  
   /**
    * 清空缓存记录
+   * @return 消息代码 0=表示成功
    */
   @Override
   public int clear() {
-    return this.provider.clear(new Date());
+    // 删除缓存项
+    CachingManager.deleteByPattern(CACHE_KEY_ACCESS_TOKEN_ID_PREFIX + "*");
+    CachingManager.deleteByPattern(CACHE_KEY_ACCESS_TOKEN_REFRESH_TOKEN_PREFIX + "*");
+    
+    return 0;
   }
 }

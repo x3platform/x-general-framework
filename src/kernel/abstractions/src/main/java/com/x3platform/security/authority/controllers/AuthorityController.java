@@ -31,12 +31,12 @@ public class AuthorityController {
   /**
    * 业务服务接口
    */
-  private AuthorityService service = null; // AuthorityContext.getInstance().getAuthorityService();
+  private AuthorityService service = AuthorityContext.getInstance().getAuthorityService();
 
   // -------------------------------------------------------
   // 保存 删除
   // -------------------------------------------------------
-    
+
   /**
    * 保存记录
    *
@@ -51,11 +51,11 @@ public class AuthorityController {
 
     return MessageObject.stringify("0", I18n.getStrings().text("msg_save_success"));
   }
-  
+
   /**
    * 删除记录
    *
-   * @param data 请求的数据内容   
+   * @param data 请求的数据内容
    * <pre>
    * {
    *   // 唯一标识
@@ -78,11 +78,11 @@ public class AuthorityController {
   // -------------------------------------------------------
   // 查询
   // -------------------------------------------------------
-  
+
   /**
    * 获取详细信息
    *
-   * @param data 请求的数据内容   
+   * @param data 请求的数据内容
    * <pre>
    * {
    *   // 唯一标识
@@ -117,7 +117,7 @@ public class AuthorityController {
 
     /// 根据实际需要设置当前用户权限
     // query.getVariables().put("accountId", KernelContext.getCurrent().getUser().getId())
-            
+
     // if (req.getString("su") == "1" && AppsSecurity.IsAdministrator(KernelContext.getCurrent().getUser(), authorityConfiguration.ApplicationName))
     // {
     //   query.getVariables().put("elevatedPrivileges", "1");
@@ -136,7 +136,7 @@ public class AuthorityController {
   // -------------------------------------------------------
   // 自定义功能
   // -------------------------------------------------------
-  
+
   /**
    * 获取带分页的列表信息
    *
@@ -164,7 +164,7 @@ public class AuthorityController {
   /**
    * 查询是否存在相关的记录
    *
-   * @param data 请求的数据内容   
+   * @param data 请求的数据内容
    * <pre>
    * {
    *   // 唯一标识
@@ -184,7 +184,7 @@ public class AuthorityController {
     return "{\"data\":" + JSON.toJSONString(result) + ","
       + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";
   }
-  
+
   /**
    * 查询是否存在相关的记录
    *
@@ -196,12 +196,12 @@ public class AuthorityController {
     Authority entity = JSON.parseObject(data, Authority.class);
 
     entity.setId(DigitalNumberContext.generate("Key_Guid"));
-    
+
     /// 根据实际需要设置默认值
     // entity.setStatus(1);
     // entity.setModifiedDate(new Date());
     // entity.setCreatedDate(new Date());
-        
+
     return "{\"data\":" + JSON.toJSONString(entity) + ","
       + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";
   }

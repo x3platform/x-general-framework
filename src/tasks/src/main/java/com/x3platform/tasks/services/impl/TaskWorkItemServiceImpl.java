@@ -1,26 +1,41 @@
 package com.x3platform.tasks.services.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.x3platform.InternalLogger;
 import com.x3platform.data.DataQuery;
+import com.x3platform.data.DynamicDataSourceContextHolder;
 import com.x3platform.digitalnumber.DigitalNumberContext;
+import com.x3platform.tasks.NotificationProvider;
 import com.x3platform.tasks.TasksContext;
 import com.x3platform.tasks.mappers.TaskWorkItemMapper;
 import com.x3platform.tasks.models.TaskWorkItem;
 import com.x3platform.tasks.services.TaskWorkItemService;
+import com.x3platform.tasks.websocket.NotificationWebSocketSessions;
 import com.x3platform.util.StringUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.UUID;
 
-@Service
+import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
+
+/**
+ * @author ruanyu
+ */
 public class TaskWorkItemServiceImpl implements TaskWorkItemService {
+
+  private Logger logger = InternalLogger.getLogger();
 
   @Autowired
   private TaskWorkItemMapper provider;
+
+  @Autowired
+  private List<NotificationProvider> notificationProviders;
 
   // -------------------------------------------------------
   // 保存 删除
@@ -29,13 +44,20 @@ public class TaskWorkItemServiceImpl implements TaskWorkItemService {
   /**
    * 保存记录
    *
-   * @param param 实例{@link TaskWorkItem}详细信息
+   * @param entity 实例 {@link TaskWorkItem} 详细信息
    * @return TaskWorkItem 实例详细信息
    */
   @Override
-  public int save(TaskWorkItem param) {
+  public int save(TaskWorkItem entity) {
+    String id = entity.getId();
+
+    if (StringUtil.isNullOrEmpty(id)) {
+      entity.setId(DigitalNumberContext.generate("Key_Guid"));
+    }
+
+    provider.insert(entity);
+
     return 0;
-    // return this.provider.save(id);
   }
 
   /**
@@ -45,26 +67,26 @@ public class TaskWorkItemServiceImpl implements TaskWorkItemService {
    */
   @Override
   public int delete(String id) {
-    return this.provider.deleteByPrimaryKey(id);
+    return provider.deleteByPrimaryKey(id);
   }
 
   /**
    * 删除记录
    *
    * @param applicationId 应用系统的标识
-   * @param taskCode      任务编号
+   * @param taskCode 任务编号
    */
   @Override
   public int deleteByTaskCode(String applicationId, String taskCode) {
-    return this.provider.deleteByTaskCode(applicationId, taskCode);
+    return provider.deleteByTaskCode(applicationId, taskCode);
   }
 
   /**
    * 删除记录
    *
    * @param applicationId 应用系统的标识
-   * @param taskCode      任务编号
-   * @param receiverIds   任务接收人标识
+   * @param taskCode 任务编号
+   * @param receiverIds 任务接收人标识
    */
   @Override
   public int deleteByTaskCode(String applicationId, String taskCode, String receiverIds) {
@@ -77,36 +99,40 @@ public class TaskWorkItemServiceImpl implements TaskWorkItemService {
 
   @Override
   public TaskWorkItem findOne(String taskId, String receiverId) {
-    return null;
+    return provider.findOne(taskId, receiverId);
   }
 
   @Override
   public TaskWorkItem findOneByTaskCode(String applicationId, String taskCode, String receiverId) {
-    return null;
+    return provider.findOneByTaskCode(applicationId, taskCode, receiverId);
   }
 
   @Override
-  public List<TaskWorkItem> findAllByReceiverId(String receiverId, DataQuery query) {
-    query.getWhere().put("receiver_id", receiverId);
-    return this.provider.findAll(query.getMap());
+  public List<TaskWorkItem> findAllByReceiverId(String receiverId) {
+    return provider.findAllByReceiverId(receiverId, 1000);
+  }
+
+  @Override
+  public List<TaskWorkItem> findAllByReceiverId(String receiverId, int length) {
+    return provider.findAllByReceiverId(receiverId, length);
   }
 
   @Override
   public List<TaskWorkItem> findAllByTaskCode(String applicationId, String taskCode) {
-    return null;
-  }
+    DataQuery query = new DataQuery();
+    // 设置查询参数
+    query.getWhere().put("application_id", applicationId);
+    query.getWhere().put("task_code", taskCode);
 
-  @Override
-  public List<TaskWorkItem> findAllByTaskCodes(String applicationId, String taskCodes) {
-    return null;
+    return provider.findAll(query.getMap());
   }
 
   /**
    * 查询某条记录
    *
    * @param applicationId 应用系统的标识
-   * @param taskCode      任务编号
-   * @param length        长度
+   * @param taskCode 任务编号
+   * @param length 长度
    * @return 返回一个 TaskWorkInfo 实例的详细信息
    */
   @Override
@@ -115,32 +141,38 @@ public class TaskWorkItemServiceImpl implements TaskWorkItemService {
     // 设置查询参数
     query.getWhere().put("application_id", applicationId);
     query.getWhere().put("task_code", taskCode);
-    query.setLength(1);
+    query.setLength(length);
 
-    return this.provider.findAll(query.getMap());
+    return provider.findAll(query.getMap());
   }
 
   @Override
-  public boolean isExist(String d) {
-    return false;
+  public List<TaskWorkItem> findAllByTaskCodes(String applicationId, String taskCodes) {
+    return null;
   }
 
+  /**
+   * 查询是否存在相关的记录
+   *
+   * @param id 任务标识
+   * @param receiverId 接收者的标识
+   * @return 布尔值
+   */
   @Override
-  public boolean isExist(String taskId, String receiverId) {
-    return false;
+  public boolean isExist(String id, String receiverId) {
+    return provider.isExist(id, receiverId);
   }
 
   /**
    * 查询是否存在相关的记录
    *
    * @param applicationId 应用系统的标识
-   * @param taskCode      任务编号
+   * @param taskCode 任务编号
    * @return 布尔值
    */
-
   @Override
   public boolean isExistTaskCode(String applicationId, String taskCode) {
-    return false;
+    return provider.isExistTaskCode(applicationId, taskCode);
   }
 
   @Override
@@ -155,70 +187,119 @@ public class TaskWorkItemServiceImpl implements TaskWorkItemService {
 
   @Override
   public void setRead(String taskId, String receiverId, int isRead) {
-    this.provider.setRead(taskId, receiverId, isRead);
+    provider.setRead(taskId, receiverId, isRead);
   }
 
+  /**
+   * 设置任务状态
+   *
+   * @param id 标识
+   * @param receiverId 接收者帐号标识
+   * @param status 是否已完成 0-未完成 1-已完成
+   */
   @Override
-  public void setStatus(String taskId, String receiverId, int status) {
-    this.provider.setStatus(taskId, receiverId, status);
+  public void setStatus(String id, String receiverId, int status) {
+    provider.setStatus(id, receiverId, status);
   }
 
+  /**
+   * 设置任务完成
+   *
+   * @param receiverId 接收者帐号标识
+   */
   @Override
   public void setFinished(String receiverId) {
-    this.provider.setFinishedByReceiverId(receiverId);
+    provider.setFinished(receiverId);
   }
 
+  /**
+   * 设置任务完成
+   *
+   * @param receiverId 接收者帐号标识
+   * @param ids 任务标识
+   */
   @Override
-  public void setFinished(String receiverId, String taskIds) {
-    this.provider.setFinished(receiverId, taskIds);
+  public void setFinished(String receiverId, String ids) {
+    provider.setFinishedByIds(receiverId, ids);
+  }
+
+  /**
+   * 设置任务完成
+   *
+   * @param receiverId 接收者帐号标识
+   * @param applicationId 应用系统的标识
+   * @param taskCodes 任务编号
+   */
+  @Override
+  public void setFinished(String receiverId, String applicationId, String taskCodes) {
+    provider.setFinishedByTaskCodes(receiverId, applicationId, taskCodes);
+  }
+
+  /**
+   * 设置任务完成
+   *
+   * @param type 任务类型
+   * @param receiverId 接收者帐号标识
+   */
+  @Override
+  public void setFinishedByType(String receiverId, String type) {
+    provider.setFinishedByType(receiverId, type);
   }
 
   /**
    * 设置任务全部完成
    *
    * @param applicationId 应用系统的标识
-   * @param taskCode      任务编号
+   * @param taskCodes 任务编号
    */
   @Override
-  public void setAllFinished(String applicationId, String taskCode) {
-  }
-
-  @Override
-  public void setFinishedByTaskCode(String applicationId, String taskCodes, String receiverId) {
-
+  public void setAllFinished(String applicationId, String taskCodes) {
+    provider.setAllFinished(applicationId, taskCodes);
   }
 
   @Override
   public void setUnfinished(String receiverId, String taskIds) {
-
+    provider.setUnfinished(receiverId, taskIds);
   }
 
   @Override
   public void setUnfinishedByTaskCode(String applicationId, String taskCodes, String receiverId) {
-
+    provider.setUnfinishedByTaskCode(applicationId, taskCodes, receiverId);
   }
 
+  /**
+   * 获取未完成任务的数量
+   *
+   * @param receiverId 接收者帐号标识
+   * @return 一个包含每个类型的统计数的字典
+   */
   @Override
   public List<HashMap<Integer, Integer>> getUnfinishedQuantities(String receiverId) {
-    List<HashMap<Integer, Integer>> result = this.provider.getUnfinishedQuantities(receiverId);
-    return result;
+    return provider.getUnfinishedQuantities(receiverId);
   }
 
+  /**
+   * 获取 Widget 部件数据
+   *
+   * @param receiverId 接收者帐号标识
+   * @param length 最大数量
+   * @return 任务列表
+   */
   @Override
   public List<TaskWorkItem> getWidgetData(String receiverId, int length) {
-    return null;
+    return findAllByReceiverId(receiverId, length);
   }
 
   /**
    * 设置任务标题
    *
    * @param applicationId 应用系统的标识
-   * @param taskCode      任务编号
-   * @param title         任务标题
+   * @param taskCode 任务编号
+   * @param title 任务标题
    */
   @Override
   public void setTitle(String applicationId, String taskCode, String title) {
-    // return 0;
+
   }
 
   /**
@@ -226,7 +307,7 @@ public class TaskWorkItemServiceImpl implements TaskWorkItemService {
    */
   @Override
   public List<String> getTags() {
-    return null;
+    return provider.getTags("");
   }
 
   /**
@@ -236,31 +317,35 @@ public class TaskWorkItemServiceImpl implements TaskWorkItemService {
    */
   @Override
   public List<String> getTags(String key) {
-    return null;
+    return provider.getTags(key);
   }
 
   @Override
-  public int send(String applicationId, String taskCode, String type, String title, String content, String tags, String senderId, String receiverId) {
+  public int send(String applicationId, String taskCode, String type, String title, String content, String tags,
+    String senderId, String receiverId) {
     return send(applicationId, taskCode, type, title, content, tags, senderId, receiverId, null);
   }
 
   @Override
-  public int send(String applicationId, String taskCode, String type, String title, String content, String tags, String senderId, String receiverId, String notificationOptions) {
+  public int send(String applicationId, String taskCode, String type, String title, String content, String tags,
+    String senderId, String receiverId, String notificationOptions) {
     TaskWorkItem entity = new TaskWorkItem();
 
-    entity.setId(DigitalNumberContext.generate("Key_Guid"));
+    //entity.setId(DigitalNumberContext.generate("Key_Guid"));
+    entity.setId(String.valueOf(UUID.randomUUID()));
     entity.setApplicationId(applicationId);
     entity.setTaskCode(taskCode);
     entity.setType(type);
     entity.setTitle(title);
     entity.setContent(content);
+    entity.setTags(tags);
     entity.setSenderId(senderId);
     entity.setReceiverId(receiverId);
 
-    this.provider.insert(entity);
+    provider.insert(entity);
 
     // 处理发送通知选项 notificationOptions
-    this.notification(entity, notificationOptions);
+    notification(entity, notificationOptions);
 
     return 0;
   }
@@ -268,35 +353,37 @@ public class TaskWorkItemServiceImpl implements TaskWorkItemService {
   /**
    * 发送一对多的待办信息
    *
-   * @param taskCode      任务编号
+   * @param taskCode 任务编号
    * @param applicationId 第三方系统帐号标识
-   * @param title         标题
-   * @param content       详细信息地址
-   * @param tags          标签
-   * @param type          类型
-   * @param senderId      发送者
-   * @param receiverIds   接收者
+   * @param title 标题
+   * @param content 详细信息地址
+   * @param tags 标签
+   * @param type 类型
+   * @param senderId 发送者
+   * @param receiverIds 接收者
    */
   @Override
-  public int sendRange(String applicationId, String taskCode, String type, String title, String content, String tags, String senderId, String receiverIds) {
+  public int sendRange(String applicationId, String taskCode, String type, String title, String content, String tags,
+    String senderId, String receiverIds) {
     return sendRange(applicationId, taskCode, type, title, content, tags, senderId, receiverIds, null);
   }
 
   /**
    * 发送一对多的待办信息
    *
-   * @param taskCode            任务编号
-   * @param applicationId       第三方系统帐号标识
-   * @param title               标题
-   * @param content             详细信息地址
-   * @param tags                标签
-   * @param type                类型
-   * @param senderId            发送者
-   * @param receiverIds         接收者
+   * @param taskCode 任务编号
+   * @param applicationId 第三方系统帐号标识
+   * @param title 标题
+   * @param content 详细信息地址
+   * @param tags 标签
+   * @param type 类型
+   * @param senderId 发送者
+   * @param receiverIds 接收者
    * @param notificationOptions 通知选项
    */
   @Override
-  public int sendRange(String applicationId, String taskCode, String type, String title, String content, String tags, String senderId, String receiverIds, String notificationOptions) {
+  public int sendRange(String applicationId, String taskCode, String type, String title, String content, String tags,
+    String senderId, String receiverIds, String notificationOptions) {
     String[] list = receiverIds.split("[,]", -1);
 
     for (String item : list) {
@@ -312,8 +399,8 @@ public class TaskWorkItemServiceImpl implements TaskWorkItemService {
    * 附加待办信息新的接收人
    *
    * @param applicationId 第三方系统帐号标识
-   * @param taskCode      任务编号
-   * @param receiverIds   接收者
+   * @param taskCode 任务编号
+   * @param receiverIds 接收者
    */
   @Override
   public int sendAppendRange(String applicationId, String taskCode, String receiverIds) {
@@ -323,16 +410,16 @@ public class TaskWorkItemServiceImpl implements TaskWorkItemService {
   /**
    * 附加待办信息新的接收人
    *
-   * @param applicationId       第三方系统帐号标识
-   * @param taskCode            任务编号
-   * @param receiverIds         接收者
+   * @param applicationId 第三方系统帐号标识
+   * @param taskCode 任务编号
+   * @param receiverIds 接收者
    * @param notificationOptions 通知选项
    */
   @Override
   public int sendAppendRange(String applicationId, String taskCode, String receiverIds, String notificationOptions) {
     List<TaskWorkItem> list = findAllByTaskCode(applicationId, taskCode, 1);
 
-    if (list.size() == 0) {
+    if (list.isEmpty()) {
       // throw new Exception("【ApplicationId " + applicationId + " - TaskCode " + taskCode + "】任务不存在。");
       TasksContext.getLogger().error("{applicationId:{}, taskCode:{}} 任务不存在。", applicationId, taskCode);
       return 1;
@@ -357,10 +444,36 @@ public class TaskWorkItemServiceImpl implements TaskWorkItemService {
    * 发送通知
    *
    * @param workItem 任务信息
-   * @param options  通知选项
+   * @param options 通知选项
    */
   @Override
   public int notification(TaskWorkItem workItem, String options) {
+    try {
+      // 发送 通知提供器集合
+      if (notificationProviders != null && !StringUtil.isNullOrEmpty(options)) {
+        JSONObject op = JSON.parseObject(options);
+
+        for (NotificationProvider provider : notificationProviders) {
+          if (op.containsKey(provider.getName())) {
+            provider.send(workItem, options);
+          }
+        }
+      }
+
+      // 发送 WebSocket 提醒
+      DynamicDataSourceContextHolder.clearDataSourceKey();
+      List<WebSocketSession> sessions = NotificationWebSocketSessions.getSessionsByAccountId(workItem.getReceiverId());
+      logger.debug("sessions size:" + sessions.size());
+      for (WebSocketSession session : sessions) {
+        if (session != null) {
+          session.sendMessage(new TextMessage("{\"command\":\"notification\","
+            + "\"data\":" + JSON.toJSONString(workItem) + "}"));
+        }
+      }
+    } catch (IOException e) {
+      logger.error("TaskWorkItemServiceImpl.notification(workItem, options):", e);
+    }
+
     return 0;
   }
 
@@ -381,7 +494,6 @@ public class TaskWorkItemServiceImpl implements TaskWorkItemService {
    */
   @Override
   public int archive() {
-
     return 0;
   }
 

@@ -1,6 +1,8 @@
 package com.x3platform.digitalnumber.services.impl;
 
+import com.alibaba.fastjson.support.spring.FastJsonRedisSerializer;
 import com.x3platform.RefObject;
+import com.x3platform.cachebuffer.CachingManager;
 import com.x3platform.data.DataQuery;
 import com.x3platform.data.GenericSqlCommand;
 import com.x3platform.digitalnumber.DigitalNumberScript;
@@ -8,13 +10,22 @@ import com.x3platform.digitalnumber.configuration.DigitalNumberConfigurationView
 import com.x3platform.digitalnumber.mappers.DigitalNumberMapper;
 import com.x3platform.digitalnumber.models.DigitalNumber;
 import com.x3platform.digitalnumber.services.DigitalNumberService;
+import com.x3platform.sessions.Ticket;
 import com.x3platform.util.StringUtil;
+
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.RedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.stereotype.Service;
 
 public class DigitalNumberServiceImpl implements DigitalNumberService {
+
+  private static final String CACHE_KEY_DIGITALNUMBER_NAME_PREFIX = "x3platform:digitalnumber:name:";
 
   @Autowired
   private DigitalNumberMapper provider = null;
@@ -29,18 +40,27 @@ public class DigitalNumberServiceImpl implements DigitalNumberService {
   /**
    * 保存记录
    *
-   * @param param DigitalNumber 实例详细信息
+   * @param entity DigitalNumber 实例详细信息
    * @return DigitalNumber 实例详细信息
    */
   @Override
-  public DigitalNumber save(DigitalNumber param) {
-    if (!provider.isExistName(param.getName())) {
-      provider.insert(param);
-    } else {
-      provider.update(param);
+  public DigitalNumber save(DigitalNumber entity) {
+    String name = entity.getName();
+
+    // 添加缓存项
+    if (!StringUtil.isNullOrEmpty(name)) {
+      String key = CACHE_KEY_DIGITALNUMBER_NAME_PREFIX + name;
+      CachingManager.set(key, entity);
     }
 
-    return param;
+    // 更新数据库信息
+    if (provider.isExistName(name)) {
+      provider.update(entity);
+    } else {
+      provider.insert(entity);
+    }
+
+    return entity;
   }
 
   /**
@@ -50,6 +70,12 @@ public class DigitalNumberServiceImpl implements DigitalNumberService {
    */
   @Override
   public void delete(String name) {
+    // 删除缓存项
+    if (!StringUtil.isNullOrEmpty(name)) {
+      String key = CACHE_KEY_DIGITALNUMBER_NAME_PREFIX + name;
+      CachingManager.delete(key);
+    }
+
     provider.delete(name);
   }
 
@@ -65,7 +91,24 @@ public class DigitalNumberServiceImpl implements DigitalNumberService {
    */
   @Override
   public DigitalNumber findOne(String name) {
-    return provider.findOne(name);
+    // 过滤空值
+    if (StringUtil.isNullOrEmpty(name)) {
+      return null;
+    }
+
+    String key = CACHE_KEY_DIGITALNUMBER_NAME_PREFIX + name;
+
+    if (CachingManager.contains(key)) {
+      return (DigitalNumber) CachingManager.get(key);
+    } else {
+      DigitalNumber entity = provider.findOne(name);
+
+      if (entity != null && !CachingManager.contains(key)) {
+        CachingManager.set(key, entity);
+      }
+
+      return entity;
+    }
   }
 
   /**
@@ -96,15 +139,6 @@ public class DigitalNumberServiceImpl implements DigitalNumberService {
   // -------------------------------------------------------
 
   /**
-   * 分页函数
-   *
-   * @return 返回一个列表
-   */
-  // public List<DigitalNumber> GetPaging(int startIndex, int pageSize, DataQuery query, tangible.RefObject<Integer> rowCount) {
-  //  return this.provider.GetPaging(startIndex, pageSize, query, rowCount);
-  // }
-
-  /**
    * 查询是否存在相关的记录.
    *
    * @param name 名称
@@ -125,32 +159,43 @@ public class DigitalNumberServiceImpl implements DigitalNumberService {
    */
   @Override
   public String generate(String name) {
-    String result = null;
+    List<String> list = generates(name, 1);
+
+    return list.size() > 0 ? list.get(0) : null;
+  }
+
+  @Override
+  public List<String> generates(String name, int length) {
+    List<String> results = new ArrayList<>();
 
     synchronized (lockObject) {
-      DigitalNumber param = findOne(name);
+      DigitalNumber entity = findOne(name);
 
-      if (param == null) {
+      if (entity == null) {
         throw new RuntimeException(StringUtil.format("未找到相关配置信息，请联系管理员配置相关编号 [{}] 参数信息。", name));
       } else {
-        int seed = param.getSeed();
-
+        int seed = entity.getSeed();
         RefObject<Integer> refSeed = new RefObject<Integer>(seed);
-
-        result = DigitalNumberScript.runScript(param.getExpression(), param.getModifiedDate(), refSeed);
+        while (length > 0) {
+          String result = DigitalNumberScript.runScript(entity.getExpression(), entity.getModifiedDate(), refSeed);
+          entity.setModifiedDate(LocalDateTime.now());
+          results.add(result);
+          length--;
+        }
 
         seed = refSeed.value;
 
-        param.setSeed(seed);
+        entity.setSeed(seed);
 
         // 忽略不需要自增的编号和更新时间的编号
         String ignoreIncrementSeed = DigitalNumberConfigurationView.getInstance().getIgnoreIncrementSeed();
 
-        if (!(ignoreIncrementSeed.indexOf(param.getName()) > -1 || param.getSeed() == -1)) {
-          save(param);
+        if (!(ignoreIncrementSeed.contains(entity.getName()) || entity.getSeed() == -1)) {
+          // 保存信息
+          save(entity);
         }
 
-        return result;
+        return results;
       }
     }
   }
@@ -159,8 +204,8 @@ public class DigitalNumberServiceImpl implements DigitalNumberService {
    * 根据前缀生成数字编码
    *
    * @param entityTableName 实体数据表
-   * @param prefixCode 前缀编号
-   * @param expression 规则表达式
+   * @param prefixCode      前缀编号
+   * @param expression      规则表达式
    * @return 数字编码
    */
   @Override
@@ -200,15 +245,15 @@ public class DigitalNumberServiceImpl implements DigitalNumberService {
   /**
    * 根据前缀生成数字编码
    *
-   * @param command 通用 SQL 命令对象
+   * @param command         通用 SQL 命令对象
    * @param entityTableName 实体数据表
-   * @param prefixCode 前缀编号
-   * @param expression 规则表达式
+   * @param prefixCode      前缀编号
+   * @param expression      规则表达式
    * @return 数字编码
    */
   @Override
   public String generateCodeByPrefixCode(GenericSqlCommand command, String entityTableName, String prefixCode,
-    String expression) {
+                                         String expression) {
     String code = "";
 
     int count = 0;
@@ -228,15 +273,15 @@ public class DigitalNumberServiceImpl implements DigitalNumberService {
   /**
    * 根据类别标识成数字编码
    *
-   * @param entityTableName 实体数据表
+   * @param entityTableName         实体数据表
    * @param entityCategoryTableName 实体类别数据表
-   * @param entityCategoryId 实体类别标识
-   * @param expression 规则表达式
+   * @param entityCategoryId        实体类别标识
+   * @param expression              规则表达式
    * @return 数字编码
    */
   @Override
   public String generateCodeByCategoryId(String entityTableName, String entityCategoryTableName,
-    String entityCategoryId, String expression) {
+                                         String entityCategoryId, String expression) {
     String code = "";
 
     int count = 0;
@@ -256,16 +301,16 @@ public class DigitalNumberServiceImpl implements DigitalNumberService {
   /**
    * 根据类别标识成数字编码
    *
-   * @param command 通用SQL命令对象
-   * @param entityTableName 实体数据表
+   * @param command                 通用SQL命令对象
+   * @param entityTableName         实体数据表
    * @param entityCategoryTableName 实体类别数据表
-   * @param entityCategoryId 实体类别标识
-   * @param expression 规则表达式
+   * @param entityCategoryId        实体类别标识
+   * @param expression              规则表达式
    * @return 数字编码
    */
   @Override
   public String generateCodeByCategoryId(GenericSqlCommand command, String entityTableName,
-    String entityCategoryTableName, String entityCategoryId, String expression) {
+                                         String entityCategoryTableName, String entityCategoryId, String expression) {
     String code = "";
 
     int count = 0;

@@ -1,6 +1,7 @@
 package com.x3platform.connect.configuration;
 
 import com.x3platform.SpringContext;
+import com.x3platform.util.BooleanUtil;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,27 +42,38 @@ public class ConnectConfigurationView {
   @Qualifier("com.x3platform.connect.configuration.ConnectConfiguration")
   ConnectConfiguration configuration;
 
-  public String getApiHostName() {
-    return configuration.getApiHostName();
-  }
-
+  /**
+   * 会话定时器执行时间间隔(单位:分钟)
+   */
   public int getSessionTimerInterval() {
     return Integer.parseInt(configuration.getSessionTimerInterval());
   }
-
+  
+  /**
+   * 会话时间限制 (单位:秒)
+   */
   public int getSessionTimeLimit() {
     return Integer.parseInt(configuration.getSessionTimeLimit());
   }
 
-  public String getMessageQueueUsername() {
-    return configuration.getMessageQueueUsername();
+  /**
+   * 认证失败最大次数
+   */
+  public int getAuthFailLimit() {
+    return Integer.parseInt(configuration.getAuthFailLimit());
   }
-
-  public int getMessageQueuePassword() {
-    return Integer.parseInt(configuration.getMessageQueuePassword());
+  
+  /**
+   * 认证失败统计持续的时间(单位:分钟)
+   */
+  public int getAuthFailDuration() {
+    return Integer.parseInt(configuration.getAuthFailDuration());
   }
-
-  public int getMessageQueueReceivingInterval() {
-    return Integer.parseInt(configuration.getMessageQueueReceivingInterval());
+  
+  /**
+   * 启用图形验证码
+   */
+  public boolean getEnableCaptcha() {
+    return BooleanUtil.bool(configuration.getEnableCaptcha());
   }
 }

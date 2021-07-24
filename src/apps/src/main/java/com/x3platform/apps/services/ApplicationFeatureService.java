@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 应用功能服务器接口
+ * 应用功能服务接口
  *
  * @author ruanyu
  */
@@ -30,14 +30,6 @@ public interface ApplicationFeatureService {
   public List<ApplicationFeature> findAll(DataQuery dataQuery);
 
   /**
-   * @param menuId 根据菜单Id
-   * @param roleId 角色Id
-   * @param applicationId 应用id
-   * @return 根据菜单 id 和 角色 id 进行查询 问题
-   */
-  // public Map<String, List<ApplicationFeature>> findAllByMenu(String menuId, String roleId, String applicationId);
-
-  /**
    * 删除记录
    *
    * @param id 实例的标识信息
@@ -51,8 +43,8 @@ public interface ApplicationFeatureService {
   /**
    * 查询某条记录
    *
-   * @param id ApplicationFeature Id号
-   * @return 返回一个 ApplicationFeature 实例的详细信息
+   * @param id {@link ApplicationFeature} Id号
+   * @return 返回一个 {@link ApplicationFeature} 实例的详细信息
    */
   ApplicationFeature findOne(String id);
 
@@ -60,7 +52,7 @@ public interface ApplicationFeatureService {
    * 根据帐号所属的标准角色信息对应的应用系统的功能点, 查询此帐号有权限启用的应用系统信息.
    *
    * @param accountId 帐号标识
-   * @return 返回所有 ApplicationFeature 实例的详细信息
+   * @return 返回所有 {@link ApplicationFeature} 实例的详细信息
    */
   List<ApplicationFeature> findAllByAccountId(String accountId);
 
@@ -77,6 +69,17 @@ public interface ApplicationFeatureService {
    * @param parentId 父级对象标识
    */
   List<ApplicationFeature> findTreeNodesByParentId(String parentId);
+
+  /**
+   * 获取授权对象允许的功能列表
+   *
+   * @param authorizationObjectType 授权对象类型
+   * @param authorizationObjectId 授权对象标识
+   * @param authorityName 权限名称
+   * @return 允许的功能列表
+   */
+  List<ApplicationFeature> findAllAllowedByAuthorizationObjectIds(String authorizationObjectType,
+    String authorizationObjectId, String authorityName);
 
   // -------------------------------------------------------
   // 自定义功能

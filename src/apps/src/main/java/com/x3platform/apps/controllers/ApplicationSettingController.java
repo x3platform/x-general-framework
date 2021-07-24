@@ -29,7 +29,7 @@ import java.util.List;
  * @author ruanyu
  */
 @Lazy
-@RestController
+@RestController("com.x3platform.apps.controllers.ApplicationSettingController")
 @RequestMapping("/api/apps/applicationSetting")
 public class ApplicationSettingController {
 

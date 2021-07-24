@@ -13,7 +13,7 @@ public class TasksConfiguration {
   /**
    * 所属应用的名称
    */
-  public static final String APPLICATION_NAME = "Tasks";
+  public static final String APPLICATION_NAME = "tasks";
 
   /**
    * 配置区的名称

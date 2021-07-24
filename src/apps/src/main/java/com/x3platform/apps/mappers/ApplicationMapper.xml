@@ -49,7 +49,27 @@
     <result property="modifiedDate" column="modified_date"/>
     <result property="createdDate" column="created_date"/>
   </resultMap>
+  <sql id="Select_Where_Clause">
+    <where>
+      <!-- 列表查询 -->
+      <if test="var_scene == 'Query'">
+        <if test="param_search_text != null and param_search_text != ''">
+          AND ( application_name LIKE concat('%',#{param_search_text},'%') OR application_display_name LIKE concat('%',#{param_search_text},'%')
+          OR description LIKE concat('%',#{param_search_text},'%') )
+        </if>
+      </if>
 
+      <!-- 默认 -->
+      <if test="var_scene == 'default'">
+        <if test="param_parent_id != null and param_parent_id != ''">
+          AND parent_id = #{param_parent_id}
+        </if>
+        <if test="param_status != null and param_status != ''">
+          AND status = #{param_status}
+        </if>
+      </if>
+    </where>
+  </sql>
   <insert id="insert" parameterType="com.x3platform.apps.models.Application">
     INSERT INTO application
     (
@@ -128,18 +148,18 @@
     WHERE id = #{id}
   </update>
   <!--
-      <update id="Sync_HasChildren" >
-          CREATE TEMPORARY TABLE tmp (Id VARCHAR(36) PRIMARY KEY, ParentId VARCHAR(36), Status INT);
+  <update id="Sync_HasChildren" >
+      CREATE TEMPORARY TABLE tmp (Id VARCHAR(36) PRIMARY KEY, ParentId VARCHAR(36), Status INT);
 
-          INSERT INTO tmp SELECT Id, ParentId, Status FROM application;
+      INSERT INTO tmp SELECT Id, ParentId, Status FROM application;
 
-          UPDATE application SET HasChildren = (
-            SELECT CASE COUNT(Id) WHEN  0 THEN 0 ELSE 1 END
-            FROM tmp WHERE tmp.ParentId = application.Id AND tmp.Status = 1) ;
+      UPDATE application SET HasChildren = (
+        SELECT CASE COUNT(Id) WHEN  0 THEN 0 ELSE 1 END
+        FROM tmp WHERE tmp.ParentId = application.Id AND tmp.Status = 1) ;
 
-          DROP TEMPORARY TABLE tmp;
-      </update>
-      -->
+      DROP TEMPORARY TABLE tmp;
+  </update>
+  -->
   <delete id="deleteByPrimaryKey">
     DELETE FROM application WHERE id = #{id}
   </delete>
@@ -150,26 +170,13 @@
     SELECT * FROM application WHERE application_key = #{applicationKey}
   </select>
   <select id="findOneByApplicationName" parameterType="com.x3platform.apps.models.Application" resultMap="BaseResultMap">
-    SELECT * FROM application WHERE application_name = #{applicationName}
+    SELECT * FROM application WHERE application_name = #{applicationName} LIMIT 0,1
   </select>
   <select id="findAll" resultMap="BaseResultMap">
-    SELECT * FROM application T
-    <where>
-      <!-- 列表查询 -->
-      <if test="var_scene == 'Query'">
-        <if test="param_search_text != null and param_search_text != ''">
-          AND application_name LIKE #{param_search_text} OR application_display_name LIKE #{param_search_text} OR description LIKE #{param_search_text}
-        </if>
-      </if>
-      <if test="var_scene == 'default'">
-        <if test="param_parent_id != null and param_parent_id != ''">
-          AND parent_id = #{param_parent_id}
-        </if>
-        <if test="param_status != null and param_status != ''">
-          AND status = #{param_status}
-        </if>
-      </if>
-    </where>
+    SELECT * FROM application t
+    <if test="_parameter != null">
+      <include refid="Select_Where_Clause" />
+    </if>
     <if test="orders != null and orders.size() > 0">
       ORDER BY
       <foreach collection="orders" item="order" index="index" separator=",">
@@ -182,23 +189,10 @@
   </select>
 
   <select id="findAllLites" resultMap="LiteResultMap">
-    SELECT * FROM application T
-    <where>
-      <!-- 列表查询 -->
-      <if test="var_scene == 'Query'">
-        <if test="param_search_text != null and param_search_text != ''">
-          AND application_name LIKE #{param_search_text} OR application_display_name LIKE #{param_search_text} OR description LIKE #{param_search_text}
-        </if>
-      </if>
-      <if test="var_scene == 'default'">
-        <if test="param_parent_id != null and param_parent_id != ''">
-          AND parent_id = #{param_parent_id}
-        </if>
-        <if test="param_status != null and param_status != ''">
-          AND status = #{param_status}
-        </if>
-      </if>
-    </where>
+    SELECT * FROM application t
+    <if test="_parameter != null">
+      <include refid="Select_Where_Clause" />
+    </if>
     <if test="orders != null and orders.size() > 0">
       ORDER BY
       <foreach collection="orders" item="order" index="index" separator=",">

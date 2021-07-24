@@ -21,10 +21,10 @@ import java.util.List;
  * @author ruanyu
  */
 @Service
-public class OrganizationServiceImpl implements OrganizationService  {
+public class OrganizationServiceImpl implements OrganizationService {
 
   @Autowired(required = false)
-  OrganizationMapper provider ;
+  OrganizationMapper provider;
 
   // -------------------------------------------------------
   // 保存 删除
@@ -95,7 +95,7 @@ public class OrganizationServiceImpl implements OrganizationService  {
    */
   @Override
   public Organization findOne(String id) {
-    return this.provider.selectByPrimaryKey(id) ;
+    return this.provider.selectByPrimaryKey(id);
   }
 
   /**
@@ -105,8 +105,7 @@ public class OrganizationServiceImpl implements OrganizationService  {
    * @return 所有相关 {@link Organization} 实例的详细信息
    */
   @Override
-  public List<Organization> findAll(DataQuery query)
-  {
+  public List<Organization> findAll(DataQuery query) {
     return this.provider.findAll(query.getMap());
   }
 

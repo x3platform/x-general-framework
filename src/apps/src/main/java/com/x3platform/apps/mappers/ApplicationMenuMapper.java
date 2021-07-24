@@ -63,6 +63,25 @@ public interface ApplicationMenuMapper {
    */
   List<ApplicationMenuLite> findAllLites(Map params);
 
+  /**
+   * 根据应用标识查询所有可用的树节点信息
+   *
+   * @param applicationId 父节点标识
+   * @return 相关实例的详细信息
+   */
+  List<ApplicationMenuLite> findTreeNodesByApplicationId(@Param("application_id") String applicationId,
+    @Param("menu_type") String menuType);
+
+  /**
+   * 根据父节点标识查询所有可用的树节点信息
+   *
+   * @param parentId 父节点标识
+   * @param menuType 菜单类型
+   * @return 相关实例的详细信息
+   */
+  List<ApplicationMenuLite> findTreeNodesByParentId(@Param("parent_id") String parentId,
+    @Param("menu_type") String menuType);
+
   // -------------------------------------------------------
   // 自定义功能
   // -------------------------------------------------------

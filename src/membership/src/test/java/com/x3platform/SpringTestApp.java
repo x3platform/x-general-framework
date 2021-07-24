@@ -1,6 +1,8 @@
 package com.x3platform;
 
+import com.alibaba.fastjson.parser.ParserConfig;
 import com.github.pagehelper.autoconfigure.PageHelperAutoConfiguration;
+import com.x3platform.cachebuffer.redis.FastJsonRedisSerializer;
 import com.x3platform.data.DynamicDataSourceRegister;
 import com.x3platform.membership.defaults.AppConfig;
 import java.util.Properties;
@@ -11,6 +13,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.serializer.RedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 /**
@@ -21,7 +28,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 @MapperScan({"com.x3platform.*.mappers", "com.x3platform.*.*.mappers", "com.x3platform.*.*.*.mappers"})
 @Import({AppConfig.class, DynamicDataSourceRegister.class})
 public class SpringTestApp {
-
+  
   /**
    * 自动识别使用的数据库类型
    * 在 mapper.xml 中设置 databaseId 的值对应这里的配置，

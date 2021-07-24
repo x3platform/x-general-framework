@@ -58,4 +58,8 @@ public class AppsConfigurationView {
   public boolean getHiddenShortcutMenu() {
     return BooleanUtil.bool(configuration.getHiddenShortcutMenu());
   }
+
+  public boolean getSyncFeatureToMenu() {
+    return BooleanUtil.bool(configuration.getSyncFeatureToMenu());
+  }
 }

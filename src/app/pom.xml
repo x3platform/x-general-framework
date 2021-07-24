@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
@@ -6,19 +7,37 @@
   <version>1.0</version>
   <packaging>jar</packaging>
   <name>x3platform-app</name>
-  <url>http://maven.apache.org</url>
+  <description>X3Platform 启动程序</description>
 
   <properties>
+    <!-- 项目源码字符集 -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <!-- 项目系统启动类 -->
+    <start-class>com.x3platform.App</start-class>
+    <!-- Java 版本 -->
     <java.version>1.8</java.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
+    <!-- 第三方组件版本 -->
+    <spring-boot.version>2.3.10.RELEASE</spring-boot.version>
+    <spring-data-redis.version>2.3.8.RELEASE</spring-data-redis.version>
+    <spring-session-data-redis.version>2.3.3.RELEASE</spring-session-data-redis.version>
+    <spring-cloud.version>2.2.2.RELEASE</spring-cloud.version>
+    <spring-cloud-alibaba.version>2.2.3.RELEASE</spring-cloud-alibaba.version>
+    <mysql.version>5.1.48</mysql.version>
+    <mybatis.version>2.1.3</mybatis.version>
+    <druid.version>1.1.24</druid.version>
+    <seata.version>1.3.0</seata.version>
+    <httpclient.version>4.5.12</httpclient.version>
+    <junit.version>4.13</junit.version>
+    <pagehelper.version>1.3.0</pagehelper.version>
+    <fastjson.version>1.2.68</fastjson.version>
   </properties>
 
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.0.2.RELEASE</version>
+    <version>2.3.10.RELEASE</version>
   </parent>
 
   <dependencies>
@@ -26,32 +45,55 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter</artifactId>
+      <version>${spring-boot.version}</version>
+    </dependency>
+    <!-- Spring Actuator -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+      <version>${spring-boot.version}</version>
     </dependency>
     <!-- Spring Test -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
+      <version>${spring-boot.version}</version>
       <scope>test</scope>
     </dependency>
     <!-- Spring WebSocket -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-websocket</artifactId>
+      <version>${spring-boot.version}</version>
     </dependency>
     <!-- Spring Session -->
     <dependency>
       <groupId>org.springframework.data</groupId>
       <artifactId>spring-data-redis</artifactId>
+      <version>${spring-data-redis.version}</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.session</groupId>
       <artifactId>spring-session-data-redis</artifactId>
+      <version>${spring-session-data-redis.version}</version>
     </dependency>
-    <!-- Spring Devtools -->
+    <!-- Ribbon -->
     <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-devtools</artifactId>
-      <scope>runtime</scope>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-netflix-ribbon</artifactId>
+      <version>${spring-cloud.version}</version>
+    </dependency>
+    <!-- Feign -->
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-openfeign</artifactId>
+      <version>${spring-cloud.version}</version>
+    </dependency>
+    <!-- Nacos Discovery -->
+    <dependency>
+      <groupId>com.alibaba.cloud</groupId>
+      <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+      <version>${spring-cloud-alibaba.version}</version>
     </dependency>
     <!-- Logging -->
     <dependency>
@@ -63,56 +105,62 @@
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-to-slf4j</artifactId>
-      <version>2.11.2</version>
+      <version>2.13.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>jul-to-slf4j</artifactId>
-      <version>1.7.28</version>
+      <version>1.7.30</version>
       <scope>compile</scope>
+    </dependency>
+    <!-- Java Simplified Encryption -->
+    <dependency>
+      <groupId>com.github.ulisesbocchio</groupId>
+      <artifactId>jasypt-spring-boot-starter</artifactId>
+      <version>2.1.2</version>
     </dependency>
     <!-- Alibaba Fastjson -->
     <dependency>
       <groupId>com.alibaba</groupId>
       <artifactId>fastjson</artifactId>
-      <version>1.2.31</version>
+      <version>${fastjson.version}</version>
     </dependency>
     <!-- Alibaba Druid -->
     <dependency>
       <groupId>com.alibaba</groupId>
       <artifactId>druid-spring-boot-starter</artifactId>
-      <version>1.1.10</version>
+      <version>${druid.version}</version>
     </dependency>
     <!-- Commons Lang3 -->
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-      <version>3.7</version>
+      <version>3.10</version>
     </dependency>
     <!-- MySQL -->
     <dependency>
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>
-      <version>5.1.48</version>
+      <version>${mysql.version}</version>
     </dependency>
     <!-- Mybatis -->
     <dependency>
       <groupId>org.mybatis.spring.boot</groupId>
       <artifactId>mybatis-spring-boot-starter</artifactId>
-      <version>1.3.2</version>
+      <version>${mybatis.version}</version>
     </dependency>
     <!-- PageHelper Spring Boot -->
     <dependency>
       <groupId>com.github.pagehelper</groupId>
       <artifactId>pagehelper-spring-boot-starter</artifactId>
-      <version>1.2.5</version>
+      <version>${pagehelper.version}</version>
     </dependency>
     <!-- JUnit -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.12</version>
+      <version>${junit.version}</version>
       <scope>test</scope>
     </dependency>
     <!-- X3Platform -->
@@ -148,11 +196,6 @@
     </dependency>
     <dependency>
       <groupId>com.x3platform</groupId>
-      <artifactId>x3platform-sync</artifactId>
-      <version>0.1.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>com.x3platform</groupId>
       <artifactId>x3platform-connect</artifactId>
       <version>0.1.0-SNAPSHOT</version>
     </dependency>
@@ -166,8 +209,204 @@
       <artifactId>x3platform-attachmentstorage</artifactId>
       <version>0.1.0-SNAPSHOT</version>
     </dependency>
+    <dependency>
+      <groupId>com.x3platform</groupId>
+      <artifactId>x3platform-files-common</artifactId>
+      <version>0.1.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>com.x3platform</groupId>
+      <artifactId>x3platform-files-minio</artifactId>
+      <version>0.1.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>com.x3platform</groupId>
+      <artifactId>x3platform-files-s3</artifactId>
+      <version>0.1.0-SNAPSHOT</version>
+    </dependency>
   </dependencies>
   <build>
+    <plugins>
+      <!-- maven-antrun-plugin -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>3.0.0</version>
+        <executions>
+          <execution>
+            <id>install</id>
+            <phase>install</phase>
+            <configuration>
+              <target>
+                <echo level="info" message="basedir:${basedir} ${project.build.finalName}"/>
+                <!-- <mkdir dir="${project.build.directory}/build" /> -->
+                <move file="${project.build.directory}/lib" todir="${basedir}/build/dist/"/>
+                <copy todir="${basedir}/build/dist" overwrite="true">
+                  <fileset dir="${project.build.directory}" erroronmissingdir="false">
+                    <include name="${project.build.finalName}.jar"/>
+                  </fileset>
+                </copy>
+                <copy todir="${basedir}/build/dist" overwrite="true">
+                  <fileset dir="${basedir}/build">
+                    <include name="docker-entrypoint.sh"/>
+                  </fileset>
+                </copy>
+                <delete>
+                  <!-- 公共容器中已经包含下面的包，所以删除部分公共内容提高发布速度。 -->
+                  <!-- 如果手动编译可以移除下面的删除操作输出完整的内容。 -->
+                  <!-- 移除公共库中已存在的第三方库版本 -->
+                  <fileset dir="build/dist/" includes="lib/ant-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/aspectjweaver-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/aspose**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/bcmail-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/bcprov-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/bcpkix-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/bctsp-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/byte-buddy-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/cxf-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/druid-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/fastjson-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/guava-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/httpclient-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/httpcore-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/httpmime-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/itext-2.**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/itext-asian-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/itextpdf-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/jackson-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/jai_codec-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/jai-imageio-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/jakarta.activation-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/jakarta.annotation-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/jakarta.el-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/jakarta.xml.bind-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/lettuce-core-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/mvel2-**.jar"/>
+                  <fileset dir="build/dist/" >
+                    <include name="lib/mybatis-**.jar" />
+                    <exclude name="lib/mybatis-plus-**.jar" />
+                  </fileset>
+                  <fileset dir="build/dist/" includes="lib/mysql-connector-java-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/netty-all-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/nlp-lang-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/ojdbc14-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/pdfbox-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/fontbox-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/reactor-core-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/seata-all-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/tomcat-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/xml-apis-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/xmlbeans-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/xmlschema-core-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/xstream-**.jar"/>
+                  <!-- 移除公共库中已存在的 Commons 库版本 -->
+                  <fileset dir="build/dist/" includes="lib/commons-beanutils-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/commons-codec-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/commons-collections4-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/commons-compress-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/commons-fileupload-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/commons-io-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/commons-lang3-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/commons-logging-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/commons-math3-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/commons-pool2-**.jar"/>
+                  <!-- 移除公共库中已存在的 CXF 库版本 -->
+                  <fileset dir="build/dist/" includes="lib/cxf-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/stax2-api-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/woodstox-core-**.jar"/>
+                  <!-- 移除公共库中已存在的 Drools 库版本 -->
+                  <fileset dir="build/dist/" includes="lib/drlx-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/drools-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/kie-**.jar"/>
+                  <!-- 移除公共库中已存在的 POI 库版本 -->
+                  <fileset dir="build/dist/" includes="lib/poi-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/ooxml-schemas-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/xmlbeans-**.jar"/>
+                  <!-- 移除公共库中已存在的 Spring Boot 库版本 -->
+                  <fileset dir="build/dist/" includes="lib/spring-boot-**.RELEASE.jar"/>
+                  <fileset dir="build/dist/" >
+                    <include name="lib/spring-context-**.RELEASE.jar" />
+                    <exclude name="lib/spring-context-support-1.**.RELEASE.jar" />
+                  </fileset>
+                  <fileset dir="build/dist/" includes="lib/spring-context-**.RELEASE.jar"/>
+                  <fileset dir="build/dist/" includes="lib/spring-core-**.RELEASE.jar"/>
+                  <fileset dir="build/dist/" includes="lib/spring-aop-**.RELEASE.jar"/>
+                  <fileset dir="build/dist/" includes="lib/spring-beans-**.RELEASE.jar"/>
+                  <fileset dir="build/dist/" includes="lib/spring-data-**.RELEASE.jar"/>
+                  <fileset dir="build/dist/" includes="lib/spring-web**.RELEASE.jar"/>
+                  <fileset dir="build/dist/" includes="lib/spring-expression-**.RELEASE.jar"/>
+                  <fileset dir="build/dist/" includes="lib/spring-jcl-**.RELEASE.jar"/>
+                  <fileset dir="build/dist/" includes="lib/spring-jdbc-**.RELEASE.jar"/>
+                  <fileset dir="build/dist/" includes="lib/spring-messaging-**.RELEASE.jar"/>
+                  <fileset dir="build/dist/" includes="lib/spring-orm-**.RELEASE.jar"/>
+                  <fileset dir="build/dist/" includes="lib/spring-oxm-**.RELEASE.jar"/>
+                  <fileset dir="build/dist/" includes="lib/spring-tx-**.RELEASE.jar"/>
+                  <!-- 移除公共库中已存在的 OpenOffice 库版本 -->
+                  <fileset dir="build/dist/" includes="lib/juh-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/jurt-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/ridl-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/unoil-**.jar"/>
+                  <!-- 移除公共库中已存在的 Elasticsearch 和 Lucene 库版本 -->
+                  <fileset dir="build/dist/" includes="lib/elasticsearch-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/lucene-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/aggs-matrix-stats-client-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/mapper-extras-client-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/rank-eval-client-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/lang-mustache-client-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/parent-join-client-**.jar"/>
+                  <fileset dir="build/dist/" includes="lib/transport-netty4-client-**.jar"/>
+                  <!-- 移除不兼容的第三方库版本 -->
+                  <fileset dir="build/dist/" includes="lib/mybatis-generator-**"/>
+                  <fileset dir="build/dist/" includes="lib/slf4j-log4j12-1.7.30.jar"/>
+                </delete>
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- maven-jar-plugin -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.2.0</version>
+        <configuration>
+          <!-- 设置包的输出路径 -->
+          <outputDirectory>${project.build.directory}</outputDirectory>
+          <!-- 不打入包的文件类型或者路径 -->
+          <excludes>
+            <exclude>**/*.properties</exclude>
+            <exclude>**/*.xml</exclude>
+            <exclude>**/*.yml</exclude>
+            <exclude>static/**</exclude>
+            <exclude>templates/**</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+      <!-- maven-dependency-plugin -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.1.2</version>
+        <executions>
+          <execution>
+            <id>copy-dependencies</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <outputDirectory>${project.build.directory}/lib</outputDirectory>
+          <excludeTransitive>false</excludeTransitive>
+          <stripVersion>false</stripVersion>
+          <includeScope>runtime</includeScope>
+        </configuration>
+      </plugin>
+    </plugins>
     <resources>
       <resource>
         <!-- 设置 src/main/java 资源目录 -->
@@ -190,13 +429,13 @@
       <uniqueVersion>false</uniqueVersion>
       <id>releases</id>
       <name>Nexus Release Repository</name>
-      <url>http://nexus.amiintellect.com/repository/maven-releases/</url>
+      <url>http://nexus.x3platform.com/repository/maven-releases/</url>
     </repository>
     <snapshotRepository>
       <uniqueVersion>true</uniqueVersion>
       <id>snapshots</id>
       <name>Nexus Snapshot Repository</name>
-      <url>http://nexus.amiintellect.com/repository/maven-snapshots/</url>
+      <url>http://nexus.x3platform.com/repository/maven-snapshots/</url>
     </snapshotRepository>
   </distributionManagement>
 </project>

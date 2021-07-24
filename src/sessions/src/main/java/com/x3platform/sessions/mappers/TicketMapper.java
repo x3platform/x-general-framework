@@ -1,6 +1,7 @@
 package com.x3platform.sessions.mappers;
 
 import com.x3platform.sessions.Ticket;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
@@ -38,7 +39,7 @@ public interface TicketMapper {
    * @param ticketValue 帐号缓存的值
    * @return 返回一个{@link Ticket}列表
    */
-  List<Ticket> dump(@Param("ticket_") String ticketValue);
+  List<Ticket> dumpByTicketValue(@Param("ticket_value") String ticketValue);
 
   /**
    * 添加记录
@@ -59,7 +60,7 @@ public interface TicketMapper {
    *
    * @param ticketId 帐号会话唯一标识
    */
-  int delete(@Param("value") String ticketId);
+  int delete(@Param("ticket_id") String ticketId);
 
   /**
    * 检测记录是否存在
@@ -78,7 +79,7 @@ public interface TicketMapper {
   /**
    * 清理过期时间之前的缓存记录
    *
-   * @param expiryTime 过期时间
+   * @param expireDate 过期时间
    */
-  int clear(java.time.LocalDateTime expiryTime);
+  int clear(@Param("expire_date") LocalDateTime expireDate);
 }

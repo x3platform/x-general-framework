@@ -64,7 +64,7 @@ public class SessionsContext extends CustomPlugin {
   /**
    * 重启插件
    *
-   * @return 返回信息. =0代表重启成功, >0代表重启失败.
+   * @return 消息代码 0-重启成功, 大于0-重启失败.
    */
   @Override
   public int restart() {
@@ -102,47 +102,54 @@ public class SessionsContext extends CustomPlugin {
    * 获取当前验证的帐号信息
    *
    * @param strategy 存储策略
-   * @param accountIdentity 存储策略
+   * @param ticketId 键
    */
-  public <T extends Account> T getAuthAccount(TicketStorageStrategy strategy, String accountIdentity) {
-    return (T) getTicketService().getAuthAccount(strategy, accountIdentity);
+  public <T extends Account> T getAuthAccount(TicketStorageStrategy strategy, String ticketId) {
+    return (T) getTicketService().getAuthAccount(strategy, ticketId);
   }
 
   /**
    * 检测是否包含当前的键
    *
-   * @param accountIdentity 键
+   * @param ticketId 键
    */
-  public boolean contains(String accountIdentity) {
-    return mTicketService.isExist(accountIdentity);
+  public boolean contains(String ticketId) {
+    return mTicketService.isExist(ticketId);
   }
 
   /**
    * 读取帐号缓存信息
    */
-  public Ticket read(String accountIdentity) {
-    return mTicketService.read(accountIdentity);
+  public Ticket read(String ticketId) {
+    return mTicketService.read(ticketId);
+  }
+
+  /**
+   * 读取帐号缓存信息
+   */
+  public Ticket readWithTicketValue(String ticketValue) {
+    return mTicketService.readWithTicketValue(ticketValue);
   }
 
   /**
    * 写入帐号缓存信息
    *
    * @param strategy 存储策略
-   * @param accountIdentity 帐号会话唯一标识
+   * @param ticketId 帐号会话唯一标识
    * @param account 帐号信息
    */
-  public void write(TicketStorageStrategy strategy, String accountIdentity, Account account) {
-    mTicketService.write(strategy, "", accountIdentity, account);
+  public void write(TicketStorageStrategy strategy, String ticketId, Account account) {
+    mTicketService.write(strategy, "", ticketId, account);
   }
 
   /**
    * 写入帐号缓存信息
    *
    * @param strategy 存储策略
-   * @param accountIdentity 帐号会话唯一标识
+   * @param ticketId 帐号会话唯一标识
    * @param account 帐号信息
    */
-  public void write(TicketStorageStrategy strategy, String appKey, String accountIdentity, Account account) {
-    mTicketService.write(strategy, appKey, accountIdentity, account);
+  public void write(TicketStorageStrategy strategy, String appKey, String ticketId, Account account) {
+    mTicketService.write(strategy, appKey, ticketId, account);
   }
 }

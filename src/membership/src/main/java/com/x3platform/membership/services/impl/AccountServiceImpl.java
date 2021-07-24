@@ -2,8 +2,11 @@ package com.x3platform.membership.services.impl;
 
 import static com.x3platform.Constants.TEXT_NUMBERS;
 
+import com.x3platform.InternalLogger;
 import com.x3platform.cachebuffer.CachingManager;
 import com.x3platform.data.DataQuery;
+import com.x3platform.digitalnumber.DigitalNumberContext;
+import com.x3platform.ldap.LdapManagement;
 import com.x3platform.ldap.configuration.LdapConfigurationView;
 import com.x3platform.membership.Account;
 import com.x3platform.membership.AccountGroupRelation;
@@ -17,11 +20,15 @@ import com.x3platform.membership.services.AccountService;
 import com.x3platform.membership.services.OrganizationUnitService;
 import com.x3platform.membership.services.RoleService;
 import com.x3platform.security.Encrypter;
+import com.x3platform.security.authentication.LoginType;
 import com.x3platform.util.StringUtil;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -31,50 +38,52 @@ import org.springframework.beans.factory.annotation.Qualifier;
  * @author ruanyu
  */
 public class AccountServiceImpl implements AccountService {
-
+  
   private static final String CACHE_KEY_ID_PREFIX = "x3platform:membership:account:id:";
   private static final String CACHE_KEY_LOGIN_NAME_PREFIX = "x3platform:membership:account:loginName:";
-
+  
+  private static String DIGITAL_NUMBER_KEY_CODE = "Table_Account_Key_Code";
+  
   /**
    * 双因素密码 trader 查询类型密码类型 适用于保密信息的查询
-   *
+   * <p>
    * query 交易类型密码类型 适用与资金处理
    */
   private static final String PASSWORD_TYPE_TWO_FACTOR = "two-factor";
-
+  
   /**
    * 数据提供器
    */
   @Autowired(required = false)
   private AccountMapper provider;
-
+  
   @Autowired(required = false)
   @Qualifier("com.x3platform.membership.services.OrganizationUnitService")
   private OrganizationUnitService organizationUnitService;
-
+  
   @Autowired(required = false)
   @Qualifier("com.x3platform.membership.services.RoleService")
   private RoleService roleService;
-
+  
   // -------------------------------------------------------
   // 缓存管理
   // -------------------------------------------------------
-
+  
   /**
    * 添加缓存项
    */
   private void addCacheItem(Account item) {
     if (!StringUtil.isNullOrEmpty(item.getId())) {
       String key = CACHE_KEY_ID_PREFIX + item.getId();
-      CachingManager.set(key, item);
+      CachingManager.set(key, item, CachingManager.getRandomMinutes());
     }
-
+    
     if (!StringUtil.isNullOrEmpty(item.getLoginName())) {
       String key = CACHE_KEY_LOGIN_NAME_PREFIX + item.getLoginName();
-      CachingManager.set(key, item);
+      CachingManager.set(key, item, CachingManager.getRandomMinutes());
     }
   }
-
+  
   /**
    * 移除缓存项
    */
@@ -85,7 +94,7 @@ public class AccountServiceImpl implements AccountService {
         CachingManager.delete(key);
       }
     }
-
+    
     if (!StringUtil.isNullOrEmpty(item.getLoginName())) {
       String key = CACHE_KEY_LOGIN_NAME_PREFIX + item.getLoginName();
       if (CachingManager.contains(key)) {
@@ -93,11 +102,11 @@ public class AccountServiceImpl implements AccountService {
       }
     }
   }
-
+  
   // -------------------------------------------------------
   // 添加 删除 修改
   // -------------------------------------------------------
-
+  
   /**
    * 保存帐号信息
    */
@@ -106,83 +115,84 @@ public class AccountServiceImpl implements AccountService {
     if (StringUtil.isNullOrEmpty(entity.getId())) {
       throw new Exception("标识不能为空");
     }
-
+    
     // 根据是否存在的对象，判断是否新建对象
     boolean isNewObject = !provider.isExist(entity.getId());
-
+    
     entity.setDistinguishedName(combineDistinguishedName(entity.getDisplayName()));
-
+    
     if (isNewObject) {
+      entity.setCode(DigitalNumberContext.generate(DIGITAL_NUMBER_KEY_CODE));
       entity.setPasswordSalt(StringUtil.toRandom(TEXT_NUMBERS, 6));
-      entity.setModifiedDate(new Date());
-      entity.setCreatedDate(new Date());
+      entity.setModifiedDate(LocalDateTime.now());
+      entity.setCreatedDate(LocalDateTime.now());
       provider.insert(entity);
     } else {
-      entity.setModifiedDate(new Date());
+      entity.setModifiedDate(LocalDateTime.now());
       provider.update(entity);
     }
-
+    
     if (entity != null) {
       String accountId = entity.getId();
-
+      
       // 绑定新的关系
       if (!StringUtil.isNullOrEmpty(accountId)) {
         // -------------------------------------------------------
         // 设置角色关系
         // -------------------------------------------------------
-
+        
         // 1.移除非默认角色关系
         MembershipManagement.getInstance().getRoleService().removeNondefaultRelation(accountId);
-
+        
         // -------------------------------------------------------
         // 根据角色设置组织关系
         // -------------------------------------------------------
-
+        
         // 1.移除非默认角色关系
         MembershipManagement.getInstance().getOrganizationUnitService().removeNondefaultRelation(accountId);
-
+        
         // 2.设置新的关系
         for (AccountRoleRelation item : entity.getRoleRelations()) {
           MembershipManagement.getInstance().getRoleService().addRelation(accountId, item.getRoleId());
-
+          
           MembershipManagement.getInstance().getOrganizationUnitService()
             .addRelation(accountId, item.getRole().getOrganizationUnitId());
-
+          
           MembershipManagement.getInstance().getOrganizationUnitService()
             .addParentRelations(accountId, item.getRole().getOrganizationUnitId());
         }
-
+        
         // -------------------------------------------------------
         // 设置群组关系
         // -------------------------------------------------------
-
+        
         // 1.移除群组关系
         MembershipManagement.getInstance().getGroupService().removeAllRelation(accountId);
-
+        
         // 2.设置新的关系
         for (AccountGroupRelation item : entity.getGroupRelations()) {
           MembershipManagement.getInstance().getGroupService().addRelation(accountId, item.getGroupId());
         }
       }
     }
-
+    
     // 保存数据后, 更新缓存信息
     entity = provider.findOne(entity.getId());
-
+    
     if (entity != null) {
       removeCacheItem(entity);
-
+      
       addCacheItem(entity);
     }
-
+    
     // 设置默认密码
     if (isNewObject) {
       setPassword(entity.getId(), MembershipConfigurationView.getInstance().getDefaultPassword());
     }
-
+    
     return entity;
   }
-
+  
   /**
    * 删除记录
    *
@@ -191,20 +201,20 @@ public class AccountServiceImpl implements AccountService {
   @Override
   public void delete(String id) {
     Account originalObject = findOne(id);
-
+    
     // 删除缓存
     if (originalObject != null) {
       removeCacheItem(originalObject);
     }
-
+    
     // 删除数据库记录
     provider.delete(id);
   }
-
+  
   // -------------------------------------------------------
   // 查询
   // -------------------------------------------------------
-
+  
   /**
    * 查询某条记录
    *
@@ -214,25 +224,25 @@ public class AccountServiceImpl implements AccountService {
   @Override
   public Account findOne(String id) {
     Account entity = null;
-
+    
     // 查找缓存数据
     String key = CACHE_KEY_ID_PREFIX + id;
     if (CachingManager.contains(key)) {
       entity = (Account) CachingManager.get(key);
     }
-
+    
     // 如果缓存中未找到相关数据，则查找数据库内容
     if (entity == null) {
       entity = provider.findOne(id);
-
+      
       if (entity != null) {
         addCacheItem(entity);
       }
     }
-
+    
     return entity;
   }
-
+  
   /**
    * 查询某条记录
    *
@@ -243,7 +253,7 @@ public class AccountServiceImpl implements AccountService {
   public Account findOneByGlobalName(String globalName) {
     return provider.findOneByGlobalName(globalName);
   }
-
+  
   /**
    * 查询某条记录
    *
@@ -253,25 +263,25 @@ public class AccountServiceImpl implements AccountService {
   @Override
   public Account findOneByLoginName(String loginName) {
     Account entity = null;
-
+    
     // 查找缓存数据
     String key = CACHE_KEY_LOGIN_NAME_PREFIX + loginName;
     if (CachingManager.contains(key)) {
       entity = (Account) CachingManager.get(key);
     }
-
+    
     // 如果缓存中未找到相关数据，则查找数据库内容
     if (entity == null) {
       entity = provider.findOneByLoginName(loginName);
-
+      
       if (entity != null) {
         addCacheItem(entity);
       }
     }
-
+    
     return entity;
   }
-
+  
   /**
    * 根据已验证的手机号查询某条记录
    *
@@ -282,7 +292,7 @@ public class AccountServiceImpl implements AccountService {
   public Account findOneByCertifiedMobile(String certifiedMobile) {
     return provider.findOneByCertifiedMobile(certifiedMobile);
   }
-
+  
   /**
    * 根据已验证的邮箱地址查询某条记录
    *
@@ -293,7 +303,7 @@ public class AccountServiceImpl implements AccountService {
   public Account findOneByCertifiedEmail(String certifiedEmail) {
     return provider.findOneByCertifiedEmail(certifiedEmail);
   }
-
+  
   /**
    * 查询所有相关记录
    *
@@ -303,7 +313,7 @@ public class AccountServiceImpl implements AccountService {
   public List<Account> findAll() {
     return provider.findAll(new HashMap());
   }
-
+  
   /**
    * 查询所有相关记录
    *
@@ -313,7 +323,7 @@ public class AccountServiceImpl implements AccountService {
   public List<Account> findAll(DataQuery query) {
     return provider.findAll(query.getMap());
   }
-
+  
   /**
    * 查询某个用户所在的所有组织单位
    *
@@ -324,11 +334,11 @@ public class AccountServiceImpl implements AccountService {
   public List<Account> findAllByOrganizationUnitId(String organizationUnitId) {
     return provider.findAllByOrganizationUnitId(organizationUnitId);
   }
-
+  
   /**
    * 查询某个组织下的所有相关帐号
    *
-   * @param organizationUnitId 组织单元标识
+   * @param organizationUnitId              组织单元标识
    * @param defaultOrganizationUnitRelation 默认组织关系
    * @return 返回一个 {@link Account} 实例的详细信息
    */
@@ -340,7 +350,7 @@ public class AccountServiceImpl implements AccountService {
       return findAllByOrganizationUnitId(organizationUnitId);
     }
   }
-
+  
   /**
    * @param organizationUnitId 根据组织机构Id 获取当前组织机构 或者当前组织机构下 及机构人员问题
    * @return 所有人员信息
@@ -348,7 +358,7 @@ public class AccountServiceImpl implements AccountService {
   @Override
   public List<Account> findAllAccountsByOrganization(String organizationUnitId) {
     List<Account> result = new ArrayList<>();
-
+    
     List<OrganizationUnit> organizationUnitInfos = MembershipManagement.getInstance().getOrganizationUnitService()
       .getChildOrganizationByOrganizationUnitId(organizationUnitId);
     if (organizationUnitInfos != null) {
@@ -358,32 +368,32 @@ public class AccountServiceImpl implements AccountService {
         result.addAll(list);
       }
     }
-
+    
     return result;
   }
-
+  
   /**
    * 查询某个角色下的所有相关帐号
    *
    * @param roleId 角色标识
-   * @return 返回一个 IAccount 实例的详细信息
+   * @return 返回一个 Account 实例的详细信息
    */
   @Override
   public List<Account> findAllByRoleId(String roleId) {
     return provider.findAllByRoleId(roleId);
   }
-
+  
   /**
-   * ��ѯĳ��Ⱥ���µ����������ʺ�
+   * 查询某个群组下的所有相关帐号
    *
-   * @param groupId Ⱥ����ʶ
-   * @return ����һ�� IAccount ʵ������ϸ��Ϣ
+   * @param groupId 群组标识
+   * @return 返回一个 Account 实例的详细信息
    */
   @Override
   public List<Account> findAllByGroupId(String groupId) {
     return provider.findAllByGroupId(groupId);
   }
-
+  
   /**
    * 返回所有没有成员信息的帐号信息
    *
@@ -394,7 +404,7 @@ public class AccountServiceImpl implements AccountService {
   public List<Account> findAllWithoutMemberInfo(int length) {
     return provider.findAllWithoutMemberInfo(length);
   }
-
+  
   /**
    * 返回所有正向领导的帐号信息
    *
@@ -405,19 +415,19 @@ public class AccountServiceImpl implements AccountService {
   public List<Account> findForwardLeaderAccountsByOrganizationUnitId(String organizationId) {
     return provider.findForwardLeaderAccountsByOrganizationUnitId(organizationId, 1);
   }
-
+  
   /**
    * 返回所有正向领导的帐号信息
    *
    * @param organizationId 组织标识
-   * @param level 层次
+   * @param level          层次
    * @return 返回所有{@link Account}实例的详细信息
    */
   @Override
   public List<Account> findForwardLeaderAccountsByOrganizationUnitId(String organizationId, int level) {
     return provider.findForwardLeaderAccountsByOrganizationUnitId(organizationId, level);
   }
-
+  
   /**
    * 返回所有反向领导的帐号信息
    *
@@ -428,23 +438,23 @@ public class AccountServiceImpl implements AccountService {
   public List<Account> findBackwardLeaderAccountsByOrganizationUnitId(String organizationId) {
     return provider.findBackwardLeaderAccountsByOrganizationUnitId(organizationId, 1);
   }
-
+  
   /**
    * 返回所有反向领导的帐号信息
    *
    * @param organizationId 组织标识
-   * @param level 层次
+   * @param level          层次
    * @return 返回所有{@link Account}实例的详细信息
    */
   @Override
   public List<Account> findBackwardLeaderAccountsByOrganizationUnitId(String organizationId, int level) {
     return provider.findBackwardLeaderAccountsByOrganizationUnitId(organizationId, level);
   }
-
+  
   // -------------------------------------------------------
   // 自定义功能
   // -------------------------------------------------------
-
+  
   /**
    * 查询是否存在相关的记录
    *
@@ -455,29 +465,29 @@ public class AccountServiceImpl implements AccountService {
   public boolean isExist(String id) {
     return provider.isExist(id);
   }
-
+  
   /**
    * 查询是否存在相关的记录
    *
-   * @param loginName 登录名
+   * @param loginName  登录名
    * @param globalName 姓名
    * @return 布尔值
    */
   @Override
   public boolean isExistLoginNameAndGlobalName(String loginName, String globalName) {
     boolean result = provider.isExistLoginNameAndGlobalName(loginName, globalName);
-
+    
     if (!result) {
       result = Boolean.parseBoolean(isExistFieldValue("LoginName", loginName));
-
+      
       if (!result) {
         result = Boolean.parseBoolean(isExistFieldValue("GlobalName", globalName));
       }
     }
-
+    
     return result;
   }
-
+  
   /**
    * 查询是否存在相关的记录
    *
@@ -498,7 +508,7 @@ public class AccountServiceImpl implements AccountService {
     }
     return result;
   }
-
+  
   /**
    * 显示名称重复校验，不存在重复的校验 ；
    *
@@ -518,7 +528,7 @@ public class AccountServiceImpl implements AccountService {
     }
     return result;
   }
-
+  
   @Override
   public boolean isExistIdentityCard(String accountId, String identityCard) {
     boolean result = provider.isExistIdentityCard(identityCard);
@@ -533,7 +543,7 @@ public class AccountServiceImpl implements AccountService {
     }
     return result;
   }
-
+  
   /**
    * 查询是否存在相关的记录
    *
@@ -543,14 +553,14 @@ public class AccountServiceImpl implements AccountService {
   @Override
   public boolean isExistName(String name) {
     boolean result = provider.isExistName(name);
-
+    
     if (!result) {
       result = Boolean.parseBoolean(isExistFieldValue("Name", name));
     }
-
+    
     return result;
   }
-
+  
   /**
    * 查询是否存在相关的记录
    *
@@ -560,14 +570,14 @@ public class AccountServiceImpl implements AccountService {
   @Override
   public boolean isExistGlobalName(String globalName) {
     boolean result = provider.isExistGlobalName(globalName);
-
+    
     if (!result) {
       result = Boolean.parseBoolean(isExistFieldValue("GlobalName", globalName));
     }
-
+    
     return result;
   }
-
+  
   /**
    * 检测是否存在相关的手机号
    *
@@ -577,7 +587,7 @@ public class AccountServiceImpl implements AccountService {
   @Override
   public boolean isExistCertifiedMobile(String accountId, String certifiedMobile) {
     boolean result = provider.isExistCertifiedMobile(certifiedMobile);
-
+    
     if (!result) {
       result = Boolean.parseBoolean(isExistFieldValue("CertifiedMobile", certifiedMobile));
     }
@@ -589,7 +599,7 @@ public class AccountServiceImpl implements AccountService {
     }
     return result;
   }
-
+  
   /**
    * 检测是否存在相关的邮箱
    *
@@ -599,14 +609,14 @@ public class AccountServiceImpl implements AccountService {
   @Override
   public boolean isExistCertifiedEmail(String certifiedEmail) {
     boolean result = provider.isExistCertifiedEmail(certifiedEmail);
-
+    
     if (!result) {
       result = Boolean.parseBoolean(isExistFieldValue("CertifiedEmail", certifiedEmail));
     }
-
+    
     return result;
   }
-
+  
   /**
    * @param certifiedEmail 验证邮箱是否存在
    */
@@ -627,21 +637,21 @@ public class AccountServiceImpl implements AccountService {
     }
     return result;
   }
-
+  
   /**
    * 检测是否存在相关的字段的值
    *
-   * @param fieldName 字段的名称
+   * @param fieldName  字段的名称
    * @param fieldValue 字段的值
    */
   public String isExistFieldValue(String fieldName, String fieldValue) {
     return "False";
   }
-
+  
   /**
    * 查询是否存在相关的记录
    *
-   * @param id 帐号标识
+   * @param id   帐号标识
    * @param name 帐号名称
    * @return 0:代表成功 1:代表已存在相同名称
    */
@@ -652,10 +662,10 @@ public class AccountServiceImpl implements AccountService {
       // 不存在对象
       return 1;
     }
-
+    
     return provider.rename(id, name);
   }
-
+  
   /**
    * 创建空的帐号信息
    *
@@ -663,17 +673,17 @@ public class AccountServiceImpl implements AccountService {
    */
   @Override
   public Account createEmptyAccount(String accountId) {
-    Account param = new AccountInfo();
-
-    param.setId(accountId);
-    param.setLocking(0);
-    param.setStatus(-1);
-    param.setModifiedDate(new Date());
-    param.setCreatedDate(new Date());
-
-    return param;
+    Account entity = new AccountInfo();
+    
+    entity.setId(accountId);
+    entity.setLocking(0);
+    entity.setStatus(-1);
+    entity.setModifiedDate(LocalDateTime.now());
+    entity.setCreatedDate(LocalDateTime.now());
+    
+    return entity;
   }
-
+  
   /**
    * 组合唯一名称
    *
@@ -683,20 +693,20 @@ public class AccountServiceImpl implements AccountService {
   public String combineDistinguishedName(String name) {
     // 输出格式类似如下
     // cn=${姓名},ou=Peoples,dc=x3platform,dc=com
-
+    
     return StringUtil.format("CN=%1$s,OU=%2$s%3$s", name,
       LdapConfigurationView.getInstance().getCorporationUserFolderRoot(),
       LdapConfigurationView.getInstance().getSuffixDistinguishedName());
   }
-
+  
   // -------------------------------------------------------
   // 管理员功能
   // -------------------------------------------------------
-
+  
   /**
    * 设置全局名称
    *
-   * @param accountId 帐户标识
+   * @param accountId  帐户标识
    * @param globalName 全局名称
    * @return 0 操作成功 | 1 操作失败
    */
@@ -705,7 +715,7 @@ public class AccountServiceImpl implements AccountService {
     if (isExistGlobalName(globalName)) {
       return 1;
     }
-
+    
     // 检测是否存在对象
     if (!isExist(accountId)) {
       // 对象【${Id}】不存在。
@@ -735,10 +745,10 @@ public class AccountServiceImpl implements AccountService {
       }
     }
     */
-
+    
     return provider.setGlobalName(accountId, globalName);
   }
-
+  
   /**
    * 获取密码
    *
@@ -748,7 +758,7 @@ public class AccountServiceImpl implements AccountService {
   public String getPassword(String loginName) {
     return provider.getPassword(loginName);
   }
-
+  
   /**
    * 获取密码强度
    *
@@ -758,14 +768,14 @@ public class AccountServiceImpl implements AccountService {
   @Override
   public int getPasswordStrength(String loginName) {
     String password = getPassword(loginName);
-
+    
     // TODO 待处理
     // 如果系统采用的密码加密方式是不可逆的密码, 此方法无效.
     // password = MembershipManagement.getInstance().getPasswordEncryptionManagement().Decrypt(password);
-
+    
     return validatePasswordPolicy(password);
   }
-
+  
   /**
    * 获取密码更新时间
    *
@@ -775,12 +785,12 @@ public class AccountServiceImpl implements AccountService {
   public Date getPasswordChangedDate(String loginName) {
     return provider.getPasswordChangedDate(loginName);
   }
-
+  
   /**
    * 设置帐号密码.(管理员)
    *
    * @param accountId 编号
-   * @param password 密码
+   * @param password  密码
    * @return 修改成功, 返回 0, 旧密码不匹配, 返回 1.
    */
   @Override
@@ -789,7 +799,7 @@ public class AccountServiceImpl implements AccountService {
     if (account == null) {
       return 1;
     }
-
+    
     if (password.startsWith("{SSHA}")) {
       password = password.substring(6);
     } else {
@@ -809,7 +819,7 @@ public class AccountServiceImpl implements AccountService {
     */
     return provider.setPassword(accountId, password);
   }
-
+  
   /**
    * 设置登录名
    *
@@ -821,7 +831,7 @@ public class AccountServiceImpl implements AccountService {
   public int setLoginName(String accountId, String loginName) {
     return provider.setLoginName(accountId, loginName);
   }
-
+  
   /**
    * 设置已验证的联系电话
    *
@@ -833,23 +843,23 @@ public class AccountServiceImpl implements AccountService {
   public int setCertifiedMobile(String accountId, String telephone) {
     return provider.setCertifiedMobile(accountId, telephone);
   }
-
+  
   /**
    * 设置已验证的邮箱
    *
    * @param accountId 帐户标识
-   * @param email 邮箱
+   * @param email     邮箱
    * @return 0 操作成功 | 1 操作失败
    */
   @Override
   public int setCertifiedEmail(String accountId, String email) {
     return provider.setCertifiedEmail(accountId, email);
   }
-
+  
   /**
    * 设置已验证的头像
    *
-   * @param accountId 帐户标识
+   * @param accountId         帐户标识
    * @param avatarVirtualPath 头像的虚拟路径
    * @return 0 操作成功 | 1 操作失败
    */
@@ -857,19 +867,19 @@ public class AccountServiceImpl implements AccountService {
   public int setCertifiedAvatar(String accountId, String avatarVirtualPath) {
     return provider.setCertifiedAvatar(accountId, avatarVirtualPath);
   }
-
+  
   /**
    * 设置企业邮箱状态
    *
    * @param accountId 帐户标识
-   * @param status 状态标识, 1:启用, 0:禁用
+   * @param status    状态标识, 1:启用, 0:禁用
    * @return 0 设置成功, 1 设置失败.
    */
   @Override
   public int setEnableEmail(String accountId, int status) {
     return provider.setEnableEmail(accountId, status);
   }
-
+  
   /**
    * 设置帐号锁定状态
    *
@@ -878,49 +888,49 @@ public class AccountServiceImpl implements AccountService {
   @Override
   public int setLocking(String accountId, int locking) {
     Account account = findOne(accountId);
-
+    
     if (account != null) {
       removeCacheItem(account);
     }
-
+    
     int affectedRows = provider.setLocking(accountId, locking);
-
+    
     return affectedRows == 1 ? 0 : 1;
   }
-
+  
   /**
    * 设置帐号状态
    *
    * @param accountId 帐户标识
-   * @param status 状态标识, 1:启用, 0:禁用
+   * @param status    状态标识, 1:启用, 0:禁用
    * @return 0 操作成功 | 1 操作失败
    */
   @Override
   public int setStatus(String accountId, int status) {
     Account account = findOne(accountId);
-
+    
     if (LdapConfigurationView.getInstance().getIntegratedMode()) {
       // 同步 Active Directory 帐号状态
-
+      
       if (account != null && !StringUtil.isNullOrEmpty(account.getLoginName())) {
         // LdapManagement.getInstance().getUser().setStatus(account.getLoginName(), status == 1 ? true : false);
       }
     }
-
+    
     if (account != null) {
       removeCacheItem(account);
     }
-
+    
     int affectedRows = provider.setStatus(accountId, status);
-
+    
     return affectedRows == 1 ? 0 : 1;
   }
-
+  
   /**
    * 设置登录名
    *
    * @param accountId 帐户标识
-   * @param ip 登录IP
+   * @param ip        登录IP
    * @param loginDate 登录时间
    * @return 0 操作成功 | 1 操作失败
    */
@@ -928,11 +938,11 @@ public class AccountServiceImpl implements AccountService {
   public int setIPAndLoginDate(String accountId, String ip, Date loginDate) {
     return provider.setIPAndLoginDate(accountId, ip, loginDate);
   }
-
+  
   // -------------------------------------------------------
   // 普通用户功能
   // -------------------------------------------------------
-
+  
   /**
    * 验证密码是否符合密码策略
    *
@@ -942,88 +952,88 @@ public class AccountServiceImpl implements AccountService {
   @Override
   public int validatePasswordPolicy(String password) {
     byte[] buffer = password.getBytes();
-
+    
     String passwordPolicyRules = MembershipConfigurationView.getInstance().getPasswordPolicyRules();
     int passwordPolicyMinimumLength = MembershipConfigurationView.getInstance().getPasswordPolicyMinimumLength();
     int passwordPolicyCharacterRepeatedTimes = MembershipConfigurationView.getInstance()
       .getPasswordPolicyCharacterRepeatedTimes();
-
+    
     boolean flag = false;
     int charCode = -1;
-
+    
     if (passwordPolicyRules.indexOf("[Number]") > -1) {
       flag = false;
       charCode = -1;
-
+      
       // charCode 48 - 57
       for (int i = 0; i < buffer.length; i++) {
         charCode = buffer[i];
-
+        
         if (charCode >= 48 && charCode <= 57) {
           flag = true;
           break;
         }
       }
-
+      
       if (!flag) {
         // 2 必须包含一个【0～9】数字。
         return 2;
       }
     }
-
+    
     if (passwordPolicyRules.indexOf("[Character]") > -1) {
       flag = false;
       charCode = -1;
-
+      
       for (int i = 0; i < buffer.length; i++) {
         charCode = buffer[i];
-
+        
         if ((charCode >= 65 && charCode <= 90) || (charCode >= 97 && charCode <= 122)) {
           flag = true;
           break;
         }
       }
-
+      
       if (!flag) {
         // 3 必须包含一个【A～Z或a～z】字符。
         return 3;
       }
     }
-
+    
     if (passwordPolicyRules.indexOf("[SpecialCharacter]") > -1) {
       flag = false;
       charCode = -1;
-
+      
       // ! 33 # 35 $ 36 @ 64
       for (int i = 0; i < buffer.length; i++) {
         charCode = buffer[i];
-
+        
         if (charCode == 33 || charCode == 35 || charCode == 36 || charCode == 64) {
           flag = true;
           break;
         }
       }
-
+      
       if (!flag) {
         // 4 必须包含一个【# $ @ !】特殊字符。
         return 4;
       }
     }
-
+    
     if (passwordPolicyMinimumLength > 0 && buffer.length < passwordPolicyMinimumLength) {
       // 5 密码长度必须大于【' + passwordPolicyMinimumLength + '】'。
       return 5;
     }
-
+    
     if (passwordPolicyCharacterRepeatedTimes > 1 && buffer.length > passwordPolicyCharacterRepeatedTimes) {
       // 判断字符连续出现的次数
       int repeatedTimes = 1;
-
+      
       for (int i = 0; i < buffer.length - passwordPolicyCharacterRepeatedTimes; i++) {
         charCode = buffer[i];
-
+        
         repeatedTimes = 1;
-
+        
         for (int j = 1; j < passwordPolicyCharacterRepeatedTimes; j++) {
           if (charCode == buffer[i + j]) {
             repeatedTimes++;
@@ -1031,23 +1041,23 @@ public class AccountServiceImpl implements AccountService {
             break;
           }
         }
-
+        
         if (repeatedTimes >= passwordPolicyCharacterRepeatedTimes) {
           // 在密码中相邻字符重复次数不能超过【' + passwordPolicyCharacterRepeatedTimes + '】次。;
           return 6;
         }
       }
     }
-
+    
     return 0;
   }
-
+  
   /**
    * 确认密码
    *
-   * @param accountId 帐号唯一标识
+   * @param accountId    帐号唯一标识
    * @param passwordType 密码类型: default 默认, two-factor 查询密码, trader 交易密码
-   * @param password 密码
+   * @param password     密码
    * @return 返回值 0-成功 | 1-失败
    */
   @Override
@@ -1062,39 +1072,70 @@ public class AccountServiceImpl implements AccountService {
     } else {
       affectedRows = provider.confirmPassword(accountId, passwordType, password);
     }
-
+    
     return affectedRows == 0 ? 1 : 0;
   }
-
+  
   /**
    * 登陆检测
    *
    * @param loginName 帐号
-   * @param password 密码
+   * @param password  密码
    * @return{@link Account} 实例
    */
   @Override
   public Account loginCheck(String loginName, String password) {
-    Account account = findOneByLoginName(loginName);
-
+    return loginCheck(LoginType.LOGIN_NAME, loginName, password);
+  }
+  
+  /**
+   * 登陆检测
+   *
+   * @param loginType      登录类型 LoginName | Mobile | Email
+   * @param objectIdentity 登录对象标识
+   * @param password       密码
+   * @return{@link Account} 实例
+   */
+  @Override
+  public Account loginCheck(LoginType loginType, String objectIdentity, String password) {
+    if (StringUtil.isNullOrEmpty(objectIdentity)) {
+      return null;
+    }
+    
+    Account account = null;
+    
+    if (loginType == LoginType.MOBILE) {
+      account = findOneByCertifiedMobile(objectIdentity);
+    } else if (loginType == LoginType.EMAIL) {
+      account = findOneByCertifiedEmail(objectIdentity);
+    } else {
+      account = findOneByLoginName(objectIdentity);
+    }
+    
     if (account == null) {
       return null;
     }
-
+    
     /// 输入调试信息
-    // KernelContext.getLog().debug("login name:{}, password:{}, password salt:{}",
+    // InternalLogger.getLogger().debug("login name:{}, password:{}, password salt:{}",
     //  loginName, password, account.getPasswordSalt());
-
+    
     if (password.startsWith("{SSHA}")) {
       password = password.substring(6);
     } else {
       String salt = account.getPasswordSalt();
       password = Encrypter.encryptSha1(password + salt);
     }
-
-    return provider.loginCheck(loginName, password);
+    
+    if (loginType == LoginType.MOBILE) {
+      return provider.loginCheckByCertifiedMobile(objectIdentity, password);
+    } else if (loginType == LoginType.EMAIL) {
+      return provider.loginCheckByCertifiedEmail(objectIdentity, password);
+    } else {
+      return provider.loginCheckByLoginName(objectIdentity, password);
+    }
   }
-
+  
   /**
    * 修改基本信息
    *
@@ -1104,50 +1145,49 @@ public class AccountServiceImpl implements AccountService {
   public void changeBasicInfo(Account param) {
     provider.changeBasicInfo(param);
   }
-
+  
   /**
    * 修改密码
    *
-   * @param loginName 编号
-   * @param password 新密码
+   * @param loginName        编号
+   * @param password         新密码
    * @param originalPassword 原始密码
    * @return 消息代码
    */
   @Override
   public int changePassword(String loginName, String password, String originalPassword) {
     Account account = findOneByLoginName(loginName);
-
+    
     if (account == null) {
       return 1;
     }
-
+    
     if (password.startsWith("{SSHA}")) {
       password = password.substring(6);
     } else {
       String salt = account.getPasswordSalt();
       password = Encrypter.encryptSha1(password + salt);
     }
-
+    
     if (originalPassword.startsWith("{SSHA}")) {
       originalPassword = originalPassword.substring(6);
     } else {
       String salt = account.getPasswordSalt();
       originalPassword = Encrypter.encryptSha1(originalPassword + salt);
     }
-
+    
     int affectedRows = provider.changePassword(loginName, password, originalPassword);
-
+    
     if (affectedRows == 1 && LdapConfigurationView.getInstance().getIntegratedMode()) {
       // 同步 Active Directory 帐号状态
       if (account != null && !StringUtil.isNullOrEmpty(account.getLoginName()) && !StringUtil.isNullOrEmpty(password)) {
-        // TODO 设置 Python
-        // LdapManagement.getInstance().getUser().setPassword(account.LoginName, password);
+        LdapManagement.getInstance().getUser().setPassword(account.getLoginName(), password);
       }
     }
-
+    
     return affectedRows > 0 ? 0 : 1;
   }
-
+  
   /**
    * 刷新帐号的更新时间
    *
@@ -1158,7 +1198,7 @@ public class AccountServiceImpl implements AccountService {
   public int refreshModifiedDate(String accountId) {
     return provider.refreshModifiedDate(accountId);
   }
-
+  
   /**
    * 获取帐号相关的权限对象
    *
@@ -1167,7 +1207,7 @@ public class AccountServiceImpl implements AccountService {
   // public List<MembershipAuthorizationScopeObject> GetAuthorizationScopeObjects(Account account) {
   //  return this.provider.GetAuthorizationScopeObjects(account);
   // }
-
+  
   /**
    * 同步信息至 Active Directory
    *
@@ -1177,13 +1217,13 @@ public class AccountServiceImpl implements AccountService {
   public int syncToLDAP(Account param) {
     return syncToLDAP(param, param.getGlobalName(), param.getStatus());
   }
-
+  
   /**
    * 同步信息至 Active Directory
    *
-   * @param param 帐号信息
+   * @param param              帐号信息
    * @param originalGlobalName 原始全局名称
-   * @param originalStatus 原始状态
+   * @param originalStatus     原始状态
    */
   public int syncToLDAP(Account param, String originalGlobalName, int originalStatus) {
     /*
@@ -1231,11 +1271,11 @@ public class AccountServiceImpl implements AccountService {
     */
     return 0;
   }
-
+  
   /**
-   * @param authType isAdministrator;isReviewer;isMember
+   * @param authType        isAdministrator;isReviewer;isMember
    * @param applicationName 配置应用名称 （必填）
-   * @param selectKey ‘搜索框输入的值’
+   * @param selectKey       ‘搜索框输入的值’
    */
   @Override
   public List<Account> findAllAccountByAccountName(String authType, String applicationName, String selectKey) {

@@ -65,11 +65,9 @@
   </select>
   <select id="dump" resultMap="BaseResultMap">
     SELECT * FROM sys_session_ticket
-    <where>
-      <if test="param_ticket_id != null and param_ticket_id != ''">
-        AND t.ticket_id = #{param_ticket_id}
-      </if>
-    </where>
+  </select>
+  <select id="dumpByTicketValue" resultMap="BaseResultMap">
+    SELECT * FROM sys_session_ticket WHERE ticket_value = #{ticket_value}
   </select>
   <select id="isExist" resultType="boolean">
     SELECT COUNT(0) AS "Count" FROM sys_session_ticket WHERE ticket_id = #{ticket_id}
@@ -78,9 +76,15 @@
     SELECT COUNT(0) AS "Count" FROM sys_session_ticket WHERE ticket_value = #{ticket_value}
   </select>
   <delete id="clear" databaseId="mysql">
-    DELETE FROM sys_session_ticket WHERE valid_to &lt; '$ExpiryTime$'
+    <![CDATA[
+    DELETE FROM sys_session_ticket
+    WHERE valid_to < ${expire_date}
+    ]]>
   </delete>
   <delete id="clear" databaseId="oracle">
-    DELETE FROM sys_session_ticket WHERE valid_to &lt; to_date('$ExpiryTime$','yyyy-mm-dd hh24:mi:ss')
+    <![CDATA[
+    DELETE FROM sys_session_ticket
+    WHERE valid_to < to_date(${expire_date}, 'yyyy-mm-dd hh24:mi:ss')
+    ]]>
   </delete>
 </mapper>

@@ -1,5 +1,6 @@
 package com.x3platform.apps.models;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.x3platform.apps.AppsContext;
 import com.x3platform.util.DateUtil;
 import com.x3platform.util.StringUtil;
@@ -28,6 +29,7 @@ public class ApplicationSettingLite {
     id = value;
   }
 
+  @JSONField(serialize = false)
   private Application application;
 
   /**
@@ -65,6 +67,7 @@ public class ApplicationSettingLite {
     return getApplication() == null ? "" : getApplication().getApplicationDisplayName();
   }
 
+  @JSONField(serialize = false)
   private ApplicationMenu parent;
 
   /**

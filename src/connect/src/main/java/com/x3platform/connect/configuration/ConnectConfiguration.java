@@ -13,108 +13,53 @@ public class ConnectConfiguration {
    */
   public static final String APPLICATION_NAME = "connect";
 
-  /**
-   * 配置区的名称
-   */
-  // public static final String SECTION_NAME = "connect";
-
-  @Value("${x3platform." + APPLICATION_NAME + ".api-host-name:apis.x3platform.com}")
-  private String mApiHostName;
-
-  /**
-   * API主机名
-   */
-  public String getApiHostName() {
-    return mApiHostName;
-  }
-
   @Value("${x3platform." + APPLICATION_NAME + ".session-timer-interval:15}")
-  private String mSessionTimerInterval;
+  private String sessionTimerInterval;
 
   /**
    * 会话定时器执行时间间隔(单位:分钟)
    */
   public String getSessionTimerInterval() {
-    return mSessionTimerInterval;
+    return sessionTimerInterval;
   }
 
   @Value("${x3platform." + APPLICATION_NAME + ".session-time-limit:86400}")
-  private String mSessionTimeLimit;
+  private String sessionTimeLimit;
 
   /**
    * 会话时间限制 (单位:秒)
    */
   public String getSessionTimeLimit() {
-    return mSessionTimeLimit;
+    return sessionTimeLimit;
   }
-
-  @Value("${x3platform." + APPLICATION_NAME + ".enable-call-log:Off}")
-  private String mEnableCallLog;
-
+  
+  @Value("${x3platform." + APPLICATION_NAME + ".auth-fail-limit:5}")
+  private String authFailLimit;
+  
   /**
-   * 启用调用日志
+   * 认证失败最大次数
    */
-  public String getEnableCallLog() {
-    return mEnableCallLog;
+  public String getAuthFailLimit() {
+    return authFailLimit;
   }
-
-  @Value("${x3platform." + APPLICATION_NAME + ".message-queue-mode:Off}")
-  private String mMessageQueueMode;
-
+  
+  @Value("${x3platform." + APPLICATION_NAME + ".auth-fail-duration:5}")
+  private String authFailDuration;
+  
   /**
-   * 消息队列模式
+   * 认证失败统计持续的时间(单位:分钟)
    */
-  public String getMessageQueueMode() {
-    return mMessageQueueMode;
+  public String getAuthFailDuration() {
+    return authFailDuration;
   }
-
-  @Value("${x3platform." + APPLICATION_NAME + ".message-queue-host-name:-}")
-  private String mMessageQueueHostName;
-
+  
+  @Value("${x3platform." + APPLICATION_NAME + ".enable-captcha:Off}")
+  private String enableCaptcha;
+  
   /**
-   * 消息队列机器名称
+   * 启用图形验证码
    */
-  public String getMessageQueueHostName() {
-    return mMessageQueueHostName;
-  }
-
-  @Value("${x3platform." + APPLICATION_NAME + ".message-queue-port:-}")
-  private String mMessageQueuePort;
-
-  /**
-   * 消息队列端口
-   */
-  public String getMessageQueuePort() {
-    return mMessageQueuePort;
-  }
-
-  @Value("${x3platform." + APPLICATION_NAME + ".message-queue-username:username}")
-  private String mMessageQueueUsername;
-
-  /**
-   * 消息队列用户名
-   */
-  public String getMessageQueueUsername() {
-    return mMessageQueueUsername;
-  }
-
-  @Value("${x3platform." + APPLICATION_NAME + ".message-queue-password:password}")
-  private String mMessageQueuePassword;
-
-  /**
-   * 消息队列密码
-   */
-  public String getMessageQueuePassword() {
-    return mMessageQueuePassword;
-  }
-
-  @Value("${x3platform." + APPLICATION_NAME + ".message-queue-receiving-interval:120}")
-  private String mMessageQueueReceivingInterval;
-
-  /**
-   * 消息队列接收时间间隔(单位:秒)
-   */
-  public String getMessageQueueReceivingInterval() {
-    return mMessageQueueReceivingInterval;
+  public String getEnableCaptcha() {
+    return enableCaptcha;
   }
 }

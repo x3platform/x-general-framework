@@ -2,6 +2,8 @@ package com.x3platform.membership.services.impl;
 
 import static com.x3platform.membership.Constants.VIRTUAL_TEAM_NAME;
 
+import com.x3platform.InternalLogger;
+import com.x3platform.cachebuffer.CachingManager;
 import com.x3platform.data.DataQuery;
 import com.x3platform.digitalnumber.DigitalNumberContext;
 import com.x3platform.ldap.configuration.LdapConfigurationView;
@@ -39,6 +41,32 @@ public class RoleServiceImpl implements RoleService {
    */
   @Autowired(required = false)
   private RoleMapper provider = null;
+  
+  // -------------------------------------------------------
+  // 缓存管理
+  // -------------------------------------------------------
+  
+  /**
+   * 添加缓存项
+   */
+  private void addCacheItem(Role item) {
+    if (!StringUtil.isNullOrEmpty(item.getId())) {
+      String key = CACHE_KEY_ID_PREFIX + item.getId();
+      CachingManager.set(key, item, CachingManager.getRandomMinutes());
+    }
+  }
+  
+  /**
+   * 移除缓存项
+   */
+  private void removeCacheItem(Role item) {
+    if (!StringUtil.isNullOrEmpty(item.getId())) {
+      String key = CACHE_KEY_ID_PREFIX + item.getId();
+      if (CachingManager.contains(key)) {
+        CachingManager.delete(key);
+      }
+    }
+  }
 
   // -------------------------------------------------------
   // 保存 删除
@@ -75,10 +103,12 @@ public class RoleServiceImpl implements RoleService {
       if (StringUtil.isNullOrEmpty(entity.getCode())) {
         entity.setCode(DigitalNumberContext.generate(DIGITAL_NUMBER_KEY_CODE));
       }
-      provider.insert(entity);
+      affectedRows = provider.insert(entity);
     } else {
-      provider.update(entity);
+      affectedRows =  provider.update(entity);
     }
+    
+    InternalLogger.getLogger().debug("save entity id:'{}', affectedRows:{}", id, affectedRows);
 
     if (entity != null) {
       // 绑定新的关系
@@ -91,7 +121,16 @@ public class RoleServiceImpl implements RoleService {
         }
       }
     }
-
+  
+    // 保存数据后, 更新缓存信息
+    entity = provider.findOne(entity.getId());
+  
+    if (entity != null) {
+      removeCacheItem(entity);
+    
+      addCacheItem(entity);
+    }
+  
     return entity;
   }
 
@@ -101,8 +140,20 @@ public class RoleServiceImpl implements RoleService {
    * @param id 标识
    */
   @Override
-  public void delete(String id) {
-    provider.delete(id);
+  public int delete(String id) {
+    Role entity = provider.findOne(id);
+  
+    if (entity != null) {
+      // 删除缓存记录
+      removeCacheItem(entity);
+    
+      // 删除数据库记录
+      int affectedRows = provider.delete(id);
+  
+      InternalLogger.getLogger().debug("delete entity id:'{}', affectedRows:{}", id, affectedRows);
+    }
+  
+    return 0;
   }
 
   // -------------------------------------------------------
@@ -117,7 +168,24 @@ public class RoleServiceImpl implements RoleService {
    */
   @Override
   public Role findOne(String id) {
-    return provider.findOne(id);
+    Role entity = null;
+  
+    String key = CACHE_KEY_ID_PREFIX + id;
+  
+    if (CachingManager.contains(key)) {
+      entity = (Role) CachingManager.get(key);
+    }
+  
+    // 如果缓存中未找到相关数据，则查找数据库内容
+    if (entity == null) {
+      entity = provider.findOne(id);
+    
+      if (entity != null) {
+        addCacheItem(entity);
+      }
+    }
+    
+    return entity;
   }
 
   /**
@@ -142,22 +210,6 @@ public class RoleServiceImpl implements RoleService {
   public Role findOneByCorporationIdAndStandardRoleId(String corporationId, String standardRoleId) {
     return provider.findOneByCorporationIdAndStandardRoleId(corporationId, standardRoleId);
   }
-
-  /**
-   * @param parentId 根据父级角色 查询最大编码的角色
-   */
-//  @Override
-//  public Role findMaxCodeByParentId(String parentId) {
-//    return provider.findMaxCodeByParentId(parentId);
-//  }
-
-  /**
-   * @param organizationUnitId 所属组织结构查询最大编码的角色
-   */
-//  @Override
-//  public Role findMaxCodeByOrganizationUnitId(String organizationUnitId) {
-//    return provider.findMaxCodeByOrganizationUnitId(organizationUnitId);
-//  }
 
   /**
    * 查询 分页 记录
@@ -1466,5 +1518,17 @@ public class RoleServiceImpl implements RoleService {
     }
     */
     return provider.clearupRelation(roleId);
+  }
+
+  /**
+   * @param id 角色id
+   * @param standardOrganizationUnit 标准组织
+   * @param roleName 角色名称
+   * @param
+   * @return
+   */
+  @Override
+  public boolean isNormalAdmin(String id, String standardOrganizationUnit, String roleName) {
+    return provider.isNormalAdmin(id,standardOrganizationUnit,roleName);
   }
 }

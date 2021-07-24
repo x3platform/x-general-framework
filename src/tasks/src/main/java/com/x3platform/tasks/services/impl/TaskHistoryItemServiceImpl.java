@@ -13,10 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.*;
 
 /**
- *
  * @author ruanyu
  */
 public class TaskHistoryItemServiceImpl implements TaskHistoryItemService {
+
   /**
    * 数据提供器
    */
@@ -26,7 +26,7 @@ public class TaskHistoryItemServiceImpl implements TaskHistoryItemService {
   // -------------------------------------------------------
   // 保存 删除
   // -------------------------------------------------------
-  
+
   /**
    * 保存记录
    *
@@ -35,7 +35,7 @@ public class TaskHistoryItemServiceImpl implements TaskHistoryItemService {
    */
   @Override
   public int save(TaskHistoryItem entity) {
-    int affectedRows = -1;
+    int affectedRows;
 
     String id = entity.getId();
 
@@ -49,11 +49,11 @@ public class TaskHistoryItemServiceImpl implements TaskHistoryItemService {
       affectedRows = this.provider.updateByPrimaryKey(entity);
     }
 
-    KernelContext.getLog().debug("save entity id:'" + id + "', affectedRows:" + affectedRows);
+    KernelContext.getLog().debug("save entity id:'{}', affectedRows:{}", id, affectedRows);
 
     return 0;
   }
-  
+
   /**
    * 删除记录
    *
@@ -63,8 +63,8 @@ public class TaskHistoryItemServiceImpl implements TaskHistoryItemService {
   public int delete(String id) {
     int affectedRows = this.provider.deleteByPrimaryKey(id);
 
-    KernelContext.getLog().debug("delete entity id:'" + id + "', affectedRows:" + affectedRows);
-    
+    KernelContext.getLog().debug("delete entity id:'{}', affectedRows:{}", id, affectedRows);
+
     return 0;
   }
 
@@ -80,9 +80,9 @@ public class TaskHistoryItemServiceImpl implements TaskHistoryItemService {
    */
   @Override
   public TaskHistoryItem findOne(String id) {
-    return this.provider.selectByPrimaryKey(id) ;
+    return this.provider.selectByPrimaryKey(id);
   }
-  
+
   /**
    * 查询所有相关记录
    *
@@ -90,15 +90,14 @@ public class TaskHistoryItemServiceImpl implements TaskHistoryItemService {
    * @return 返回所有实例 TaskHistoryItem 的详细信息
    */
   @Override
-  public List<TaskHistoryItem> findAll(DataQuery query)
-  {
+  public List<TaskHistoryItem> findAll(DataQuery query) {
     return this.provider.findAll(query.getMap());
   }
 
   // -------------------------------------------------------
   // 自定义功能
   // -------------------------------------------------------
-   
+
   /**
    * 查询是否存在相关的记录
    *

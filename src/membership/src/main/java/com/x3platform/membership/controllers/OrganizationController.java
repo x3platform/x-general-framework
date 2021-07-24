@@ -16,6 +16,7 @@ import com.x3platform.membership.models.OrganizationInfo;
 import com.x3platform.membership.services.OrganizationService;
 import com.x3platform.messages.MessageObject;
 import java.lang.reflect.Member;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author ruanyu
  */
 @Lazy
-@RestController
+@RestController("com.x3platform.membership.controllers.OrganizationController")
 @RequestMapping("/api/membership/organization")
 public class OrganizationController {
 
@@ -205,8 +206,8 @@ public class OrganizationController {
 
     // 根据实际需要设置默认值
     entity.setStatus(1);
-    entity.setModifiedDate(new Date());
-    entity.setCreatedDate(new Date());
+    entity.setModifiedDate(LocalDateTime.now());
+    entity.setCreatedDate(LocalDateTime.now());
 
     return "{\"data\":" + JSON.toJSONString(entity) + ","
       + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";

@@ -1,18 +1,18 @@
 package com.x3platform.membership.models;
 
 import static com.x3platform.Constants.TEXT_EMPTY;
+import static com.x3platform.membership.Constants.STANDARD_ROLE_ROOT_ID;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import com.x3platform.membership.Account;
-import com.x3platform.membership.ExtensionInformation;
-import com.x3platform.membership.MembershipManagement;
-import com.x3platform.membership.OrganizationUnit;
-import com.x3platform.membership.Role;
+import com.x3platform.membership.*;
 import com.x3platform.util.DateUtil;
 import com.x3platform.util.StringUtil;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import org.apache.http.client.utils.DateUtils;
 import org.dom4j.Element;
 
@@ -24,11 +24,13 @@ import org.dom4j.Element;
 public class RoleInfo implements Role {
 
   /**
+   *
    */
   public RoleInfo() {
   }
 
   /**
+   *
    */
   public RoleInfo(String id) {
     setId(id);
@@ -57,6 +59,7 @@ public class RoleInfo implements Role {
   private String id;
 
   /**
+   *
    */
   @Override
   public String getId() {
@@ -171,6 +174,7 @@ public class RoleInfo implements Role {
   /**
    * 父级对象
    */
+  @JSONField(serialize = false)
   @Override
   public Role getParent() {
     if (parent == null && !StringUtil.isNullOrEmpty(parentId)) {
@@ -189,9 +193,8 @@ public class RoleInfo implements Role {
     return corporationId;
   }
 
-  public String setCorporationId(String value) {
+  public void setCorporationId(String value) {
     corporationId = value;
-    return corporationId;
   }
 
   /**
@@ -203,9 +206,8 @@ public class RoleInfo implements Role {
     return corporationName;
   }
 
-  public String setCorporationName(String value) {
+  public void setCorporationName(String value) {
     corporationName = value;
-    return corporationName;
   }
 
   private OrganizationUnit corporation = null;
@@ -217,9 +219,8 @@ public class RoleInfo implements Role {
     return corporation;
   }
 
-  public OrganizationUnit setCorporation(OrganizationUnit value) {
+  public void setCorporation(OrganizationUnit value) {
     corporation = value;
-    return corporation;
   }
 
   /**
@@ -236,11 +237,29 @@ public class RoleInfo implements Role {
   }
 
   /**
-   * 所属通用角色名称
+   * 所属标准角色
    */
+  @JSONField(serialize = false)
+  private StandardRole standardRole = null;
+
+  public StandardRole getStandardRole() {
+    //
+    // StandardRoleId = "00000000-0000-0000-0000-000000000000" 表示根节点为空
+    // 系统中的特殊角色[所有人]的Id为"00000000-0000-0000-0000-000000000000".
+    // 所以为避免错误, 当 StandardRoleId = "00000000-0000-0000-0000-000000000000", 直接返回 null.
+    if (StringUtil.isNullOrEmpty(this.getStandardRoleId()) || STANDARD_ROLE_ROOT_ID.equals(this.getStandardRoleId())) {
+      return null;
+    }
+
+    if (standardRole == null && !StringUtil.isNullOrEmpty(this.getStandardRoleId())) {
+      standardRole = MembershipManagement.getInstance().getStandardRoleService().findOne(this.getStandardRoleId());
+    }
+
+    return standardRole;
+  }
 
   /**
-   * 所属通用角色
+   * 所属角色标识
    */
   private String standardRoleId;
 
@@ -257,11 +276,12 @@ public class RoleInfo implements Role {
     standardRoleId = value;
   }
 
+  public String getStandardRoleName() {
+    return this.getStandardRole() == null ? TEXT_EMPTY : this.getStandardRole().getName();
+  }
+
   /**
-   * 标准角色名称
-   */
-  /**
-   * 标准组织对象
+   * 所属组织标识
    */
   private String organizationUnitId;
 
@@ -287,6 +307,7 @@ public class RoleInfo implements Role {
   /**
    * 所属组织对象
    */
+  @JSONField(serialize = false)
   @Override
   public OrganizationUnit getOrganizationUnit() {
     if (organizationUnit == null && !StringUtil.isNullOrEmpty(organizationUnitId)) {
@@ -431,31 +452,31 @@ public class RoleInfo implements Role {
     distinguishedName = value;
   }
 
-  private Date modifiedDate = DateUtil.getDefaultDate();
+  private LocalDateTime modifiedDate = DateUtil.getDefaultLocalDateTime();
 
   /**
    * 修改时间
    */
   @Override
-  public Date getModifiedDate() {
+  public LocalDateTime getModifiedDate() {
     return modifiedDate;
   }
 
   @Override
-  public void setModifiedDate(Date value) {
+  public void setModifiedDate(LocalDateTime value) {
     modifiedDate = value;
   }
 
-  private Date createdDate = DateUtil.getDefaultDate();
+  private LocalDateTime createdDate = DateUtil.getDefaultLocalDateTime();
 
   /**
    * 创建时间
    */
-  public Date getCreatedDate() {
+  public LocalDateTime getCreatedDate() {
     return createdDate;
   }
 
-  public void setCreatedDate(Date value) {
+  public void setCreatedDate(LocalDateTime value) {
     createdDate = value;
   }
 
@@ -468,6 +489,17 @@ public class RoleInfo implements Role {
    */
   @Override
   public void resetMemberRelations(String relationText) {
+    String[] list = StringUtil.isNullOrEmpty(relationText) ? new String[0] : relationText.split(",|;");
+
+    this.getMembers().clear();
+
+    for (String item : list) {
+      String[] keys = item.split("#");
+
+      if (keys.length > 2 && "account".equals(keys[0])) {
+        this.getMembers().add(MembershipManagement.getInstance().getAccountService().findOne(keys[1]));
+      }
+    }
   }
 
   // -------------------------------------------------------
@@ -496,7 +528,7 @@ public class RoleInfo implements Role {
   public String getMemberText() {
     if (StringUtil.isNullOrEmpty(this.memberText) && !this.getMembers().isEmpty()) {
       for (Account account : this.getMembers()) {
-        this.memberText += String.format("role#%1$s#%2$s,", account.getId(), account.getGlobalName());
+        this.memberText += StringUtil.format("account#{}#{},", account.getId(), account.getGlobalName());
       }
 
       this.memberText = StringUtil.trimEnd(this.memberText, ",");
@@ -523,7 +555,7 @@ public class RoleInfo implements Role {
   }
 
   // -------------------------------------------------------
-  // 显式实现 AuthorizationObject Type
+  // 实现 AuthorizationObject 接口
   // -------------------------------------------------------
 
   /**
@@ -575,7 +607,7 @@ public class RoleInfo implements Role {
   /**
    * 根据对象导出Xml元素
    *
-   * @param displayComment 显示注释
+   * @param displayComment      显示注释
    * @param displayFriendlyName 显示友好名称
    */
   @Override
@@ -647,11 +679,11 @@ public class RoleInfo implements Role {
     setName(element.selectSingleNode("name").getText());
     setPinYin(element.selectSingleNode("pinyin").getText());
     setOrganizationUnitId(element.selectSingleNode("organizationId").getText());
-    // this.setStandardRoleId(element.selectSingleNode("standardRoleId").getText());
+    setStandardRoleId(element.selectSingleNode("standardRoleId").getText());
     setParentId(element.selectSingleNode("parentId").getText());
     setOrderId(element.selectSingleNode("orderId").getText());
     setStatus(Integer.parseInt(element.selectSingleNode("status").getText()));
     setRemark(element.selectSingleNode("remark").getText());
-    setModifiedDate(DateUtils.parseDate(element.selectSingleNode("modifiedDate").getText()));
+    setModifiedDate(LocalDateTime.parse(element.selectSingleNode("modifiedDate").getText()));
   }
 }

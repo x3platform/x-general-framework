@@ -1,5 +1,6 @@
 package com.x3platform.connect.services.impl;
 
+import com.x3platform.Constants;
 import com.x3platform.connect.configuration.ConnectConfiguration;
 import com.x3platform.connect.configuration.ConnectConfigurationView;
 import com.x3platform.connect.mappers.ConnectAuthorizationCodeMapper;
@@ -15,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 
+import static com.x3platform.Constants.TEXT_EMPTY;
+
 public class ConnectAuthorizationCodeServiceImpl implements ConnectAuthorizationCodeService {
 
   @Autowired
@@ -28,7 +31,7 @@ public class ConnectAuthorizationCodeServiceImpl implements ConnectAuthorization
    * 保存记录
    *
    * @return ConnectAuthorizationCode 实例详细信息
-   * @entity entity ConnectAuthorizationCode 实例详细信息
+   * @param entity ConnectAuthorizationCode 实例详细信息
    */
   @Override
   public int save(ConnectAuthorizationCode entity) {
@@ -50,7 +53,7 @@ public class ConnectAuthorizationCodeServiceImpl implements ConnectAuthorization
   /**
    * 删除记录
    *
-   * @entity id 标识
+   * @param id 标识
    */
   @Override
   public int delete(String id) {
@@ -65,7 +68,7 @@ public class ConnectAuthorizationCodeServiceImpl implements ConnectAuthorization
    * 查询某条记录
    *
    * @return 返回一个实例 ConnectAuthorizationCode 的详细信息
-   * @entity id 连接器标识
+   * @param id 连接器标识
    */
   @Override
   public ConnectAuthorizationCode findOne(String id) {
@@ -76,21 +79,19 @@ public class ConnectAuthorizationCodeServiceImpl implements ConnectAuthorization
    * 查询某条记录
    *
    * @return 返回一个实例 ConnectAuthorizationCode 的详细信息
-   * @entity appKey    应用标识
-   * @entity accountId 帐号标识
+   * @param appKey    应用标识
+   * @param accountId 帐号标识
    */
   @Override
   public ConnectAuthorizationCode findOneByAccountId(String appKey, String accountId) {
     return this.provider.findOneByAccountId(appKey, accountId);
   }
 
-  ///#region 函数:FindAll(string whereClause,int length)
-
   /**
    * 查询所有相关记录
    *
    * @return 返回所有实例 ConnectAuthorizationCode 的详细信息
-   * @entity query  数据查询参数
+   * @param query  数据查询参数
    */
   @Override
   public List<ConnectAuthorizationCode> findAll(DataQuery query) {
@@ -102,23 +103,10 @@ public class ConnectAuthorizationCodeServiceImpl implements ConnectAuthorization
   // -------------------------------------------------------
 
   /**
-   * 分页函数
-   *
-   * @entity startIndex 开始行索引数,由0开始统计
-   * @entity pageSize   页面大小
-   * @entity query      数据查询参数
-   * @entity rowCount   行数
-   * @return 返回一个列表实例
-   */
-  //public List<ConnectAuthorizationCode> GetPaging(int startIndex, int pageSize, DataQuery query, tangible.RefObject<Integer> rowCount) {
-  //  return this.provider.GetPaging(startIndex, pageSize, query, rowCount);
-  //}
-
-  /**
    * 查询是否存在相关的记录
    *
    * @return 布尔值
-   * @entity id 会员标识
+   * @param id 会员标识
    */
   @Override
   public boolean isExist(String id) {
@@ -129,8 +117,8 @@ public class ConnectAuthorizationCodeServiceImpl implements ConnectAuthorization
    * 查询是否存在相关的记录
    *
    * @return 布尔值
-   * @entity appKey    应用标识
-   * @entity accountId 帐号标识
+   * @param appKey    应用标识
+   * @param accountId 帐号标识
    */
   @Override
   public boolean isExist(String appKey, String accountId) {
@@ -141,13 +129,13 @@ public class ConnectAuthorizationCodeServiceImpl implements ConnectAuthorization
    * 获取帐号的授权码
    *
    * @return 授权码
-   * @entity appKey  应用标识
-   * @entity account 帐号信息
+   * @param appKey  应用标识
+   * @param account 帐号信息
    */
   @Override
   public String getAuthorizationCode(String appKey, Account account) {
     ConnectAuthorizationCode code = this.findOneByAccountId(appKey, account.getId());
 
-    return code == null ? "" : code.getId();
+    return code == null ? TEXT_EMPTY : code.getId();
   }
 }

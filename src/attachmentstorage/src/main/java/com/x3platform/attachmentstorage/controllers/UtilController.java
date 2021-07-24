@@ -32,7 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  *
  */
-@Lazy(true)
+@Lazy
 @RestController("com.x3platform.attachmentstorage.controllers.UtilController")
 @RequestMapping("/api/attachmentstorage/util")
 public class UtilController {
@@ -97,23 +97,26 @@ public class UtilController {
         // 检测文件名后缀限制
         String allowFileTypes = AttachmentStorageConfigurationView.getInstance().getAllowFileTypes();
         allowFileTypes = ".*(." + allowFileTypes.replace(",", "|.") + ")$";
-        if (!Pattern.compile(allowFileTypes, Pattern.CASE_INSENSITIVE).matcher(attachment.getAttachmentName()).matches()) {
+        if (!Pattern.compile(allowFileTypes, Pattern.CASE_INSENSITIVE).matcher(attachment.getAttachmentName())
+          .matches()) {
           return MessageObject.stringify("500", "Attachment file type is invalid.");
         }
 
         attachment.save();
 
-        KernelContext.getLog().info("attachment id: " + attachment.getId());
+        KernelContext.getLog().info("attachment id: {}", attachment.getId());
 
         if (outputType.equals("uri")) {
           // 输出 uri
-          return attachment.getVirtualPath().replace("{uploads}", AttachmentStorageConfigurationView.getInstance().getVirtualUploadFolder());
+          return attachment.getVirtualPath()
+            .replace("{uploads}", AttachmentStorageConfigurationView.getInstance().getVirtualUploadFolder());
         } else if (outputType.equals("id")) {
           // 输出 id
           return attachment.getId();
         } else {
           // 输出 object
-          return "{\"data\":{\"id\":\"" + attachment.getId() + "\",\"url\":\"" + attachment.getVirtualPath().replace("{uploads}", AttachmentStorageConfigurationView.getInstance().getVirtualUploadFolder()) + "\"},"
+          return "{\"data\":{\"id\":\"" + attachment.getId() + "\",\"url\":\"" + attachment.getVirtualPath()
+            .replace("{uploads}", AttachmentStorageConfigurationView.getInstance().getVirtualUploadFolder()) + "\"},"
             + MessageObject.stringify("0", "Attachment file upload success", true) + "}";
         }
       }

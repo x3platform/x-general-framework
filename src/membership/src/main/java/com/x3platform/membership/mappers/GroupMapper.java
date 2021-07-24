@@ -5,6 +5,7 @@ import com.x3platform.membership.Group;
 
 import java.time.LocalDateTime;
 import java.util.*;
+
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -102,34 +103,34 @@ public interface GroupMapper {
    * @param globalName 群组全局名称
    * @return 布尔值
    */
-  boolean isExistGlobalName(String globalName);
+  boolean isExistGlobalName(@Param("global_name") String globalName);
 
   /**
    * 检测是否存在相关的记录
    *
-   * @param id 群组标识
+   * @param id   群组标识
    * @param name 群组名称
    * @return 受影响的行数
    */
-  int rename(String id, String name);
+  int rename(@Param("id") String id, @Param("name") String name);
 
   /**
    * 设置全局名称
    *
-   * @param id 群组标识
+   * @param id         群组标识
    * @param globalName 全局名称
    * @return 受影响的行数
    */
-  int setGlobalName(String id, String globalName);
+  int setGlobalName(@Param("id") String id, @Param("global_name") String globalName);
 
   /**
    * 设置企业邮箱状态
    *
-   * @param accountId 帐户标识
-   * @param status 状态标识, 1:启用, 0:禁用
+   * @param groupId 群组标识
+   * @param status  状态标识, 1:启用, 0:禁用
    * @return 受影响的行数
    */
-  int setEnableEmail(String accountId, int status);
+  int setEnableEmail(String groupId, int status);
 
   // -------------------------------------------------------
   // 设置帐号和群组关系
@@ -155,33 +156,33 @@ public interface GroupMapper {
    * 添加帐号与相关群组的关系
    *
    * @param accountId 帐号标识
-   * @param groupId 群组标识
+   * @param groupId   群组标识
    * @param beginDate 启用时间
-   * @param endDate 停用时间
+   * @param endDate   停用时间
    * @return 受影响的行数
    */
   int addRelation(@Param("account_id") String accountId,
-    @Param("group_id") String groupId,
-    @Param("begin_date") LocalDateTime beginDate,
-    @Param("end_date") LocalDateTime endDate);
+                  @Param("group_id") String groupId,
+                  @Param("begin_date") LocalDateTime beginDate,
+                  @Param("end_date") LocalDateTime endDate);
 
   /**
    * 续约帐号与相关角色的关系
    *
    * @param accountId 帐号标识
-   * @param groupId 群组标识
-   * @param endDate 新的截止时间
+   * @param groupId   群组标识
+   * @param endDate   新的截止时间
    * @return 受影响的行数
    */
   int extendRelation(@Param("account_id") String accountId,
-    @Param("group_id") String groupId,
-    @Param("end_date") LocalDateTime endDate);
+                     @Param("group_id") String groupId,
+                     @Param("end_date") LocalDateTime endDate);
 
   /**
    * 移除帐号与相关群组的关系
    *
    * @param accountId 帐号标识
-   * @param groupId 群组标识
+   * @param groupId   群组标识
    * @return 受影响的行数
    */
   int removeRelation(@Param("account_id") String accountId, @Param("group_id") String groupId);
@@ -206,7 +207,7 @@ public interface GroupMapper {
    * 检测帐号是否有与群组的关系
    *
    * @param accountId 帐号标识
-   * @param groupId 群组标识
+   * @param groupId   群组标识
    */
   boolean hasRelation(@Param("account_id") String accountId, @Param("group_id") String groupId);
 

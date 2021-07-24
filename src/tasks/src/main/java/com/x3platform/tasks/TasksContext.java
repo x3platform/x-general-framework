@@ -6,7 +6,8 @@ import com.x3platform.globalization.I18n;
 import com.x3platform.plugins.CustomPlugin;
 import com.x3platform.tasks.configuration.TasksConfiguration;
 import com.x3platform.tasks.configuration.TasksConfigurationView;
-import com.x3platform.tasks.services.*;
+import com.x3platform.tasks.services.TaskWaitingItemService;
+import com.x3platform.tasks.services.TaskWorkItemService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +25,7 @@ public class TasksContext extends CustomPlugin {
 
   private static volatile TasksContext sInstance = null;
 
-  private static Object lockObject = new Object();
+  private static final Object lockObject = new Object();
 
   /**
    * 实例
@@ -41,7 +42,7 @@ public class TasksContext extends CustomPlugin {
     return sInstance;
   }
 
-  private Logger logger = LoggerFactory.getLogger(this.getClass());
+  private Logger logger = LoggerFactory.getLogger(getClass());
 
   /**
    * 日志记录器
@@ -55,7 +56,7 @@ public class TasksContext extends CustomPlugin {
   /**
    * 任务服务提供者
    */
-  public TaskWaitingItemService getTaskWorkService() {
+  public TaskWaitingItemService getTaskWaitingItemService() {
     return mTaskWaitingItemService;
   }
 
@@ -80,14 +81,14 @@ public class TasksContext extends CustomPlugin {
   /**
    * 重启插件
    *
-   * @return 返回信息. =0代表重启成功, >0代表重启失败.
+   * @return 消息代码 0-重启成功, 大于0-重启失败.
    */
   @Override
   public int restart() {
     try {
-      this.reload();
+      reload();
       // 自增重启次数计数器
-      this.restartCount++;
+      restartCount++;
     } catch (RuntimeException ex) {
       KernelContext.getLog().error(ex.toString());
       throw ex;
@@ -97,18 +98,20 @@ public class TasksContext extends CustomPlugin {
   }
 
   private void reload() {
-    if (this.restartCount > 0) {
-      KernelContext.getLog().info(String.format(I18n.getStrings().text("application_is_reloading"), TasksConfiguration.APPLICATION_NAME));
-
+    if (restartCount > 0) {
+      KernelContext.getLog().info(I18n.getStrings().text("application_is_reloading"), TasksConfiguration.APPLICATION_NAME);
       // 重新加载配置信息
       TasksConfigurationView.getInstance().reload();
     } else {
-      KernelContext.getLog().info(String.format(I18n.getStrings().text("application_is_loading"), TasksConfiguration.APPLICATION_NAME));
+      KernelContext.getLog().info(I18n.getStrings().text("application_is_loading"), TasksConfiguration.APPLICATION_NAME);
     }
 
     // 创建数据服务对象
-    this.mTaskWorkItemService = SpringContext.getBean("com.x3platform.tasks.services.TaskWorkItemService", TaskWorkItemService.class);
+    mTaskWorkItemService = SpringContext.getBean("com.x3platform.tasks.services.TaskWorkItemService",
+      TaskWorkItemService.class);
+    mTaskWaitingItemService = SpringContext.getBean("com.x3platform.tasks.services.TaskWaitingItemService",
+      TaskWaitingItemService.class);
 
-    KernelContext.getLog().info(String.format(I18n.getStrings().text("application_is_successfully_loaded"), TasksConfiguration.APPLICATION_NAME));
+    KernelContext.getLog().info(I18n.getStrings().text("application_is_successfully_loaded"), TasksConfiguration.APPLICATION_NAME);
   }
 }

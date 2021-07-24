@@ -1,5 +1,6 @@
 package com.x3platform.membership.models;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.x3platform.membership.Account;
 import com.x3platform.membership.AccountGroupRelation;
 import com.x3platform.membership.AccountRoleRelation;
@@ -10,6 +11,8 @@ import com.x3platform.membership.User;
 import com.x3platform.membership.configuration.MembershipConfigurationView;
 import com.x3platform.util.DateUtil;
 import com.x3platform.util.StringUtil;
+
+import java.time.LocalDateTime;
 import java.util.*;
 import org.dom4j.Element;
 
@@ -74,6 +77,8 @@ public class UserInfo implements User {
   /**
    * 帐号
    */
+  @JSONField(serialize = false)
+  @Override
   public Account getAccount() {
     if (account == null) {
       account = MembershipManagement.getInstance().getAccountService().findOne(this.getAccountId());
@@ -81,7 +86,8 @@ public class UserInfo implements User {
 
     return account;
   }
-
+  
+  @Override
   public void setAccount(Account value) {
     account = value;
   }
@@ -91,10 +97,12 @@ public class UserInfo implements User {
   /**
    * 帐户标识
    */
+  @Override
   public String getAccountId() {
     return accountId;
   }
-
+  
+  @Override
   public void setAccountId(String value) {
     accountId = value;
   }
@@ -102,6 +110,7 @@ public class UserInfo implements User {
   /**
    * 帐号名称
    */
+  @Override
   public String getAccountName() {
     return this.getAccount() == null ? "" : this.getAccount().getName();
   }
@@ -111,6 +120,7 @@ public class UserInfo implements User {
   /**
    * 公司
    */
+  @JSONField(serialize = false)
   public OrganizationUnit getCorporation() {
     if (corporation == null && !StringUtil.isNullOrEmpty(corporationId)) {
       corporation = MembershipManagement.getInstance().getOrganizationUnitService().findOne(corporationId);
@@ -124,10 +134,12 @@ public class UserInfo implements User {
   /**
    * 公司标识
    */
+  @Override
   public String getCorporationId() {
     return corporationId;
   }
-
+  
+  @Override
   public void setCorporationId(String value) {
     corporationId = value;
   }
@@ -135,6 +147,7 @@ public class UserInfo implements User {
   /**
    * 公司名称
    */
+  @Override
   public String getCorporationName() {
     return this.getCorporation() == null ? "" : this.getCorporation().getName();
   }
@@ -144,10 +157,12 @@ public class UserInfo implements User {
   /**
    * 部门标识
    */
+  @Override
   public String getDepartmentId() {
     return departmentId;
   }
-
+  
+  @Override
   public void setDepartmentId(String value) {
     departmentId = value;
   }
@@ -155,6 +170,7 @@ public class UserInfo implements User {
   /**
    * 一级部门名称
    */
+  @Override
   public String getDepartmentName() {
     return this.getDepartment() == null ? "" : this.getDepartment().getName();
   }
@@ -164,6 +180,7 @@ public class UserInfo implements User {
   /**
    * 一级部门
    */
+  @JSONField(serialize = false)
   public OrganizationUnit getDepartment() {
     if (department == null && !StringUtil.isNullOrEmpty(departmentId)) {
       department = MembershipManagement.getInstance().getOrganizationUnitService().findOne(departmentId);
@@ -177,10 +194,12 @@ public class UserInfo implements User {
   /**
    * 二级部门标识
    */
+  @Override
   public String getDepartment2Id() {
     return department2Id;
   }
-
+  
+  @Override
   public void setDepartment2Id(String value) {
     department2Id = value;
   }
@@ -188,6 +207,7 @@ public class UserInfo implements User {
   /**
    * 二级部门名称
    */
+  @Override
   public String getDepartment2Name() {
     return this.getDepartment2() == null ? "" : this.getDepartment2().getName();
   }
@@ -197,6 +217,7 @@ public class UserInfo implements User {
   /**
    * 二级部门
    */
+  @JSONField(serialize = false)
   public OrganizationUnit getDepartment2() {
     if (department2 == null && !StringUtil.isNullOrEmpty(this.getDepartment2Id())) {
       department2 = MembershipManagement.getInstance().getOrganizationUnitService().findOne(this.getDepartment2Id());
@@ -210,10 +231,12 @@ public class UserInfo implements User {
   /**
    * 三级部门标识
    */
+  @Override
   public String getDepartment3Id() {
     return department3Id;
   }
-
+  
+  @Override
   public void setDepartment3Id(String value) {
     department3Id = value;
   }
@@ -221,6 +244,7 @@ public class UserInfo implements User {
   /**
    * 三级部门名称
    */
+  @Override
   public String getDepartment3Name() {
     return this.getDepartment3() == null ? "" : this.getDepartment3().getName();
   }
@@ -230,6 +254,7 @@ public class UserInfo implements User {
   /**
    * 三级部门
    */
+  @JSONField(serialize = false)
   public OrganizationUnit getDepartment3() {
     if (department3 == null && !StringUtil.isNullOrEmpty(this.getDepartment3Id())) {
       department3 = MembershipManagement.getInstance().getOrganizationUnitService()
@@ -244,6 +269,7 @@ public class UserInfo implements User {
   /**
    * 默认的组织单位标识
    */
+  @Override
   public String getOrganizationUnitId() {
     if (StringUtil.isNullOrEmpty(this.organizationUnitId)) {
       this.organizationUnitId = MembershipConfigurationView.getInstance().getDefaultOrganizationId();
@@ -251,7 +277,8 @@ public class UserInfo implements User {
 
     return organizationUnitId;
   }
-
+  
+  @Override
   public void setOrganizationUnitId(String value) {
     organizationUnitId = value;
   }
@@ -261,6 +288,7 @@ public class UserInfo implements User {
   /**
    * 默认的组织单位
    */
+  @JSONField(serialize = false)
   public OrganizationUnit getOrganizationUnit() {
     if (organizationUnit == null && !StringUtil.isNullOrEmpty(this.getOrganizationUnitId())) {
       organizationUnit = MembershipManagement.getInstance().getOrganizationUnitService()
@@ -275,6 +303,7 @@ public class UserInfo implements User {
   /**
    * 默认的组织路径
    */
+  @Override
   public String getOrganizationPath() {
     if (StringUtil.isNullOrEmpty(this.organizationPath) && !StringUtil
       .isNullOrEmpty(this.getCorporationId())) {
@@ -301,10 +330,12 @@ public class UserInfo implements User {
   /**
    * 默认的角色标识
    */
+  @Override
   public String getRoleId() {
     return roleId;
   }
-
+  
+  @Override
   public void setRoleId(String value) {
     roleId = value;
   }
@@ -312,6 +343,7 @@ public class UserInfo implements User {
   /**
    * 默认角色名称
    */
+  @Override
   public String getRoleName() {
     return this.getRole() == null ? "" : this.getRole().getName();
   }
@@ -321,6 +353,7 @@ public class UserInfo implements User {
   /**
    * 默认的角色
    */
+  @JSONField(serialize = false)
   public Role getRole() {
     if (role == null && !StringUtil.isNullOrEmpty(this.getRoleId())) {
       role = MembershipManagement.getInstance().getRoleService().findOne(this.getRoleId());
@@ -334,10 +367,12 @@ public class UserInfo implements User {
   /**
    * 职务 | 头衔
    */
+  @Override
   public String getHeadship() {
     return headship;
   }
-
+  
+  @Override
   public void setHeadship(String value) {
     headship = value;
   }
@@ -347,6 +382,7 @@ public class UserInfo implements User {
   /**
    * 性别
    */
+  @Override
   public String getGender() {
     if (StringUtil.isNullOrEmpty(gender)) {
       gender = "男";
@@ -354,64 +390,73 @@ public class UserInfo implements User {
 
     return gender;
   }
-
+  
+  @Override
   public void setGender(String value) {
     gender = value;
   }
 
-  private java.time.LocalDateTime birthday = DateUtil.getDefaultLocalDateTime();
+  private LocalDateTime birthday = DateUtil.getDefaultLocalDateTime();
 
   /**
    * 生日
    */
-  public java.time.LocalDateTime getBirthday() {
+  @Override
+  public LocalDateTime getBirthday() {
     return birthday;
   }
-
-  public void setBirthday(java.time.LocalDateTime value) {
+  
+  @Override
+  public void setBirthday(LocalDateTime value) {
     birthday = value;
   }
 
-  private java.time.LocalDateTime graduationDate = DateUtil.getDefaultLocalDateTime();
+  private LocalDateTime graduationDate = DateUtil.getDefaultLocalDateTime();
 
   /**
    * 毕业时间
    */
-  public java.time.LocalDateTime getGraduationDate() {
+  @Override
+  public LocalDateTime getGraduationDate() {
     return this.graduationDate;
   }
-
-  public void setGraduationDate(java.time.LocalDateTime value) {
+  
+  @Override
+  public void setGraduationDate(LocalDateTime value) {
     this.graduationDate = value;
   }
 
-  private java.time.LocalDateTime entryDate = DateUtil.getDefaultLocalDateTime();
+  private LocalDateTime entryDate = DateUtil.getDefaultLocalDateTime();
 
   /**
    * 入职时间
    */
-  public java.time.LocalDateTime getEntryDate() {
+  @Override
+  public LocalDateTime getEntryDate() {
     return entryDate;
   }
-
-  public void setEntryDate(java.time.LocalDateTime value) {
+  
+  @Override
+  public void setEntryDate(LocalDateTime value) {
     entryDate = value;
   }
 
-  private java.time.LocalDateTime promotionDate = java.time.LocalDateTime.MIN;
+  private LocalDateTime promotionDate = LocalDateTime.MIN;
 
   /**
    * 最近一次晋升时间，如果刚入职则等于入职时间
    */
-  public java.time.LocalDateTime getPromotionDate() {
-    if (java.time.LocalDateTime.MIN.equals(this.promotionDate)) {
+  @Override
+  public LocalDateTime getPromotionDate() {
+    if (LocalDateTime.MIN.equals(this.promotionDate)) {
       this.promotionDate = this.getEntryDate();
     }
 
     return this.promotionDate;
   }
-
-  public void setPromotionDate(java.time.LocalDateTime value) {
+  
+  @Override
+  public void setPromotionDate(LocalDateTime value) {
     this.promotionDate = value;
   }
 
@@ -420,10 +465,12 @@ public class UserInfo implements User {
   /**
    * 居住城市
    */
+  @Override
   public String getCity() {
     return city;
   }
-
+  
+  @Override
   public void setCity(String value) {
     city = value;
   }
@@ -433,37 +480,43 @@ public class UserInfo implements User {
   /**
    * 所属组织架构全路径
    */
+  @Override
   public String getFullPath() {
     return fullPath;
   }
-
+  
+  @Override
   public void setFullPath(String value) {
     fullPath = value;
   }
 
-  private java.time.LocalDateTime modifiedDate = java.time.LocalDateTime.MIN;
+  private LocalDateTime modifiedDate = LocalDateTime.MIN;
 
   /**
    * 修改时间
    */
-  public java.time.LocalDateTime getModifiedDate() {
+  @Override
+  public LocalDateTime getModifiedDate() {
     return modifiedDate;
   }
-
-  public void setModifiedDate(java.time.LocalDateTime value) {
+  
+  @Override
+  public void setModifiedDate(LocalDateTime value) {
     modifiedDate = value;
   }
 
-  private java.time.LocalDateTime createdDate = java.time.LocalDateTime.MIN;
+  private LocalDateTime createdDate = LocalDateTime.MIN;
 
   /**
    * 创建时间
    */
-  public java.time.LocalDateTime getCreatedDate() {
+  @Override
+  public LocalDateTime getCreatedDate() {
     return createdDate;
   }
-
-  public void setCreatedDate(java.time.LocalDateTime value) {
+  
+  @Override
+  public void setCreatedDate(LocalDateTime value) {
     createdDate = value;
   }
 
@@ -659,19 +712,19 @@ public class UserInfo implements User {
 //    }
 //
 //    if (element.SelectSingleNode("birthday") != null) {
-//      this.setBirthday(java.time.LocalDateTime.parse(element.SelectSingleNode("birthday").InnerText));
+//      this.setBirthday(LocalDateTime.parse(element.SelectSingleNode("birthday").InnerText));
 //    }
 //
 //    if (element.SelectSingleNode("graduateDate") != null) {
-//      this.setGraduationDate(java.time.LocalDateTime.parse(element.SelectSingleNode("graduateDate").InnerText));
+//      this.setGraduationDate(LocalDateTime.parse(element.SelectSingleNode("graduateDate").InnerText));
 //    }
 //
 //    if (element.SelectSingleNode("entryDate") != null) {
-//      this.setEntryDate(java.time.LocalDateTime.parse(element.SelectSingleNode("entryDate").InnerText));
+//      this.setEntryDate(LocalDateTime.parse(element.SelectSingleNode("entryDate").InnerText));
 //    }
 //
 //    if (element.SelectSingleNode("promotionDate") != null) {
-//      this.setPromotionDate(java.time.LocalDateTime.parse(element.SelectSingleNode("promotionDate").InnerText));
+//      this.setPromotionDate(LocalDateTime.parse(element.SelectSingleNode("promotionDate").InnerText));
 //    }
 //
 //    this.setMobile(element.SelectSingleNode("mobile").InnerText);
@@ -708,6 +761,6 @@ public class UserInfo implements User {
 //      this.setJobGradeDisplayName(element.SelectSingleNode("jobGrade").InnerText);
 //    }
 //
-//    this.setModifiedDate(java.time.LocalDateTime.parse(element.SelectSingleNode("updateDate").InnerText));
+//    this.setModifiedDate(LocalDateTime.parse(element.SelectSingleNode("updateDate").InnerText));
   }
 }

@@ -1,21 +1,19 @@
 package com.x3platform.attachmentstorage;
 
-import com.x3platform.KernelContext;
 import com.x3platform.attachmentstorage.configuration.AttachmentStorageConfigurationView;
-import com.x3platform.attachmentstorage.services.FastDFSFileTransferService;
 import com.x3platform.attachmentstorage.util.UploadPathUtil;
-import com.x3platform.util.*;
-
+import com.x3platform.util.ByteUtil;
+import com.x3platform.util.DirectoryUtil;
+import com.x3platform.util.StringUtil;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Map;
 
 /**
  * 一般的附件文件信息
  */
 public class GeneralAttachmentFile implements AttachmentFile {
+
   public GeneralAttachmentFile() {
   }
 
@@ -113,7 +111,8 @@ public class GeneralAttachmentFile implements AttachmentFile {
    * 虚拟路径
    */
   public String getVirtualPathView() {
-    return getVirtualPath().replace("{uploads}", AttachmentStorageConfigurationView.getInstance().getVirtualUploadFolder());
+    return getVirtualPath()
+      .replace("{uploads}", AttachmentStorageConfigurationView.getInstance().getVirtualUploadFolder());
   }
 
   private String folderRule = "";
@@ -177,7 +176,8 @@ public class GeneralAttachmentFile implements AttachmentFile {
       // 读取 二进制数据
       // -------------------------------------------------------
 
-      String path = getVirtualPath().replace("{uploads}", AttachmentStorageConfigurationView.getInstance().getPhysicalUploadFolder());
+      String path = getVirtualPath()
+        .replace("{uploads}", AttachmentStorageConfigurationView.getInstance().getPhysicalUploadFolder());
 
       // if (path.indexOf("~/") == 0) {
       //  path = VirtualPathUtil.getPhysicalPath(path);
@@ -196,12 +196,12 @@ public class GeneralAttachmentFile implements AttachmentFile {
       }
     }
 
-    return this.fileData;
+    return fileData;
   }
 
   @Override
   public void setFileData(byte[] value) {
-    this.fileData = value;
+    fileData = value;
   }
 
   private int fileStatus;
@@ -269,22 +269,23 @@ public class GeneralAttachmentFile implements AttachmentFile {
   public void restore(String id) {
     AttachmentFile temp = AttachmentStorageContext.getInstance().getAttachmentFileService().findOne(id);
 
-    this.setId(temp.getId());
-    this.setEntityId(temp.getEntityId());
-    this.setEntityClassName(temp.getEntityClassName());
+    setId(temp.getId());
+    setEntityId(temp.getEntityId());
+    setEntityClassName(temp.getEntityClassName());
 
-    this.setAttachmentFolder(temp.getVirtualPath().substring(0, temp.getVirtualPath().indexOf("/")).replace("{uploads}", ""));
+    setAttachmentFolder(
+      temp.getVirtualPath().substring(0, temp.getVirtualPath().indexOf("/")).replace("{uploads}", ""));
 
-    this.setAttachmentName(temp.getAttachmentName());
-    this.setVirtualPath(temp.getVirtualPath());
-    this.setFolderRule(temp.getFolderRule());
-    this.setFileType(temp.getFileType());
-    this.setFileSize(temp.getFileSize());
-    this.setFileData(null);
-    this.setFileStatus(temp.getFileStatus());
+    setAttachmentName(temp.getAttachmentName());
+    setVirtualPath(temp.getVirtualPath());
+    setFolderRule(temp.getFolderRule());
+    setFileType(temp.getFileType());
+    setFileSize(temp.getFileSize());
+    setFileData(null);
+    setFileStatus(temp.getFileStatus());
 
-    this.setCreatedBy(temp.getCreatedBy());
-    this.setCreatedDate(temp.getCreatedDate());
+    setCreatedBy(temp.getCreatedBy());
+    setCreatedDate(temp.getCreatedDate());
   }
 
   /**
@@ -292,21 +293,13 @@ public class GeneralAttachmentFile implements AttachmentFile {
    */
   @Override
   public void save() throws IOException {
-    // 保存 二进制数据
-    if (AttachmentStorageConfigurationView.getInstance().getFastDFSMode()) {
-      // fastdfs 存储方式
-      FastDFSFileTransferService fastDFSFileTransferService = AttachmentStorageContext.getInstance().getFastDFSFileTransferService();
+    // 本地存储方式
+    String path = UploadPathUtil.combinePhysicalPath(
+      getAttachmentFolder(), String.format("%1$s%2$s", getId(), getFileType()));
 
-      String[] results = fastDFSFileTransferService.upload(this);
-      this.setVirtualPath("{fastdfs}" + fastDFSFileTransferService.getFileAbsolutePath(results));
-    } else {
-      // 本地存储方式
-      String path = UploadPathUtil.combinePhysicalPath(this.getAttachmentFolder(), String.format("%1$s%2$s", getId(), getFileType()));
+    UploadPathUtil.tryCreateDirectory(path);
 
-      UploadPathUtil.tryCreateDirectory(path);
-
-      ByteUtil.toFile(getFileData(), path);
-    }
+    ByteUtil.toFile(getFileData(), path);
 
     // 保存 对象信息
     AttachmentStorageContext.getInstance().getAttachmentFileService().save(this);

@@ -1,20 +1,30 @@
 package com.x3platform.attachmentstorage.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
-
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import sun.misc.BASE64Decoder;
+import sun.misc.BASE64Encoder;
 
 /**
  * @author lvluo
@@ -57,8 +67,9 @@ public class SysUtils {
 	}
 
 	public static String nullString(Double value) {
-		if (value==null) return "";
-		else {
+		if (value==null) {
+      return "";
+    } else {
 			DecimalFormat df = new DecimalFormat("#,###.00");
 			return df.format(value);
 		}
@@ -66,8 +77,9 @@ public class SysUtils {
 
 
 	public static String nullString(BigDecimal value) {
-		if (value==null) return "";
-		else {
+		if (value==null) {
+      return "";
+    } else {
 			DecimalFormat df = new DecimalFormat("#,###.00");
 			return df.format(value);
 		}
@@ -121,8 +133,9 @@ public class SysUtils {
 	public static String appendStopChar(String value){
 		String v=SysUtils.nullString(value);
 		if (SysUtils.isNotNull(v) && !v.endsWith("。") && !v.endsWith(".") && !v.endsWith("！") && !v.endsWith("!")
-				&& !v.endsWith("？") && !v.endsWith("?") && !v.endsWith("；") && !v.endsWith(";"))
-			v=v+"。";
+				&& !v.endsWith("？") && !v.endsWith("?") && !v.endsWith("；") && !v.endsWith(";")) {
+      v=v+"。";
+    }
 		return v;
 	}
 
@@ -163,10 +176,11 @@ public class SysUtils {
 	}
 
 	public static String trimNotNull(String value){
-		if (value!=null)
-			return value.trim();
-		else
-			return value;
+		if (value!=null) {
+      return value.trim();
+    } else {
+      return value;
+    }
 	}
 
 	/**
@@ -206,7 +220,6 @@ public class SysUtils {
 	 * @param before
 	 * @param after
 	 * @return 正常：计算后的非-1的值，异常：-1
-	 * @throws ParseException
 	 */
 	public static long getTimeDiff(String before, String after) {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -244,12 +257,15 @@ public class SysUtils {
 		String s = nullString(str).trim();
 		if (s.length() > 0 && bits > 0 && s.length() > bits) {
 			String zs = "";
-			if (s.length() % bits > 0)
-				s += "0";
-			for (int i = 0; i < bits; i++)
-				zs += "0";
-			while (s.endsWith(zs))
-				s = s.substring(0, s.length() - bits);
+			if (s.length() % bits > 0) {
+        s += "0";
+      }
+			for (int i = 0; i < bits; i++) {
+        zs += "0";
+      }
+			while (s.endsWith(zs)) {
+        s = s.substring(0, s.length() - bits);
+      }
 		}
 		return s;
 	}
@@ -266,8 +282,9 @@ public class SysUtils {
 
 	public static String cutOffString(String value,Integer length){
 		String v=nullString(value);
-		if (v.length()>length)
-			v=v.substring(0,length-3)+"...";
+		if (v.length()>length) {
+      v=v.substring(0,length-3)+"...";
+    }
 		return v;
 	}
 
@@ -327,10 +344,11 @@ public class SysUtils {
 	 */
 	public static boolean isPhone(String str) {
 		String exp="";
-		if (str.length() > 9)
-			str="^[0][1-9]{2,3}-[0-9]{5,10}$";// 验证带区号的
-		else
-			str="^[1-9]{1}[0-9]{5,8}$"; // 验证没有区号的
+		if (str.length() > 9) {
+      str="^[0][1-9]{2,3}-[0-9]{5,10}$";// 验证带区号的
+    } else {
+      str="^[1-9]{1}[0-9]{5,8}$"; // 验证没有区号的
+    }
 		return matchExp(exp,str);
 	}
 
@@ -341,12 +359,15 @@ public class SysUtils {
 	 * @return the boolean
 	 */
 	public static boolean isID(String str) {
-		if (SysUtils.isNull(str) || str.length()!=15 || str.length()!=18) return false;
+		if (SysUtils.isNull(str) || str.length()!=15 || str.length()!=18) {
+      return false;
+    }
 		String exp="";
-		if (str.length()==15)
-			exp="^[1-9]\\d{7}((0\\d)|(1[0-2]))(([0|1|2]\\d)|3[0-1])\\d{3}$";
-		else
-			exp="^[1-9]\\d{5}[1-9]\\d{3}((0\\d)|(1[0-2]))(([0|1|2]\\d)|3[0-1])\\d{3}([0-9]|X)$";
+		if (str.length()==15) {
+      exp="^[1-9]\\d{7}((0\\d)|(1[0-2]))(([0|1|2]\\d)|3[0-1])\\d{3}$";
+    } else {
+      exp="^[1-9]\\d{5}[1-9]\\d{3}((0\\d)|(1[0-2]))(([0|1|2]\\d)|3[0-1])\\d{3}([0-9]|X)$";
+    }
 		return matchExp(exp,str);
 	}
 
@@ -503,7 +524,9 @@ public class SysUtils {
 		for (String value:values){
 			s.append(value+separator);
 		}
-		if (s.length()>0) s.delete(s.length()-separator.length(), s.length());
+		if (s.length()>0) {
+      s.delete(s.length()-separator.length(), s.length());
+    }
 		return s.toString();
 	}
 
@@ -520,9 +543,9 @@ public class SysUtils {
 
 	public static String fillLeftChar(String value,char fillChar,int len){
 		String v=nullString(value);
-		if (v.length()>=len)
-			return value;
-		else{
+		if (v.length()>=len) {
+      return value;
+    } else{
 			char[] chars=new char[len-v.length()];
 			Arrays.fill(chars, fillChar);
 			return new String(chars)+v;
@@ -531,9 +554,9 @@ public class SysUtils {
 
 	public static String fillRightChar(String value,char fillChar,int len){
 		String v=nullString(value);
-		if (v.length()>=len)
-			return value;
-		else{
+		if (v.length()>=len) {
+      return value;
+    } else{
 			char[] chars=new char[len-v.length()];
 			Arrays.fill(chars, fillChar);
 			return v+new String(chars);
@@ -557,27 +580,29 @@ public class SysUtils {
 	public static void deleteFile(String fileName){
 		if (!isNull(fileName)){
 			File file=new File(fileName);
-			if (file.isFile() && file.exists())
-				file.delete();
+			if (file.isFile() && file.exists()) {
+        file.delete();
+      }
 		}
 	}
 
 	public static BigDecimal castNumberAsBigDecimal(Object result) {
 		BigDecimal value=BigDecimal.ZERO;
-		if (result instanceof Integer)
-			value=BigDecimal.valueOf(((Integer)result));
-		else if (result instanceof Float)
-			value=BigDecimal.valueOf(((Float)result));
-		else if (result instanceof Long)
-			value=BigDecimal.valueOf(((Long)result));
-		else if (result instanceof BigInteger)
-			value=BigDecimal.valueOf(((BigInteger)result).longValue());
-		else if (result instanceof Short)
-			value=BigDecimal.valueOf(((Short)result));
-		else if (result instanceof Byte)
-			value=BigDecimal.valueOf(((Byte)result));
-		else
-			value=BigDecimal.valueOf((Double)result);
+		if (result instanceof Integer) {
+      value=BigDecimal.valueOf(((Integer)result));
+    } else if (result instanceof Float) {
+      value=BigDecimal.valueOf(((Float)result));
+    } else if (result instanceof Long) {
+      value=BigDecimal.valueOf(((Long)result));
+    } else if (result instanceof BigInteger) {
+      value=BigDecimal.valueOf(((BigInteger)result).longValue());
+    } else if (result instanceof Short) {
+      value=BigDecimal.valueOf(((Short)result));
+    } else if (result instanceof Byte) {
+      value=BigDecimal.valueOf(((Byte)result));
+    } else {
+      value=BigDecimal.valueOf((Double)result);
+    }
 		return value;
 	}
 
@@ -665,19 +690,22 @@ public class SysUtils {
 			log.error(e.getMessage(),e);
 			return null;
 		} finally{
-			if (in!=null)
-				try {
-					in.close();
-				} catch (IOException e) {
-					log.error(e.getMessage(),e);
-					return null;
-				}
+			if (in!=null) {
+        try {
+          in.close();
+        } catch (IOException e) {
+          log.error(e.getMessage(),e);
+          return null;
+        }
+      }
 		}
 		if (data!=null){
 			BASE64Encoder encoder = new BASE64Encoder();
 			return encoder.encode(data);
 		}
-		else return null;
+		else {
+      return null;
+    }
 	}
 
 	public static byte[] base64StringToBytes(String base64Value){
@@ -701,11 +729,16 @@ public class SysUtils {
 
 	public static Boolean base64StringToFile(String base64Value,String destinationDir,String fileName){
 		byte[] data=base64StringToBytes(base64Value);
-		if (data==null) return false;
-		if (SysUtils.isNull(destinationDir) || SysUtils.isNull(fileName)) return false;
+		if (data==null) {
+      return false;
+    }
+		if (SysUtils.isNull(destinationDir) || SysUtils.isNull(fileName)) {
+      return false;
+    }
 		String fName=destinationDir.toString();
-		if (!fName.endsWith(File.separator))
-			fName=fName+File.separator;
+		if (!fName.endsWith(File.separator)) {
+      fName=fName+File.separator;
+    }
 		fName=fName+fileName;
 		OutputStream out = null;
 		try {
@@ -717,13 +750,14 @@ public class SysUtils {
 			log.error(e.getMessage(),e);
 			return false;
 		} finally {
-			if (out!=null)
-				try {
-					out.close();
-				} catch (IOException e) {
-					log.error(e.getMessage(),e);
-					return false;
-				}
+			if (out!=null) {
+        try {
+          out.close();
+        } catch (IOException e) {
+          log.error(e.getMessage(),e);
+          return false;
+        }
+      }
 		}
 	}
 
@@ -734,124 +768,199 @@ public class SysUtils {
 	}
 
 	public static Integer getIntegerFromMap(Map<String,Object> map, String key, Integer nullDefaultValue){
-		if (map==null || SysUtils.isNull(key)) return nullDefaultValue;
+		if (map==null || SysUtils.isNull(key)) {
+      return nullDefaultValue;
+    }
 		Object value=map.get(key);
-		if (value==null) return nullDefaultValue;
+		if (value==null) {
+      return nullDefaultValue;
+    }
 		try{
-			if (value instanceof Integer) return (Integer)value;
-			else if (value instanceof Float) return ((Float)value).intValue();
-			else if (value instanceof Double) return ((Double)value).intValue();
-			else if (value instanceof Long) return ((Long)value).intValue();
-			else return Integer.parseInt(String.valueOf(value));
+			if (value instanceof Integer) {
+        return (Integer)value;
+      } else if (value instanceof Float) {
+        return ((Float)value).intValue();
+      } else if (value instanceof Double) {
+        return ((Double)value).intValue();
+      } else if (value instanceof Long) {
+        return ((Long)value).intValue();
+      } else {
+        return Integer.parseInt(String.valueOf(value));
+      }
 		}catch (Exception e){
 			return nullDefaultValue;
 		}
 	}
 
 	public static Double getDoubleFromMap(Map<String,Object> map, String key, Double nullDefaultValue){
-		if (map==null || SysUtils.isNull(key)) return nullDefaultValue;
+		if (map==null || SysUtils.isNull(key)) {
+      return nullDefaultValue;
+    }
 		Object value=map.get(key);
-		if (value==null) return nullDefaultValue;
+		if (value==null) {
+      return nullDefaultValue;
+    }
 		try{
-			if (value instanceof Double) return (Double)value;
-			else if (value instanceof Float) return ((Float)value).doubleValue();
-			else if (value instanceof Integer) return ((Integer)value).doubleValue();
-			else if (value instanceof Long) return ((Long)value).doubleValue();
-			else return Double.parseDouble(String.valueOf(value));
+			if (value instanceof Double) {
+        return (Double)value;
+      } else if (value instanceof Float) {
+        return ((Float)value).doubleValue();
+      } else if (value instanceof Integer) {
+        return ((Integer)value).doubleValue();
+      } else if (value instanceof Long) {
+        return ((Long)value).doubleValue();
+      } else {
+        return Double.parseDouble(String.valueOf(value));
+      }
 		}catch (Exception e){
 			return nullDefaultValue;
 		}
 	}
 
 	public static Float getFloatFromMap(Map<String,Object> map, String key, Float nullDefaultValue){
-		if (map==null || SysUtils.isNull(key)) return nullDefaultValue;
+		if (map==null || SysUtils.isNull(key)) {
+      return nullDefaultValue;
+    }
 		Object value=map.get(key);
-		if (value==null) return nullDefaultValue;
+		if (value==null) {
+      return nullDefaultValue;
+    }
 		try{
-			if (value instanceof Float) return (Float)value;
-			else if (value instanceof Double) return ((Double)value).floatValue();
-			else if (value instanceof Integer) return ((Integer)value).floatValue();
-			else if (value instanceof Long) return ((Long)value).floatValue();
-			else return Float.parseFloat(String.valueOf(value));
+			if (value instanceof Float) {
+        return (Float)value;
+      } else if (value instanceof Double) {
+        return ((Double)value).floatValue();
+      } else if (value instanceof Integer) {
+        return ((Integer)value).floatValue();
+      } else if (value instanceof Long) {
+        return ((Long)value).floatValue();
+      } else {
+        return Float.parseFloat(String.valueOf(value));
+      }
 		}catch (Exception e){
 			return nullDefaultValue;
 		}
 	}
 
 	public static Long getLongFromMap(Map<String,Object> map, String key, Long nullDefaultValue){
-		if (map==null || SysUtils.isNull(key)) return nullDefaultValue;
+		if (map==null || SysUtils.isNull(key)) {
+      return nullDefaultValue;
+    }
 		Object value=map.get(key);
-		if (value==null) return nullDefaultValue;
+		if (value==null) {
+      return nullDefaultValue;
+    }
 		try{
-			if (value instanceof Long) return (Long)value;
-			else if (value instanceof Integer) return ((Integer)value).longValue();
-			else if (value instanceof Double) return ((Double)value).longValue();
-			else if (value instanceof Float) return ((Float)value).longValue();
-			else return Long.parseLong(String.valueOf(value));
+			if (value instanceof Long) {
+        return (Long)value;
+      } else if (value instanceof Integer) {
+        return ((Integer)value).longValue();
+      } else if (value instanceof Double) {
+        return ((Double)value).longValue();
+      } else if (value instanceof Float) {
+        return ((Float)value).longValue();
+      } else {
+        return Long.parseLong(String.valueOf(value));
+      }
 		}catch (Exception e){
 			return nullDefaultValue;
 		}
 	}
 
 	public static BigDecimal getBigDecimalFromMap(Map<String,Object> map, String key, BigDecimal nullDefaultValue){
-		if (map==null || SysUtils.isNull(key)) return nullDefaultValue;
+		if (map==null || SysUtils.isNull(key)) {
+      return nullDefaultValue;
+    }
 		Object value=map.get(key);
-		if (value==null) return nullDefaultValue;
+		if (value==null) {
+      return nullDefaultValue;
+    }
 		try{
-			if (value instanceof  BigDecimal) return (BigDecimal) value;
-			else if (value instanceof Integer) return new BigDecimal(((Integer) value).toString());
-			else if (value instanceof Long) return new BigDecimal(((Long) value).toString());
-			else return new BigDecimal(String.valueOf(value));
+			if (value instanceof  BigDecimal) {
+        return (BigDecimal) value;
+      } else if (value instanceof Integer) {
+        return new BigDecimal(((Integer) value).toString());
+      } else if (value instanceof Long) {
+        return new BigDecimal(((Long) value).toString());
+      } else {
+        return new BigDecimal(String.valueOf(value));
+      }
 		}catch (Exception e){
 			return nullDefaultValue;
 		}
 	}
 
 	public static Byte getByteFromMap(Map<String,Object> map, String key, Byte nullDefaultValue){
-		if (map==null || SysUtils.isNull(key)) return nullDefaultValue;
+		if (map==null || SysUtils.isNull(key)) {
+      return nullDefaultValue;
+    }
 		Object value=map.get(key);
-		if (value==null) return nullDefaultValue;
+		if (value==null) {
+      return nullDefaultValue;
+    }
 		try{
-			if (value instanceof Byte) return (Byte)value;
-			else if (value instanceof Integer) return ((Integer)value).byteValue();
-			else if (value instanceof Long) return ((Long)value).byteValue();
-			else if (value instanceof Double) return ((Double)value).byteValue();
-			else if (value instanceof Float) return ((Float)value).byteValue();
-			else return Byte.parseByte(String.valueOf(value));
+			if (value instanceof Byte) {
+        return (Byte)value;
+      } else if (value instanceof Integer) {
+        return ((Integer)value).byteValue();
+      } else if (value instanceof Long) {
+        return ((Long)value).byteValue();
+      } else if (value instanceof Double) {
+        return ((Double)value).byteValue();
+      } else if (value instanceof Float) {
+        return ((Float)value).byteValue();
+      } else {
+        return Byte.parseByte(String.valueOf(value));
+      }
 		}catch (Exception e){
 			return nullDefaultValue;
 		}
 	}
 
 	public static Boolean getBoolFromMap(Map<String,Object> map, String key, Boolean nullDefaultValue){
-		if (map==null || SysUtils.isNull(key)) return nullDefaultValue;
+		if (map==null || SysUtils.isNull(key)) {
+      return nullDefaultValue;
+    }
 		Object value=map.get(key);
-		if (value==null) return nullDefaultValue;
+		if (value==null) {
+      return nullDefaultValue;
+    }
 		try{
-			if (value instanceof  Boolean) return (Boolean) value;
-			else return Boolean.parseBoolean(String.valueOf(value));
+			if (value instanceof  Boolean) {
+        return (Boolean) value;
+      } else {
+        return Boolean.parseBoolean(String.valueOf(value));
+      }
 		}catch (Exception e){
 			return nullDefaultValue;
 		}
 	}
 
 	public static String getStringFromMap(Map<String,Object> map, String key, String nullDefaultValue){
-		if (map==null || SysUtils.isNull(key)) return nullDefaultValue;
+		if (map==null || SysUtils.isNull(key)) {
+      return nullDefaultValue;
+    }
 		Object value=map.get(key);
-		if (value==null) return nullDefaultValue;
-		else return SysUtils.nullString(String.valueOf(value));
+		if (value==null) {
+      return nullDefaultValue;
+    } else {
+      return SysUtils.nullString(String.valueOf(value));
+    }
 	}
 
 
 	public static Date getDateFromMap(Map<String,Object> map, String key,String dateFromat, Date nullDefaultValue){
-		if (map==null || SysUtils.isNull(key)) return nullDefaultValue;
+		if (map==null || SysUtils.isNull(key)) {
+      return nullDefaultValue;
+    }
 		Object value=map.get(key);
-		if (value==null) return nullDefaultValue;
-		else {
+		if (value==null) {
+      return nullDefaultValue;
+    } else {
 			try{
-				if (value instanceof Date)
-					return (Date)value;
-				else{
+				if (value instanceof Date) {
+          return (Date)value;
+        } else{
 					SimpleDateFormat sdf = new SimpleDateFormat(dateFromat);
 					return sdf.parse(String.valueOf(value));
 				}

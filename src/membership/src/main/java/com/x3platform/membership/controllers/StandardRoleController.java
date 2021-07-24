@@ -13,6 +13,7 @@ import com.x3platform.membership.StandardRole;
 import com.x3platform.membership.models.StandardRoleInfo;
 import com.x3platform.membership.services.StandardRoleService;
 import com.x3platform.messages.MessageObject;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import org.springframework.context.annotation.Lazy;
@@ -24,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author ruanyu
  */
 @Lazy
-@RestController
+@RestController("com.x3platform.membership.controllers.StandardRoleController")
 @RequestMapping("/api/membership/standardRole")
 public class StandardRoleController {
 
@@ -199,7 +200,7 @@ public class StandardRoleController {
 
     // 根据实际需要设置默认值
     entity.setStatus(1);
-    entity.setModifiedDate(new Date());
+    entity.setModifiedDate(LocalDateTime.now());
 
     return "{\"data\":" + JSON.toJSONString(entity) + ","
       + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";

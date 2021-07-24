@@ -41,9 +41,11 @@ public class AttachmentFileServiceTests {
   public void testSave() {
     AttachmentFileService service = AttachmentStorageContext.getInstance().getAttachmentFileService();
 
+    String id = UploadFileUtil.newIdentity();
+
     AttachmentFile param = new GeneralAttachmentFile();
 
-    param.setId(UploadFileUtil.newIdentity());
+    param.setId(id);
     param.setAttachmentName("test_" + DateUtil.getTimestamp());
     param.setFileType(".txt");
     param.setEntityClassName("TestObject");
@@ -54,15 +56,19 @@ public class AttachmentFileServiceTests {
     service.save(param);
 
     assertNotNull(param);
+
+    service.delete(id);
   }
 
   @Test
   public void testFindOne() {
     AttachmentFileService service = AttachmentStorageContext.getInstance().getAttachmentFileService();
 
+    String id = "test-" + DigitalNumberContext.generate("Key_RunningNumber");
+
     AttachmentFile param = new GeneralAttachmentFile();
 
-    param.setId("test-" + DigitalNumberContext.generate("Key_RunningNumber"));
+    param.setId(id);
     param.setAttachmentName("test-" + StringUtil.toRandom(8));
     param.setFileType(".tXT");
     param.setEntityClassName("TestObject");
@@ -75,6 +81,8 @@ public class AttachmentFileServiceTests {
     param = service.findOne(param.getId());
 
     assertNotNull(param);
+
+    service.delete(id);
   }
 
   @Test
@@ -88,11 +96,11 @@ public class AttachmentFileServiceTests {
   public void testSetValid() {
     AttachmentFileService service = AttachmentStorageContext.getInstance().getAttachmentFileService();
 
-    String attachmentFileId = "20150415152823240893301";
+    String attachmentFileId = "19700101000000000000001";
 
     service.setValid(
-      "X3Platform.Plugins.Cost.Model.CostInfo, X3Platform.Plugins.Cost",
-      "79398250-ca7a-4983-9d9b-f36c90bbcf05",
+      "com.x3platform.plugins.articles.models.Article",
+      "00000000-0000-0000-0000-000000000001",
       attachmentFileId);
 
     AttachmentFile file = service.findOne(attachmentFileId);

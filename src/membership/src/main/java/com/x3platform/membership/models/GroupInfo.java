@@ -1,10 +1,16 @@
 package com.x3platform.membership.models;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.x3platform.membership.Account;
 import com.x3platform.membership.Group;
+import com.x3platform.membership.MembershipManagement;
 import com.x3platform.util.DateUtil;
+
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
+
+import com.x3platform.util.StringUtil;
 import org.dom4j.Element;
 
 /**
@@ -110,6 +116,7 @@ public class GroupInfo implements Group {
    *
    * @return 拼音
    */
+  @JSONField(name = "pinyin")
   @Override
   public String getPinYin() {
     return pinyin;
@@ -339,17 +346,7 @@ public class GroupInfo implements Group {
     distinguishedName = value;
   }
 
-  @Override
-  public List<Account> getMembers() {
-    return null;
-  }
-
-  @Override
-  public void resetMemberRelations(String relationText) {
-
-  }
-
-  private Date modifiedDate = DateUtil.getDefaultDate();
+  private LocalDateTime modifiedDate = DateUtil.getDefaultLocalDateTime();
 
   /**
    * 获取修改时间
@@ -357,7 +354,7 @@ public class GroupInfo implements Group {
    * @return 修改时间
    */
   @Override
-  public Date getModifiedDate() {
+  public LocalDateTime getModifiedDate() {
     return modifiedDate;
   }
 
@@ -367,18 +364,18 @@ public class GroupInfo implements Group {
    * @param value 值
    */
   @Override
-  public void setModifiedDate(Date value) {
+  public void setModifiedDate(LocalDateTime value) {
     modifiedDate = value;
   }
 
-  private Date createdDate = DateUtil.getDefaultDate();
+  private LocalDateTime createdDate = DateUtil.getDefaultLocalDateTime();
 
   /**
    * 获取创建时间
    *
    * @return 创建时间
    */
-  public Date getCreatedDate() {
+  public LocalDateTime getCreatedDate() {
     return createdDate;
   }
 
@@ -387,8 +384,79 @@ public class GroupInfo implements Group {
    *
    * @param value 值
    */
-  public void setCreatedDate(Date value) {
+  public void setCreatedDate(LocalDateTime value) {
     createdDate = value;
+  }
+
+  // -------------------------------------------------------
+  // 重置成员关系
+  // -------------------------------------------------------
+
+  @Override
+  public void resetMemberRelations(String relationText) {
+    String[] list = StringUtil.isNullOrEmpty(relationText) ? new String[0] : relationText.split(",|;");
+
+    this.getMembers().clear();
+
+    for (String item : list) {
+      String[] keys = item.split("#");
+
+      if (keys.length > 2 && "account".equals(keys[0])) {
+        this.getMembers().add(MembershipManagement.getInstance().getAccountService().findOne(keys[1]));
+      }
+    }
+  }
+
+  // -------------------------------------------------------
+  // 群组所拥有的成员
+  // -------------------------------------------------------
+
+  @JSONField(serialize = false)
+  private List<Account> members = null;
+
+  /**
+   * 成员信息
+   */
+  @Override
+  public List<Account> getMembers() {
+    if (members == null) {
+      this.members = MembershipManagement.getInstance().getAccountService().findAllByGroupId(this.getId());
+    }
+    return members;
+  }
+
+  private String memberText = "";
+
+  /**
+   * 成员文本信息
+   */
+  public String getMemberText() {
+    if (StringUtil.isNullOrEmpty(this.memberText) && !this.getMembers().isEmpty()) {
+      for (Account account : this.getMembers()) {
+        this.memberText += StringUtil.format("account#{}#{},", account.getId(), account.getGlobalName());
+      }
+
+      this.memberText = StringUtil.trimEnd(this.memberText, ",");
+    }
+
+    return this.memberText;
+  }
+
+  private String memberView = "";
+
+  /**
+   * 成员视图
+   */
+  public String getMemberView() {
+    if (StringUtil.isNullOrEmpty(this.memberView) && !this.getMembers().isEmpty()) {
+      for (Account account : this.getMembers()) {
+        this.memberView += account.getGlobalName() + ",";
+      }
+
+      this.memberView = StringUtil.trimEnd(this.memberView, ",");
+    }
+
+    return this.memberView;
   }
 
   // -------------------------------------------------------
@@ -397,9 +465,12 @@ public class GroupInfo implements Group {
 
   @Override
   public String getAuthorizationObjectType() {
-    return "Role";
+    return "Group";
   }
 
+  /**
+   * 授权对象唯一标识
+   */
   @Override
   public String getAuthorizationObjectId() {
     return getId();
@@ -410,6 +481,9 @@ public class GroupInfo implements Group {
     setId(value);
   }
 
+  /**
+   * 授权对象名称
+   */
   @Override
   public String getAuthorizationObjectName() {
     return getGlobalName();

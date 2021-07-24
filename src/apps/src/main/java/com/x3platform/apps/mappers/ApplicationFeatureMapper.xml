@@ -4,9 +4,7 @@
   <resultMap id="BaseResultMap" type="com.x3platform.apps.models.ApplicationFeature">
     <result property="id" column="id"/>
     <result property="applicationId" column="application_id"/>
-    <result property="applicationName" column="application_name"/>
     <result property="parentId" column="parent_id"/>
-    <result property="parentName" column="parent_name"/>
     <result property="code" column="code"/>
     <result property="name" column="name"/>
     <result property="displayName" column="display_name"/>
@@ -26,6 +24,32 @@
     <result property="modifiedDate" column="modified_date"/>
     <result property="createdDate" column="created_date"/>
   </resultMap>
+  <sql id="Select_Where_Clause">
+    <where>
+      <!-- 列表查询 -->
+      <if test="var_scene == 'Query'">
+        <if test="param_search_text != null and param_search_text != ''">
+          t.name LIKE concat('%',#{param_search_text},'%')
+        </if>
+      </if>
+
+      <!-- 默认 -->
+      <if test="var_scene == 'default'">
+        <if test="param_parent_id != null and param_application_id != ''">
+          AND application_id = #{param_application_id}
+        </if>
+        <if test="param_parent_id != null and param_parent_id != ''">
+          AND parent_id = #{param_parent_id}
+        </if>
+        <if test="param_type != null and param_type != ''">
+          AND type = #{param_type}
+        </if>
+        <if test="param_status != null and param_status != ''">
+          AND status = #{param_status}
+        </if>
+      </if>
+    </where>
+  </sql>
   <insert id="insert" parameterType="com.x3platform.apps.models.ApplicationFeature">
     INSERT INTO application_feature
     (
@@ -36,8 +60,11 @@
       name,
       display_name,
       type,
+      url,
+      target,
       icon_path,
       big_icon_path,
+      help_url,
       hidden,
       effect_scope,
       tree_view_scope,
@@ -57,8 +84,11 @@
       #{name},
       #{displayName},
       #{type},
+      #{url},
+      #{target},
       #{iconPath},
       #{bigIconPath},
+      #{helpUrl},
       #{hidden},
       #{effectScope},
       #{treeViewScope},
@@ -72,15 +102,17 @@
   </insert>
   <update id="updateByPrimaryKey" parameterType="com.x3platform.apps.models.ApplicationFeature">
     UPDATE application_feature SET
-      id= #{id},
       application_id = #{applicationId},
       parent_id =  #{parentId},
       code =  #{code},
       name =  #{name},
       display_name = #{displayName},
       type = #{type},
+      url = #{url},
+      target = #{target},
       icon_path = #{iconPath},
       big_icon_path = #{bigIconPath},
+      help_url = #{helpUrl},
       hidden =  #{hidden},
       effect_scope =  #{effectScope},
       tree_view_scope = #{treeViewScope},
@@ -111,23 +143,10 @@
     SELECT * FROM application_feature WHERE id = #{id}
   </select>
   <select id="findAll" resultMap="BaseResultMap">
-    SELECT * FROM application_feature T
-    <where>
-      <!-- 列表查询 -->
-      <if test="var_scene == 'Query'">
-        <if test="param_search_text != null and param_search_text != ''">
-          AND application_name LIKE #{param_search_text} OR application_display_name LIKE #{param_search_text} OR description LIKE #{param_search_text}
-        </if>
-      </if>
-      <if test="var_scene == 'default'">
-        <if test="param_parent_id != null and param_parent_id != ''">
-          AND parent_id = #{param_parent_id}
-        </if>
-        <if test="param_status != null and param_status != ''">
-          AND status = #{param_status}
-        </if>
-      </if>
-    </where>
+    SELECT * FROM application_feature t
+    <if test="_parameter != null">
+      <include refid="Select_Where_Clause" />
+    </if>
     <if test="orders != null and orders.size() > 0">
       ORDER BY
       <foreach collection="orders" item="order" index="index" separator=",">
@@ -138,27 +157,44 @@
       LIMIT 0, ${length}
     </if>
   </select>
-  <select id="findAllByMenu" resultMap="BaseResultMap">
-    SELECT * FROM application_feature T WHERE T.application_id = #{applicationId} and parent_id=#{menuId} and status = 1
-  </select>
-  <select id="findAllAuthorizationScopeByMenu" resultMap="BaseResultMap">
-    select * from application_feature T
-    where T.id in (
-      SELECT s.entity_id  FROM application_feature_scope s
-      WHERE  s.authorization_object_type = 'Role'
-       AND authorization_object_id = #{roleId}
-      ) and T.`status` = 1
-      and T.application_id = #{applicationId}
-      and parent_id = #{menuId}
+  <select id="findAllAllowedByAuthorizationObjectIds" resultMap="BaseResultMap">
+    SELECT * FROM application_feature t
+    WHERE t.id in (
+      SELECT entity_id  FROM application_feature_scope
+      WHERE authority_id = #{authority_id}
+        AND authorization_object_type = #{authorization_object_type}
+        AND authorization_object_id = #{authorization_object_id}
+      ) AND t.`status` = 1
   </select>
   <select id="findAllByAccountId" resultMap="BaseResultMap">
-    select * from application_feature where id in (select ac.entity_id from application_scope ac where ac.authorization_object_id=#{accountId})
+    SELECT * FROM application_feature WHERE id IN (
+      SELECT entity_id FROM application_scope WHERE authorization_object_id = #{accountId})
   </select>
   <select id="findTreeNodesByApplicationId" resultMap="BaseResultMap">
-    SELECT * FROM application_feature T WHERE application_id = #{application_id} AND parent_id = '00000000-0000-0000-0000-000000000000' AND status = 1 ORDER BY order_id, code
+    SELECT * FROM application_feature
+    WHERE application_id = #{application_id}
+          AND parent_id = '00000000-0000-0000-0000-000000000000'
+          AND type IN ('function', 'action')
+          AND status = 1
+    ORDER BY order_id, code
+  </select>
+  <select id="findTreeNodesByApplicationIdAndType" resultMap="BaseResultMap">
+    SELECT * FROM application_feature
+    WHERE application_id = #{application_id}
+          AND parent_id = '00000000-0000-0000-0000-000000000000'
+          AND type = #{type}
+          AND status = 1
+    ORDER BY order_id, code
   </select>
   <select id="findTreeNodesByParentId" resultMap="BaseResultMap">
-    SELECT * FROM application_feature T WHERE parent_id = #{parent_id} AND status = 1 ORDER BY order_id, code
+    SELECT * FROM application_feature
+    WHERE parent_id = #{parent_id}
+          AND type IN ('function', 'action')
+          AND status = 1
+    ORDER BY order_id, code
+  </select>
+  <select id="findTreeNodesByParentIdAndType" resultMap="BaseResultMap">
+    SELECT * FROM application_feature WHERE parent_id = #{parent_id} AND type = #{type} AND status = 1 ORDER BY order_id, code
   </select>
   <select id="isExist" resultType="java.lang.Boolean">
     SELECT COUNT(*) AS "Count" FROM application_feature T WHERE id = #{id}
@@ -182,7 +218,6 @@
   <select id="findAllAccountByApplicationId" resultType="com.x3platform.membership.models.AccountInfo">
     select a.* from application_scope appc , sys_account a where appc.authorization_object_id = a.id and appc.authorization_object_type=#{applicationMembersType} and entity_id=#{applicationId}
   </select>
-
   <delete id="unBindFeature">
     delete from application_feature_scope where entity_id=#{entityId}
     and entity_class_name=#{entityClassName} and authority_id=#{authorityId}

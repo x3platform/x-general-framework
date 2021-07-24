@@ -1,5 +1,7 @@
 package com.x3platform.membership.controllers;
 
+import static com.x3platform.Constants.TEXT_EMPTY;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
@@ -8,14 +10,12 @@ import com.x3platform.data.DataPagingUtil;
 import com.x3platform.data.DataQuery;
 import com.x3platform.digitalnumber.DigitalNumberContext;
 import com.x3platform.globalization.I18n;
-import com.x3platform.membership.Account;
-import com.x3platform.membership.MembershipManagement;
-import com.x3platform.membership.OrganizationUnit;
-import com.x3platform.membership.Role;
+import com.x3platform.membership.*;
 import com.x3platform.membership.models.RoleInfo;
 import com.x3platform.membership.services.RoleService;
 import com.x3platform.messages.MessageObject;
 import com.x3platform.util.StringUtil;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import org.springframework.context.annotation.Lazy;
@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author ruanyu
  */
-@Lazy(true)
+@Lazy
 @RestController
 @RequestMapping("/api/membership/role")
 public class RoleController {
@@ -73,7 +73,7 @@ public class RoleController {
       entity.setId(StringUtil.toUuid());
     } else {
       // 修改
-      if (!originalGlobalName.equals(entity.getGlobalName())) {
+      if (null!=originalGlobalName&&!originalGlobalName.equals(entity.getGlobalName())) {
         if (this.service.isExistGlobalName(entity.getGlobalName())) {
           return MessageObject.stringify(
             I18n.getExceptions().text("code_membership_global_name_already_exists"),
@@ -177,11 +177,10 @@ public class RoleController {
     RoleInfo entity = JSON.parseObject(data, RoleInfo.class);
 
     entity.setId(DigitalNumberContext.generate("Key_Guid"));
-
-    // 根据实际需要设置默认值
+    entity.setName(TEXT_EMPTY);
+    entity.setGlobalName(TEXT_EMPTY);
     entity.setStatus(1);
-    entity.setModifiedDate(new Date());
-    entity.setCreatedDate(new Date());
+    entity.setModifiedDate(LocalDateTime.now());
 
     return "{\"data\":" + JSON.toJSONString(entity) + ","
       + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";
@@ -261,4 +260,70 @@ public class RoleController {
     outString.append("]}," + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}");
     return outString.toString();
   }
+
+  // -------------------------------------------------------
+  // 设置帐号和角色关系
+  // -------------------------------------------------------
+
+  /**
+   * 移除帐号相关角色的所有关系
+   */
+  @RequestMapping("/removeAllRelation")
+  public final String removeAllRelation(@RequestBody String data){
+    JSONObject req = JSON.parseObject(data);
+    String accountId = req.getString("accountId");
+    service.removeAllRelation(accountId);
+    return MessageObject.stringify("0", I18n.getStrings().text("msg_delete_success"));
+  }
+
+  /**
+   *  添加帐号与相关角色的关系
+   *  @param data 请求的数据内容
+   *  <pre>
+   *  {
+   *    "accountId": "",
+   *    "roleId": ""
+   *  }
+   *  </pre>
+   */
+  @RequestMapping("/addRelation")
+  public final String addRelation(@RequestBody String data){
+    JSONObject req = JSON.parseObject(data);
+    String accountId = req.getString("accountId");
+    String id = req.getString("roleId");
+    service.addRelation(accountId,id);
+    return MessageObject.stringify("0", I18n.getStrings().text("msg_save_success"));
+  }
+
+  /**
+   * {roleId:xxxx}
+   * @param data
+   * @return
+   */
+  @RequestMapping("/findAllRelationByRoleId")
+  public final String findAllRelationByRoleId(@RequestBody String data){
+    JSONObject req = JSON.parseObject(data);
+    String roleId = req.getString("roleId");
+    List<AccountRoleRelation> dataList =  service.findAllRelationByRoleId(roleId);
+    return "{\"data\":" + JSON.toJSONString(dataList) + ","
+      + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";
+  }
+
+  /**
+   * 判断当前 exists
+   * @param data
+   * @return
+   */
+  @RequestMapping("/isExistName")
+  public final String isExistName(@RequestBody String data){
+   JSONObject req = JSON.parseObject(data);
+   String name = req.getString("name") ;
+   String standardOrganizationUnit = req.getString("standardOrganizationUnit") ;
+   boolean result =  service.isExistName(name,standardOrganizationUnit);
+   return "{\"data\":" + result+ ","
+      + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";
+  }
+
+
+
 }

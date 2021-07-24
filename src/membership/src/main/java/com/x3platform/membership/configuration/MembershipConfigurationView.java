@@ -129,7 +129,11 @@ public class MembershipConfigurationView {
     return configuration.getProhibitedPreviewObjects();
   }
 
-  public String getRelationShip() {  return configuration.getRelationShip(); }
+  public String getRelationShip() {
+    return configuration.getRelationShip();
+  }
 
-  public String getRelationshipManagement() {  return configuration.getRelationshipManagement(); }
+  public String getRelationshipManagement() {
+    return configuration.getRelationshipManagement();
+  }
 }

@@ -26,7 +26,7 @@ import java.util.*;
  * @author ruanyu
  */
 @Lazy
-@RestController
+@RestController("com.x3platform.membership.controllers.AccountBindingController")
 @RequestMapping("/api/membership/accountBinding")
 public class AccountBindingController {
 

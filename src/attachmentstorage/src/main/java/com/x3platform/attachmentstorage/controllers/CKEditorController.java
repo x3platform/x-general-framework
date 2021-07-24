@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  *
  */
-@Lazy(true)
+@Lazy
 @RestController
 @RequestMapping("/api/attachmentstorage/ckeditor")
 public class CKEditorController {
@@ -50,6 +50,7 @@ public class CKEditorController {
           break;
         }
       }
+      
       // 文件唯一标识
       String attachmentId = DigitalNumberContext.generate("Key_RunningNumber");
       // (必填)所属实体唯一标识

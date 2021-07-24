@@ -11,6 +11,7 @@ import com.x3platform.membership.MembershipManagement;
 import com.x3platform.membership.configuration.MembershipConfigurationView;
 import com.x3platform.util.DateUtil;
 import com.x3platform.util.StringUtil;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -79,8 +80,6 @@ public class AccountInfo implements Account {
   private String ip = "";
   private Date loginDate = DateUtil.getDefaultDate();
   private String distinguishedName = "";
-  private Date modifiedDate = DateUtil.getDefaultDate();
-  private Date createdDate = DateUtil.getDefaultDate();
 
   private Date expires = new Date((new Date()).getTime() + 6 * 60 * 60 * 1000L);
 
@@ -418,29 +417,32 @@ public class AccountInfo implements Account {
     distinguishedName = value;
   }
 
+  private LocalDateTime modifiedDate = DateUtil.getDefaultLocalDateTime();
   /**
    * 修改时间
    */
   @Override
-  public Date getModifiedDate() {
+  public LocalDateTime getModifiedDate() {
     return modifiedDate;
   }
 
   @Override
-  public void setModifiedDate(Date value) {
+  public void setModifiedDate(LocalDateTime value) {
     modifiedDate = value;
   }
+
+  private LocalDateTime createdDate = DateUtil.getDefaultLocalDateTime();
 
   /**
    * 创建时间
    */
   @Override
-  public Date getCreatedDate() {
+  public LocalDateTime getCreatedDate() {
     return createdDate;
   }
 
   @Override
-  public void setCreatedDate(Date value) {
+  public void setCreatedDate(LocalDateTime value) {
     createdDate = value;
   }
 
@@ -482,7 +484,7 @@ public class AccountInfo implements Account {
   private String organizationUnitText = "";
 
   public String getOrganizationUnitText() {
-    if (StringUtil.isNullOrEmpty(organizationUnitText) && getOrganizationUnitRelations().size() > 0) {
+    if (StringUtil.isNullOrEmpty(organizationUnitText) && !getOrganizationUnitRelations().isEmpty()) {
       for (AccountOrganizationUnitRelation relation : getOrganizationUnitRelations()) {
         organizationUnitText += StringUtil.format("organizationUnit#{}#{}#{}#{},",
           relation.getOrganizationUnitId(),
@@ -691,8 +693,7 @@ public class AccountInfo implements Account {
   private Date getExpires() {
     return expires;
   }
-
-
+  
   public String getOrganizationUnitIds() {
     return organizationUnitIds;
   }

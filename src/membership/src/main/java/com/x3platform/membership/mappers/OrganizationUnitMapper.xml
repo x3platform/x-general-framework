@@ -8,7 +8,7 @@
     <result property="name" column="name"/>
     <result property="globalName" column="global_name"/>
     <result property="fullName" column="full_name"/>
-    <result property="pinYin" column="pinyin"/>
+    <result property="pinyin" column="pinyin"/>
     <result property="type" column="type"/>
     <result property="typeView" column="type_view"/>
     <result property="level" column="level"/>
@@ -43,8 +43,11 @@
         <if test="param_search_text != null and param_search_text != ''">
           t.global_name LIKE concat('%',#{param_search_text},'%') OR t.name LIKE concat('%',#{param_search_text},'%')
         </if>
-        <if test="param_status == null">
-          AND t.status = 1
+        <if test="param_parent_id != null and param_parent_id != ''">
+          AND t.parent_id = #{param_parent_id}
+        </if>
+        <if test="param_status != null and param_status != ''">
+          AND t.status = #{param_status}
         </if>
       </if>
       <!-- 通讯录查询 -->
@@ -131,15 +134,14 @@
       distinguished_name,
       modified_date,
       created_date
-    )
-    values (
+    ) values (
       #{id},
       #{parentId},
       #{code},
       #{name},
       #{globalName},
       #{fullName},
-      #{pinYin},
+      #{pinyin},
       #{type},
       #{level},
       #{chiefRoleId},
@@ -157,89 +159,52 @@
     )
   </insert>
   <update id="update" parameterType="com.x3platform.membership.models.OrganizationUnitInfo">
-    update sys_organization_unit
-    <trim prefix="set" suffixOverrides=",">
-    <if test="parentId != null">
+    UPDATE sys_organization_unit SET
       parent_id=#{parentId},
-    </if>
-    <if test="code != null">
       code=#{code},
-    </if>
-    <if test="name != null">
       name=#{name},
-    </if>
-    <if test="globalName != null">
       global_name=#{globalName},
-    </if>
-    <if test="fullName != null">
       full_name=#{fullName},
-    </if>
-    <if test="pinYin != null">
-      pinyin=#{pinYin},
-    </if>
-    <if test="type != null">
+      pinyin=#{pinyin},
       type=#{type},
-    </if>
-    <if test="level!= null">
       level=#{level},
-    </if>
       chief_role_id = #{chiefRoleId},
-    <if test="standardOrganizationUnitId!= null">
       standard_organization_unit_id=#{standardOrganizationUnitId},
-    </if>
-    <if test="enableEmail != null">
       enable_email=#{enableEmail},
-    </if>
-    <if test="effectScope!= null">
       effect_scope=#{effectScope},
-    </if>
-    <if test=" locking!= null">
       locking=#{locking},
-    </if>
-    <if test=" orderId!= null">
       order_id=#{orderId},
-    </if>
-    <if test=" status!= null">
       status=#{status},
-    </if>
-    <if test=" remark!= null">
       remark=#{remark},
-    </if>
-    <if test=" fullPath!= null">
       full_path=#{fullPath},
-    </if>
-    <if test=" distinguishedName!= null">
       distinguished_name=#{distinguishedName},
-    </if>
-    <if test=" modifiedDate!= null">
-      modified_date = CURRENT_TIMESTAMP,
-    </if>
-    </trim>
-  where id = #{id}
+      modified_date = CURRENT_TIMESTAMP
+    WHERE id = #{id}
   </update>
   <delete id="delete">
-    update  sys_organization_unit set status = 0  WHERE id = #{id}
+    DELETE FROM sys_organization_unit WHERE id = #{id}
   </delete>
   <select id="findOne" resultMap="BaseResultMap">
-    select t.* , b.`name` as parent_name from sys_organization_unit t left join  sys_organization_unit b on  (t.parent_id = b.id ) WHERE t.id = #{id}
+    SELECT * FROM sys_organization_unit WHERE id = #{id}
   </select>
   <select id="findOneByGlobalName" resultMap="BaseResultMap">
-     SELECT * FROM sys_organization_unit where global_name=#{globalName,jdbcType=VARCHAR}
+     SELECT * FROM sys_organization_unit WHERE global_name = #{global_name}
   </select>
   <select id="findOneByRoleId" resultMap="BaseResultMap">
-    SELECT * FROM sys_organization_unit WHERE  id IN ( SELECT organization_unit_id FROM sys_role WHERE id = ${role_id})
+    SELECT * FROM sys_organization_unit WHERE id IN ( SELECT organization_unit_id FROM sys_role WHERE id = #{role_id} )
   </select>
   <select id="findOneByRoleIdAndLevel" resultMap="BaseResultMap">
-    SELECT * FROM sys_organization_unit where  id IN (
-      SELECT func_GetDepartmentIdByOrganizationUnitId( organization_unit_id , #{level} ) FROM sys_role WHERE id = ${role_id} )
+    SELECT * FROM sys_organization_unit where id IN (
+      SELECT func_GetDepartmentIdByOrganizationUnitId( organization_unit_id , #{level} ) FROM sys_role WHERE id = #{role_id} )
   </select>
   <select id="findCorporationByOrganizationUnitId" resultMap="BaseResultMap">
     SELECT * FROM sys_organization_unit where  id IN ( func_GetCorporationIdByOrganizationUnitId(#{id}) )
   </select>
-
-  <select id="findAll" resultMap="BaseResultMap">
+  <select id="findAll" parameterType="java.util.Map" resultMap="BaseResultMap">
     select t.* from sys_organization_unit t
-    <include refid="Select_Where_Clause_Default" />
+    <if test="_parameter != null">
+      <include refid="Select_Where_Clause" />
+    </if>
     <if test="orders != null and orders.size() > 0">
       ORDER BY
       <foreach collection="orders" item="order" index="index" separator=",">
@@ -250,44 +215,52 @@
       LIMIT 0, ${length}
     </if>
   </select>
-  <select id="queryAll" resultMap="BaseResultMap">
-    select t.* , b.`name` as parent_name from sys_organization_unit t left join sys_organization_unit b on  (t.parent_id = b.id )
-    <include refid="Select_Where_Clause" />
-    order by t.modified_date desc
-  </select>
   <select id="findAllByParentId" resultMap="BaseResultMap">
     SELECT * FROM sys_organization_unit where parent_id = #{parent_id}
   </select>
   <select id="getChildOrganizationByOrganizationUnitId" resultMap="BaseResultMap">
-    SELECT
-      t3.* , t4.name as parent_name
+  SELECT
+    t3.* , t4.name as parent_name
+  FROM
+    sys_organization_unit t3  left join sys_organization_unit t4 on (t3.parent_id = t4.id)
+  WHERE
+    FIND_IN_SET(
+      t3.id,
+      func_GetAllChildrenIdByOrganizationUnitId (
+        #{organizationUnitId,jdbcType=VARCHAR},1
+        )
+      )
+    ORDER BY t3.created_date
+  </select>
+  <select id="getChildOrganizationByDeleteOrganizationUnitId" resultMap="BaseResultMap">
+    SELECT t3.* , t4.name as parent_name
     FROM
-      (
-        SELECT
-          T1.*,
-          IF
-            (
-            FIND_IN_SET( parent_id, @PIDS ) > 0,
-            @PIDS := CONCAT( @PIDS, ',', T1.ID ),
-            0
-            ) AS ISCHILD
-        FROM
-            ( SELECT A.* FROM sys_organization_unit A where  status = 1 ) AS T1,
-            ( SELECT @PIDS := #{organizationUnitId} ) t2
-      ) t3 left join sys_organization_unit t4 on (t3.parent_id = t4.id)
+      sys_organization_unit t3  left join sys_organization_unit t4 on (t3.parent_id = t4.id)
     WHERE
-      ISCHILD != '0'
-    order by created_date
-
+      FIND_IN_SET(
+        t3.id,
+        func_GetAllChildrenIdByOrganizationUnitId (
+          #{organizationUnitId,jdbcType=VARCHAR},0
+          )
+        )
+    order by t3.created_date
+  </select>
+  <select id="findAllRelationOrganizationUnitByAccountId" resultMap="BaseResultMap">
+    SELECT * FROM sys_organization_unit WHERE id IN (
+    SELECT organization_unit_id FROM sys_account_organization_unit where account_id =#{account_id}
+    ) and `status` = 1
   </select>
   <select id="findAllByAccountId" resultMap="BaseResultMap">
-  SELECT * FROM sys_organization_unit WHERE Id IN (
+  SELECT * FROM sys_organization_unit WHERE id IN (
     SELECT organization_unit_id FROM sys_role WHERE Id IN (
       SELECT role_id FROM sys_account_role WHERE account_id = #{account_id} )
   )
   </select>
   <select id="findTreeNodesByParentId" resultMap="BaseResultMap">
-    SELECT * FROM sys_organization_unit T WHERE parent_id = #{parent_id} AND status = 1 ORDER BY order_id, code
+    SELECT * FROM sys_organization_unit T WHERE parent_id = #{parent_id} AND status = 1 ORDER BY order_id, code,created_date asc
+  </select>
+  <select id="findAllTreeNodesByParentId" resultMap="BaseResultMap">
+    SELECT * FROM sys_organization_unit T WHERE parent_id = #{parent_id}  ORDER BY order_id, code,created_date asc
   </select>
   <select id="isExist" resultType="boolean">
     SELECT COUNT(0) AS "Count" FROM sys_organization_unit WHERE id =#{id}
@@ -298,14 +271,20 @@
   <select id="isExistGlobalName" resultType="boolean">
     SELECT COUNT(0) AS "Count" FROM sys_organization_unit WHERE global_name = #{global_name}
   </select>
-  <update id="rename" parameterType="com.x3platform.membership.models.OrganizationUnitInfo">
+  <update id="rename" >
     UPDATE sys_organization_unit SET name = #{name}, modified_date = CURRENT_TIMESTAMP WHERE id = #{id}
   </update>
-  <update id="setGlobalName" parameterType="com.x3platform.membership.models.OrganizationUnitInfo">
+  <update id="setGlobalName" >
     UPDATE sys_organization_unit SET global_name = #{global_name}, modified_date = CURRENT_TIMESTAMP WHERE id = #{id}
   </update>
   <update id="setParentId" >
     UPDATE sys_organization_unit SET parent_id = #{parent_id}, modified_date = CURRENT_TIMESTAMP WHERE id = #{id}
+  </update>
+  <update id="setEmailStatus" >
+    UPDATE sys_organization_unit SET enable_email = #{enable_email}, modified_date = CURRENT_TIMESTAMP WHERE id = #{id}
+  </update>
+  <update id="setStatus" >
+    UPDATE sys_organization_unit SET status = #{status}, modified_date = CURRENT_TIMESTAMP WHERE id = #{id}
   </update>
   <select id="findAllRelationByAccountId" resultMap="AccountOrganizationUnitRelationResultMap">
     SELECT
@@ -344,9 +323,7 @@
       is_default,
       begin_date,
       end_date
-    )
-    VALUES
-    (
+    ) VALUES (
       #{account_id},
       #{organization_unit_id},
       #{is_default},

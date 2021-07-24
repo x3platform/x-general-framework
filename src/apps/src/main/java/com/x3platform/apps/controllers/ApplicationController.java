@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author ruanyu
  */
 @Lazy
-@RestController
+@RestController("com.x3platform.apps.controllers.ApplicationController")
 @RequestMapping("/api/apps/application")
 public class ApplicationController {
 

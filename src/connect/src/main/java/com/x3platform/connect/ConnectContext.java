@@ -88,7 +88,7 @@ public class ConnectContext extends CustomPlugin {
   /**
    * 重启插件
    *
-   * @return 返回信息. =0代表重启成功, >0代表重启失败.
+   * @return 消息代码 0-重启成功, 大于0-重启失败.
    */
   @Override
   public int restart() {

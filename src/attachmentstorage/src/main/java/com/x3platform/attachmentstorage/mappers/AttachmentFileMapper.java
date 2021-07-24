@@ -52,11 +52,14 @@ public interface AttachmentFileMapper {
    * 查询所有相关记录
    *
    * @param entityClassName 实体类名称
-   * @param entityId        实体类标识
-   * @param fileStatus      文件状态
+   * @param entityId 实体类标识
+   * @param fileStatus 文件状态
    * @return 返回所有 实例 AttachmentFile 的详细信息
    */
-  List<AttachmentFile> findAllByEntityId(@Param("entityClassName") String entityClassName, @Param("entityId") String entityId, @Param("fileStatus") int fileStatus);
+  List<AttachmentFile> findAllByEntityId(
+    @Param("entity_class_name") String entityClassName,
+    @Param("entity_id") String entityId,
+    @Param("file_status") int fileStatus);
 
   // -------------------------------------------------------
   // 自定义功能
@@ -73,7 +76,7 @@ public interface AttachmentFileMapper {
   /**
    * 重命名
    *
-   * @param id   附件标识
+   * @param id 附件标识
    * @param name 新的附件名称
    */
   void rename(String id, String name);
@@ -81,10 +84,11 @@ public interface AttachmentFileMapper {
   /**
    * 设置有效的文件信息
    *
-   * @param entityClassName   实体类名称
-   * @param entityId          实体标识
+   * @param entityClassName 实体类名称
+   * @param entityId 实体标识
    * @param attachmentFileIds 附件唯一标识
-   * @param fileStatus        文件状态
+   * @param fileStatus 文件状态
    */
-  void setFileStatus(@Param("entityClassName") String entityClassName, @Param("entityId") String entityId, @Param("attachmentFileIds") String[] attachmentFileIds, @Param("fileStatus") int fileStatus);
+  void setFileStatus(@Param("entityClassName") String entityClassName, @Param("entityId") String entityId,
+    @Param("attachmentFileIds") String[] attachmentFileIds, @Param("fileStatus") int fileStatus);
 }

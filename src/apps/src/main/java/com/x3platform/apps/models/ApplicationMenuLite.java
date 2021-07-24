@@ -2,6 +2,7 @@ package com.x3platform.apps.models;
 
 import static com.x3platform.apps.configuration.AppsConfiguration.APPLICATION_NAME;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.x3platform.apps.AppsContext;
 import com.x3platform.util.StringUtil;
 import com.x3platform.util.UUIDUtil;
@@ -31,6 +32,7 @@ public class ApplicationMenuLite {
     id = value;
   }
 
+  @JSONField(serialize = false)
   private Application application;
 
   /**

@@ -53,9 +53,20 @@ public class AppsConfiguration {
   private String hiddenShortcutMenu;
 
   /**
-   * # 隐藏快捷方式 : 可选的值 1.On 2.Off(默认)
+   * 隐藏快捷方式 : 可选的值 1.On 2.Off(默认)
    */
   public String getHiddenShortcutMenu() {
     return hiddenShortcutMenu;
+  }
+
+
+  @Value("${x3platform." + SECTION_NAME + ".sync-feature-to-menu:Off}")
+  private String  syncFeatureToMenu;
+
+  /**
+   * 同步功能信息至菜单信息 : 可选的值 1.On 2.Off(默认)
+   */
+  public String getSyncFeatureToMenu() {
+    return syncFeatureToMenu;
   }
 }

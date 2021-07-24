@@ -1,5 +1,6 @@
 package com.x3platform;
 
+import com.x3platform.util.StringUtil;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -32,11 +33,16 @@ public class GenericExceptionHandler {
   @ResponseBody
   public Map handleAllExceptions(Exception ex, WebRequest request) {
     // 处理所有未处理的异常信息
-    InternalLogger.getLogger().error("UnhandledException:" + ex.getClass().getName(), ex);
+    String exceptionName = ex.getClass().getName();
+    InternalLogger.getLogger().error("UnhandledException:" + exceptionName, ex);
     ex.printStackTrace();
     Map<String, Object> map = new HashMap<>();
     map.put("code", "1");
-    map.put("message", ex.getLocalizedMessage());
+    if (ex.getLocalizedMessage() == null) {
+      map.put("message", StringUtil.format("Exception:{}, Please contact the administrator.", exceptionName));
+    } else {
+      map.put("message", ex.getLocalizedMessage());
+    }
     return map;
   }
 }

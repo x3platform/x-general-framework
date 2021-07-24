@@ -1,6 +1,7 @@
 package com.x3platform.membership;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import com.x3platform.AuthorizationObject;
@@ -145,14 +146,14 @@ public interface OrganizationUnit extends AuthorizationObject, Cacheable, Serial
   /**
    * 创建时间
    */
-  Date getCreatedDate();
+  LocalDateTime getCreatedDate();
 
-  void setCreatedDate(Date value);
+  void setCreatedDate(LocalDateTime value);
 
   /**
-   * 新增补齐
-   * @return
+   * 层级
    */
   public int getLevel();
+
   void setLevel(int level);
 }

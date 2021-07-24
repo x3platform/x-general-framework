@@ -1,5 +1,7 @@
 package com.x3platform.membership.controllers;
 
+import static com.x3platform.Constants.TEXT_EMPTY;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
@@ -17,6 +19,7 @@ import com.x3platform.messages.MessageObject;
 import com.x3platform.tree.DynamicTreeView;
 import com.x3platform.tree.TreeView;
 import com.x3platform.util.StringUtil;
+import java.time.LocalDateTime;
 import java.util.Date;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,7 +36,7 @@ import java.util.Map;
  * @author ruanyu
  */
 @Lazy
-@RestController
+@RestController("com.x3platform.membership.controllers.OrganizationUnitController")
 @RequestMapping("/api/membership/organizationUnit")
 public class OrganizationUnitController {
 
@@ -108,6 +111,18 @@ public class OrganizationUnitController {
   }
 
   /**
+   * 微服务-改造项目
+   * @param data
+   * @return
+   */
+  @RequestMapping("/add")
+  public final String add(@RequestBody String data) {
+    OrganizationUnitInfo param = JSON.parseObject(data,OrganizationUnitInfo.class);
+    service.save(param);
+    return MessageObject.stringify("0", I18n.getStrings().text("msg_save_success"));
+  }
+
+  /**
    * 逻辑删除部门
    *
    * @return 返回操作结果
@@ -115,6 +130,7 @@ public class OrganizationUnitController {
   @RequestMapping("/delete")
   public final String delete(@RequestBody String data) {
     JSONObject req = JSON.parseObject(data);
+
     String id = req.getString("id");
     // 删除组织单元时需要判断限制条件
     // 1.判断是否有子组织
@@ -166,7 +182,7 @@ public class OrganizationUnitController {
   @RequestMapping("/findAll")
   public String findAll(@RequestBody String data) {
     JSONObject req = JSON.parseObject(data);
-    // 查询公司，查询等级
+
     DataPaging paging = DataPagingUtil.create(req.getString("paging"));
 
     PageHelper.startPage(paging.getCurrentPage(), paging.getPageSize());
@@ -179,6 +195,17 @@ public class OrganizationUnitController {
 
     return "{\"data\":" + JSON.toJSONString(list) + ",\"paging\":" + JSON.toJSONString(paging) + ","
       + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";
+  }
+
+  /**
+   *  查询某个父节点下的所有组织单位
+   */
+  @RequestMapping("/findAllByParentId")
+  public String findAllByParentId(@RequestBody String data){
+    JSONObject req = JSON.parseObject(data);
+    String parentId = req.getString("parentId");
+    List<OrganizationUnit> list = service.findAllByParentId(parentId);
+    return "{\"data\":" + JSON.toJSONString(list) + "," + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";
   }
 
   /**
@@ -210,6 +237,20 @@ public class OrganizationUnitController {
   // -------------------------------------------------------
 
   /**
+   * 查询是否存在全局名称的相关的记录
+   */
+  @RequestMapping("/isExistGlobalName")
+  public String isExistGlobalName(@RequestBody String data) {
+    JSONObject req = JSON.parseObject(data);
+    String globalName = req.getString("globalName");
+
+    boolean result = service.isExistGlobalName(globalName);
+
+    return "{\"data\":" + JSON.toJSONString(result) + ","
+      + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";
+  }
+
+  /**
    * 创建新的对象信息
    *
    * @param data 请求的数据内容
@@ -220,12 +261,10 @@ public class OrganizationUnitController {
     OrganizationUnitInfo entity = JSON.parseObject(data, OrganizationUnitInfo.class);
 
     entity.setId(DigitalNumberContext.generate("Key_Guid"));
-
-    // 根据实际需要设置默认值
-    entity.setLocking(0);
+    entity.setName(TEXT_EMPTY);
+    entity.setGlobalName(TEXT_EMPTY);
     entity.setStatus(1);
-    entity.setModifiedDate(new Date());
-    entity.setCreatedDate(new Date());
+    entity.setModifiedDate(LocalDateTime.now());
 
     return "{\"data\":" + JSON.toJSONString(entity) + ","
       + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";
@@ -277,5 +316,95 @@ public class OrganizationUnitController {
 
     return "{\"data\":" + JSON.toJSONString(treeView) + ","
       + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";
+  }
+
+  /**
+   * 获取某个组织下的全部树节点数据
+   *
+   * @param data 请求的数据
+   * @return 返回树形结构数据
+   */
+  @RequestMapping("/getTreeTable")
+  public String getTreeTable(@RequestBody String data) {
+    JSONObject req = JSON.parseObject(data);
+    // 组织标识
+    String id = req.getString("id");
+
+    List<OrganizationUnit> list = service.getTreeTable(id);
+
+    return "{\"data\":" + JSON.toJSONString(list) + ","
+      + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";
+  }
+  /**
+   * 新增接口，将组织结构查询子组织
+   * @param data {"organizationId":organizationId}
+   * @return
+   */
+  @RequestMapping("/getChildOrganizationByOrganizationUnitId")
+  public String getChildOrganizationByOrganizationUnitId(@RequestBody String data) {
+    JSONObject req = JSON.parseObject(data);
+    // 组织标识
+    String organizationId = req.getString("organizationId");
+    List<OrganizationUnit> list = service.getChildOrganizationByOrganizationUnitId(organizationId);
+
+    return "{\"data\":" + JSON.toJSONString(list) + ","
+      + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";
+  }
+
+  /**
+   * 删除
+   * @param data
+   * @return
+   */
+  @RequestMapping("/getChildOrganizationByDeleteOrganizationUnitId")
+  public String getChildOrganizationByDeleteOrganizationUnitId(@RequestBody String data) {
+    JSONObject req = JSON.parseObject(data);
+    String organizationUnitId = req.getString("organizationUnitId");
+    List<OrganizationUnit> list = service.getChildOrganizationByDeleteOrganizationUnitId(organizationUnitId);
+    return "{\"data\":" + JSON.toJSONString(list) + "," + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";
+  }
+
+  /**
+   *  根据当前人员查询 ，人员所属组织
+   * @param data
+   * @return
+   */
+  @RequestMapping("/findAllRelationOrganizationUnitByAccountId")
+  public String findAllRelationOrganizationUnitByAccountId(@RequestBody String data){
+    JSONObject req = JSON.parseObject(data);
+    String accountId = req.getString("accountId");
+    List<OrganizationUnit> list = service.findAllRelationOrganizationUnitByAccountId(accountId);
+    return "{\"data\":" + JSON.toJSONString(list) + "," + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";
+  }
+
+  /**
+   * 移除组织结构下的人员组织
+   * @param data
+   * @return
+   */
+  @RequestMapping("/removeAllRelation")
+  public String removeAllRelation(@RequestBody String data) {
+    JSONObject req = JSON.parseObject(data);
+    String accountId = req.getString("id");
+    int result = service.removeAllRelation(accountId);
+    return "{\"data\":" + JSON.toJSONString(result) + "," + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";
+  }
+
+
+  /**
+   * 移除组织结构下的人员组织
+   * @param data {
+   *        accountId:"xxx1",
+   *        organizationId:"xxx2"
+   * }
+   * @return
+   */
+  @RequestMapping("/addRelation")
+  public String addRelation(@RequestBody String data) {
+    JSONObject req = JSON.parseObject(data);
+    String accountId = req.getString("accountId");
+    String organizationId = req.getString("organizationId");
+    int result = service.addRelation(accountId,organizationId);
+    return "{\"data\":" + JSON.toJSONString(result) + "," + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";
   }
 }

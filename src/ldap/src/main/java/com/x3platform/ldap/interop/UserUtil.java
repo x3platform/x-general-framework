@@ -44,16 +44,8 @@ public class UserUtil {
   private static final String LDAP_FACTORY = "com.sun.jndi.ldap.LdapCtxFactory";
 
   private Logger logger = InternalLogger.getLogger();
-
-  /**** 测试 ****/
-//  public void main(String[] args) {
-//    getDirContext();
-//    add("tset1", "123456", "测试帐号1");
-//    updatePasswordLdap("10000", "1234567");
-//    remove("10000");
-//  }
-
-  // 通过连接LDAP服务器对用户进行认证，返回LDAP对象
+  
+  // 通过连接 LDAP 服务器对用户进行认证，返回 LDAP 对象
   public DirContext getDirContext() {
     // 模拟用户名
     String username = LdapConfigurationView.getInstance().getUsername();
@@ -85,8 +77,7 @@ public class UserUtil {
 
     return context;
   }
-
-
+  
   /**
    * 确认密码
    *
@@ -122,7 +113,11 @@ public class UserUtil {
 
     return 1;
   }
-
+  
+  public int setPassword(String loginName, String password) {
+    return 0;
+  }
+  
   /**
    * 将输入用户和密码进行加密算法后验证
    */

@@ -1,20 +1,13 @@
 package com.x3platform.membership.services.impl;
 
-import static com.x3platform.Constants.TEXT_ZERO;
-import static com.x3platform.membership.Constants.*;
-
 import com.x3platform.AuthorizationObject;
-import com.x3platform.Constants;
+import com.x3platform.InternalLogger;
 import com.x3platform.KernelContext;
 import com.x3platform.cachebuffer.CachingManager;
 import com.x3platform.data.DataQuery;
 import com.x3platform.digitalnumber.DigitalNumberContext;
-import com.x3platform.ldap.LdapManagement;
 import com.x3platform.ldap.configuration.LdapConfigurationView;
-import com.x3platform.membership.AccountOrganizationUnitRelation;
-import com.x3platform.membership.MembershipManagement;
-import com.x3platform.membership.OrganizationUnit;
-import com.x3platform.membership.User;
+import com.x3platform.membership.*;
 import com.x3platform.membership.mappers.OrganizationUnitMapper;
 import com.x3platform.membership.services.OrganizationUnitService;
 import com.x3platform.tree.DynamicTreeNode;
@@ -23,10 +16,17 @@ import com.x3platform.tree.TreeNode;
 import com.x3platform.tree.TreeView;
 import com.x3platform.util.StringUtil;
 import com.x3platform.util.UUIDUtil;
+
+import java.time.LocalDateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.x3platform.Constants.TEXT_ZERO;
+import static com.x3platform.membership.Constants.ORGANIZATION_STRUCTURE_ID;
+import static com.x3platform.membership.Constants.ORGANIZATION_UNIT_ROOT_ID;
 
 /**
  * @author ruanyu
@@ -52,7 +52,7 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
   private void addCacheItem(OrganizationUnit item) {
     if (!StringUtil.isNullOrEmpty(item.getId())) {
       String key = CACHE_KEY_ID_PREFIX + item.getId();
-      CachingManager.set(key, item);
+      CachingManager.set(key, item, CachingManager.getRandomMinutes());
     }
   }
 
@@ -79,19 +79,26 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
    * @return 消息代码
    */
   @Override
-  public int save(OrganizationUnit entity) {
+  public int save(OrganizationUnit entity) throws NullPointerException {
+    if (StringUtil.isNullOrEmpty(entity.getId())) {
+      throw new NullPointerException("标识不能为空");
+    }
+
+    // 根据是否存在的对象，判断是否新建对象
+    boolean isNewObject = !provider.isExist(entity.getId());
+
     int affectedRows;
+
     String id = entity.getId();
 
     if (LdapConfigurationView.getInstance().getIntegratedMode()) {
-    /*
-      OrganizationUnit originalObject = findOne(param.Id);
-      if (originalObject == null)
-      {
-        originalObject = param;
+
+      OrganizationUnit originalObject = findOne(id);
+      if (originalObject == null) {
+        originalObject = entity;
       }
-      SyncToLdap(param, originalObject.Name, originalObject.GlobalName, originalObject.ParentId);
-    */
+
+      // syncToLdap(param, originalObject.Name, originalObject.GlobalName, originalObject.ParentId);
     }
 
     if (StringUtil.isNullOrEmpty(entity.getId())) {
@@ -101,9 +108,7 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
       entity.setGlobalName(entity.getName());
     }
 
-    boolean isExist = provider.isExist(entity.getId());
-
-    if (!isExist) {
+    if (isNewObject) {
       if (StringUtil.isNullOrEmpty(entity.getCode())) {
         entity.setCode(DigitalNumberContext.generate(DIGITAL_NUMBER_KEY_CODE));
       }
@@ -113,14 +118,14 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
       // 设置唯一识别名称
       entity.setDistinguishedName(combineDistinguishedName(entity.getGlobalName(), entity.getId()));
       // 设置修改时间
-      entity.setModifiedDate(new Date());
+      entity.setModifiedDate(LocalDateTime.now());
 
       affectedRows = provider.insert(entity);
     } else {
       affectedRows = provider.update(entity);
     }
 
-    KernelContext.getLog().debug("save entity id:'{}', affectedRows:{}", id, affectedRows);
+    InternalLogger.getLogger().debug("save entity id:'{}', affectedRows:{}", id, affectedRows);
 
     // 保存数据后, 更新缓存信息
     entity = provider.findOne(entity.getId());
@@ -134,6 +139,17 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
       CachingManager.deleteByPattern(CACHE_KEY_TREEVIEW_PREFIX + "*");
     }
 
+    return 0;
+  }
+
+  /**
+   * 虚拟删除记录
+   *
+   * @param id 实例的标识
+   */
+  @Override
+  public int remove(String id) {
+    this.setStatus(id, 0);
     return 0;
   }
 
@@ -156,7 +172,7 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
       // 删除数据库记录
       int affectedRows = provider.delete(id);
 
-      KernelContext.getLog().debug("delete entity id:'{}', affectedRows:{}", id, affectedRows);
+      InternalLogger.getLogger().debug("delete entity id:'{}', affectedRows:{}", id, affectedRows);
     }
 
     return 0;
@@ -225,7 +241,7 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
    * 查询某个角色所属的某一级次的组织信息
    *
    * @param roleId 角色标识
-   * @param level 层次
+   * @param level  层次
    * @return 所有 {@link OrganizationUnit} 实例的详细信息
    */
   @Override
@@ -236,7 +252,7 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
   /**
    * 查询某个组织所属的公司信息
    *
-   * @param id 组织标识
+   * @param id 组织单元标识
    * @return 所有 {@link OrganizationUnit} 实例的详细信息
    */
   @Override
@@ -248,7 +264,7 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
    * 查询某个组织的所属某个上级部门信息
    *
    * @param organizationId 组织标识
-   * @param level 层次
+   * @param level          层次
    * @return 所有 {@link OrganizationUnit} 实例的详细信息
    */
   @Override
@@ -309,14 +325,44 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
   }
 
   /**
-   * @param parentId 查询等级
-   * @param level 查询等级
+   * 查询某个父节点下的所有组织单位
+   *
+   * @param parentId 父节标识
+   * @param depth    深入获取的层次，0 表示只获取本层次，-1 表示全部获取
+   * @return 所有实例 {@link OrganizationUnit} 的详细信息
+   */
+  @Override
+  public List<OrganizationUnit> findAllByParentId(String parentId, int depth) {
+    // 结果列表
+    ArrayList<OrganizationUnit> list = new ArrayList<OrganizationUnit>();
+
+    // 查找组织子部门信息
+    List<OrganizationUnit> organizations = provider.findAllByParentId(parentId);
+
+    list.addAll(organizations);
+
+    if (depth == -1) {
+      depth = Integer.MAX_VALUE;
+    }
+
+    if (!organizations.isEmpty() && depth > 0) {
+      for (OrganizationUnit organization : organizations) {
+        list.addAll(findAllByParentId(organization.getId(), (depth - 1)));
+      }
+    }
+
+    return list;
+  }
+
+  /**
+   * @param parentId 父节点对象
+   * @param level    查询等级
    */
   @Override
   public OrganizationUnit findPhysicalTreeView(String parentId, int level) {
     OrganizationUnit parent = provider.findOne(parentId);
     if (StringUtil.isNullOrEmpty(parentId) || TEXT_ZERO.equals(parentId)) {
-
+      //
     } else {
       List<OrganizationUnit> children = provider.getChildOrganizationByOrganizationUnitId(parentId);
       // 取消树节点
@@ -328,7 +374,7 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
   /**
    * 设置子节点
    *
-   * @param parent 父级
+   * @param parent    父级
    * @param labelList 所有子集
    */
   private void setChildren(OrganizationUnit parent, List<OrganizationUnit> labelList) {
@@ -358,36 +404,6 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
   }
 
   /**
-   * 查询某个父节点下的所有组织单位
-   *
-   * @param parentId 父节标识
-   * @param depth 深入获取的层次，0 表示只获取本层次，-1 表示全部获取
-   * @return 所有实例 {@link OrganizationUnit} 的详细信息
-   */
-  @Override
-  public List<OrganizationUnit> findAllByParentId(String parentId, int depth) {
-    // 结果列表
-    ArrayList<OrganizationUnit> list = new ArrayList<OrganizationUnit>();
-
-    // 查找组织子部门信息
-    List<OrganizationUnit> organizations = provider.findAllByParentId(parentId);
-
-    list.addAll(organizations);
-
-    if (depth == -1) {
-      depth = Integer.MAX_VALUE;
-    }
-
-    if (!organizations.isEmpty() && depth > 0) {
-      for (OrganizationUnit organization : organizations) {
-        list.addAll(findAllByParentId(organization.getId(), (depth - 1)));
-      }
-    }
-
-    return list;
-  }
-
-  /**
    * 查询某条记录
    *
    * @param accountId 帐号标识
@@ -401,6 +417,19 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
     }
 
     return provider.findAllByAccountId(accountId);
+  }
+
+  /**
+   * @param accountId
+   * @return
+   */
+  @Override
+  public List<OrganizationUnit> findAllRelationOrganizationUnitByAccountId(String accountId) {
+    // 过滤 非法的内容信息
+    if (StringUtil.isNullOrEmpty(accountId) || accountId.equals("0")) {
+      return new ArrayList<OrganizationUnit>();
+    }
+    return provider.findAllRelationOrganizationUnitByAccountId(accountId);
   }
 
   /**
@@ -430,7 +459,7 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
    * 查询某个角色的所属相关组织
    *
    * @param roleIds 角色标识
-   * @param level 层次
+   * @param level   层次
    * @return 所有{@link OrganizationUnit}实例的详细信息
    */
   @Override
@@ -518,7 +547,7 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
         corporations.add(corporation);
       }
 
-      List<OrganizationUnit> list = this.provider.findCorporationsByAccountId(accountId);
+      List<OrganizationUnit> list = provider.findCorporationsByAccountId(accountId);
 
       for (OrganizationUnit item : list) {
         if (!item.getId().equals(user.getCorporationId())) {
@@ -566,14 +595,11 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
   public boolean isExistGlobalName(String globalName) {
     return provider.isExistGlobalName(globalName);
   }
-  ///#endregion
-
-  ///#region 函数:Rename(string id, string name)
 
   /**
    * 查询是否存在相关的记录
    *
-   * @param id 组织标识
+   * @param id   组织单元标识
    * @param name 组织名称
    * @return 0:代表成功 1:代表已存在相同名称
    */
@@ -587,14 +613,11 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
 
     return provider.rename(id, name);
   }
-  ///#endregion
-
-  ///#region 函数:CombineFullPath(string name, string parentId)
 
   /**
    * 组合全路径
    *
-   * @param name 组织名称
+   * @param name     组织名称
    * @param parentId 父级对象标识
    */
   @Override
@@ -655,13 +678,13 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
    * 组合唯一名称
    *
    * @param globalName 组织全局名称
-   * @param id 对象标识
+   * @param id         对象标识
    */
   @Override
   public String combineDistinguishedName(String globalName, String id) {
     String path = getLdapOuPathByOrganizationUnitId(id);
 
-    return String.format("CN=%1$s,%2$s%3$s", globalName, path,
+    return String.format("cn=%1$s,%2$s%3$s", globalName, path,
       LdapConfigurationView.getInstance().getSuffixDistinguishedName());
   }
 
@@ -721,7 +744,7 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
   /**
    * 设置全局名称
    *
-   * @param id 帐户标识
+   * @param id         帐户标识
    * @param globalName 全局名称
    * @return 0 操作成功 | 1 操作失败
    */
@@ -765,7 +788,7 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
   /**
    * 查询是否存在相关的记录
    *
-   * @param id 组织标识
+   * @param id       组织单元标识
    * @param parentId 父级组织标识
    * @return 0 操作成功 | 1 操作失败
    */
@@ -777,7 +800,7 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
   /**
    * 设置企业邮箱状态
    *
-   * @param id 组织标识
+   * @param id     组织单元标识
    * @param status 状态标识, 1:启用, 0:禁用
    * @return 0 设置成功, 1 设置失败.
    */
@@ -787,17 +810,30 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
   }
 
   /**
-   * 获取组织的子成员
+   * 设置状态
    *
-   * @param organizationId 组织单位标识
+   * @param id     组织单元标识
+   * @param status 状态标识, 1:启用, 0:禁用
+   * @return 0 设置成功, 1 设置失败.
    */
   @Override
-  public List<AuthorizationObject> getChildNodes(String organizationId) {
-    List<AuthorizationObject> list = new ArrayList<AuthorizationObject>();
-/*
-    List<OrganizationUnit> listA = this.findAllByParentId(organizationId);
+  public int setStatus(String id, int status) {
+    return provider.setStatus(id, status);
+  }
 
-    List<Account> listB = MembershipManagement.getInstance().getAccountService().findAllByOrganizationUnitId(organizationId);
+  /**
+   * 获取组织的子成员
+   *
+   * @param organizationUnitId 组织单位标识
+   */
+  @Override
+  public List<AuthorizationObject> getChildNodes(String organizationUnitId) {
+    List<AuthorizationObject> list = new ArrayList<AuthorizationObject>();
+
+    List<OrganizationUnit> listA = findAllByParentId(organizationUnitId);
+
+    List<Account> listB = MembershipManagement.getInstance().getAccountService()
+      .findAllByOrganizationUnitId(organizationUnitId);
 
     for (AuthorizationObject item : listA) {
       list.add(item);
@@ -805,7 +841,7 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
 
     for (AuthorizationObject item : listB) {
       list.add(item);
-    }*/
+    }
 
     return list;
   }
@@ -815,8 +851,27 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
    */
   @Override
   public List<OrganizationUnit> getChildOrganizationByOrganizationUnitId(String organizationUnitId) {
-    // List<Organization> child = new ArrayList<>();
-    List<OrganizationUnit> child = provider.getChildOrganizationByOrganizationUnitId(organizationUnitId);
+    List<OrganizationUnit> child = new ArrayList<>();
+    // OrganizationUnit parent = provider.findOne(organizationUnitId)
+    // child.add(parent);
+    List<OrganizationUnit> children = provider.getChildOrganizationByOrganizationUnitId(organizationUnitId);
+
+    if (children != null && children.size() > 0) {
+      child.addAll(children);
+    }
+
+    return child;
+  }
+
+  @Override
+  public List<OrganizationUnit> getChildOrganizationByDeleteOrganizationUnitId(String organizationUnitId) {
+    List<OrganizationUnit> child = new ArrayList<>();
+    // OrganizationUnit parent = provider.findOne(organizationUnitId)
+    // child.add(parent);
+    List<OrganizationUnit> children = provider.getChildOrganizationByDeleteOrganizationUnitId(organizationUnitId);
+    if (children != null && children.size() > 0) {
+      child.addAll(children);
+    }
     return child;
   }
 
@@ -833,13 +888,13 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
   /**
    * 同步信息
    *
-   * @param param 组织信息
-   * @param originalName 原始名称
+   * @param param              组织信息
+   * @param originalName       原始名称
    * @param originalGlobalName 原始全局名称
-   * @param originalParentId 原始父级标识
+   * @param originalParentId   原始父级标识
    */
   public int syncToLdap(OrganizationUnit param, String originalName, String originalGlobalName,
-    String originalParentId) {
+                        String originalParentId) {
     /*
     if (LdapConfigurationView.Instance.IntegratedMode.equals("ON")) {
       if (StringUtil.isNullOrEmpty(param.GlobalName)) {
@@ -881,15 +936,6 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
     */
     return 0;
   }
-
-  /**
-   * 同步信息
-   *
-   * @param param 组织信息
-   */
-  // public  int syncFromPackPage(OrganizationUnit param) {
-  //  return this.provider.SyncFromPackPage(param);
-  // }
 
   // -------------------------------------------------------
   // 树形视图
@@ -938,7 +984,7 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
 
   @Override
   public DynamicTreeView getDynamicTreeView(String treeViewName, String treeViewRootTreeNodeId, String parentId,
-    String commandFormat) {
+                                            String commandFormat) {
 
     parentId = (StringUtil.isNullOrEmpty(parentId) || "0".equals(parentId)) ? treeViewRootTreeNodeId : parentId;
 
@@ -954,6 +1000,37 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
     }
 
     return treeView;
+  }
+
+  @Override
+  public List<OrganizationUnit> getTreeTable(String id) {
+    List<OrganizationUnit> root = new ArrayList<OrganizationUnit>();
+
+    OrganizationUnit entity = findOne(id);
+
+    List<OrganizationUnit> list = getTreeTableRows(id);
+
+    if (!list.isEmpty()) {
+      entity.setChildren(list);
+    }
+
+    root.add(entity);
+
+    return root;
+  }
+
+  private List<OrganizationUnit> getTreeTableRows(String parentId) {
+    List<OrganizationUnit> list = provider.findAllTreeNodesByParentId(parentId);
+
+    for (OrganizationUnit item : list) {
+      List<OrganizationUnit> childNodes = getTreeTableRows(item.getId());
+
+      if (!childNodes.isEmpty()) {
+        item.setChildren(childNodes);
+      }
+    }
+
+    return list;
   }
 
   // -------------------------------------------------------
@@ -985,7 +1062,7 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
   /**
    * 添加帐号与相关组织的关系
    *
-   * @param accountId 帐号标识
+   * @param accountId      帐号标识
    * @param organizationId 组织标识
    */
   @Override
@@ -996,15 +1073,14 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
   /**
    * 添加帐号与相关组织的关系
    *
-   * @param accountId 帐号标识
+   * @param accountId      帐号标识
    * @param organizationId 组织标识
-   * @param isDefault 是否是默认组织
-   * @param beginDate 启用时间
-   * @param endDate 停用时间 , mysql 最大能存9999 ； 169104628-12-10 19:08:16.999999
+   * @param isDefault      是否是默认组织
+   * @param beginDate      启用时间
+   * @param endDate        停用时间 , mysql 最大能存9999 ； 169104628-12-10 19:08:16.999999
    */
   @Override
-  public int addRelation(String accountId, String organizationId, boolean isDefault, Date beginDate,
-    Date endDate) {
+  public int addRelation(String accountId, String organizationId, boolean isDefault, Date beginDate, Date endDate) {
     if (StringUtil.isNullOrEmpty(accountId)) {
       // 帐号标识不能为空
       return 1;
@@ -1032,7 +1108,7 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
   /**
    * 添加帐号与相关组织的关系
    *
-   * @param accountIds 帐号标识，多个以逗号隔开
+   * @param accountIds     帐号标识，多个以逗号隔开
    * @param organizationId 组织标识
    */
   @Override
@@ -1049,7 +1125,7 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
   /**
    * 添加帐号与相关组织的父级组织关系(递归)
    *
-   * @param accountId 帐号标识
+   * @param accountId      帐号标识
    * @param organizationId 组织标识
    */
   @Override
@@ -1071,9 +1147,9 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
   /**
    * 续约帐号与相关组织的关系
    *
-   * @param accountId 帐号标识
+   * @param accountId      帐号标识
    * @param organizationId 组织标识
-   * @param endDate 新的截止时间
+   * @param endDate        新的截止时间
    */
   @Override
   public int extendRelation(String accountId, String organizationId, Date endDate) {
@@ -1083,7 +1159,7 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
   /**
    * 移除帐号与相关组织的关系
    *
-   * @param accountId 帐号标识
+   * @param accountId      帐号标识
    * @param organizationId 组织标识
    */
   @Override
@@ -1170,7 +1246,7 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
   /**
    * 设置帐号的默认组织
    *
-   * @param accountId 帐号标识
+   * @param accountId      帐号标识
    * @param organizationId 组织标识
    */
   @Override

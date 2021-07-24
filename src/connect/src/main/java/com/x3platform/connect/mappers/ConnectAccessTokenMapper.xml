@@ -38,13 +38,13 @@
   <insert id="insert" parameterType="com.x3platform.connect.models.ConnectAccessToken">
     INSERT INTO connect_access_token
     (
-    id,
-    app_key,
-    account_id,
-    expire_date,
-    refresh_token,
-    modified_date,
-    created_date
+      id,
+      app_key,
+      account_id,
+      expire_date,
+      refresh_token,
+      modified_date,
+      created_date
     )
     VALUES
     (
@@ -91,7 +91,7 @@
     <if test="orders != null and orders.size() > 0">
       ORDER BY
       <foreach collection="orders" item="order" index="index" separator="," >
-        #{order}
+        ${order}
       </foreach>
     </if>
     <if test="length > 0">
@@ -120,9 +120,15 @@
     UPDATE connect_access_token SET expire_date = to_date(#{expireDate},'yyyy-mm-dd hh24:mi:ss'), refresh_token = #{next_refresh_token}, modified_date = CURRENT_TIMESTAMP WHERE app_key = #{app_key} AND refresh_token = #{refresh_token}
   </update>
   <delete id="clear" databaseId="mysql" >
-    <![CDATA[DELETE FROM connect_access_token WHERE expire_date < ${expiryTime}]]>
+    <![CDATA[
+    DELETE FROM connect_access_token
+    WHERE expire_date < ${expire_date}
+    ]]>
   </delete>
   <delete id="clear" databaseId="oracle" >
-    <![CDATA[DELETE FROM connect_access_token WHERE expire_date < to_date(${expiryTime},'yyyy-mm-dd hh24:mi:ss')]]>
+    <![CDATA[
+    DELETE FROM connect_access_token
+    WHERE expire_date < to_date(${expire_date}, 'yyyy-mm-dd hh24:mi:ss')
+    ]]>
   </delete>
 </mapper>

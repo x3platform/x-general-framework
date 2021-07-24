@@ -1,5 +1,6 @@
 package com.x3platform.apps.models;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.x3platform.EntityClass;
 import com.x3platform.apps.AppsContext;
 import com.x3platform.cachebuffer.Cacheable;
@@ -31,6 +32,7 @@ public class ApplicationSetting extends EntityClass implements Cacheable {
     id = value;
   }
 
+  @JSONField(serialize = false)
   private Application application;
 
   /**
@@ -67,6 +69,7 @@ public class ApplicationSetting extends EntityClass implements Cacheable {
     return getApplication() == null ? "" : getApplication().getApplicationDisplayName();
   }
 
+  @JSONField(serialize = false)
   private ApplicationSettingGroup applicationSettingGroup;
 
   /**

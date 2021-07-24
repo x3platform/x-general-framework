@@ -96,6 +96,21 @@ public final class TestConstants {
    */
   public static final String GENERAL_ACCOUNT_NAME = "演示用户";
 
+  /**
+   * 普通管理员帐号标识 (演示)
+   */
+  public static final String GENERAL_MANAGER_ACCOUNT_ID = "88888888-0000-0000-0000-000000000007";
+
+  /**
+   * 普通管理员帐号登录名 (演示)
+   */
+  public static final String GENERAL_MANAGER_ACCOUNT_LOGIN_NAME = "demo-manager";
+
+  /**
+   * 普通管理员帐号名称 (演示)
+   */
+  public static final String GENERAL_MANAGER_ACCOUNT_NAME = "演示经理";
+
   // -------------------------------------------------------
   // 角色
   // -------------------------------------------------------

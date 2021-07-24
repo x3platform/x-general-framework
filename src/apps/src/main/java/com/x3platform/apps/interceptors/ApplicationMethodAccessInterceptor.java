@@ -29,7 +29,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
  */
 public class ApplicationMethodAccessInterceptor implements HandlerInterceptor {
 
-  static final String ERROR_URI = "/error";
+  private static final String ERROR_URI = "/error";
 
   @Override
   public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
@@ -39,7 +39,7 @@ public class ApplicationMethodAccessInterceptor implements HandlerInterceptor {
     // 只处理 method=POST, content-type=application/json 的内容
     if (HTTP_METHOD_POST.equalsIgnoreCase(request.getMethod())
       && HTTP_CONTENT_TYPE_APPLICATION_JSON.equalsIgnoreCase(request.getContentType())) {
-      if (uri == ERROR_URI) {
+      if (ERROR_URI.equals(uri)) {
         return true;
       }
       // 设置方法名称
@@ -109,14 +109,14 @@ public class ApplicationMethodAccessInterceptor implements HandlerInterceptor {
           String[] requiredParams = options.getString("requiredParams").split(",");
           for (String requiredParam : requiredParams) {
             if (req.containsKey(requiredParam)) {
-              return true;
-            } else {
-              HttpContextUtil.writeException(response,
-                I18n.getExceptions().text("code_general_param_is_required"),
-                I18n.getExceptions().format("text_general_param_is_required", requiredParam));
-
-              return false;
+              continue;
             }
+
+            HttpContextUtil.writeException(response,
+              I18n.getExceptions().text("code_general_param_is_required"),
+              I18n.getExceptions().format("text_general_param_is_required", requiredParam));
+
+            return false;
           }
         }
       }

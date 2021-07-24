@@ -170,7 +170,8 @@ public class TreeNode {
     this.setParentId(parentId);
     this.setName(name);
     this.setDescription(description);
-    this.setDisabled(0);
+    this.setCommand(commadFormat);
+    this.setDisabled(disabled);
   }
 
   /**
@@ -201,8 +202,7 @@ public class TreeNode {
     }
 
     if (this.getHasChildren() && this.getDisabled() == 1) {
-      String text = "javascript:";
-      this.setCommand(String.format("javascript:void(0)"));
+      this.setCommand("void(0)");
     } else {
       String text = "javascript:";
       if (this.getCommand().toLowerCase().indexOf(text) == 0) {
@@ -213,8 +213,10 @@ public class TreeNode {
           .replace("{treeNodeCategoryIndex}", this.getCategoryIndex().replace("\\", "\\\\").replace("$", "\\\\")));
       } else {
         this.setCommand(
-          this.getCommand().replace("{treeNodeId}", this.getId()).replace("{treeNodeParentId}", this.getParentId())
-            .replace("{treeNodeName}", this.getName()).replace("{treeNodeToken}", this.getToken())
+          this.getCommand().replace("{treeNodeId}", this.getId())
+            .replace("{treeNodeParentId}", this.getParentId())
+            .replace("{treeNodeName}", this.getName())
+            .replace("{treeNodeToken}", this.getToken())
             .replace("{treeNodeCategoryIndex}", this.getCategoryIndex()));
       }
     }

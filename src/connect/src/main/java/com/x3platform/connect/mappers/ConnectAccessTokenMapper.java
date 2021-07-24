@@ -1,11 +1,11 @@
 package com.x3platform.connect.mappers;
 
 import com.x3platform.connect.models.ConnectAccessToken;
-import org.apache.ibatis.annotations.Param;
-
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import org.apache.ibatis.annotations.Param;
 
 /**
  */
@@ -112,12 +112,12 @@ public interface ConnectAccessTokenMapper {
    * @param expireDate   过期时间
    * @return 消息代码
    */
-  int refresh(@Param("app_key") String appKey, @Param("refresh_token") String refreshToken, @Param("expire_date") Date expireDate, @Param("next_refresh_token") String nextRefreshToken);
+  int refresh(@Param("app_key") String appKey, @Param("refresh_token") String refreshToken, @Param("expire_date") LocalDateTime expireDate, @Param("next_refresh_token") String nextRefreshToken);
 
   /**
    * 清理过期时间之前的缓存记录
    *
-   * @param expiryTime 过期时间
+   * @param expireDate 过期时间
    */
-  int clear(Date expiryTime);
+  int clear(@Param("expire_date") LocalDateTime expireDate);
 }

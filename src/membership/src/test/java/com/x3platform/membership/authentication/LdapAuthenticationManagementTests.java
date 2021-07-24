@@ -11,6 +11,8 @@ import com.x3platform.membership.models.StandardRoleInfo;
 import com.x3platform.tests.TestConstants;
 import com.x3platform.util.DateUtil;
 import java.util.List;
+
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,7 @@ public class LdapAuthenticationManagementTests {
   @Autowired
   private StandardRoleService service;
 
+  @Ignore
   @Test
   public void testFindOne() {
     LdapAuthenticationManagement management = new LdapAuthenticationManagement();

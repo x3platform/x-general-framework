@@ -21,53 +21,48 @@
   </resultMap>
   <sql id="Select_Where_Clause">
     <where>
-      <if test="param_id != null and param_id != ''">
-        AND t.id = #{param_id}
+      <!-- 列表查询 -->
+      <if test="var_scene == 'Query'">
+        <if test="param_search_text != null and param_search_text != ''">
+          t.name LIKE concat('%',#{param_search_text},'%')
+        </if>
       </if>
-      <if test="param_application_id != null and param_application_id != ''">
-        AND t.application_id = #{param_application_id}
-      </if>
-      <if test="param_code != null and param_code != ''">
-        AND t.code = #{param_code}
-      </if>
-      <if test="param_name != null and param_name != ''">
-        AND t.name = #{param_name}
-      </if>
-      <if test="param_display_name != null and param_display_name != ''">
-        AND t.display_name = #{param_display_name}
-      </if>
-      <if test="param_description != null and param_description != ''">
-        AND t.description = #{param_description}
-      </if>
-      <if test="param_detail != null and param_detail != ''">
-        AND t.detail = #{param_detail}
-      </if>
-      <if test="param_type != null and param_type != ''">
-        AND t.type = #{param_type}
-      </if>
-      <if test="param_options != null and param_options != ''">
-        AND t.options = #{param_options}
-      </if>
-      <if test="param_effect_scope != null">
-        AND t.effect_scope = #{param_effect_scope}
-      </if>
-      <if test="param_version != null">
-        AND t.version = #{param_version}
-      </if>
-      <if test="param_order_id != null and param_order_id != ''">
-        AND t.order_id = #{param_order_id}
-      </if>
-      <if test="param_status != null">
-        AND t.status = #{param_status}
-      </if>
-      <if test="param_remark != null and param_remark != ''">
-        AND t.remark = #{param_remark}
-      </if>
-      <if test="param_modified_date != null">
-        AND t.modified_date = #{param_modified_date}
-      </if>
-      <if test="param_created_date != null">
-        AND t.created_date = #{param_created_date}
+
+      <!-- 默认 -->
+      <if test="var_scene == 'default'">
+        <if test="param_id != null and param_id != ''">
+          AND t.id = #{param_id}
+        </if>
+        <if test="param_application_id != null and param_application_id != ''">
+          AND t.application_id = #{param_application_id}
+        </if>
+        <if test="param_code != null and param_code != ''">
+          AND t.code = #{param_code}
+        </if>
+        <if test="param_name != null and param_name != ''">
+          AND t.name = #{param_name}
+        </if>
+        <if test="param_display_name != null and param_display_name != ''">
+          AND t.display_name = #{param_display_name}
+        </if>
+        <if test="param_description != null and param_description != ''">
+          AND t.description = #{param_description}
+        </if>
+        <if test="param_detail != null and param_detail != ''">
+          AND t.detail = #{param_detail}
+        </if>
+        <if test="param_effect_scope != null">
+          AND t.effect_scope = #{param_effect_scope}
+        </if>
+        <if test="param_version != null">
+          AND t.version = #{param_version}
+        </if>
+        <if test="param_status != null">
+          AND t.status = #{param_status}
+        </if>
+        <if test="param_remark != null and param_remark != ''">
+          AND t.remark = #{param_remark}
+        </if>
       </if>
     </where>
   </sql>

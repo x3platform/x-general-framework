@@ -23,21 +23,21 @@ public interface RoleMapper {
    *
    * @param param {@link Role} 实例的详细信息
    */
-  void insert(Role param);
+  int insert(Role param);
 
   /**
    * 修改记录
    *
    * @param param {@link Role} 实例的详细信息
    */
-  void update(Role param);
+  int update(Role param);
 
   /**
    * 删除记录
    *
    * @param id 标识
    */
-  void delete(String id);
+  int delete(String id);
 
   // -------------------------------------------------------
   // 查询
@@ -240,14 +240,14 @@ public interface RoleMapper {
    * @return 布尔值
    */
   boolean isExistName(String name);
-
+  
   /**
    *
    * @param name
    * @param organizationUnitId
    * @return
    */
-  boolean isExistNameByStandard(@Param("name") String name,@Param("organizationUnitId")String organizationUnitId);
+  boolean isExistNameByStandard(@Param("name") String name, @Param("organizationUnitId")String organizationUnitId);
 
   /**
    * 查询是否存在相关的记录
@@ -256,7 +256,7 @@ public interface RoleMapper {
    * @return 布尔值
    */
   boolean isExistGlobalName(@Param("global_name") String globalName);
-
+  
   /**
    * 查询是否存在相关的记录
    *
@@ -411,21 +411,21 @@ public interface RoleMapper {
   boolean hasDefaultRelation(@Param("account_id") String accountId);
 
   /**
-   * 设置帐号的默认岗位
-   *
-   * @param accountId 帐号标识
-   * @param roleId 角色标识
-   * @return 受影响的行数
-   */
-  int setDefaultRelation(@Param("account_id") String accountId, @Param("role_id") String roleId);
-
-  /**
    * 清理角色与帐号的关系
    *
    * @param roleId 角色标识
    * @return 受影响的行数
    */
   int clearupRelation(@Param("role_id") String roleId);
-
+  
+  int setDefaultRelation(@Param("account_id") String accountId, @Param("role_id") String roleId);
+  
+  /**
+   * @param id 角色id
+   * @param standardOrganizationUnit 标准组织
+   * @param roleName 角色名称
+   * @return 是否存在
+   */
+  boolean isNormalAdmin(@Param("id")String id, @Param("standardOrganizationUnit") String standardOrganizationUnit, @Param("roleName")String roleName);
 
 }

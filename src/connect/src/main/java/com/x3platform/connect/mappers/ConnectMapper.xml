@@ -119,38 +119,35 @@
     #{authorizationScope,jdbcType=VARCHAR},
     #{certifiedCode,jdbcType=VARCHAR},
     #{status,jdbcType=INTEGER},
-    #{modifiedDate,jdbcType=TIMESTAMP},
-    #{createdDate,jdbcType=TIMESTAMP}
+    CURRENT_TIMESTAMP,
+    CURRENT_TIMESTAMP
     )
   </insert>
   <update id="updateByPrimaryKey" parameterType="com.x3platform.connect.models.Connect">
     UPDATE connect SET
-
-    id = #{id,jdbcType=VARCHAR},
-    account_id = #{accountId,jdbcType=VARCHAR},
-    account_name = #{accountName,jdbcType=VARCHAR},
-    app_key = #{appKey,jdbcType=VARCHAR},
-    app_secret = #{appSecret,jdbcType=VARCHAR},
-    app_type = #{appType,jdbcType=VARCHAR},
-    code = #{code,jdbcType=VARCHAR},
-    name = #{name,jdbcType=VARCHAR},
-    description = #{description,jdbcType=VARCHAR},
-    domain = #{domain,jdbcType=VARCHAR},
-    redirect_uri = #{redirectUri,jdbcType=VARCHAR},
-    options = #{options,jdbcType=VARCHAR},
-    is_internal = #{isInternal,jdbcType=BOOLEAN},
-    authorization_scope = #{authorizationScope,jdbcType=VARCHAR},
-    certified_code = #{certifiedCode,jdbcType=VARCHAR},
-    status = #{status,jdbcType=INTEGER},
-    modified_date = #{modifiedDate,jdbcType=TIMESTAMP},
-    created_date = #{createdDate,jdbcType=TIMESTAMP}
+      account_id = #{accountId,jdbcType=VARCHAR},
+      account_name = #{accountName,jdbcType=VARCHAR},
+      app_key = #{appKey,jdbcType=VARCHAR},
+      app_secret = #{appSecret,jdbcType=VARCHAR},
+      app_type = #{appType,jdbcType=VARCHAR},
+      code = #{code,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
+      description = #{description,jdbcType=VARCHAR},
+      domain = #{domain,jdbcType=VARCHAR},
+      redirect_uri = #{redirectUri,jdbcType=VARCHAR},
+      options = #{options,jdbcType=VARCHAR},
+      is_internal = #{isInternal,jdbcType=BOOLEAN},
+      authorization_scope = #{authorizationScope,jdbcType=VARCHAR},
+      certified_code = #{certifiedCode,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      modified_date = CURRENT_TIMESTAMP
 
     WHERE id = #{id}
   </update>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+  <delete id="delete" parameterType="java.lang.String">
     DELETE FROM connect WHERE id = #{id}
   </delete>
-  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap" >
+  <select id="findOne" parameterType="java.lang.String" resultMap="BaseResultMap" >
     SELECT * FROM connect WHERE id = #{id}
   </select>
   <select id="findAll" parameterType="java.util.Map" resultMap="BaseResultMap" >
@@ -161,7 +158,7 @@
     <if test="orders != null and orders.size() > 0">
       ORDER BY
       <foreach collection="orders" item="order" index="index" separator="," >
-        #{order}
+        ${order}
       </foreach>
     </if>
     <if test="length > 0">

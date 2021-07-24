@@ -1,12 +1,14 @@
 package com.x3platform.apps.services.impl;
 
 import static com.x3platform.apps.Constants.APPLICATION_SETTING_GROUP_ROOT_ID;
+import static com.x3platform.apps.configuration.AppsConfiguration.APPLICATION_NAME;
 
 import com.x3platform.KernelContext;
 import com.x3platform.apps.AppsContext;
 import com.x3platform.apps.mappers.ApplicationSettingGroupMapper;
 import com.x3platform.apps.models.Application;
 import com.x3platform.apps.models.ApplicationFeature;
+import com.x3platform.apps.models.ApplicationMethod;
 import com.x3platform.apps.models.ApplicationSettingGroup;
 import com.x3platform.apps.services.ApplicationSettingGroupService;
 import com.x3platform.cachebuffer.CachingManager;
@@ -27,7 +29,11 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class ApplicationSettingGroupServiceImpl implements ApplicationSettingGroupService {
 
+  private static final String CACHE_KEY_ID_PREFIX = "x3platform:apps:application-feature:id:";
+
   private static final String CACHE_KEY_TREEVIEW_PREFIX = "x3platform:apps:application-setting-group:treeview:";
+
+  private static final String TREEVIEW_ROOT_ID = "settingGroup#applicationId#00000000-0000-0000-0000-000000000001#settingGroupId#00000000-0000-0000-0000-000000000000";
 
   private static final String TREENODE_ID_FORMAT = "{}#applicationId#{}#settingGroupId#{}";
 
@@ -36,6 +42,32 @@ public class ApplicationSettingGroupServiceImpl implements ApplicationSettingGro
    */
   @Autowired
   private ApplicationSettingGroupMapper provider = null;
+
+  // -------------------------------------------------------
+  // 缓存管理
+  // -------------------------------------------------------
+
+  /**
+   * 添加缓存项
+   */
+  private void addCacheItem(ApplicationSettingGroup item) {
+    if (!StringUtil.isNullOrEmpty(item.getId())) {
+      String key = CACHE_KEY_ID_PREFIX + item.getId();
+      CachingManager.set(key, item);
+    }
+  }
+
+  /**
+   * 移除缓存项
+   */
+  private void removeCacheItem(ApplicationSettingGroup item) {
+    if (!StringUtil.isNullOrEmpty(item.getId())) {
+      String key = CACHE_KEY_ID_PREFIX + item.getId();
+      if (CachingManager.contains(key)) {
+        CachingManager.delete(key);
+      }
+    }
+  }
 
   // -------------------------------------------------------
   // 保存 删除
@@ -71,6 +103,10 @@ public class ApplicationSettingGroupServiceImpl implements ApplicationSettingGro
     entity = provider.selectByPrimaryKey(entity.getId());
 
     if (entity != null) {
+      removeCacheItem(entity);
+
+      addCacheItem(entity);
+
       // 如果单个分组信息缓存信息出现更新，清除所有树节点的缓存。
       CachingManager.deleteByPattern(CACHE_KEY_TREEVIEW_PREFIX + "*");
     }
@@ -88,6 +124,9 @@ public class ApplicationSettingGroupServiceImpl implements ApplicationSettingGro
     ApplicationSettingGroup entity = provider.selectByPrimaryKey(id);
 
     if (entity != null) {
+      // 删除缓存记录
+      removeCacheItem(entity);
+
       // 如果单个组织信息缓存信息出现更新，清除所有树节点的缓存。
       CachingManager.deleteByPattern(CACHE_KEY_TREEVIEW_PREFIX + "*");
 
@@ -112,7 +151,29 @@ public class ApplicationSettingGroupServiceImpl implements ApplicationSettingGro
    */
   @Override
   public ApplicationSettingGroup findOne(String id) {
-    return provider.selectByPrimaryKey(id);
+    ApplicationSettingGroup entity = null;
+
+    // 根节点快速处理
+    if (APPLICATION_SETTING_GROUP_ROOT_ID.equals(id)) {
+      return null;
+    }
+
+    String key = CACHE_KEY_ID_PREFIX + id;
+
+    if (CachingManager.contains(key)) {
+      entity = (ApplicationSettingGroup) CachingManager.get(key);
+    }
+
+    // 如果缓存中未找到相关数据，则查找数据库内容
+    if(entity == null) {
+      entity = provider.selectByPrimaryKey(id);
+
+      if (entity != null) {
+        addCacheItem(entity);
+      }
+    }
+
+    return entity;
   }
 
   /**
@@ -259,35 +320,63 @@ public class ApplicationSettingGroupServiceImpl implements ApplicationSettingGro
 
     DynamicTreeView treeView = new DynamicTreeView(treeViewName, treeViewRootTreeNodeId, parentId, commandFormat);
 
-    if (APPLICATION_SETTING_GROUP_ROOT_ID.equals(keys[4])) {
+    Application application = AppsContext.getInstance().getApplicationService()
+      .findOneByApplicationName(APPLICATION_NAME);
+
+    if (TREEVIEW_ROOT_ID.equals(parentId)) {
+      DynamicTreeNode treeNode = null;
+
+      // 添加应用管理
+      treeNode = new DynamicTreeNode(
+        StringUtil.format(TREENODE_ID_FORMAT, "application", application.getId(), UUIDUtil.emptyString("D")),
+        APPLICATION_SETTING_GROUP_ROOT_ID, application.getApplicationDisplayName(),
+        application.getApplicationDisplayName(),
+        commandFormat, true);
+
+      treeView.add(treeNode);
+
       List<Application> list = AppsContext.getInstance().getApplicationService().findTreeNodesByParentId(keys[2]);
 
       for (Application item : list) {
-        DynamicTreeNode treeNode = new DynamicTreeNode(
+        treeNode = new DynamicTreeNode(
           StringUtil.format(TREENODE_ID_FORMAT, "application", item.getId(), UUIDUtil.emptyString("D")),
           StringUtil.format(TREENODE_ID_FORMAT, "application", keys[2], UUIDUtil.emptyString("D")),
           item.getApplicationDisplayName(), item.getApplicationDisplayName(), commandFormat, true);
 
         treeView.add(treeNode);
       }
-    }
-
-    List<ApplicationSettingGroup> list = null;
-
-    // 功能项
-    if (APPLICATION_SETTING_GROUP_ROOT_ID.equals(keys[4])) {
-      list = provider.findTreeNodesByApplicationId(keys[2]);
     } else {
-      list = provider.findTreeNodesByParentId(keys[4]);
-    }
+      if ("application".equals(keys[0]) && !application.getId().equals(keys[2])
+        && APPLICATION_SETTING_GROUP_ROOT_ID.equals(keys[4])) {
+        List<Application> list = AppsContext.getInstance().getApplicationService().findTreeNodesByParentId(keys[2]);
 
-    for (ApplicationSettingGroup item : list) {
-      DynamicTreeNode treeNode = new DynamicTreeNode(
-        StringUtil.format(TREENODE_ID_FORMAT, "settingGroup", item.getApplicationId(), item.getId()),
-        StringUtil.format(TREENODE_ID_FORMAT, "settingGroup", item.getApplicationId(), item.getParentId()),
-        item.getDisplayName(), item.getDisplayName(), commandFormat, true);
+        for (Application item : list) {
+          DynamicTreeNode treeNode = new DynamicTreeNode(
+            StringUtil.format(TREENODE_ID_FORMAT, "application", item.getId(), UUIDUtil.emptyString("D")),
+            StringUtil.format(TREENODE_ID_FORMAT, "application", keys[2], UUIDUtil.emptyString("D")),
+            item.getApplicationDisplayName(), item.getApplicationDisplayName(), commandFormat, true);
 
-      treeView.add(treeNode);
+          treeView.add(treeNode);
+        }
+      }
+
+      List<ApplicationSettingGroup> list = null;
+
+      // 功能项
+      if (APPLICATION_SETTING_GROUP_ROOT_ID.equals(keys[4])) {
+        list = provider.findTreeNodesByApplicationId(keys[2]);
+      } else {
+        list = provider.findTreeNodesByParentId(keys[4]);
+      }
+
+      for (ApplicationSettingGroup item : list) {
+        DynamicTreeNode treeNode = new DynamicTreeNode(
+          StringUtil.format(TREENODE_ID_FORMAT, "settingGroup", item.getApplicationId(), item.getId()),
+          StringUtil.format(TREENODE_ID_FORMAT, "settingGroup", item.getApplicationId(), item.getParentId()),
+          item.getDisplayName(), item.getDisplayName(), commandFormat, true);
+
+        treeView.add(treeNode);
+      }
     }
 
     return treeView;

@@ -9,7 +9,10 @@ import org.slf4j.Logger;
 
 /**
  * 核心环境
+ *
+ * @author ruanyu
  */
+@SuppressWarnings("unchecked")
 public final class KernelContext implements Context {
 
   /**

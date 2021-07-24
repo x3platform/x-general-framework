@@ -1,121 +1,121 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-scan£∫µ±¥À Ù–‘…Ë÷√Œ™true ±£¨≈‰÷√Œƒº˛»Áπ˚∑¢…˙∏ƒ±‰£¨Ω´ª·±ª÷ÿ–¬º”‘ÿ£¨ƒ¨»œ÷µŒ™true°£
-scanPeriod£∫…Ë÷√º‡≤‚≈‰÷√Œƒº˛ «∑Ò”––ﬁ∏ƒµƒ ±º‰º‰∏Ù£¨»Áπ˚√ª”–∏¯≥ˆ ±º‰µ•Œª£¨ƒ¨»œµ•Œª «∫¡√Îµ±scanŒ™true ±£¨¥À Ù–‘…˙–ß°£ƒ¨»œµƒ ±º‰º‰∏ÙŒ™1∑÷÷”°£
-debug£∫µ±¥À Ù–‘…Ë÷√Œ™true ±£¨Ω´¥Ú”°≥ˆlogbackƒ⁄≤ø»’÷æ–≈œ¢£¨ µ ±≤Èø¥logback‘À––◊¥Ã¨°£ƒ¨»œ÷µŒ™false°£
+scanÔºöÂΩìÊ≠§Â±ûÊÄßËÆæÁΩÆ‰∏∫trueÊó∂ÔºåÈÖçÁΩÆÊñá‰ª∂Â¶ÇÊûúÂèëÁîüÊîπÂèòÔºåÂ∞Ü‰ºöË¢´ÈáçÊñ∞Âä†ËΩΩÔºåÈªòËÆ§ÂÄº‰∏∫true„ÄÇ
+scanPeriodÔºöËÆæÁΩÆÁõëÊµãÈÖçÁΩÆÊñá‰ª∂ÊòØÂê¶Êúâ‰øÆÊîπÁöÑÊó∂Èó¥Èó¥ÈöîÔºåÂ¶ÇÊûúÊ≤°ÊúâÁªôÂá∫Êó∂Èó¥Âçï‰ΩçÔºåÈªòËÆ§Âçï‰ΩçÊòØÊØ´ÁßíÂΩìscan‰∏∫trueÊó∂ÔºåÊ≠§Â±ûÊÄßÁîüÊïà„ÄÇÈªòËÆ§ÁöÑÊó∂Èó¥Èó¥Èöî‰∏∫1ÂàÜÈíü„ÄÇ
+debugÔºöÂΩìÊ≠§Â±ûÊÄßËÆæÁΩÆ‰∏∫trueÊó∂ÔºåÂ∞ÜÊâìÂç∞Âá∫logbackÂÜÖÈÉ®Êó•Âøó‰ø°ÊÅØÔºåÂÆûÊó∂Êü•ÁúãlogbackËøêË°åÁä∂ÊÄÅ„ÄÇÈªòËÆ§ÂÄº‰∏∫false„ÄÇ
 -->
 <configuration>
   <property scope="context" name="APP_NAME" value="app"/>
   <property scope="context" name="LOG_PATH" value="log"/>
-  <!-- Ω˚÷π ‰≥ˆ∆Ù∂Ø–≈œ¢ -->
+  <!-- Á¶ÅÊ≠¢ËæìÂá∫ÂêØÂä®‰ø°ÊÅØ -->
   <statusListener class="ch.qos.logback.core.status.NopStatusListener"/>
 
-  <!-- øÿ÷∆Ã®»’÷æ ‰≥ˆ ≈‰÷√-->
+  <!-- ÊéßÂà∂Âè∞Êó•ÂøóËæìÂá∫ ÈÖçÁΩÆ-->
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
       <pattern>{%date{HH:mm:ss.SSS}} [%thread][%highlight(%-5level)] %magenta(%-40class{40})[%3line]: %msg%n</pattern>
     </encoder>
   </appender>
-  <!-- Œƒº˛»’÷æ ‰≥ˆ -->
+  <!-- Êñá‰ª∂Êó•ÂøóËæìÂá∫ -->
   <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <!-- ≈‰÷√»’÷æ ‰≥ˆµƒŒƒº˛¬∑æ∂∫Õ√˚≥∆ -->
+    <!-- ÈÖçÁΩÆÊó•ÂøóËæìÂá∫ÁöÑÊñá‰ª∂Ë∑ØÂæÑÂíåÂêçÁß∞ -->
     <file>${LOG_PATH}/${APP_NAME}.log</file>
-    <!-- ≈‰÷√»’÷æ «◊∑º”ªπ «∏≤∏«÷ÿ–¥ -->
+    <!-- ÈÖçÁΩÆÊó•ÂøóÊòØËøΩÂä†ËøòÊòØË¶ÜÁõñÈáçÂÜô -->
     <append>true</append>
-    <!-- ≈‰÷√»’÷æ «∑Ò¡¢º¥À¢–¬ -->
+    <!-- ÈÖçÁΩÆÊó•ÂøóÊòØÂê¶Á´ãÂç≥Âà∑Êñ∞ -->
     <immediateFlush>true</immediateFlush>
-    <!--ÃÌº” ∑∂Œß π˝¬À-->
+    <!--Ê∑ªÂä† ËåÉÂõ¥ ËøáÊª§-->
     <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
       <level>INFO</level>
     </filter>
     <encoder>
-      <!-- ≈‰÷√»’÷æ ‰≥ˆ∏Ò Ω -->
+      <!-- ÈÖçÁΩÆÊó•ÂøóËæìÂá∫Ê†ºÂºè -->
       <pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} [%thread][%-5level] %-36logger{36} %class[%line]: %msg%n</pattern>
     </encoder>
-    <!--»’÷æπˆ∂Ø≤ﬂ¬‘£¨’‚¿Ô≈‰÷√∏˘æ›¥Û–°∫Õ»’∆⁄◊‘∂Øπˆ∂Ø -->
+    <!--Êó•ÂøóÊªöÂä®Á≠ñÁï•ÔºåËøôÈáåÈÖçÁΩÆÊ†πÊçÆÂ§ßÂ∞èÂíåÊó•ÊúüËá™Âä®ÊªöÂä® -->
     <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-      <!--  ◊œ»∞¥’’√øÃÏπˆ∂Ø£¨∏˘æ›»’÷æ∑≈µΩ≤ªÕ¨Œƒº˛º–÷–£¨◊Ó∫Û∏˘æ›¥Û–°Ω¯––πˆ∂Ø∑÷∏Ó -->
+      <!-- È¶ñÂÖàÊåâÁÖßÊØèÂ§©ÊªöÂä®ÔºåÊ†πÊçÆÊó•ÂøóÊîæÂà∞‰∏çÂêåÊñá‰ª∂Â§π‰∏≠ÔºåÊúÄÂêéÊ†πÊçÆÂ§ßÂ∞èËøõË°åÊªöÂä®ÂàÜÂâ≤ -->
       <fileNamePattern>${LOG_PATH}/${APP_NAME}-%d{yyyy-MM-dd,UTC}.%i.log</fileNamePattern>
-      <!-- √ø∏ˆ»’÷æŒƒº˛÷¡…Ÿ 4MB, ±£¥Ê 30 ÃÏ, µ´ «À˘”–»’÷æ’º”√ø’º‰◊Ó¥Û≤ªƒ‹≥¨π˝ 5GB£¨≥¨π˝∫Û«Â¿ÌΩœæ…µƒ»’÷æ -->
+      <!-- ÊØè‰∏™Êó•ÂøóÊñá‰ª∂Ëá≥Â∞ë 4MB, ‰øùÂ≠ò 30 Â§©, ‰ΩÜÊòØÊâÄÊúâÊó•ÂøóÂç†Áî®Á©∫Èó¥ÊúÄÂ§ß‰∏çËÉΩË∂ÖËøá 5GBÔºåË∂ÖËøáÂêéÊ∏ÖÁêÜËæÉÊóßÁöÑÊó•Âøó -->
       <maxFileSize>2MB</maxFileSize>
       <maxHistory>30</maxHistory>
-      <!-- À˘”–¥ÊµµŒƒº˛µƒ◊‹¥Û–°°£≥¨π˝◊‹¥Û–°…œœﬁ ±£¨Ω´“Ï≤Ω…æ≥˝◊Óæ…µƒπÈµµ°£-->
+      <!-- ÊâÄÊúâÂ≠òÊ°£Êñá‰ª∂ÁöÑÊÄªÂ§ßÂ∞è„ÄÇË∂ÖËøáÊÄªÂ§ßÂ∞è‰∏äÈôêÊó∂ÔºåÂ∞ÜÂºÇÊ≠•Âà†Èô§ÊúÄÊóßÁöÑÂΩíÊ°£„ÄÇ-->
       <totalSizeCap>5GB</totalSizeCap>
-      <!-- ∆Ù∂Ø ±∫Ú«Â¿Ì»’÷æ -->
+      <!-- ÂêØÂä®Êó∂ÂÄôÊ∏ÖÁêÜÊó•Âøó -->
       <cleanHistoryOnStart>true</cleanHistoryOnStart>
     </rollingPolicy>
   </appender>
-  <!-- Œƒº˛¥ÌŒÛ»’÷æ ‰≥ˆ -->
+  <!-- Êñá‰ª∂ÈîôËØØÊó•ÂøóËæìÂá∫ -->
   <appender name="FILE_ERROR_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <!-- ≈‰÷√»’÷æ ‰≥ˆµƒŒƒº˛¬∑æ∂∫Õ√˚≥∆ -->
+    <!-- ÈÖçÁΩÆÊó•ÂøóËæìÂá∫ÁöÑÊñá‰ª∂Ë∑ØÂæÑÂíåÂêçÁß∞ -->
     <file>${LOG_PATH}/${APP_NAME}-error.log</file>
-    <!-- ≈‰÷√»’÷æ «◊∑º”ªπ «∏≤∏«÷ÿ–¥ -->
+    <!-- ÈÖçÁΩÆÊó•ÂøóÊòØËøΩÂä†ËøòÊòØË¶ÜÁõñÈáçÂÜô -->
     <append>true</append>
-    <!-- ≈‰÷√»’÷æ «∑Ò¡¢º¥À¢–¬ -->
+    <!-- ÈÖçÁΩÆÊó•ÂøóÊòØÂê¶Á´ãÂç≥Âà∑Êñ∞ -->
     <immediateFlush>true</immediateFlush>
-    <!--ÃÌº” ∑∂Œß π˝¬À-->
+    <!--Ê∑ªÂä† ËåÉÂõ¥ ËøáÊª§-->
     <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
       <level>ERROR</level>
     </filter>
     <encoder>
-      <!-- ≈‰÷√»’÷æ ‰≥ˆ∏Ò Ω -->
+      <!-- ÈÖçÁΩÆÊó•ÂøóËæìÂá∫Ê†ºÂºè -->
       <pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} [%thread][%-5level] %-36logger{36} %class[%line]: %msg%n</pattern>
     </encoder>
-    <!--»’÷æπˆ∂Ø≤ﬂ¬‘£¨’‚¿Ô≈‰÷√∏˘æ›¥Û–°∫Õ»’∆⁄◊‘∂Øπˆ∂Ø -->
+    <!--Êó•ÂøóÊªöÂä®Á≠ñÁï•ÔºåËøôÈáåÈÖçÁΩÆÊ†πÊçÆÂ§ßÂ∞èÂíåÊó•ÊúüËá™Âä®ÊªöÂä® -->
     <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-      <!--  ◊œ»∞¥’’√øÃÏπˆ∂Ø£¨∏˘æ›»’÷æ∑≈µΩ≤ªÕ¨Œƒº˛º–÷–£¨◊Ó∫Û∏˘æ›¥Û–°Ω¯––πˆ∂Ø∑÷∏Ó -->
+      <!-- È¶ñÂÖàÊåâÁÖßÊØèÂ§©ÊªöÂä®ÔºåÊ†πÊçÆÊó•ÂøóÊîæÂà∞‰∏çÂêåÊñá‰ª∂Â§π‰∏≠ÔºåÊúÄÂêéÊ†πÊçÆÂ§ßÂ∞èËøõË°åÊªöÂä®ÂàÜÂâ≤ -->
       <fileNamePattern>${LOG_PATH}/${APP_NAME}-error-%d{yyyy-MM-dd,UTC}.%i.log</fileNamePattern>
-      <!-- √ø∏ˆ»’÷æŒƒº˛÷¡…Ÿ 4MB, ±£¥Ê 30 ÃÏ, µ´ «À˘”–»’÷æ’º”√ø’º‰◊Ó¥Û≤ªƒ‹≥¨π˝ 5GB£¨≥¨π˝∫Û«Â¿ÌΩœæ…µƒ»’÷æ -->
+      <!-- ÊØè‰∏™Êó•ÂøóÊñá‰ª∂Ëá≥Â∞ë 4MB, ‰øùÂ≠ò 30 Â§©, ‰ΩÜÊòØÊâÄÊúâÊó•ÂøóÂç†Áî®Á©∫Èó¥ÊúÄÂ§ß‰∏çËÉΩË∂ÖËøá 5GBÔºåË∂ÖËøáÂêéÊ∏ÖÁêÜËæÉÊóßÁöÑÊó•Âøó -->
       <maxFileSize>2MB</maxFileSize>
       <maxHistory>60</maxHistory>
-      <!-- À˘”–¥ÊµµŒƒº˛µƒ◊‹¥Û–°°£≥¨π˝◊‹¥Û–°…œœﬁ ±£¨Ω´“Ï≤Ω…æ≥˝◊Óæ…µƒπÈµµ°£-->
+      <!-- ÊâÄÊúâÂ≠òÊ°£Êñá‰ª∂ÁöÑÊÄªÂ§ßÂ∞è„ÄÇË∂ÖËøáÊÄªÂ§ßÂ∞è‰∏äÈôêÊó∂ÔºåÂ∞ÜÂºÇÊ≠•Âà†Èô§ÊúÄÊóßÁöÑÂΩíÊ°£„ÄÇ-->
       <totalSizeCap>5GB</totalSizeCap>
-      <!-- ∆Ù∂Ø ±∫Ú«Â¿Ì»’÷æ -->
+      <!-- ÂêØÂä®Êó∂ÂÄôÊ∏ÖÁêÜÊó•Âøó -->
       <cleanHistoryOnStart>true</cleanHistoryOnStart>
     </rollingPolicy>
   </appender>
-  <!-- Œƒº˛µ˜ Ω»’÷æ ‰≥ˆ -->
+  <!-- Êñá‰ª∂Ë∞ÉÂºèÊó•ÂøóËæìÂá∫ -->
   <appender name="FILE_DEBUG_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <!-- ≈‰÷√»’÷æ ‰≥ˆµƒŒƒº˛¬∑æ∂∫Õ√˚≥∆ -->
+    <!-- ÈÖçÁΩÆÊó•ÂøóËæìÂá∫ÁöÑÊñá‰ª∂Ë∑ØÂæÑÂíåÂêçÁß∞ -->
     <file>${LOG_PATH}/${APP_NAME}-debug.log</file>
-    <!-- ≈‰÷√»’÷æ «◊∑º”ªπ «∏≤∏«÷ÿ–¥ -->
+    <!-- ÈÖçÁΩÆÊó•ÂøóÊòØËøΩÂä†ËøòÊòØË¶ÜÁõñÈáçÂÜô -->
     <append>true</append>
-    <!-- ≈‰÷√»’÷æ «∑Ò¡¢º¥À¢–¬ -->
+    <!-- ÈÖçÁΩÆÊó•ÂøóÊòØÂê¶Á´ãÂç≥Âà∑Êñ∞ -->
     <immediateFlush>true</immediateFlush>
-    <!--ÃÌº” ∑∂Œß π˝¬À-->
+    <!--Ê∑ªÂä† ËåÉÂõ¥ ËøáÊª§-->
     <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
       <level>INFO</level>
     </filter>
     <encoder>
-      <!-- ≈‰÷√»’÷æ ‰≥ˆ∏Ò Ω -->
+      <!-- ÈÖçÁΩÆÊó•ÂøóËæìÂá∫Ê†ºÂºè -->
       <pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} [%thread][%-5level] %-36logger{36} %class[%line]: %msg%n</pattern>
     </encoder>
-    <!--»’÷æπˆ∂Ø≤ﬂ¬‘£¨’‚¿Ô≈‰÷√∏˘æ›¥Û–°∫Õ»’∆⁄◊‘∂Øπˆ∂Ø -->
+    <!--Êó•ÂøóÊªöÂä®Á≠ñÁï•ÔºåËøôÈáåÈÖçÁΩÆÊ†πÊçÆÂ§ßÂ∞èÂíåÊó•ÊúüËá™Âä®ÊªöÂä® -->
     <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-      <!--  ◊œ»∞¥’’√øÃÏπˆ∂Ø£¨∏˘æ›»’÷æ∑≈µΩ≤ªÕ¨Œƒº˛º–÷–£¨◊Ó∫Û∏˘æ›¥Û–°Ω¯––πˆ∂Ø∑÷∏Ó -->
+      <!-- È¶ñÂÖàÊåâÁÖßÊØèÂ§©ÊªöÂä®ÔºåÊ†πÊçÆÊó•ÂøóÊîæÂà∞‰∏çÂêåÊñá‰ª∂Â§π‰∏≠ÔºåÊúÄÂêéÊ†πÊçÆÂ§ßÂ∞èËøõË°åÊªöÂä®ÂàÜÂâ≤ -->
       <fileNamePattern>${LOG_PATH}/${APP_NAME}-debug-%d{yyyy-MM-dd,UTC}.%i.log</fileNamePattern>
-      <!-- √ø∏ˆ»’÷æŒƒº˛÷¡…Ÿ 2MB, ±£¥Ê 1 ÃÏ, µ´ «À˘”–»’÷æ’º”√ø’º‰◊Ó¥Û≤ªƒ‹≥¨π˝ 2GB£¨≥¨π˝∫Û«Â¿ÌΩœæ…µƒ»’÷æ -->
+      <!-- ÊØè‰∏™Êó•ÂøóÊñá‰ª∂Ëá≥Â∞ë 2MB, ‰øùÂ≠ò 1 Â§©, ‰ΩÜÊòØÊâÄÊúâÊó•ÂøóÂç†Áî®Á©∫Èó¥ÊúÄÂ§ß‰∏çËÉΩË∂ÖËøá 2GBÔºåË∂ÖËøáÂêéÊ∏ÖÁêÜËæÉÊóßÁöÑÊó•Âøó -->
       <maxFileSize>2MB</maxFileSize>
       <maxHistory>1</maxHistory>
-      <!-- À˘”–¥ÊµµŒƒº˛µƒ◊‹¥Û–°°£≥¨π˝◊‹¥Û–°…œœﬁ ±£¨Ω´“Ï≤Ω…æ≥˝◊Óæ…µƒπÈµµ°£-->
+      <!-- ÊâÄÊúâÂ≠òÊ°£Êñá‰ª∂ÁöÑÊÄªÂ§ßÂ∞è„ÄÇË∂ÖËøáÊÄªÂ§ßÂ∞è‰∏äÈôêÊó∂ÔºåÂ∞ÜÂºÇÊ≠•Âà†Èô§ÊúÄÊóßÁöÑÂΩíÊ°£„ÄÇ-->
       <totalSizeCap>2GB</totalSizeCap>
-      <!-- ∆Ù∂Ø ±∫Ú«Â¿Ì»’÷æ -->
+      <!-- ÂêØÂä®Êó∂ÂÄôÊ∏ÖÁêÜÊó•Âøó -->
       <cleanHistoryOnStart>true</cleanHistoryOnStart>
     </rollingPolicy>
   </appender>
   <!--
-  ∏˘Ω⁄µ„»’÷æº«¬º∆˜ ≈‰÷√
+  Ê†πËäÇÁÇπÊó•ÂøóËÆ∞ÂΩïÂô® ÈÖçÁΩÆ
   -->
   <root level="DEBUG">
     <appender-ref ref="FILE"/>
     <appender-ref ref="FILE_ERROR_LOG"/>
     <appender-ref ref="FILE_DEBUG_LOG"/>
-    <!-- …˙≤˙ª∑æ≥Ω´«ÎΩ˚”√ STDOUT -->
+    <!-- Áîü‰∫ßÁéØÂ¢ÉÂ∞ÜËØ∑Á¶ÅÁî® STDOUT -->
     <appender-ref ref="STDOUT"/>
   </root>
 
   <!--
-  µ⁄»˝∑Ω jar ∞¸»’÷æ ‰≥ˆº∂±
+  Á¨¨‰∏âÊñπ jar ÂåÖÊó•ÂøóËæìÂá∫Á∫ßÂà´
   -->
   <logger name="org.springframework" level="WARN"/>
   <logger name="org.mybatis" level="DEBUG"/>
@@ -124,10 +124,10 @@ debug£∫µ±¥À Ù–‘…Ë÷√Œ™true ±£¨Ω´¥Ú”°≥ˆlogbackƒ⁄≤ø»’÷æ–≈œ¢£¨ µ ±≤Èø¥logback‘À––◊¥Ã
   <logger name="com.apache.zookeeper" level="ERROR"/>
   <logger name="io.netty" level="ERROR"/>
   <!--
-  ◊‘∂®“Â–ﬁ∏ƒ
-  ◊‘÷˜ø™∑¢µƒ jar ∞¸»’÷æ ‰≥ˆº∂±
-  ’˝ Ωª∑æ≥…Ë÷√ WARN º∂± | ø™∑¢ª∑æ≥…Ë÷√ DEBUG º∂±
+  Ëá™ÂÆö‰πâ‰øÆÊîπ
+  Ëá™‰∏ªÂºÄÂèëÁöÑ jar ÂåÖÊó•ÂøóËæìÂá∫Á∫ßÂà´
+  Ê≠£ÂºèÁéØÂ¢ÉËÆæÁΩÆ WARN Á∫ßÂà´ | ÂºÄÂèëÁéØÂ¢ÉËÆæÁΩÆ DEBUG Á∫ßÂà´
   -->
   <logger name="com.x3platform" level="DEBUG" additivity="true"/>
-  <logger name="com.amiintellect" level="DEBUG" additivity="true"/>
+  <logger name="com.x3platform" level="DEBUG" additivity="true"/>
 </configuration>

@@ -4,6 +4,8 @@ import com.alibaba.fastjson.annotation.JSONField;
 import com.x3platform.apps.AppsContext;
 import com.x3platform.util.DateUtil;
 import com.x3platform.util.StringUtil;
+
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -38,12 +40,12 @@ public class ApplicationMethod
     id = value;
   }
 
+  @JSONField(serialize = false)
   private Application application;
 
   /**
    * 应用
    */
-  @JSONField(serialize = false)
   public Application getApplication() {
     if (application == null && !StringUtil.isNullOrEmpty(getApplicationId())) {
       application = AppsContext.getInstance().getApplicationService().findOne(getApplicationId());
@@ -67,6 +69,20 @@ public class ApplicationMethod
    */
   public void setApplicationId(String value) {
     applicationId = value;
+  }
+
+  /**
+   * 所属应用名称
+   */
+  public String getApplicationName() {
+    return getApplication() == null ? "" : getApplication().getApplicationName();
+  }
+
+  /**
+   * 所属应用显示名称
+   */
+  public String getApplicationDisplayName() {
+    return getApplication() == null ? "" : getApplication().getApplicationDisplayName();
   }
 
   private String code = "";
@@ -285,13 +301,13 @@ public class ApplicationMethod
     remark = value;
   }
 
-  private Date modifiedDate = DateUtil.getDefaultDate();
+  private LocalDateTime modifiedDate = DateUtil.getDefaultLocalDateTime();
 
   /**
    * 获取
    * @return
    */
-  public Date getModifiedDate() {
+  public LocalDateTime getModifiedDate() {
     return modifiedDate;
   }
 
@@ -299,17 +315,17 @@ public class ApplicationMethod
    * 设置
    * @param value 值
    */
-  public void setModifiedDate(Date value) {
+  public void setModifiedDate(LocalDateTime value) {
     modifiedDate = value;
   }
 
-  private Date createdDate = DateUtil.getDefaultDate();
+  private LocalDateTime createdDate = DateUtil.getDefaultLocalDateTime();
 
   /**
    * 获取
    * @return
    */
-  public Date getCreatedDate() {
+  public LocalDateTime getCreatedDate() {
     return createdDate;
   }
 
@@ -317,7 +333,7 @@ public class ApplicationMethod
    * 设置
    * @param value 值
    */
-  public void setCreatedDate(Date value) {
+  public void setCreatedDate(LocalDateTime value) {
     createdDate = value;
   }
 }

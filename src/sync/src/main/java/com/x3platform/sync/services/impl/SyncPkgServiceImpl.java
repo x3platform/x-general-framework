@@ -35,15 +35,13 @@ import java.util.Map;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageDeliveryMode;
 import org.springframework.amqp.core.MessageProperties;
+import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.rabbit.support.CorrelationData;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 /**
  * @author ruanyu
  */
-@Service
 public class SyncPkgServiceImpl implements SyncPkgService {
 
   private static final String DIGITAL_NUMBER_KEY_CODE = "Table_Sync_Pkg_Key_Id";

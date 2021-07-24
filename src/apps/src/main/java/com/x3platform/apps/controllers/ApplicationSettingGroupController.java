@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author ruanyu
  */
 @Lazy
-@RestController
+@RestController("com.x3platform.apps.controllers.ApplicationSettingGroupController")
 @RequestMapping("/api/apps/applicationSettingGroup")
 public class ApplicationSettingGroupController {
 

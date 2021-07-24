@@ -1426,7 +1426,10 @@ CREATE TABLE `data_storage_node`  (
 -- ----------------------------
 -- Records of data_storage_node
 -- ----------------------------
-INSERT INTO `data_storage_node` VALUES ('default-0', 'default', 'f', 'f', 'f', 'localhost', 3306, NULL, NULL, NULL, NULL, 'jdbc:mysql://mysql.amiintellect.com:3306/ami_base_dev?user=test&password=ami#42aa3B11&useUnicode=true&characterEncoding=utf-8&useSSL=false&autoReconnect=true', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `data_storage_node` VALUES
+  ('default-0', 'default', 'f', 'f', 'f', 'localhost', 3306, NULL, NULL, NULL, NULL,
+   'jdbc:mysql://mysql.x3platform.com:3306/x3_base?user=test&password=test&useUnicode=true&characterEncoding=utf-8&useSSL=false&autoReconnect=true',
+   NULL, NULL, NULL, NULL, NULL, NULL);
 
 -- ----------------------------
 -- Table structure for data_storage_schema

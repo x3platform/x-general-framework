@@ -120,9 +120,7 @@
       full_path,
       modified_date,
       created_date
-    )
-    VALUES
-    (
+    ) VALUES (
       #{id,jdbcType=VARCHAR},
       #{accountId,jdbcType=VARCHAR},
       #{corporationId,jdbcType=VARCHAR},
@@ -170,6 +168,9 @@
   </delete>
   <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap" >
     SELECT * FROM sys_user WHERE id = #{id}
+  </select>
+  <select id="findOneByLoginName" parameterType="java.lang.String" resultMap="BaseResultMap" >
+    SELECT * FROM sys_user WHERE account_id IN ( SELECT id FROM sys_account WHERE login_name = #{login_name} )
   </select>
   <select id="findAll" parameterType="java.util.Map" resultMap="BaseResultMap" >
     SELECT * FROM sys_user t

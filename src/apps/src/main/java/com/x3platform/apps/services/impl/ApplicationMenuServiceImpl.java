@@ -5,17 +5,26 @@ import static com.x3platform.apps.configuration.AppsConfiguration.APPLICATION_NA
 
 import com.x3platform.AuthorizationScope;
 import com.x3platform.KernelContext;
+import com.x3platform.apps.AppsContext;
 import com.x3platform.apps.AppsSecurity;
+import com.x3platform.apps.configuration.AppsConfigurationView;
 import com.x3platform.apps.mappers.ApplicationMenuMapper;
+import com.x3platform.apps.models.Application;
 import com.x3platform.apps.models.ApplicationMenu;
 import com.x3platform.apps.models.ApplicationMenuLite;
 import com.x3platform.apps.services.ApplicationMenuService;
 import com.x3platform.cachebuffer.CachingManager;
 import com.x3platform.data.DataQuery;
+import com.x3platform.digitalnumber.DigitalNumberContext;
 import com.x3platform.membership.Account;
 import com.x3platform.membership.MembershipManagement;
+import com.x3platform.tree.DynamicTreeNode;
+import com.x3platform.tree.DynamicTreeView;
+import com.x3platform.tree.TreeNode;
+import com.x3platform.tree.TreeView;
 import com.x3platform.util.StringUtil;
 import com.x3platform.util.UUIDUtil;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -24,9 +33,17 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class ApplicationMenuServiceImpl implements ApplicationMenuService {
 
+  private static final String CACHE_KEY_TREEVIEW_PREFIX = "x3platform:apps:application-menu:treeview:";
+
+  private static final String TREEVIEW_ROOT_ID = "menu#applicationId#00000000-0000-0000-0000-000000000001#menuId#00000000-0000-0000-0000-000000000000";
+
+  private static final String TREENODE_ID_FORMAT = "{}#applicationId#{}#menuId#{}";
+
   private static final String CACHE_KEY_ID_PREFIX = "x3platform:apps:application-menu:id:";
 
   private static final String DATA_SCOPE_TABLE_NAME = "application_menu_scope";
+
+  private static final String DIGITAL_NUMBER_KEY_CODE = "table_application_menu_key_code";
 
   /**
    * 数据提供器
@@ -70,19 +87,39 @@ public class ApplicationMenuServiceImpl implements ApplicationMenuService {
    * @param entity 实例 ApplicationMenu 详细信息
    */
   @Override
-  public int save(ApplicationMenu entity) {
-    int affectedRows = -1;
+  public int save(ApplicationMenu entity) throws NullPointerException {
+    if (StringUtil.isNullOrEmpty(entity.getId())) {
+      throw new NullPointerException("标识不能为空");
+    }
+
+    // 根据是否存在的对象，判断是否新建对象
+    boolean isNewObject = !provider.isExist(entity.getId());
+
+    int affectedRows;
 
     String id = entity.getId();
 
-    if (StringUtil.isNullOrEmpty(id)) {
-      throw new NullPointerException("必须填写对象标识");
+    // 如果 ParentId 为空 或者 ParentId = Application Id 则设置为应用的根节点菜单
+    if(StringUtil.isNullOrEmpty(entity.getParentId()) || entity.getParentId().equals(entity.getApplicationId()))
+    {
+      entity.setParentId(APPLICATION_MENU_ROOT_ID);
+    }
+
+    if (StringUtil.isNullOrEmpty(entity.getTarget())) {
+      entity.setTarget("_self");
+    }
+    if (StringUtil.isNullOrEmpty(entity.getDisplayType())) {
+      entity.setDisplayType("MenuItem");
     }
 
     // 计算完整路径
     entity.setFullPath(combineFullPath(entity));
 
-    if (provider.selectByPrimaryKey(id) == null) {
+    if (isNewObject) {
+      if (StringUtil.isNullOrEmpty(entity.getCode())) {
+        entity.setCode(DigitalNumberContext.generate(DIGITAL_NUMBER_KEY_CODE));
+      }
+
       affectedRows = provider.insert(entity);
     } else {
       affectedRows = provider.updateByPrimaryKey(entity);
@@ -177,13 +214,17 @@ public class ApplicationMenuServiceImpl implements ApplicationMenuService {
    */
   @Override
   public List<ApplicationMenuLite> findAllLites(DataQuery query) {
-//     // 验证管理员身份
-//    if (AppsSecurity.IsAdministrator(KernelContext.Current.User, AppsConfiguration.ApplicationName)) {
-//      return this.provider.findAllQueryObject(whereClause, length);
-//    } else {
-//      return this.provider.findAllQueryObject(this.BindAuthorizationScopeSQL(whereClause), length);
-//    }
     return provider.findAllLites(query.getMap());
+  }
+
+  @Override
+  public List<ApplicationMenuLite> findTreeNodesByApplicationId(String applicationId, String menuType) {
+    return provider.findTreeNodesByApplicationId(applicationId, menuType);
+  }
+
+  @Override
+  public List<ApplicationMenuLite> findTreeNodesByParentId(String parentId, String menuType) {
+    return provider.findTreeNodesByParentId(parentId, menuType);
   }
 
   // -------------------------------------------------------
@@ -258,8 +299,7 @@ public class ApplicationMenuServiceImpl implements ApplicationMenuService {
    * @return 返回所有实例ApplicationMenu的详细信息
    */
   @Override
-  public List<ApplicationMenu> getMenusByFullPath(String applicationId, String fullPath,
-    String menuType) {
+  public List<ApplicationMenu> getMenusByFullPath(String applicationId, String fullPath, String menuType) {
     return provider.getMenusByFullPath(applicationId, fullPath, menuType);
   }
 
@@ -396,5 +436,205 @@ public class ApplicationMenuServiceImpl implements ApplicationMenuService {
         + " GROUP BY entity_id)) "
         + ") ", accountId);
     }
+  }
+
+  // -------------------------------------------------------
+  // 树形视图
+  // -------------------------------------------------------
+
+  @Override
+  public TreeView getTreeView(String treeViewName, String treeViewRootTreeNodeId, String commandFormat) {
+    String key = CACHE_KEY_TREEVIEW_PREFIX + treeViewRootTreeNodeId;
+
+    // 读取缓存信息
+    if (CachingManager.contains(key)) {
+      return (TreeView) CachingManager.get(key);
+    }
+
+    TreeView treeView = new TreeView(treeViewName, treeViewRootTreeNodeId, commandFormat);
+
+    List<TreeNode> childNodes = getTreeNodes(treeViewRootTreeNodeId, commandFormat);
+
+    if (!childNodes.isEmpty()) {
+      treeView.add(childNodes);
+      // 设置缓存信息
+      CachingManager.set(key, treeView);
+    }
+
+    return treeView;
+  }
+
+  private List<TreeNode> getTreeNodes(String parentId, String commandFormat) {
+    // ParentId 内容格式如下
+    // "function#applicationId#00000000-0000-0000-0000-000000000001#featureId#00000000-0000-0000-0000-000000000000"
+    // keys[0] -
+    // keys[1] - 所属应用标识标签
+    // keys[2] - 所属应用标识
+    // keys[3] - 所属应用标识标签
+    // keys[4] - 所属应用功能标识
+    String[] keys = parentId.split("#");
+
+    List<TreeNode> treeNodes = new ArrayList<TreeNode>();
+
+    Application application = AppsContext.getInstance().getApplicationService()
+      .findOneByApplicationName(APPLICATION_NAME);
+
+    if (UUIDUtil.emptyString("D").equals(keys[4])) {
+      List<Application> list = AppsContext.getInstance().getApplicationService().findTreeNodesByParentId(keys[2]);
+
+      for (Application item : list) {
+        TreeNode treeNode = new TreeNode(
+          StringUtil.format(TREENODE_ID_FORMAT, "application", item.getId(), UUIDUtil.emptyString("D")),
+          StringUtil.format(TREENODE_ID_FORMAT, "application", keys[2], UUIDUtil.emptyString("D")),
+          item.getApplicationDisplayName(), item.getApplicationDisplayName(), commandFormat);
+
+        List<TreeNode> childNodes = getTreeNodes(StringUtil.format(TREENODE_ID_FORMAT,
+          "application", item.getId(), UUIDUtil.emptyString("D")), commandFormat);
+
+        if (!childNodes.isEmpty()) {
+          treeNode.add(childNodes);
+        }
+
+        treeNodes.add(treeNode);
+      }
+    }
+
+    // 获取应用功能节点
+    List<ApplicationMenuLite> list = null;
+
+    // 功能项
+    if (UUIDUtil.emptyString("D").equals(keys[4])) {
+      list = provider.findTreeNodesByApplicationId(keys[2], keys[0]);
+    } else {
+      list = provider.findTreeNodesByParentId(keys[4], keys[0]);
+    }
+
+    for (ApplicationMenuLite item : list) {
+      TreeNode treeNode = new TreeNode(
+        StringUtil.format(TREENODE_ID_FORMAT, "menu", item.getApplicationId(), item.getId()),
+        StringUtil.format(TREENODE_ID_FORMAT, "menu", item.getApplicationId(), item.getParentId()),
+        item.getName(), item.getName(), commandFormat);
+
+      List<TreeNode> childNodes = getTreeNodes(StringUtil.format(TREENODE_ID_FORMAT,
+        "function", item.getApplicationId(), item.getId()), commandFormat);
+
+      if (!childNodes.isEmpty()) {
+        treeNode.add(childNodes);
+      }
+
+      treeNodes.add(treeNode);
+    }
+
+    return treeNodes;
+  }
+
+  @Override
+  public DynamicTreeView getDynamicTreeView(String treeViewName, String treeViewRootTreeNodeId, String parentId,
+    String commandFormat) {
+    // ParentId 内容格式如下
+    // "function#applicationId#00000000-0000-0000-0000-000000000001#featureId#00000000-0000-0000-0000-000000000000"
+    // keys[0] - 对象类型
+    // keys[1] - 所属应用标识标签
+    // keys[2] - 所属应用标识
+    // keys[3] - 所属应用标识标签
+    // keys[4] - 所属应用功能标识
+    parentId = (StringUtil.isNullOrEmpty(parentId) || "0".equals(parentId)) ? treeViewRootTreeNodeId : parentId;
+
+    String[] keys = parentId.split("#");
+
+    DynamicTreeView treeView = new DynamicTreeView(treeViewName, treeViewRootTreeNodeId, parentId, commandFormat);
+
+    Application application = AppsContext.getInstance().getApplicationService()
+      .findOneByApplicationName(APPLICATION_NAME);
+
+    if (TREEVIEW_ROOT_ID.equals(parentId)) {
+      DynamicTreeNode treeNode = null;
+
+      // 特殊类型 开始菜单 顶部菜单 快捷菜单
+      if (!AppsConfigurationView.getInstance().getHiddenStartMenu()) {
+        treeNode = new DynamicTreeNode(
+          StringUtil.format(TREENODE_ID_FORMAT, "startMenu", application.getId(), UUIDUtil.emptyString("D")),
+          APPLICATION_MENU_ROOT_ID, "开始菜单", "开始菜单", commandFormat, true);
+
+        treeView.add(treeNode);
+      }
+
+      if (!AppsConfigurationView.getInstance().getHiddenTopMenu()) {
+        treeNode = new DynamicTreeNode(
+          StringUtil.format(TREENODE_ID_FORMAT, "topMenu", application.getId(), UUIDUtil.emptyString("D")),
+          APPLICATION_MENU_ROOT_ID, "顶部菜单", "顶部菜单", commandFormat, true);
+
+        treeView.add(treeNode);
+      }
+
+      if (!AppsConfigurationView.getInstance().getHiddenShortcutMenu()) {
+        treeNode = new DynamicTreeNode(
+          StringUtil.format(TREENODE_ID_FORMAT, "shortcutMenu", application.getId(), UUIDUtil.emptyString("D")),
+          APPLICATION_MENU_ROOT_ID, "快捷菜单", "快捷菜单", commandFormat, true);
+
+        treeView.add(treeNode);
+      }
+
+      // 添加应用管理
+      treeNode = new DynamicTreeNode(
+        StringUtil.format(TREENODE_ID_FORMAT, "application", application.getId(), UUIDUtil.emptyString("D")),
+        APPLICATION_MENU_ROOT_ID, application.getApplicationDisplayName(), application.getApplicationDisplayName(),
+        commandFormat, true);
+
+      treeView.add(treeNode);
+
+      List<Application> list = AppsContext.getInstance().getApplicationService().findTreeNodesByParentId(keys[2]);
+
+      for (Application item : list) {
+        treeNode = new DynamicTreeNode(
+          StringUtil.format(TREENODE_ID_FORMAT, "application", item.getId(), UUIDUtil.emptyString("D")),
+          StringUtil.format(TREENODE_ID_FORMAT, "application", keys[2], UUIDUtil.emptyString("D")),
+          item.getApplicationDisplayName(), item.getApplicationDisplayName(), commandFormat, true);
+
+        treeView.add(treeNode);
+      }
+    } else {
+      // 应用节点处理
+      if ("application".equals(keys[0]) && !application.getId().equals(keys[2])
+        && APPLICATION_MENU_ROOT_ID.equals(keys[4])) {
+        List<Application> list = AppsContext.getInstance().getApplicationService().findTreeNodesByParentId(keys[2]);
+
+        for (Application item : list) {
+          DynamicTreeNode treeNode = new DynamicTreeNode(
+            StringUtil.format(TREENODE_ID_FORMAT, "application", item.getId(), UUIDUtil.emptyString("D")),
+            StringUtil.format(TREENODE_ID_FORMAT, "application", keys[2], UUIDUtil.emptyString("D")),
+            item.getApplicationDisplayName(), item.getApplicationDisplayName(), commandFormat, true);
+
+          treeView.add(treeNode);
+        }
+      }
+
+      // 获取应用菜单节点
+      List<ApplicationMenuLite> list = null;
+
+      String menuType = StringUtil.toFirstUpper(keys[0]);
+
+      if ("Application".equals(menuType)) {
+        menuType = "ApplicationMenu";
+      }
+
+      // 菜单项
+      if (APPLICATION_MENU_ROOT_ID.equals(keys[4])) {
+        list = provider.findTreeNodesByApplicationId(keys[2], menuType);
+      } else {
+        list = provider.findTreeNodesByParentId(keys[4], menuType);
+      }
+
+      for (ApplicationMenuLite item : list) {
+        DynamicTreeNode treeNode = new DynamicTreeNode(
+          StringUtil.format(TREENODE_ID_FORMAT, item.getMenuType(), item.getApplicationId(), item.getId()),
+          StringUtil.format(TREENODE_ID_FORMAT, item.getMenuType(), item.getApplicationId(), item.getParentId()),
+          item.getName(), item.getName(), commandFormat, true);
+
+        treeView.add(treeNode);
+      }
+    }
+
+    return treeView;
   }
 }

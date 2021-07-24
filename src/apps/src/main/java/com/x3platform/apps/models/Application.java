@@ -10,9 +10,11 @@ import com.x3platform.membership.Account;
 import com.x3platform.membership.MembershipManagement;
 import com.x3platform.util.DateUtil;
 import com.x3platform.util.StringUtil;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import org.dom4j.Element;
 
 /**
@@ -89,6 +91,7 @@ public class Application extends EntityClass implements Cacheable {
   }
 
   /**
+   *
    */
   private String parentDisplayName;
 
@@ -135,6 +138,7 @@ public class Application extends EntityClass implements Cacheable {
   private String applicationName = "";
 
   /**
+   *
    */
   public String getApplicationName() {
     return applicationName;
@@ -147,6 +151,7 @@ public class Application extends EntityClass implements Cacheable {
   private String applicationDisplayName = "";
 
   /**
+   *
    */
   public String getApplicationDisplayName() {
     if (StringUtil.isNullOrEmpty(applicationDisplayName)) {
@@ -217,6 +222,7 @@ public class Application extends EntityClass implements Cacheable {
   private String description = "";
 
   /**
+   *
    */
   public String getDescription() {
     return description;
@@ -242,6 +248,7 @@ public class Application extends EntityClass implements Cacheable {
   private String administratorEmail = "";
 
   /**
+   *
    */
   public String getAdministratorEmail() {
     return administratorEmail;
@@ -332,6 +339,7 @@ public class Application extends EntityClass implements Cacheable {
   private String orderId = "";
 
   /**
+   *
    */
   public String getOrderId() {
     return orderId;
@@ -344,6 +352,7 @@ public class Application extends EntityClass implements Cacheable {
   private int status;
 
   /**
+   *
    */
   public int getStatus() {
     return status;
@@ -356,6 +365,7 @@ public class Application extends EntityClass implements Cacheable {
   private String remark = "";
 
   /**
+   *
    */
   public String getRemark() {
     return remark;
@@ -365,9 +375,10 @@ public class Application extends EntityClass implements Cacheable {
     remark = value;
   }
 
-  private java.time.LocalDateTime modifiedDate = java.time.LocalDateTime.now();
+  private java.time.LocalDateTime modifiedDate = DateUtil.getDefaultLocalDateTime();
 
   /**
+   * 修改时间
    */
   public java.time.LocalDateTime getModifiedDate() {
     return modifiedDate;
@@ -377,7 +388,7 @@ public class Application extends EntityClass implements Cacheable {
     modifiedDate = value;
   }
 
-  private java.time.LocalDateTime createdDate = java.time.LocalDateTime.now();
+  private java.time.LocalDateTime createdDate = DateUtil.getDefaultLocalDateTime();
 
   /**
    * 创建时间
@@ -404,6 +415,7 @@ public class Application extends EntityClass implements Cacheable {
   }
 
   /**
+   *
    */
   public List<AuthorizationScope> getAdministrators() {
     if (administrators == null) {
@@ -416,6 +428,7 @@ public class Application extends EntityClass implements Cacheable {
   private String administratorScopeView = null;
 
   /**
+   *
    */
   public String getAdministratorScopeView() {
     if (administratorScopeView == null) {
@@ -427,6 +440,7 @@ public class Application extends EntityClass implements Cacheable {
   private String administratorScopeText = null;
 
   /**
+   *
    */
   public String getAdministratorScopeText() {
     if (administratorScopeText == null) {
@@ -563,7 +577,7 @@ public class Application extends EntityClass implements Cacheable {
   /**
    * 序列化对象
    *
-   * @param displayComment 显示注释
+   * @param displayComment      显示注释
    * @param displayFriendlyName 显示友好名称
    */
   @Override

@@ -1,6 +1,9 @@
 package com.x3platform.digitalnumber.models;
 
+import com.x3platform.util.DateUtil;
+
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * 流水号信息
@@ -52,7 +55,33 @@ public class DigitalNumber implements Serializable {
     seed = value;
   }
 
-  private java.time.LocalDateTime modifiedDate = java.time.LocalDateTime.MIN;
+  private String description;
+
+  /**
+   * 描述
+   */
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String value) {
+    description = value;
+  }
+
+  /**
+   * 是否锁定
+   */
+  public int locking = 1;
+
+  public int getLocking() {
+    return locking;
+  }
+
+  public void setLocking(int locking) {
+    this.locking = locking;
+  }
+
+  private LocalDateTime modifiedDate = DateUtil.getDefaultLocalDateTime();
 
   /**
    * 更新日期
@@ -65,7 +94,7 @@ public class DigitalNumber implements Serializable {
     modifiedDate = value;
   }
 
-  private java.time.LocalDateTime createdDate = java.time.LocalDateTime.MIN;
+  private LocalDateTime createdDate = DateUtil.getDefaultLocalDateTime();
 
   /**
    * 创建日期

@@ -68,7 +68,7 @@ public interface Role extends AuthorizationObject {
 
   /** 所属标准角色信息
    */
-  // IStandardRoleInfo getStandardRole();
+  // StandardRoleInfo getStandardRole();
   ///#endregion
 
   /**

@@ -15,6 +15,7 @@ import com.x3platform.membership.services.StandardOrganizationUnitService;
 import com.x3platform.messages.MessageObject;
 import com.x3platform.tree.DynamicTreeView;
 import com.x3platform.tree.TreeView;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import org.springframework.context.annotation.Lazy;
@@ -28,7 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author ruanyu
  */
 @Lazy
-@RestController
+@RestController("com.x3platform.membership.controllers.StandardOrganizationUnitController")
 @RequestMapping("/api/membership/standardOrganizationUnit")
 public class StandardOrganizationUnitController {
 
@@ -204,7 +205,7 @@ public class StandardOrganizationUnitController {
 
     // 根据实际需要设置默认值
     entity.setStatus(1);
-    entity.setModifiedDate(new Date());
+    entity.setModifiedDate(LocalDateTime.now());
 
     return "{\"data\":" + JSON.toJSONString(entity) + ","
       + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";

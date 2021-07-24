@@ -49,7 +49,7 @@ public interface OrganizationUnitMapper {
    * @param id OrganizationUnit id号
    * @return 一个 {@link OrganizationUnit} 实例的详细信息
    */
-  OrganizationUnit findOne(String id);
+  OrganizationUnit findOne(@Param("id") String id);
 
   // OrganizationUnit findMaxCode();
 
@@ -59,7 +59,7 @@ public interface OrganizationUnitMapper {
    * @param globalName 组织的全局名称
    * @return 一个 {@link OrganizationUnit} 实例的详细信息
    */
-  OrganizationUnit findOneByGlobalName(@Param("globalName") String globalName);
+  OrganizationUnit findOneByGlobalName(@Param("global_name") String globalName);
 
   /**
    * 查询角色所属的组织信息
@@ -104,19 +104,17 @@ public interface OrganizationUnitMapper {
   List<OrganizationUnit> findAll(Map params);
 
   /**
-   * 新版， 查询列表化 组织结构展现形式
-   *
-   * @param params 查询参数集合
-   */
-  List<OrganizationUnit> queryAll(Map params);
-
-  /**
    * 查询某个父节点下的所有组织单位
    *
    * @param parentId 父节标识
    * @return 所有实例实例的详细信息
    */
   List<OrganizationUnit> findAllByParentId(@Param("parent_id") String parentId);
+
+  /**
+   * @return 一个 {@link OrganizationUnit} 实例的列表信息
+   */
+  List<OrganizationUnit> findAllRelationOrganizationUnitByAccountId(@Param("account_id") String accountId);
 
   /**
    * 查询某条记录
@@ -130,6 +128,11 @@ public interface OrganizationUnitMapper {
    * 查询所有的组织机构 包含本组织机构
    */
   List<OrganizationUnit> getChildOrganizationByOrganizationUnitId(String organizationUnitId);
+
+  /**
+   * 查询所有的组织机构 包含本组织机构
+   */
+  List<OrganizationUnit> getChildOrganizationByDeleteOrganizationUnitId(String organizationUnitId);
 
   /**
    * 查询某个帐户所属的所有公司信息
@@ -146,6 +149,14 @@ public interface OrganizationUnitMapper {
    * @return 所有实例的详细信息
    */
   List<OrganizationUnit> findTreeNodesByParentId(@Param("parent_id") String parentId);
+
+  /**
+   * 根据父节点标识查询所有可用的树节点信息
+   *
+   * @param parentId 父节点标识
+   * @return 所有实例的详细信息
+   */
+  List<OrganizationUnit> findAllTreeNodesByParentId(@Param("parent_id") String parentId);
 
   // -------------------------------------------------------
   // 自定义功能
@@ -209,7 +220,16 @@ public interface OrganizationUnitMapper {
    * @param status 状态标识, 1:启用, 0:禁用
    * @return 0 设置成功, 1 设置失败.
    */
-  int setEmailStatus(String id, int status);
+  int setEmailStatus(@Param("id") String id, @Param("enable_email") int status);
+
+  /**
+   * 设置状态
+   *
+   * @param id 组织单元标识
+   * @param status 状态标识, 1:启用, 0:禁用
+   * @return 0 设置成功, 1 设置失败.
+   */
+  int setStatus(@Param("id") String id, @Param("status") int status);
 
   /**
    * 同步信息

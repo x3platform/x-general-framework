@@ -5,7 +5,6 @@ import com.x3platform.apps.models.*;
 import com.x3platform.apps.services.*;
 
 import com.x3platform.data.*;
-import com.x3platform.digitalnumber.DigitalNumberContext;
 import com.x3platform.messages.MessageObject;
 import com.x3platform.globalization.I18n;
 import com.x3platform.util.*;
@@ -13,20 +12,22 @@ import com.x3platform.util.*;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
  * @author ruanyu
  */
 @Lazy
-@RestController
+@RestController("com.x3platform.apps.controllers.ApplicationEventController")
 @RequestMapping("/api/apps/applicationEvent")
 public class ApplicationEventController {
   /**
@@ -57,12 +58,6 @@ public class ApplicationEventController {
    * 删除记录
    *
    * @param data 请求的数据内容
-   * <pre>
-   * {
-   *   // 唯一标识
-   *   id:""
-   * }
-   * </pre>
    * @return 响应的数据内容
    */
   @RequestMapping("/delete")
@@ -84,12 +79,12 @@ public class ApplicationEventController {
    * 获取详细信息
    *
    * @param data 请求的数据内容
-   * <pre>
-   * {
-   *   // 唯一标识
-   *   id:""
-   * }
-   * </pre>
+   *             <pre>
+   *                                                                                                                         {
+   *                                                                                                                           // 唯一标识
+   *                                                                                                                           id:""
+   *                                                                                                                         }
+   *                                                                                                                         </pre>
    * @return 返回一个相关的实例详细信息
    */
   @RequestMapping("/findOne")
@@ -163,26 +158,46 @@ public class ApplicationEventController {
   }
 
   /**
-   * 查询是否存在相关的记录
+   * 写入应用事件信息
    *
    * @param data 请求的数据内容
-   * <pre>
-   * {
-   *   // 唯一标识
-   *   id:""
-   * }
-   * </pre>
    * @return 响应的数据内容
    */
-  @RequestMapping("/isExist")
-  public String isExist(@RequestBody String data) {
-    JSONObject req = JSON.parseObject(data);
+  @RequestMapping("/write")
+  public String write(@RequestBody String data, HttpServletRequest request) {
+    try {
+      JSONObject req = JSON.parseObject(data);
+      String accountId = req.getString("accountId");
+      String accountName = req.getString("accountName");
+      String applicationId = req.getString("applicationId");
+      String applicationFeatureName = req.getString("applicationFeatureName");
+      String level = req.getString("level");
+      String description = req.getString("description");
+      String startTime = req.getString("startTime");
+      String finishTime = req.getString("finishTime");
+      String ip = req.getString("ip");
+      LocalDateTime startTimeValue = null;
+      LocalDateTime finishTimeValue = null;
+      DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+      DateTimeFormatter df2 = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
 
-    String id = req.getString("id");
-
-    boolean result = this.service.isExist(id);
-
-    return "{\"data\":" + JSON.toJSONString(result) + ","
-      + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";
+      if (StringUtil.isNullOrEmpty(ip)) {
+        ip = IPQueryUtil.getClientIP();
+      }
+      if (StringUtil.isNullOrEmpty(startTime)) {
+        startTime =  LocalDateTime.now().toString();
+      }
+      startTimeValue = LocalDateTime.parse(startTime, startTime.length() == 19 ? df : df2);
+      if (StringUtil.isNullOrEmpty(finishTime)) {
+        finishTime =  LocalDateTime.now().toString();
+      }
+      finishTimeValue = LocalDateTime.parse(finishTime, finishTime.length() == 19 ? df : df2);
+      this.service.write(accountId, accountName, applicationId, applicationFeatureName,
+        level, description, startTimeValue, finishTimeValue, ip);
+      return MessageObject.stringify("0", I18n.getStrings().text("msg_save_success"));
+    }catch (Exception e){
+      e.printStackTrace();
+      return MessageObject.stringify("0", I18n.getStrings().text("msg_save_failed"));
+    }
   }
 }

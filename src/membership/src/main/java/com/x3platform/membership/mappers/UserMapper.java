@@ -49,7 +49,15 @@ public interface UserMapper {
    * @return 一个 {@link User} 实例的详细信息
    */
   User selectByPrimaryKey(String id);
-
+  
+  /**
+   * 根据登录名查询某条记录
+   *
+   * @param loginName 登录名
+   * @return 一个 {@link User} 实例的详细信息
+   */
+  User findOneByLoginName(String loginName);
+  
   /**
    * 查询所有相关记录
    *
@@ -104,4 +112,21 @@ public interface UserMapper {
    * @return 消息代码
    */
   int setDefaultRole(@Param("account_id") String accountId, @Param("role_id") String roleId);
+  
+  /**
+   * 设置帐号的默认岗位
+   *
+   * @param accountId 帐号标识
+   * @param roleId 角色标识
+   * @return 受影响的行数
+   */
+  //
+  
+  /**
+   * 设置帐号的默认岗位
+   *
+   * @param accountId 帐号标识
+   * @return 受影响的行数
+   */
+  int setNullDefaultRelation(@Param("account_id") String accountId);
 }

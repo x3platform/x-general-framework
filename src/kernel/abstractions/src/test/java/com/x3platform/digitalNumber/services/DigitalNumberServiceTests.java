@@ -112,4 +112,17 @@ public class DigitalNumberServiceTests {
 
     assertFalse(StringUtil.isNullOrEmpty(result));
   }
+
+
+  /**
+   * 测试 生成流水号
+   */
+  @Test
+  public void testGenerates() {
+    List<String> result = null;
+
+    result = service.generates("Key_RunningNumber", 10);
+
+    assertEquals(result.size(), 10);
+  }
 }

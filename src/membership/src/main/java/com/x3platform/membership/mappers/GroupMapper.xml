@@ -30,59 +30,79 @@
   </resultMap>
   <sql id="Select_Where_Clause">
     <where>
-      <if test="param_id != null and param_id != ''">
-        AND t.id = #{param_id}
+      <!-- 列表查询 -->
+      <if test="var_scene == 'Query'">
+        <if test="param_search_text != null and param_search_text != ''">
+          t.global_name LIKE concat('%',#{param_search_text},'%') OR t.name LIKE concat('%',#{param_search_text},'%')
+        </if>
       </if>
-      <if test="param_parent_id != null and param_parent_id != ''">
-        AND t.parent_id = #{param_parent_id}
+
+      <!-- 通讯录查询 -->
+      <if test="var_scene == 'Contacts'">
+        <if test="param_name != null and param_name != ''">
+          AND (t.global_name LIKE #{param_name} OR t.name LIKE #{param_name})
+        </if>
+        <if test="param_status != null and param_status != ''">
+          AND t.status = #{param_status}
+        </if>
       </if>
-      <if test="param_code != null and param_code != ''">
-        AND t.code = #{param_code}
-      </if>
-      <if test="param_name != null and param_name != ''">
-        AND t.name = #{param_name}
-      </if>
-      <if test="param_global_name != null and param_global_name != ''">
-        AND t.global_name = #{param_global_name}
-      </if>
-      <if test="param_pinyin != null and param_pinyin != ''">
-        AND t.pinyin = #{param_pinyin}
-      </if>
-      <if test="param_type != null and param_type != ''">
-        AND t.type = #{param_type}
-      </if>
-      <if test="param_catalog_item_id != null and param_catalog_item_id != ''">
-        AND t.catalog_item_id = #{param_catalog_item_id}
-      </if>
-      <if test="param_enable_email != null">
-        AND t.enable_email = #{param_enable_email}
-      </if>
-      <if test="param_effect_scope != null">
-        AND t.effect_scope = #{param_effect_scope}
-      </if>
-      <if test="param_locking != null">
-        AND t.locking = #{param_locking}
-      </if>
-      <if test="param_order_id != null and param_order_id != ''">
-        AND t.order_id = #{param_order_id}
-      </if>
-      <if test="param_status != null">
-        AND t.status = #{param_status}
-      </if>
-      <if test="param_remark != null and param_remark != ''">
-        AND t.remark = #{param_remark}
-      </if>
-      <if test="param_full_path != null and param_full_path != ''">
-        AND t.full_path = #{param_full_path}
-      </if>
-      <if test="param_distinguished_name != null and param_distinguished_name != ''">
-        AND t.distinguished_name = #{param_distinguished_name}
-      </if>
-      <if test="param_modified_date != null">
-        AND t.modified_date = #{param_modified_date}
-      </if>
-      <if test="param_created_date != null">
-        AND t.created_date = #{param_created_date}
+
+      <!-- 默认 -->
+      <if test="var_scene == 'default'">
+        <if test="param_id != null and param_id != ''">
+          AND t.id = #{param_id}
+        </if>
+        <if test="param_parent_id != null and param_parent_id != ''">
+          AND t.parent_id = #{param_parent_id}
+        </if>
+        <if test="param_code != null and param_code != ''">
+          AND t.code = #{param_code}
+        </if>
+        <if test="param_name != null and param_name != ''">
+          AND t.name = #{param_name}
+        </if>
+        <if test="param_global_name != null and param_global_name != ''">
+          AND t.global_name = #{param_global_name}
+        </if>
+        <if test="param_pinyin != null and param_pinyin != ''">
+          AND t.pinyin = #{param_pinyin}
+        </if>
+        <if test="param_type != null and param_type != ''">
+          AND t.type = #{param_type}
+        </if>
+        <if test="param_catalog_item_id != null and param_catalog_item_id != ''">
+          AND t.catalog_item_id = #{param_catalog_item_id}
+        </if>
+        <if test="param_enable_email != null">
+          AND t.enable_email = #{param_enable_email}
+        </if>
+        <if test="param_effect_scope != null">
+          AND t.effect_scope = #{param_effect_scope}
+        </if>
+        <if test="param_locking != null">
+          AND t.locking = #{param_locking}
+        </if>
+        <if test="param_order_id != null and param_order_id != ''">
+          AND t.order_id = #{param_order_id}
+        </if>
+        <if test="param_status != null">
+          AND t.status = #{param_status}
+        </if>
+        <if test="param_remark != null and param_remark != ''">
+          AND t.remark = #{param_remark}
+        </if>
+        <if test="param_full_path != null and param_full_path != ''">
+          AND t.full_path = #{param_full_path}
+        </if>
+        <if test="param_distinguished_name != null and param_distinguished_name != ''">
+          AND t.distinguished_name = #{param_distinguished_name}
+        </if>
+        <if test="param_modified_date != null">
+          AND t.modified_date = #{param_modified_date}
+        </if>
+        <if test="param_created_date != null">
+          AND t.created_date = #{param_created_date}
+        </if>
       </if>
     </where>
   </sql>
@@ -106,9 +126,7 @@
       distinguished_name,
       modified_date,
       created_date
-    )
-    VALUES
-    (
+    ) VALUES (
       #{id,jdbcType=VARCHAR},
       #{code,jdbcType=VARCHAR},
       #{name,jdbcType=VARCHAR},
@@ -155,7 +173,7 @@
   <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap" >
     SELECT * FROM sys_group WHERE id = #{id}
   </select>
-  <select id="findAll" parameterType="java.util.Map" resultMap="BaseResultMap" >
+  <select id="findAll" parameterType="java.util.Map" resultMap="BaseResultMap">
     SELECT * FROM sys_group t
     <if test="_parameter != null">
       <include refid="Select_Where_Clause" />
@@ -170,14 +188,14 @@
       LIMIT 0, ${length}
     </if>
   </select>
-  <select id="getRowCount" >
-    SELECT COUNT(0) AS "RowCount" FROM sys_group t
-    <if test="_parameter != null">
-      <include refid="Select_Where_Clause" />
-    </if>
-  </select>
   <select id="isExist" resultType="java.lang.Boolean" >
     SELECT COUNT(0) AS "Count" FROM sys_group WHERE id = #{id}
+  </select>
+  <select id="isExistName" resultType="boolean">
+    SELECT COUNT(0) AS "Count" FROM sys_group WHERE name = #{name}
+  </select>
+  <select id="isExistGlobalName" resultType="boolean">
+    SELECT COUNT(0) AS "Count" FROM sys_group WHERE global_name = #{global_name}
   </select>
   <select id="findAllRelationByAccountId" resultMap="AccountGroupRelationResultMap">
     SELECT

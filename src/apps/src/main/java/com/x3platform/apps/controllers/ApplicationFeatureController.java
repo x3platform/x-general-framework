@@ -1,5 +1,7 @@
 package com.x3platform.apps.controllers;
 
+import static com.x3platform.Constants.TEXT_EMPTY;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
@@ -10,12 +12,16 @@ import com.x3platform.apps.services.ApplicationFeatureService;
 import com.x3platform.data.DataPaging;
 import com.x3platform.data.DataPagingUtil;
 import com.x3platform.data.DataQuery;
+import com.x3platform.digitalnumber.DigitalNumberContext;
 import com.x3platform.globalization.I18n;
 import com.x3platform.membership.Account;
 import com.x3platform.messages.MessageObject;
 import com.x3platform.tree.DynamicTreeView;
 import com.x3platform.tree.TreeView;
 import com.x3platform.util.StringUtil;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,7 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author ruanyu
  */
 @Lazy
-@RestController
+@RestController("com.x3platform.apps.controllers.ApplicationFeatureController")
 @RequestMapping("/api/apps/applicationFeature")
 public class ApplicationFeatureController {
 
@@ -120,20 +126,24 @@ public class ApplicationFeatureController {
   }
 
   /**
-   * 获取当前用户列表信息
+   * 获取授权对象允许的功能列表
    *
    * @param data 请求的数据内容
-   * @return 一个相关的实例列表信息.
+   * @return 树形结构数据
    */
-  @RequestMapping("/findAllByApplicationName")
-  public String findAllByApplicationName(@RequestBody String data) {
+  @RequestMapping("/findAllAllowedByAuthorizationObjectIds")
+  public String findAllAllowedByAuthorizationObjectIds(@RequestBody String data) {
     JSONObject req = JSON.parseObject(data);
 
-    DataQuery query = DataQuery.create(req.getString("query"));
+    String authorizationObjectType = req.getString("authorizationObjectType");
+    String authorizationObjectId = req.getString("authorizationObjectId");
+    String authorityName = req.getString("authorityName");
 
-    List<ApplicationFeature> list = null;
+    // 格式化类型内容
+    authorizationObjectType = StringUtil.toFirstUpper(authorizationObjectType);
 
-    // List<ApplicationFeature> list = service.findAllByApplicationId(query);
+    List<ApplicationFeature> list = service.findAllAllowedByAuthorizationObjectIds(
+      authorizationObjectType, authorizationObjectId, authorityName);
 
     return "{\"data\":" + JSON.toJSONString(list) + ","
       + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";
@@ -186,7 +196,26 @@ public class ApplicationFeatureController {
   }
 
   /**
-   * 根据授权对象绑定菜单
+   * 创建新的对象信息
+   *
+   * @param data 请求的数据内容
+   * @return 响应的数据内容
+   */
+  @RequestMapping("/create")
+  public String create(@RequestBody String data) {
+    ApplicationFeature entity = JSON.parseObject(data, ApplicationFeature.class);
+
+    entity.setId(DigitalNumberContext.generate("Key_Guid"));
+    entity.setName(TEXT_EMPTY);
+    entity.setStatus(1);
+    entity.setModifiedDate(LocalDateTime.now());
+
+    return "{\"data\":" + JSON.toJSONString(entity) + ","
+      + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";
+  }
+
+  /**
+   * 根据授权对象绑定应用功能
    */
   @RequestMapping("/bindAuthorizationScopeByAuthorizationObjectIds")
   public String bindAuthorizationScopeByAuthorizationObjectIds(@RequestBody String data) {
@@ -196,6 +225,9 @@ public class ApplicationFeatureController {
     String authorizationObjectId = req.getString("authorizationObjectId");
     String authorityName = req.getString("authorityName");
     String entityIds = req.getString("entityIds");
+
+    // 格式化类型内容
+    authorizationObjectType = StringUtil.toFirstUpper(authorizationObjectType);
 
     service.bindAuthorizationScopeByAuthorizationObjectIds(authorizationObjectType, authorizationObjectId,
       authorityName, entityIds);
@@ -268,6 +300,18 @@ public class ApplicationFeatureController {
 
     List<String> list = service.getAllowedFeatures();
 
+    return "{\"data\":" + JSON.toJSONString(list) + ","
+      + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";
+  }
+
+  /**
+   * @param data { parentId:xxxxx}
+   */
+  @RequestMapping("/findTreeNodesByParentId")
+  public String findTreeNodesByParentId(@RequestBody String data) {
+    JSONObject req = JSON.parseObject(data);
+    String parentId = req.getString("parentId");
+    List<ApplicationFeature> list = service.findTreeNodesByParentId(parentId);
     return "{\"data\":" + JSON.toJSONString(list) + ","
       + MessageObject.stringify("0", I18n.getStrings().text("msg_query_success"), true) + "}";
   }

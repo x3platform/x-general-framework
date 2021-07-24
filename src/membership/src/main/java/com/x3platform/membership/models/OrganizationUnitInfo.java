@@ -12,6 +12,9 @@ import com.x3platform.membership.OrganizationUnit;
 import com.x3platform.membership.Role;
 import com.x3platform.util.DateUtil;
 import com.x3platform.util.StringUtil;
+
+import java.time.LocalDateTime;
+
 import org.dom4j.Element;
 
 import java.util.ArrayList;
@@ -30,7 +33,7 @@ public class OrganizationUnitInfo implements OrganizationUnit {
   private String name = "";
   private String globalName = "";
   private String fullName = "";
-  private String pinYin = "";
+  private String pinyin = "";
   private int level = 0;
   private String standardOrganizationUnitId = "";
   private String standardOrganizationUnitName = "";
@@ -43,8 +46,6 @@ public class OrganizationUnitInfo implements OrganizationUnit {
   private String remark = "";
   private String fullPath = "";
   private String distinguishedName = "";
-  private Date modifiedDate = DateUtil.getDefaultDate();
-  private Date createdDate = DateUtil.getDefaultDate();
 
   private List<OrganizationUnit> children = new ArrayList<>();
 
@@ -310,19 +311,27 @@ public class OrganizationUnitInfo implements OrganizationUnit {
     return null;
   }
 
-  public Date getModifiedDate() {
+  private LocalDateTime modifiedDate = DateUtil.getDefaultLocalDateTime();
+
+  @Override
+  public LocalDateTime getModifiedDate() {
     return modifiedDate;
   }
 
-  public void setModifiedDate(Date modifiedDate) {
+  @Override
+  public void setModifiedDate(LocalDateTime modifiedDate) {
     this.modifiedDate = modifiedDate;
   }
 
-  public Date getCreatedDate() {
+  private LocalDateTime createdDate = DateUtil.getDefaultLocalDateTime();
+
+  @Override
+  public LocalDateTime getCreatedDate() {
     return createdDate;
   }
 
-  public void setCreatedDate(Date createdDate) {
+  @Override
+  public void setCreatedDate(LocalDateTime createdDate) {
     this.createdDate = createdDate;
   }
 
@@ -359,14 +368,15 @@ public class OrganizationUnitInfo implements OrganizationUnit {
     this.children = children;
   }
 
+  @JSONField(name = "pinyin")
   @Override
   public String getPinYin() {
-    return pinYin;
+    return pinyin;
   }
 
   @Override
   public void setPinYin(String value) {
-    this.pinYin = value;
+    this.pinyin = value;
   }
 
   @Override
@@ -431,13 +441,12 @@ public class OrganizationUnitInfo implements OrganizationUnit {
     if (StringUtil.isNullOrEmpty(this.roleMemberView) && !this.getRoles().isEmpty()) {
       List<Account> list = MembershipManagement.getInstance().getAccountService()
         .findAllByOrganizationUnitId(this.getId());
-
+      StringBuilder outString = new StringBuilder();
       for (Account item : list) {
-        this.roleMemberView += (StringUtil.isNullOrEmpty(item.getGlobalName()) ?
-          item.getName() : item.getGlobalName()) + ",";
+        outString.append((StringUtil.isNullOrEmpty(item.getGlobalName()) ?
+          item.getName() : item.getGlobalName()) + ",");
       }
-
-      this.roleMemberView = StringUtil.trimEnd(this.roleMemberView, ",");
+      this.roleMemberView = StringUtil.trimEnd(outString, ",").toString();
     }
 
     return this.roleMemberView;
