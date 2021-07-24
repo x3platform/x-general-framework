@@ -5,7 +5,7 @@ services:
   - mysql
   - redis-server
 before_install:
-  - mysql -e 'CREATE DATABASE IF NOT EXISTS x3_base;'
+  - mysql -e 'CREATE DATABASE IF NOT EXISTS x3_base; ALTER DATABASE x3_base CHARACTER SET utf8;'
 install:
   - echo install ok.
 before_script:
