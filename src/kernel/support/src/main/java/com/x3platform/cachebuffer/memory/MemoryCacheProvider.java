@@ -1,6 +1,10 @@
 package com.x3platform.cachebuffer.memory;
 
 import com.x3platform.cachebuffer.CacheProvider;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -17,7 +21,30 @@ public class MemoryCacheProvider implements CacheProvider {
   // -------------------------------------------------------
 
   ConcurrentMap<String, Object> map = new ConcurrentHashMap<String, Object>();
-
+  
+  /**
+   * 获取相关的键值信息
+   *
+   * @param pattern 模式
+   */
+  @Override
+  public Set<String> keys(String pattern) {
+    String regex = pattern.replace("?", "[0-9a-z]").replace("*", "[0-9a-z]{0,}");
+    
+    Set<String> result = new HashSet<String>();
+    
+    Set<String> keys = map.keySet();
+    
+    // 遍历 keys 中的键
+    for (String key : keys) {
+      if (key.matches(regex)) {
+        result.add(key);
+      }
+    }
+    
+    return result;
+  }
+  
   /**
    * 是否包含缓存记录
    *
@@ -62,7 +89,7 @@ public class MemoryCacheProvider implements CacheProvider {
    * @param minutes 有效分钟数
    */
   @Override
-  public void set(String name, Object value, int minutes) {
+  public void set(String name, Object value, long minutes) {
     map.put(name, value);
   }
 
@@ -134,5 +161,15 @@ public class MemoryCacheProvider implements CacheProvider {
     if (dicts.containsKey(dict)) {
       dicts.get(dict).remove(name);
     }
+  }
+
+  @Override
+  public long listLeftSetAll(String key, List value) {
+    return 0;
+  }
+
+  @Override
+  public List listGetRange(String key, long start, long end) {
+    return null;
   }
 }

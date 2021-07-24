@@ -15,17 +15,22 @@
   <!-- msg -->
   <string name="msg_query_success">查询成功。</string>
   <string name="msg_query_faild">查询失败。</string>
-  <string name="msg_operat_success">操作成功。</string>
-  <string name="msg_operat_faild">操作失败。</string>
+  <string name="msg_operate_success">操作成功。</string>
+  <string name="msg_operate_faild">操作失败。</string>
   <string name="msg_save_success">保存成功。</string>
+  <string name="msg_save_failed">保存失败。</string>
   <string name="msg_delete_success">删除成功。</string>
-  <string name="msg_delete_faild">删除失败。</string>
+  <string name="msg_delete_failed">删除失败。</string>
   <string name="msg_create_success">创建成功。</string>
+  <string name="msg_create_failed">创建失败。</string>
   <string name="msg_modify_success">修改成功。</string>
+  <string name="msg_modify_failed">修改失败。</string>
   <string name="msg_commit_success">提交成功。</string>
+  <string name="msg_commit_failed">提交失败。</string>
   <string name="msg_setup_success">设置成功。</string>
-  <string name="msg_upload_success">上传成功!</string>
-  <string name="msg_upload_failed">上传失败!</string>
+  <string name="msg_setup_failed">设置失败。</string>
+  <string name="msg_upload_success">上传成功。</string>
+  <string name="msg_upload_failed">上传失败。</string>
   <!-- msg long text -->
   <string name="msg_are_you_sure_you_want_to_delete">确定删除？</string>
   <string name="msg_the_same_field_already_exists">已存在相同的字段。</string>
@@ -100,5 +105,5 @@
 
   <!-- connect -->
   <string name="connect_session_passed">会话过期，请重新登录</string>
-  
+
 </resources>

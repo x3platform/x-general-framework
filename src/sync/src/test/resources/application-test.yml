@@ -1,0 +1,114 @@
+# -------------------------------------------------------
+# X3Platform 配置
+# -------------------------------------------------------
+# 系统名称
+x3platform.system-name: 智慧报关应用平台
+x3platform.file-host: http://apis.edge.customs.x3platform.com
+# 验证管理类型
+x3platform.authentication-management-type: com.x3platform.membership.authentication.HttpAuthenticationManagement
+# 帐号唯一标识令牌的 Key 值
+x3platform.membership.account-identity-cookie-token: AMI_ACCESS_TOKEN
+# 允许上传的最大文件大小 单位(B)
+x3platform.attachmentstorage.identity-format: yyyymmddhhmmssfff
+# 允许上传的最大文件大小 单位(B)
+x3platform.attachmentstorage.allow-max-file-size: 10485760
+# 允许上传的最小文件大小 单位(B)
+x3platform.attachmentstorage.allow-min-file-size: 0
+# 设置二级缓存,是否设置二级缓存 on ; off
+x3platform.membership.cache-redis: on
+#开始菜单 是否显示开始菜单（Off/On）  默认Off ，
+x3platform.apps.hidden-start-menu: Off
+#默认新增人员后绑定对应应用开关 默认 off 配置项 off/on
+x3platform.membership.default-bind-relationship: on
+#默认新增人员后绑定对应应用 ami-ocr-edge 多个应用以，分割开
+x3platform.membership.default-bind-relationship-management: ami-ocr-edge
+x3platform.attachmentstorage.virtual-upload-folder: uploads
+# 接收队列名称
+x3platform.sync.receive-queue-name: 10000003_sync
+
+# -------------------------------------------------------
+# 日志 配置
+# -------------------------------------------------------
+logging.level:
+  root: WARN
+  com.x3platform: DEBUG
+
+# -------------------------------------------------------
+# 上传内容 配置
+# -------------------------------------------------------
+spring.servlet.multipart.max-file-size: 500MB
+spring.servlet.multipart.max-request-size: 500MB
+
+# -------------------------------------------------------
+# 数据源 配置
+# -------------------------------------------------------
+# DataSource default(默认)
+spring.datasource:
+  driver-class-name: com.mysql.jdbc.Driver
+  type: com.alibaba.druid.pool.DruidDataSource
+  url: jdbc:mysql://${X3_MYSQL_HOST}:${X3_MYSQL_PORT}/${X3_MYSQL_DATABASE}?useUnicode=true&characterEncoding=utf-8&useSSL=false
+  username: ${X3_MYSQL_USERNAME}
+  password: ${X3_MYSQL_PASSWORD}
+# DataSource ami-customs(智慧报关管理平台)
+spring.datasource.ami-customs:
+  type: com.alibaba.druid.pool.DruidDataSource
+  url: jdbc:mysql://${X3_MYSQL_HOST}:${X3_MYSQL_PORT}/ami_customs_core_dev?useUnicode=true&characterEncoding=utf-8&useSSL=false
+  username: ${X3_MYSQL_USERNAME}
+  password: ${X3_MYSQL_PASSWORD}
+# DataSource ami-customs(智慧报关应用平台)
+spring.datasource.ami-customs-edge:
+  type: com.alibaba.druid.pool.DruidDataSource
+  url: jdbc:mysql://${X3_MYSQL_HOST}:${X3_MYSQL_PORT}/ami_customs_edge_dev?useUnicode=true&characterEncoding=utf-8&useSSL=false
+  username: ${X3_MYSQL_USERNAME}
+  password: ${X3_MYSQL_PASSWORD}
+
+# -------------------------------------------------------
+# Redis 配置
+# -------------------------------------------------------
+# 服务器地址
+spring.redis.host: localhost
+# 服务器端口
+spring.redis.port: 6379
+# 服务器密码
+spring.redis.password: ${X3_REDIS_PASSWORD}
+# 数据库索引 (默认为0)
+spring.redis.database: 0
+# 连接超时时间
+spring.redis.timeout: 6000
+# 连接池最大连接数量 (使用负值表示没有限制)
+spring.redis.jedis.pool.max-active: 1000
+# 连接池最大阻塞等待时间 (使用负值表示没有限制)
+spring.redis.jedis.pool.max-wait: -1
+# 连接池中的最大空闲连接数
+spring.redis.jedis.pool.max-idle: -1
+# 连接池中的最小空闲连接数
+spring.redis.jedis.pool.min-idle: 0
+# 会话存储方式 none | redis
+spring.session.store-type: none
+# -------------------------------------------------------
+# RabbitMQ 配置
+# -------------------------------------------------------
+# 服务器地址
+spring.rabbitmq.addresses: rabbit.x3platform.com
+# 服务器端口
+spring.rabbitmq.port: 5672
+# 服务器登录名
+spring.rabbitmq.username: rabbitadmin
+# 服务器登录密码
+spring.rabbitmq.password: rabbit#6f4b83a6
+# 虚拟主机路径
+spring.rabbitmq.virtual-host: /
+# 设置路由交换
+spring.rabbitmq.exchange.name: sync_direct
+# 创建 queue 的数量设置为最大
+# spring.rabbitmq.size: 2
+# 消费者数量消费者数量
+spring.rabbitmq.concurrent.consumers: 4
+# 每个消费者获取的最大的消息投递数量
+spring.rabbitmq.prefetch.count: 100
+# 消息发送和接受队列，暂时使用
+spring.rabbitmq.quenes.send-quene: Q_Send2
+spring.rabbitmq.quenes.reveice-quene: Q_Recv2
+# -------------------------------------------------------
+# 智慧报关 配置
+# -------------------------------------------------------

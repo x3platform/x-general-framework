@@ -1,7 +1,6 @@
 package com.x3platform.data;
 
 import com.alibaba.druid.pool.DruidDataSource;
-import com.alibaba.druid.pool.xa.DruidXADataSource;
 import com.x3platform.InternalLogger;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -10,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import javax.sql.CommonDataSource;
 import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,9 +27,6 @@ import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.validation.DataBinder;
-
-// import org.springframework.boot.bind.RelaxedDataBinder;
-// import org.springframework.boot.bind.RelaxedPropertyResolver;
 
 /**
  * 动态数据源注册 启动动态数据源请在启动类中（如SpringBootSampleApplication） 添加 @Import(DynamicDataSourceRegister.class)
@@ -64,13 +61,18 @@ public class DynamicDataSourceRegister implements ImportBeanDefinitionRegistrar,
   private static final String DRUIDDATASOURCE_KEY_TEST_ON_BORROW = "test-on-borrow";
   private static final String DRUIDDATASOURCE_KEY_TEST_ON_RETURN = "test-on-return";
   private static final String DRUIDDATASOURCE_KEY_FILTERS = "filters";
+  private static final String DRUIDDATASOURCE_KEY_BREAK_AFTER_ACQUIRE_FAILURE = "break-after-acquire-failure";
   private static final String DRUIDDATASOURCE_KEY_CONNECTION_PROPERTIES = "connection-properties";
 
+  private Map<String, Class> dataSourceTypes = new HashMap<String, Class>();
+
   private ConversionService conversionService = new DefaultConversionService();
+
   private PropertyValues dataSourcePropertyValues;
 
   // 数据源
   private DataSource defaultDataSource;
+
   private Map<String, DataSource> customDataSources = new HashMap<>();
 
   @Override
@@ -113,9 +115,21 @@ public class DynamicDataSourceRegister implements ImportBeanDefinitionRegistrar,
         type = DATASOURCE_TYPE_DEFAULT;
       }
 
-      Class<? extends DataSource> dataSourceType = (Class<? extends DataSource>) Class.forName((String) type);
+      Class dataSourceType = null;
+
+      String dataSourceTypeText = type.toString().trim();
+
+      if (dataSourceTypes.containsKey(dataSourceTypeText)) {
+        dataSourceType = dataSourceTypes.get(dataSourceTypeText);
+      } else {
+        dataSourceType = Class.forName(dataSourceTypeText);
+        if (dataSourceType != null) {
+          dataSourceTypes.put(dataSourceTypeText, dataSourceType);
+        }
+      }
 
       DataSourceBuilder factory = DataSourceBuilder.create().type(dataSourceType);
+
       // 驱动类名称
       if (map.containsKey("driver-class-name")) {
         factory.driverClassName(map.get("driver-class-name").toString());
@@ -202,6 +216,10 @@ public class DynamicDataSourceRegister implements ImportBeanDefinitionRegistrar,
           if (map.containsKey(DRUIDDATASOURCE_KEY_FILTERS)) {
             druidDataSource.setFilters(map.get(DRUIDDATASOURCE_KEY_FILTERS).toString());
           }
+          if (map.containsKey(DRUIDDATASOURCE_KEY_BREAK_AFTER_ACQUIRE_FAILURE)) {
+            druidDataSource.setBreakAfterAcquireFailure(
+              Boolean.valueOf(map.get(DRUIDDATASOURCE_KEY_BREAK_AFTER_ACQUIRE_FAILURE).toString()));
+          }
           if (map.containsKey(DRUIDDATASOURCE_KEY_CONNECTION_PROPERTIES)) {
             Properties properties = new Properties();
             properties
@@ -255,7 +273,7 @@ public class DynamicDataSourceRegister implements ImportBeanDefinitionRegistrar,
   /**
    * 为 DataSource 绑定更多数据
    */
-  private void dataBinder(DataSource dataSource, Environment env) {
+  private void dataBinder(CommonDataSource dataSource, Environment env) {
     DataBinder dataBinder = new DataBinder(dataSource);
 
     dataBinder.setConversionService(conversionService);

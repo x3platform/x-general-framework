@@ -1,6 +1,7 @@
 package com.x3platform.util;
 
 import com.x3platform.messages.MessageObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,6 +13,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -32,7 +34,8 @@ public class HttpContextUtil {
   }
 
   /**
-   * 获取请求 Body 内容 注: ServletRequest.getInputStream() 流只允许读取一次, 如果需要多次读取需要其他方法配合
+   * 获取请求 Body 内容
+   * 注: ServletRequest.getInputStream() 流只允许读取一次, 如果需要多次读取需要其他方法配合
    */
   public static String getBodyString(ServletRequest request) {
     StringBuilder sb = new StringBuilder();
@@ -70,8 +73,8 @@ public class HttpContextUtil {
    * 输出异常信息
    *
    * @param response HTTP 响应对象
-   * @param code 消息代码
-   * @param message 消息描述
+   * @param code     消息代码
+   * @param message  消息描述
    */
   public static void writeException(HttpServletResponse response, String code, String message) throws IOException {
     response.setHeader("Access-Control-Allow-Origin", "*");

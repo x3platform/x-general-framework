@@ -102,7 +102,7 @@ public class I18n {
    */
   public static String getExceptionDescription(String code, String... args) {
     // 当 code == 1 表示通用应用错误，快速处理，不做遍历。
-    if (code == GENERL_APPLICATION_ERROR_CODE) {
+    if (GENERL_APPLICATION_ERROR_CODE.equals(code)) {
       return "Application Error";
     }
 

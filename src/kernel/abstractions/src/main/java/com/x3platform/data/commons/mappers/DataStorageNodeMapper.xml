@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.x3platform.data.commons.mappers.DataStorageNodeMapper">
+  <resultMap id="BaseResultMap" type="com.x3platform.data.commons.models.DataStorageNode">
+    <result property="id" jdbcType="VARCHAR" column="id"/>
+    <result property="applicationId" jdbcType="VARCHAR" column="application_id"/>
+    <result property="accountId" jdbcType="VARCHAR" column="account_id"/>
+    <result property="storageSchemaId" jdbcType="VARCHAR" column="storage_schema_id"/>
+    <result property="name" jdbcType="VARCHAR" column="name"/>
+    <result property="type" jdbcType="VARCHAR" column="type"/>
+    <result property="providerName" jdbcType="VARCHAR" column="provider_name"/>
+    <result property="host" jdbcType="VARCHAR" column="host"/>
+    <result property="port" jdbcType="INTEGER" column="port"/>
+    <result property="database" jdbcType="VARCHAR" column="database"/>
+    <result property="username" jdbcType="VARCHAR" column="username"/>
+    <result property="password" jdbcType="VARCHAR" column="password"/>
+    <result property="connectionString" jdbcType="VARCHAR" column="connection_string"/>
+    <result property="connectionState" jdbcType="INTEGER" column="connection_state"/>
+    <result property="orderId" jdbcType="VARCHAR" column="order_id"/>
+    <result property="status" jdbcType="INTEGER" column="status"/>
+    <result property="remark" jdbcType="VARCHAR" column="remark"/>
+    <result property="modifiedDate" jdbcType="TIMESTAMP" column="modified_date"/>
+    <result property="createdDate" jdbcType="TIMESTAMP" column="created_date"/>
+  </resultMap>
+  <sql id="Select_Where_Clause">
+    <where>
+      <if test="param_search_text != null and param_search_text != ''">
+        AND ( t.name LIKE #{param_search_text}
+        OR t.host LIKE #{param_search_text}
+        OR t.database LIKE #{param_search_text} )
+      </if>
+      <if test="param_id != null and param_id != ''">
+        AND t.id = #{param_id}
+      </if>
+      <if test="param_storage_schema_id != null and param_storage_schema_id != ''">
+        AND t.storage_schema_id = #{param_storage_schema_id}
+      </if>
+      <if test="param_name != null and param_name != ''">
+        AND t.name = #{param_name}
+      </if>
+      <if test="param_type != null and param_type != ''">
+        AND t.type = #{param_type}
+      </if>
+      <if test="param_provider_name != null and param_provider_name != ''">
+        AND t.provider_name = #{param_provider_name}
+      </if>
+      <if test="param_host != null and param_host != ''">
+        AND t.host = #{param_host}
+      </if>
+      <if test="param_database != null and param_database != ''">
+        AND t.database = #{param_database}
+      </if>
+      <if test="param_connection_string != null and param_connection_string != ''">
+        AND t.connection_string = #{param_connection_string}
+      </if>
+      <if test="param_connection_state != null">
+        AND t.connection_state = #{param_connection_state}
+      </if>
+      <if test="param_remark != null and param_remark != ''">
+        AND t.remark = #{param_remark}
+      </if>
+    </where>
+  </sql>
+  <insert id="insert" parameterType="com.x3platform.data.commons.models.DataStorageNode">
+    INSERT INTO data_storage_node
+    (
+      id,
+      application_id,
+      account_id,
+      storage_schema_id,
+      `name`,
+      `type`,
+      `provider_name`,
+      `host`,
+      `port`,
+      `database`,
+      `username`,
+      `password`,
+      connection_string,
+      connection_state,
+      order_id,
+      status,
+      remark,
+      modified_date,
+      created_date
+    ) VALUES (
+      #{id,jdbcType=VARCHAR},
+      #{accountId,jdbcType=VARCHAR},
+      #{storageSchemaId,jdbcType=VARCHAR},
+      #{storageSchemaId,jdbcType=VARCHAR},
+      #{name,jdbcType=VARCHAR},
+      #{type,jdbcType=VARCHAR},
+      #{providerName,jdbcType=VARCHAR},
+      #{host,jdbcType=VARCHAR},
+      #{port,jdbcType=INTEGER},
+      #{database,jdbcType=VARCHAR},
+      #{username,jdbcType=VARCHAR},
+      #{password,jdbcType=VARCHAR},
+      #{connectionString,jdbcType=VARCHAR},
+      #{connectionState,jdbcType=INTEGER},
+      #{orderId,jdbcType=VARCHAR},
+      #{status,jdbcType=INTEGER},
+      #{remark,jdbcType=VARCHAR},
+      CURRENT_TIMESTAMP,
+      CURRENT_TIMESTAMP
+    )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.x3platform.data.commons.models.DataStorageNode">
+    UPDATE data_storage_node
+    SET
+
+      application_id    = #{applicationId,jdbcType=VARCHAR},
+      account_id        = #{accountId,jdbcType=VARCHAR},
+      storage_schema_id = #{storageSchemaId,jdbcType=VARCHAR},
+      `name`            = #{name,jdbcType=VARCHAR},
+      `type`            = #{type,jdbcType=VARCHAR},
+      `provider_name`   = #{providerName,jdbcType=VARCHAR},
+      `host`            = #{host,jdbcType=VARCHAR},
+      `port`            = #{port,jdbcType=INTEGER},
+      `database`        = #{database,jdbcType=VARCHAR},
+      `username`        = #{username,jdbcType=VARCHAR},
+      `password`        = #{password,jdbcType=VARCHAR},
+      connection_string = #{connectionString,jdbcType=VARCHAR},
+      connection_state  = #{connectionState,jdbcType=INTEGER},
+      order_id          = #{orderId,jdbcType=VARCHAR},
+      status            = #{status,jdbcType=INTEGER},
+      remark            = #{remark,jdbcType=VARCHAR},
+      modified_date     = CURRENT_TIMESTAMP
+
+    WHERE id = #{id}
+  </update>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    DELETE FROM data_storage_node
+    WHERE id = #{id}
+  </delete>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    SELECT *
+    FROM data_storage_node
+    WHERE id = #{id}
+  </select>
+  <select id="findAll" parameterType="java.util.Map" resultMap="BaseResultMap">
+    SELECT * FROM data_storage_node t
+    <if test="_parameter != null">
+      <include refid="Select_Where_Clause"/>
+    </if>
+    <if test="orders != null and orders.size() > 0">
+      ORDER BY
+      <foreach collection="orders" item="order" index="index" separator=",">
+        ${order}
+      </foreach>
+    </if>
+    <if test="length > 0">
+      LIMIT 0, ${length}
+    </if>
+  </select>
+  <select id="findAllBySchemaId" parameterType="java.util.Map" resultMap="BaseResultMap">
+    SELECT *
+    FROM data_storage_node
+    WHERE storage_schema_id = #{storage_schema_id}
+  </select>
+  <select id="findAllByApplicationId" parameterType="java.util.Map" resultMap="BaseResultMap">
+    SELECT *
+    FROM data_storage_node
+    WHERE application_id = #{application_id}
+  </select>
+  <select id="isExist" resultType="boolean">
+    SELECT COUNT(0) AS "Count"
+    FROM data_storage_node
+    WHERE id = #{id}
+  </select>
+  <select id="getCombobox" parameterType="java.util.Map" resultMap="BaseResultMap">
+    SELECT *
+    FROM data_storage_node
+    WHERE storage_schema_id = 'application-datasource' AND status = 1 AND application_id = #{application_id}
+  </select>
+</mapper>

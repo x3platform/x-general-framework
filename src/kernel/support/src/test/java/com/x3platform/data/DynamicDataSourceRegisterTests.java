@@ -27,6 +27,6 @@ public class DynamicDataSourceRegisterTests {
 
   @Test
   public void testInit() {
-
+    // 测试数据源初始化
   }
 }

@@ -1,0 +1,67 @@
+# -------------------------------------------------------
+# X3Platform 配置
+# -------------------------------------------------------
+x3platform:
+  # 系统名称
+  system-name: X3 System
+  # 消息格式化处理器
+  messages.message-object-formatter: com.x3platform.messages.MessageObjectFormatter
+  security:
+    # AES 加密方式的默认密钥
+    aes-crypto-key: 1234567812345678
+    # AES 加密方式的默认初始化向量
+    aes-crypto-iv: 1234567812345678
+  ldap:
+    # LDAP 集成模式 On | Off(默认)
+    integrated-mode: on
+    # LDAP Host
+    host: ldap://x3platform.com
+    # LDAP Base
+    base: dc=x3platform,dc=com
+    # LDAP 登录名
+    username: root
+    # LDAP 密码
+    password: "{cipher}[YOUR_LDAP_PASSWORD]"
+    # LDAP 域
+    domain: x3platform.com
+    # LDAP 邮箱的后缀域名
+    suffix-email-domain: "@x3platform.com"
+    # LDAP 对象唯一名称的后缀
+    suffix-distinguished-name: ",DC=x3platform,DC=com"
+    # LDAP 公司组织存放的根目录 (包括角色)
+    corporation-organization-unit-folder-root: ou=Organizations
+    # LDAP 公司用户存放的根目录
+    corporation-user-folder-root: ou=Peoples
+    # LDAP 公司群组存放的根目录
+    corporation-group-folder-root: ou=Groups
+    # LDAP 公司角色存放的根目录 (非组织结构中的角色数据)
+    corporation-role-folder-root: Roles
+    # LDAP 新建帐号的默认密码
+    newly-created-account-password: X3000000
+
+# -------------------------------------------------------
+# Java Simplified Encryption 配置
+# -------------------------------------------------------
+jasypt.encryptor.password: c8643e09
+
+# -------------------------------------------------------
+# 日志 配置
+# -------------------------------------------------------
+logging.level:
+  root: WARN
+  com.x3platform: DEBUG
+
+# -------------------------------------------------------
+# 数据源 配置
+# -------------------------------------------------------
+# DataSource default(默认)
+spring.datasource:
+  driver-class-name: com.mysql.jdbc.Driver
+  type: com.alibaba.druid.pool.DruidDataSource
+  url: jdbc:mysql://${X3_MYSQL_HOST}:${X3_MYSQL_PORT}/${X3_MYSQL_DATABASE}?useUnicode=true&characterEncoding=utf-8&useSSL=false
+  username: ${X3_MYSQL_USERNAME}
+  password: ${X3_MYSQL_PASSWORD}
+
+# -------------------------------------------------------
+# 其他 配置
+# -------------------------------------------------------

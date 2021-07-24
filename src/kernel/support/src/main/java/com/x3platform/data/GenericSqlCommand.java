@@ -1,6 +1,10 @@
 package com.x3platform.data;
 
+import com.alibaba.druid.pool.DruidDataSource;
+import com.x3platform.InternalLogger;
+import com.x3platform.cachebuffer.CachingManager;
 import com.x3platform.util.StringUtil;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -31,11 +35,14 @@ import org.springframework.stereotype.Component;
  */
 public class GenericSqlCommand {
 
-  private static final Logger logger = LoggerFactory.getLogger(DynamicDataSourceRegister.class);
+  private static final String CACHE_KEY_NAME_PREFIX = "x3platform:data:datasource:id:";
+
+  private static final Logger logger = InternalLogger.getLogger();
 
   private static final String DATASOURCE_TYPE_DEFAULT = "com.alibaba.druid.pool.DruidDataSource";
 
   DataSource dataSource;
+
   /**
    * 数据连接
    */
@@ -45,7 +52,19 @@ public class GenericSqlCommand {
     this(DATASOURCE_TYPE_DEFAULT, url);
   }
 
+  /**
+   * @param type 数据源类型
+   * @param url JDBC 连接地址
+   */
   public GenericSqlCommand(String type, String url) {
+    this(type, null, url, null, null);
+  }
+
+  /**
+   * @param type 数据源类型
+   * @param url JDBC 连接地址
+   */
+  public GenericSqlCommand(String type, String driverClassName, String url) {
     this(type, null, url, null, null);
   }
 
@@ -76,8 +95,25 @@ public class GenericSqlCommand {
     return create("default");
   }
 
-  public static GenericSqlCommand create(String datasourceName) {
-    return null;
+  public static GenericSqlCommand create(String datasourceId) {
+    String key = CACHE_KEY_NAME_PREFIX + datasourceId;
+
+    if (CachingManager.contains(key)) {
+      GenericDataSource datasource = (GenericDataSource) CachingManager.get(key);
+      return create(datasource);
+    } else {
+      return null;
+    }
+  }
+
+  public static GenericSqlCommand create(GenericDataSource datasource) {
+    // 如果数据源为空则直接返回空
+    if (datasource == null) {
+      return null;
+    }
+
+    return new GenericSqlCommand(datasource.getProviderName(), datasource.getDriverClassName(),
+      datasource.getConnectionString(), datasource.getUsername(), datasource.getPassword());
   }
 
   public DataSource buildDataSource(Map<String, Object> map) {
@@ -108,7 +144,13 @@ public class GenericSqlCommand {
         factory.password(map.get("password").toString());
       }
 
-      return factory.build();
+      dataSource = factory.build();
+      if (dataSource.getClass().equals(DruidDataSource.class)) {
+          DruidDataSource druidDataSource = (DruidDataSource) dataSource;
+          // 防止 druid 连接失败不停尝试重连
+          druidDataSource.setBreakAfterAcquireFailure(false);
+      }
+      return dataSource;
     } catch (ClassNotFoundException ex) {
       logger.error(ex.toString());
     }
@@ -213,18 +255,54 @@ public class GenericSqlCommand {
 
     List list = new ArrayList();
     // 获取键名
-    ResultSetMetaData md = rs.getMetaData();
+    ResultSetMetaData metaData = rs.getMetaData();
     // 获取行的数量
-    int columnCount = md.getColumnCount();
+    int columnCount = metaData.getColumnCount();
 
     while (rs.next()) {
       // 声明 Map
       Map rowData = new HashMap();
       for (int i = 1; i <= columnCount; i++) {
-        //获取键名及值
-        rowData.put(md.getColumnName(i), rs.getObject(i));
+        // String label = metaData.getColumnLabel(i);
+        // 获取键名及值
+        rowData.put(metaData.getColumnLabel(i), rs.getObject(i));
       }
       list.add(rowData);
+    }
+
+    preparedStatement.close();
+
+    return list;
+  }
+
+  // -------------------------------------------------------
+  // executeListWithLabel
+  // 执行查询命令，并返回查询所返回的结果集。
+  // -------------------------------------------------------
+
+  public List executeListWithLabel(String commandText) throws SQLException {
+    PreparedStatement preparedStatement = connection.prepareStatement(commandText);
+
+    ResultSet rs = preparedStatement.executeQuery();
+
+    List<Object> list = new ArrayList();
+    // 获取键名
+    ResultSetMetaData metaData = rs.getMetaData();
+    // 获取行的数量
+    int columnCount = metaData.getColumnCount();
+    List<String> value=new ArrayList<> (columnCount);
+    for(int i = 1;i<=columnCount; i++){
+      value.add(metaData.getColumnLabel(i));
+    }
+    list.add(value);
+    while (rs.next()) {
+      // 声明 Map
+      Map rowData = new HashMap();
+      value=new ArrayList<> (columnCount);
+      for (int i = 1; i <= columnCount; i++) {
+        value.add(rs.getString(i));
+      }
+      list.add(value);
     }
 
     preparedStatement.close();

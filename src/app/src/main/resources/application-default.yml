@@ -1,0 +1,246 @@
+# -------------------------------------------------------
+# X3Platform 配置
+# -------------------------------------------------------
+x3platform:
+  # 系统名称
+  system-name: X3 System
+  # 验证管理类型
+  authentication-management-type: com.x3platform.membership.authentication.HttpAuthenticationManagement
+  # 缓存提供器
+  cache-buffer:
+    cache-provider: com.x3platform.cachebuffer.redis.RedisCacheProvider
+  digital-number:
+    # 忽略不需要自增的编号和更新时间的编号 一般适用于随机数和 GUID
+    ignore-increment-seed: Key_32DigitGuid,Key_Guid,Key_Nonce,Key_Random_10,Key_Session
+  messages:
+    # 消息格式化处理器
+    message-object-formatter: com.x3platform.messages.MessageObjectFormatter
+  # LDAP 配置
+  ldap:
+    # LDAP 集成模式 On | Off(默认)
+    integrated-mode: off
+    # LDAP Host
+    host: 'ldap://ldap.x3platform.com'
+    # LDAP Base
+    base: 'dc=x3platform,dc=com'
+    # LDAP 登录名
+    username: Manager
+    # LDAP 密码
+    password: \{cipher\}YOUR_LDAP_PASSWORD
+    # LDAP 域
+    domain: 'x3platform.com'
+    # LDAP 邮箱的后缀域名
+    suffix-email-domain: '@x3platform.com'
+    # LDAP 对象唯一名称的后缀
+    suffix-distinguished-name: ',dc=x3platform,dc=com'
+    # LDAP 公司组织存放的根目录 (包括角色)
+    corporation-organization-unit-folder-root=ou: Organizations
+    # LDAP 公司用户存放的根目录
+    corporation-user-folder-root: ou=Peoples
+    # LDAP 公司群组存放的根目录
+    corporation-group-folder-root: ou=Groups
+    # LDAP 公司角色存放的根目录 (非组织结构中的角色数据)
+    corporation-role-folder-root: ou=Roles
+    # LDAP 新建帐号的默认密码
+    newly-created-account-password: PWD123456
+  membership:
+    # 帐号唯一标识令牌的 Key 值
+    account-identity-cookie-token: AMI_ACCESS_TOKEN
+    # 默认的初始密码
+    default-password: PWD123456
+  apps:
+    # 系统超级管理员帐号
+    administrators: root,amiadmin
+    # 同步功能信息至菜单信息
+    sync-feature-to-menu: On
+  attachmentstorage:
+    # 允许上传的最大文件大小 单位(B)
+    allow-max-file-size: 5242880
+    # 允许上传的最小文件大小 单位(B)
+    allow-min-file-size: 0
+    # 上传文件唯一标识格式
+    identity-format: yyyymmddhhmmssfff
+
+# -------------------------------------------------------
+# 服务器 配置
+# -------------------------------------------------------
+# 服务器端口
+server:
+  port: 28787
+# -------------------------------------------------------
+# 日志 配置
+# -------------------------------------------------------
+logging.level:
+  root: INFO
+  com.x3platform: DEBUG
+# -------------------------------------------------------
+# Spring 配置
+# -------------------------------------------------------
+spring:
+  application:
+    # 服务名 "service-provider"
+    name: x3platform-service
+  main:
+    allow-bean-definition-overriding: true
+  # -------------------------------------------------------
+  # 上传内容 配置
+  # -------------------------------------------------------
+  servlet:
+    multipart:
+      max-file-size: 500MB
+      max-request-size: 500MB
+  # -------------------------------------------------------
+  # 数据源 配置
+  # -------------------------------------------------------
+  # DataSource default(默认)
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+    # 配置监控统计拦截的 filters，去掉后监控界面 sql 将无法统计，'wall' 用于防火墙
+    # druid.filters=stat,wall,log4j
+    # druid.web-stat-filter.enabled=true
+    # url=jdbc:mysql://localhost:3306/x3db?user=root&password=root&useUnicode=true&characterEncoding=utf-8&useSSL=false&autoReconnect=true
+    url: jdbc:mysql://mysql.dev.x3platform.com:3306/ami_base_dev?user=amidba&password=ami#42aa3B11&useUnicode=true&characterEncoding=utf-8&useSSL=false&autoReconnect=true
+    username: amidba
+    password: ami#42aa3B11
+    # DataSource Oracle 类型测试
+    bidb:
+      type: com.alibaba.druid.pool.DruidDataSource
+      driver-class-name: oracle.jdbc.driver.OracleDriver
+      url: jdbc:oracle:thin:@oracle.dev.x3platform.com:1521:ORCL
+      username: bidb
+      password: bidb#6870
+  # -------------------------------------------------------
+  # Druid 数据连接池 配置
+  # -------------------------------------------------------
+  druid:
+    # 连接池初始化大小，正式环境可以适当调整配置。
+    initial-size: 1
+    # 连接池最小连接数，正式环境可以适当调整配置。
+    min-idle: 1
+    # 连接池最大连接数，正式环境可以适当调整配置。
+    max-active: 20
+    # MaxWait 超时等待时间(单位:毫秒) 6000 毫秒/1000 = 60秒
+    max-wait: 30000
+    # 启用 PSCache，并且指定每个连接上 PSCache 的大小，Oracle 等支持游标的数据库，
+    # 打开此开关，会以数量级提升性能，具体查阅 PSCache 相关资料。
+    pool-prepared-statements: true
+    max-pool-prepared-statement-per-connection-size: 20
+    # TimeBetweenEvictionRunsMillis 间隔多久启动一次 DestroyThread，对连接池内的连接才进行一次检测。(单位:毫秒)
+    # 检测条件:
+    # 1.如果连接空闲并且超过 MinIdle 以外的连接，如果空闲时间超过 MinEvictableIdleTimeMillis 设置的值则直接物理关闭。
+    # 2.在 MinIdle 以内的不处理。
+    time-between-eviction-runs-millis: 60000
+    # MinEvictableIdleTimeMillis 一个连接在池中最大空闲时间 (单位:毫秒)
+    min-evictable-idle-time-millis: 300000
+    # KeepAlive 打开后，增强 TimeBetweenEvictionRunsMillis 的周期性连接检查，MinIdle 内的空闲连接，
+    # 每次检查强制验证连接有效性. 参考：https://github.com/alibaba/druid/wiki/KeepAlive_cn
+    keep-alive: true
+    # RemoveAbandoned 连接泄露检查，打开 RemoveAbandoned 功能，连接从连接池借出后，长时间不归还，将触发强制回连接。
+    # 回收周期随 TimeBetweenEvictionRunsMillis 进行，如果连接为从连接池借出状态，并且未执行任何 sql，
+    # 并且从借出时间起已超过 RemoveAbandonedTimeout 时间，则强制归还连接到连接池中。
+    remove-abandoned: true
+    # RemoveAbandoned 连接泄露检查超时时间 (单位:秒)
+    remove-abandoned-timeout: 90
+    # LogAbandoned 关闭 Abandoned 连接时输出错误日志，这样出现连接泄露时可以通过错误日志定位忘记关闭连接的位置。
+    log-abandoned: true
+    validation-query: SELECT 1 FROM DUAL
+    test-while-idle: true
+    test-on-borrow: false
+    test-on-return: false
+    filters: stat,wall,slf4j
+    connection-properties: druid.stat.mergeSql\=true;druid.stat.slowSqlMillis\=5000
+    web-stat-filter:
+      enabled: true
+      url-pattern: /*
+      exclusions: '*.js,*.gif,*.jpg,*.bmp,*.png,*.css,*.ico,/druid/*'
+    stat-view-servlet:
+      url-pattern: /druid/*
+      allow: 127.0.0.1,192.168.163.1
+      deny:
+      reset-enable: false
+      login-username: admin
+      login-password: admin
+  # -------------------------------------------------------
+  # Quartz 配置
+  # -------------------------------------------------------
+  quartz:
+    # 采用数据库存储方式
+    job-store-type=jdbc: jdbc
+
+  # -------------------------------------------------------
+  # Redis 配置
+  # -------------------------------------------------------
+  redis:
+    # 服务器地址
+    host: localhost
+    # 服务器端口
+    port: 6379
+    # 服务器密码 (默认为空)
+    password: ${X3_REDIS_PASSWORD}
+    # 数据库索引 (默认为0)
+    database: 0
+    lettuce:
+      pool:
+        # 连接池最大连接数量 (使用负值表示没有限制)
+        max-active: 8
+        # 连接池最大阻塞等待时间 (使用负值表示没有限制)
+        max-wait: -1
+        # 连接池中的最小空闲连接数
+        min-idle: 1
+        # 连接池中的最大空闲连接数
+        max-idle: 10
+    # 连接超时时间（毫秒）
+    timeout: 6000s
+  # 会话存储方式 none | redis
+  session:
+    store-type: none
+
+  # -------------------------------------------------------
+  # Spring Cloud 配置
+  # -------------------------------------------------------
+  #spring.cloud.nacos.discovery.ip=280aec5c.nat123.cc
+  # 注册中心地址
+  cloud:
+    nacos:
+      discovery:
+        # discovery.server-addr=127.0.0.1:8848
+        server-addr: 'nacos.cloud.x3platform.com:8848'
+        # 注册发送到命名空间
+        namespace: 'f050013e-a89a-4c51-af5a-970471d23b4d'
+
+  # -------------------------------------------------------
+  # Spring Admin 配置
+  # -------------------------------------------------------
+  # spring.security.user.name=amdin
+  # spring.security.user.password=admin@pass
+  # spring.security.user.roles=SBA_ADMIN
+  # Spring Boot Admin Server 地址 http://localhost:8080 可自定义
+  # spring.boot.admin.client.url=http://localhost:8500
+  boot:
+    admin:
+      client:
+        url: http://localhost:8500
+  # 这里是我们在 client 设置安全账户信息  步骤中设置的账密
+  # spring.boot.admin.client.instance.metadata.user.name=amdin
+  # spring.boot.admin.client.instance.metadata.user.password=admin@pass
+
+# 默认情况下，大多数端点都不通过http公开，我们公开了所有端点。对于生产，您应该仔细选择要公开的端点。
+management:
+  security:
+    enabled: false
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    info:
+      enabled: true
+    health:
+      show-details: always
+      redis:
+      enabled: false
+
+# -------------------------------------------------------
+# 其他 配置
+# -------------------------------------------------------

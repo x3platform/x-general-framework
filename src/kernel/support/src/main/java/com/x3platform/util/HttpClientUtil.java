@@ -2,6 +2,7 @@ package com.x3platform.util;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -10,6 +11,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.x3platform.InternalLogger;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
@@ -37,25 +40,25 @@ import org.apache.http.util.EntityUtils;
  * @author ruanyu
  */
 public class HttpClientUtil {
-
+  
   private RequestConfig requestConfig = RequestConfig.custom()
-    .setSocketTimeout(15000)
-    .setConnectTimeout(15000)
-    .setConnectionRequestTimeout(15000).build();
-
+    .setSocketTimeout(300000)
+    .setConnectTimeout(300000)
+    .setConnectionRequestTimeout(300000).build();
+  
   private static HttpClientUtil instance = null;
-
+  
   public HttpClientUtil() {
   }
-
+  
   public static HttpClientUtil getInstance() {
     if (instance == null) {
       instance = new HttpClientUtil();
     }
-
+    
     return instance;
   }
-
+  
   /**
    * 发送 post请求
    *
@@ -65,15 +68,15 @@ public class HttpClientUtil {
   public String sendHttpPost(String uri) {
     // 创建 HttpPost
     HttpPost httpPost = new HttpPost(uri);
-
+    
     return sendHttpPost(httpPost);
   }
-
+  
   /**
    * 发送 post请求
    *
    * @param httpUrl 地址
-   * @param params 参数(格式:key1=value1&amp;key2=value2)
+   * @param params  参数(格式:key1=value1&amp;key2=value2)
    * @return 返回响应信息
    */
   public String sendHttpPost(String httpUrl, String params) {
@@ -89,12 +92,12 @@ public class HttpClientUtil {
     }
     return sendHttpPost(httpPost);
   }
-
+  
   /**
    * 发送 post请求
    *
    * @param httpUrl 地址
-   * @param maps 参数
+   * @param maps    参数
    * @return 返回响应信息
    */
   public String sendHttpPost(String httpUrl, Map<String, Object> maps) {
@@ -109,15 +112,15 @@ public class HttpClientUtil {
     } catch (Exception e) {
       e.printStackTrace();
     }
-
+    
     return sendHttpPost(httpPost);
   }
-
+  
   /**
    * 发送 post请求
    *
    * @param httpUrl 地址
-   * @param maps 参数
+   * @param maps    参数
    * @param headers 请求头参数
    * @return 返回响应信息
    */
@@ -135,15 +138,15 @@ public class HttpClientUtil {
     } catch (Exception e) {
       e.printStackTrace();
     }
-
+    
     return sendHttpPost(httpPost);
   }
-
+  
   /**
    * 发送 post请求（带文件）
    *
-   * @param url 地址
-   * @param maps 参数
+   * @param url       地址
+   * @param maps      参数
    * @param fileLists 附件
    * @return 返回响应信息
    */
@@ -165,7 +168,7 @@ public class HttpClientUtil {
     httpPost.setEntity(reqEntity);
     return sendHttpPost(httpPost);
   }
-
+  
   /**
    * 发送  请求
    *
@@ -201,11 +204,11 @@ public class HttpClientUtil {
     }
     return responseContent;
   }
-
+  
   public String sendJsonHttpPost(String url, String json) {
-
     CloseableHttpClient httpclient = HttpClients.createDefault();
-    String responseInfo = null;
+    String responseText = "";
+    int statusCode = 0;
     try {
       HttpPost httpPost = new HttpPost(url);
       httpPost.addHeader("Content-Type", "application/json;charset=UTF-8");
@@ -213,14 +216,19 @@ public class HttpClientUtil {
       httpPost.setEntity(new StringEntity(json, contentType));
       CloseableHttpResponse response = httpclient.execute(httpPost);
       HttpEntity entity = response.getEntity();
-      int status = response.getStatusLine().getStatusCode();
-      if (status >= 200 && status < 300) {
+      statusCode = response.getStatusLine().getStatusCode();
+      
+      if (statusCode >= 200 && statusCode < 300) {
         if (null != entity) {
-          responseInfo = EntityUtils.toString(entity);
+          responseText = EntityUtils.toString(entity);
         }
+      } else {
+        // 记录异常的响应信息
+        InternalLogger.getLogger().error("http request url:{},response status code:{}", url, statusCode);
       }
-    } catch (Exception e) {
-      e.printStackTrace();
+    } catch (Exception ex) {
+      InternalLogger.getLogger().error("HttpRequestException url:" + url, ex);
+      ex.printStackTrace();
     } finally {
       try {
         httpclient.close();
@@ -228,9 +236,10 @@ public class HttpClientUtil {
         e.printStackTrace();
       }
     }
-    return responseInfo;
+    
+    return responseText;
   }
-
+  
   /**
    * 发送 GET 请求
    *
@@ -240,10 +249,10 @@ public class HttpClientUtil {
   public String sendHttpGet(String url) {
     // 创建 GET 请求
     HttpGet httpGet = new HttpGet(url);
-
+    
     return sendHttpGet(httpGet);
   }
-
+  
   /**
    * 发送 GET 请求 https
    *
@@ -253,10 +262,10 @@ public class HttpClientUtil {
   public String sendHttpsGet(String url) {
     // 创建 GET 请求
     HttpGet httpGet = new HttpGet(url);
-
+    
     return sendHttpsGet(httpGet);
   }
-
+  
   /**
    * 发送Get请求
    *
@@ -292,7 +301,7 @@ public class HttpClientUtil {
     }
     return responseContent;
   }
-
+  
   /**
    * 发送Get请求Https
    *
@@ -331,7 +340,7 @@ public class HttpClientUtil {
     }
     return responseContent;
   }
-
+  
   public static void main(String[] args) {
     HttpClientUtil http = new HttpClientUtil();
     Map map = new HashMap();
@@ -342,14 +351,14 @@ public class HttpClientUtil {
     List<String> data = new ArrayList<String>();
     data.add("wo xiang cha xun jin tian de yao pin jia ge lie biao");
     map.put("data", data);
-
+    
     String json = JSON.toJSONString(map);
-
+    
     String reply = http.sendJsonHttpPost("http://11.11.40.63:7777/algor/simclassify", json);
     System.out.println("reply->" + reply);
-
+    
     String jsonStr = "{'买方会员->合同管理->器械合同->器械合同列表':0.707,'买方会员->合同管理->器械合同->维护器械合同目录':0.707,'买方会员->合同管理->药品合同->维护药品合同目录':0.707}";
-
+    
     LinkedHashMap<String, String> jsonMap = JSON.parseObject(jsonStr,
       new TypeReference<LinkedHashMap<String, String>>() {
       });

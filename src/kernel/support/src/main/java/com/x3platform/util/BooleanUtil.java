@@ -21,7 +21,7 @@ public class BooleanUtil {
     // 支持 1 或 0
     // 支持 Yes 或 No
     // 支持 On 或 Off
-    if (text.equals("1") || text.equals("YES") || text.equals("ON")) {
+    if (text.equals("1") || text.equals("TRUE") || text.equals("YES") || text.equals("ON")) {
       return true;
     }
 
