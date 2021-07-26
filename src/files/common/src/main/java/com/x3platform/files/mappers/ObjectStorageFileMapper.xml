@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.x3platform.files.mappers.ObjectStorageFileMapper">
+  <resultMap id="findOne_Result" type="com.x3platform.files.DistributedObjectStorageFile">
+    <result property="id" column="id"/>
+    <result property="bucketName" column="bucket_name" />
+    <result property="entityClassName" column="entity_elass_name" />
+    <result property="entityId" column="entity_id" />
+    <result property="fileEntityClassName" column="file_entity_class_name" />
+    <result property="fileName" column="attachment_name" />
+    <result property="virtualPath" column="virtual_path" />
+    <result property="folderRule" column="folder_rule" />
+    <result property="fileType" column="file_type" />
+    <result property="fileSize" column="file_size" />
+    <result property="fileStatus" column="file_status" />
+    <result property="orderId" column="order_id"/>
+    <result property="createdBy" column="created_by"/>
+    <result property="createdDate" column="created_date"/>
+  </resultMap>
+  <resultMap id="findAll_Result" type="com.x3platform.files.DistributedObjectStorageFile">
+    <result property="id" column="id"/>
+    <result property="bucketName" column="bucket_name" />
+    <result property="entityClassName" column="entity_elass_name" />
+    <result property="entityId" column="entity_id" />
+    <result property="fileEntityClassName" column="file_entity_class_name" />
+    <result property="fileName" column="attachment_name" />
+    <result property="virtualPath" column="virtual_path" />
+    <result property="folderRule" column="folder_rule" />
+    <result property="fileType" column="file_type" />
+    <result property="fileSize" column="file_size" />
+    <result property="fileStatus" column="file_status" />
+    <result property="orderId" column="order_id"/>
+    <result property="createdBy" column="created_by"/>
+    <result property="createdDate" column="created_date"/>
+  </resultMap>
+  <insert id="save" parameterType="com.x3platform.files.DistributedObjectStorageFile">
+    INSERT INTO attachment_file
+    (
+      id,
+      bucket_name,
+      entity_class_name,
+      entity_id,
+      file_entity_class_name,
+      attachment_name,
+      virtual_path,
+      folder_rule,
+      file_type,
+      file_size,
+      file_status,
+      order_id,
+      created_by,
+      created_date
+    )
+    VALUES
+    (
+      #{id},
+      #{bucketName},
+      #{entityClassName},
+      #{entityId},
+      #{fileEntityClassName},
+      #{fileName},
+      #{virtualPath},
+      #{folderRule},
+      #{fileType},
+      #{fileSize},
+      #{fileStatus},
+      #{orderId},
+      #{createdBy},
+      CURRENT_TIMESTAMP
+    )
+  </insert>
+  <delete id="delete">
+    DELETE FROM attachment_file WHERE id = #{id}
+  </delete>
+  <select id="findOne" parameterType="com.x3platform.files.DistributedObjectStorageFile" resultMap="findOne_Result">
+    SELECT * FROM attachment_file WHERE id = #{id}
+  </select>
+  <select id="findAll" resultMap="findAll_Result">
+    SELECT * FROM attachment_file T
+    <where>
+      <if test="var_scene == 'Query'">
+        <if test="param_search_text != null and param_search_text != ''">
+          AND attachment_name LIKE #{param_search_text}
+        </if>
+      </if>
+      <if test="var_scene == 'default'">
+        <if test="param_entity_id != null and param_entity_id != ''">
+          AND entity_id= #{param_entity_id}
+        </if>
+        <if test="param_entity_class_name != null and param_entity_class_name != ''">
+          AND entity_class_name = #{param_entity_class_name}
+        </if>
+        <if test="param_file_status != null and param_status != ''">
+          AND file_status = #{fileStatus}
+        </if>
+      </if>
+    </where>
+    <if test="orders != null and orders.size() > 0">
+      ORDER BY
+      <foreach collection="orders" item="order" index="index" separator=",">
+        ${order}
+      </foreach>
+    </if>
+    <if test="length > 0">
+      LIMIT 0, ${length}
+    </if>
+  </select>
+  <select id="findAllByEntityId" resultMap="findAll_Result">
+    SELECT * FROM attachment_file
+    WHERE entity_class_name = #{entity_class_name} AND entity_id = #{entity_id}
+    <if test="fileStatus > 0">
+        AND file_status = #{file_status}
+    </if>
+    <if test="orders != null and orders.size() > 0">
+      ORDER BY
+      <foreach collection="orders" item="order" index="index" separator=",">
+        ${order}
+      </foreach>
+    </if>
+    <if test="length > 0">
+      LIMIT 0, ${length}
+    </if>
+  </select>
+  <update id="rename" >
+    UPDATE attachment_file SET attachment_name = #{name} WHERE id = #{id}
+  </update>
+  <update id="setFileStatus" >
+    UPDATE attachment_file SET file_status = #{file_status} WHERE
+    entity_class_name = #{entity_class_name} AND entity_id = #{entity_id}
+    <if test="attachment_file_ids != null">
+      AND id IN
+      <foreach item="item" index="index" collection="attachment_file_ids" open="(" separator="," close=")">
+        #{item}
+      </foreach>
+    </if>
+  </update>
+</mapper>

@@ -1,0 +1,21 @@
+# -------------------------------------------------------
+# 日志 配置
+# -------------------------------------------------------
+logging.level:
+  root: WARN
+  com.x3platform: DEBUG
+
+# -------------------------------------------------------
+# 数据源 配置
+# -------------------------------------------------------
+# DataSource default(默认)
+spring.datasource:
+  driver-class-name: com.mysql.jdbc.Driver
+  type: com.alibaba.druid.pool.DruidDataSource
+  url: jdbc:mysql://${X3_MYSQL_HOST}:${X3_MYSQL_PORT}/${X3_MYSQL_DATABASE}?useUnicode=true&characterEncoding=utf-8&useSSL=false
+  username: ${X3_MYSQL_USERNAME}
+  password: ${X3_MYSQL_PASSWORD}
+
+# -------------------------------------------------------
+# 其他 配置
+# -------------------------------------------------------
